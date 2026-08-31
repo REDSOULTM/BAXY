@@ -1,0 +1,1333 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-103-baxy",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:46:26Z",
+  "closed_utc": "2026-08-31T05:46:27Z",
+  "estimated_tokens": 293594,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 103,
+  "subsystem": "baxy_art_technology_tournament",
+  "subsystems": [
+    "baxy_art_technology_tournament",
+    "baxy_art_test-results"
+  ],
+  "files": [
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/ExtensionActivityEdge",
+      "sha256": "aa8fa397c122e3c52a4cf9ef1078973e85dde76729ebe9a2be3cf061dc5d6e42",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/ExtensionActivityEdge",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/GPUCache/data_0",
+      "sha256": "26a72e3e9c8ff4b2899883933ef0816758a68343833ebb78e59d1b3325fab52b",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/GPUCache/data_1",
+      "sha256": "e12948188c5a92cb633e08dba51aad2dd70bd0ed9ac6f8c2e34b7dcea180dbdb",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/GPUCache/index",
+      "sha256": "69bb61761c1b567b3a0b6df47e0f05420050c3cfb9a28fa13175dfadbde4e287",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/History",
+      "sha256": "e95a4dd8f0c4a377e6df62d73635f6394914f5f8e208c8740bba12de952ba24b",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Local Storage/leveldb/LOG",
+      "sha256": "fadd2e8b80024f6dd70e9f45cac5eafb0d779dbcf374b752fd8166416d731f7e",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network Action Predictor",
+      "sha256": "e229f1676f9123961e814197fbea469176defec9780bc1d089ffea10d187e6d7",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network Action Predictor",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network/Network Persistent State",
+      "sha256": "35886f6291e8bd9c0299064f6557cc2790e86090966f2cdf0cce53a5a24eb57f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network/TransportSecurity",
+      "sha256": "b279e99a9d19fd2695f07193cb75dfa5e24122eed84f25fc413824d87058716e",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network/TransportSecurity",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Preferences",
+      "sha256": "de39f16a95d13409cc07cfb800f14150ff2612f71dda865fa1236416f968d3c3",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Secure Preferences",
+      "sha256": "7a574975425a39b7086dbead2c555364711196ec75a2b2f214b6597aba35fe53",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Session Storage/000003.log",
+      "sha256": "648f698a1a795c697fe66c04b8745519c372fbf77d6bc860623b7354d3d8d536",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Session Storage/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Session Storage/LOG",
+      "sha256": "1167eea422a6e65235d7f079ce1acac154297da5dbbe81010d6e391478b3ba43",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Shared Dictionary/cache/index-dir/the-real-index",
+      "sha256": "1c6f2da443711aa33751eb5ad3e102ab218cde5298b71de39838341132003954",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Site Characteristics Database/000003.log",
+      "sha256": "a748cded16f40308d5ffe61b289c4698b013ceff7964731e33d5445aef157328",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Site Characteristics Database/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Site Characteristics Database/LOG",
+      "sha256": "58a5e3c6ca90899514e27542d944b3b6a291f9e4d278915eb65be9939fba45de",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Sync Data/LevelDB/LOG",
+      "sha256": "27f4f2e848129138226c40046d591b3ab65974ae7bdf636bf3f0818fc6376a1e",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Top Sites",
+      "sha256": "89ee604de30002ef14c912d3cc7797a0828fe4a89821bc87743b80e377085e67",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Top Sites",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Web Data",
+      "sha256": "8747c5d9d3cfe6eaf5984028ce0a3497ab0bfdea290ca1a260e8460f57b66319",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/favorites_diagnostic.log",
+      "sha256": "550c9a2dbb6523f127eba07e2fc8c57d238a60fa22359298546649e29e38d38f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/favorites_diagnostic.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/000003.log",
+      "sha256": "137be3df68442ec8dd5c42251aea53e30d77d6892934c16a1cef52ca3195009a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/LOG",
+      "sha256": "0eda4961083651dec2b8c25ac1291ecb30ceaa7f075926e87bdb30ebadec9833",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log",
+      "sha256": "8f321562535d011adfa80848981b80553ad3dd36c3ecddf56221e931b77aad47",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/metadata/LOG",
+      "sha256": "9fc2f624ef985a06449ce83f26adba2f10bac1d10b3251b0a0a0062070f00327",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal",
+      "sha256": "cdea65f974e534e460d05202280c1ab1881ccd4d89d89b22c320ba1919fefadd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite-wal-with-parent:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GrShaderCache/data_0",
+      "sha256": "58f81305f9db117081c8addb2bcc583cd33fad71db7507cacfb1253ca477a7ff",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GrShaderCache/data_1",
+      "sha256": "34cb3bebff394a90c744e6c580018c1151fc1047a2e0a7ea6d7a5d6508599352",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GrShaderCache/data_3",
+      "sha256": "a00f81e15fa5cdb8b260538be36d49409f0d3ca7162e18551b72f621a1b7ebcd",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GrShaderCache/index",
+      "sha256": "c48dbad0eac6784aa583bdf3c9caffb9226982d716aef654a8f30cf3d560fce2",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Local State",
+      "sha256": "25028ec063a44588fc5606e5eb4987d30bf66d359f9ec581ec2b999c47c7456d",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/ShaderCache/index",
+      "sha256": "340108d0560c8c6540c020819cfb174cce8394d0bd12290a210e601d2adf7277",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/component_crx_cache/metadata.json",
+      "sha256": "2771d13c637c267132afff9db67537bef95708534b79ae8d954254c4e64e4e0f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/component_crx_cache/metadata.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/first_party_sets.db",
+      "sha256": "a6bd93ac4745253b0e55c51ca514472a2a71c4e32fa72d206fe2a9d080ae7b08",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/first_party_sets.db"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/workspace/journal.jsonl",
+      "sha256": "78ad324ed52c53b904a3f52275a9019596f5ee8136cb79b2407f51f6a03861a2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-webview/data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-wpf-rust/data/workspace/journal.jsonl",
+      "sha256": "f35f1b9c59887f3ebc9d62a3d872e13222cbbda7c0563591793c66fe7caced6e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-wpf-rust/data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-wpf-rust/malformed_probe/workspace/journal.jsonl",
+      "sha256": "3da1949b3da6a27733a5302d694744de1653038af3f4c345a2691e0a50da1ab1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-wpf-rust/malformed_probe/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-wpf/data/workspace/journal.jsonl",
+      "sha256": "41a280b57d002c9d31a1179749897eb71cd0460b0241bedd687855588baa32c0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-wpf/data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/dotnet-wpf/malformed_probe/workspace/journal.jsonl",
+      "sha256": "d782db795f824d3558016a7b0316cf2f36c028594e4832eeda1c7ebfbf1cca69",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/dotnet-wpf/malformed_probe/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b/tauri-rust/data/workspace/journal.jsonl",
+      "sha256": "b947d322720725f6e5c40f2ceec96d0286fd78617f41f22b1cc66d1da47aa57d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b/tauri-rust/data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_capture/data/workspace/journal.jsonl",
+      "sha256": "102b1b57da21bade5ac27d065257c68e7f2542f9f8ac7bfc4bc3703ca011bbfe",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_capture/data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_00/workspace/journal.jsonl",
+      "sha256": "d3ab73e74bfad0865794d1cc0908c37f80271f9673b941d952d50c4e66a71c5a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_00/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_01/workspace/journal.jsonl",
+      "sha256": "a1828debeea5bb07cc1074fb5cb92bb7b00cc1c824600508f792bc2dfd20c36e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_01/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_02/workspace/journal.jsonl",
+      "sha256": "0db36d549e56f661844416ece01b7c02a4ac704b1452537979828348ee39408b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_02/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_03/workspace/journal.jsonl",
+      "sha256": "936706d7f0f0e366df2720f4ffb0357fc6d60167f0371922f7eadd24ed938ab1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_03/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_04/workspace/journal.jsonl",
+      "sha256": "fc7cfcfe75cc16b6fd707a3b6869d0e77018a8aea0eb457569369174e2b30335",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_04/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_05/workspace/journal.jsonl",
+      "sha256": "4f6e554eda0b2ba2ca04370f3a238e99dd0874dd1490d19f004d3b44673a96bf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_05/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_06/workspace/journal.jsonl",
+      "sha256": "d97698af1a401e2de89bcd76f8dc2aaa3786bb5410defa1d0b148c3165bfc5b1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_06/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/journal.jsonl",
+      "sha256": "257e8a956f257166da816b5c733513594548994b371e089fd079ae2be24f500b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/scale_200/workspace/journal.jsonl",
+      "sha256": "fc257a4ab98e4dd87a52664ef60b1f940a8f41729c6629c51250217cd970dd22",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/scale_200/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/warm_ui/workspace/journal.jsonl",
+      "sha256": "867db694e6f59370b6af545bd60baf05b32e095181e6951a6297bc24a4ba7bbe",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/warm_ui/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_00/workspace/journal.jsonl",
+      "sha256": "6ac55f5c83fbc88a2656a492d8eee7f95541b6e2a007615132e0d9b29f895575",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_00/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_01/workspace/journal.jsonl",
+      "sha256": "e2c979b018fd010f0399d44bcd483431d667810506d3a37dc25ba02a4e62b2a3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_01/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_02/workspace/journal.jsonl",
+      "sha256": "46d446d1604a55a5795e4defac640d994771ddaa5e2c14d563fcb3aeb236a8d6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_02/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_03/workspace/journal.jsonl",
+      "sha256": "26d254bb28b3e134276f1a4bdbba1f49c25463abeecb3c8cdf30e43ff126211d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_03/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_04/workspace/journal.jsonl",
+      "sha256": "914a6eb381ec7d8e9738e6920d4a9d640e5bde74dcd8eaf13db2ae925a0930f9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_04/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_05/workspace/journal.jsonl",
+      "sha256": "63f2a50df38c59f71d80075a3022d5441233251ad395addc9315f900e7ec2587",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_05/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_06/workspace/journal.jsonl",
+      "sha256": "ee77478b6426db0f5b2fbbad8edf31ce1a2e887868f685602206028d12feea2b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_06/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/lifecycle_data/workspace/journal.jsonl",
+      "sha256": "585622b8bcb258a5788f53c647d485578d9d12afb012f243209be82bd60f8b3f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/lifecycle_data/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/scale_200/workspace/journal.jsonl",
+      "sha256": "d79482b3f7b67bbc54d2264e9551e96c31e95402b10ce1413ee7e135a74826f7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/scale_200/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/warm_ui/workspace/journal.jsonl",
+      "sha256": "764557e5de7e75d61093d05851a98a173a4d5262d609d7610ab7a0e8af4f5a0c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/warm_ui/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle_smoke_wpf.json",
+      "sha256": "a73c4031d2f22da99b63e2138dac95a23f77ca944a8064d1ca0bc84b9ffd8444",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_lifecycle_smoke_wpf.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/manifest.json",
+      "sha256": "d818306465264a83df21b23208625cc673a65c983b2a2dee1e888c9aa319215d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/manifest.json",
+      "sha256": "64a772335098ab60989b616bdcb2e8f616c8104d9a74010d40dee71b650f0908",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/manifest.json",
+      "sha256": "3d43afc3b7c5ed89513883d67c162be31233343f6c18438858f5c366e431e862",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/manifest.json",
+      "sha256": "d06979117f2c9517340fb3afd78e77c417350319371da148c102cd42ee5608e6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/manifest.json",
+      "sha256": "26351f99dce97d4a4a4ec1b299d2bc62fc28e0c7e0dd451e9c086b92a11bc2aa",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.1/manifest.json",
+      "sha256": "df0d1c302856230c606e226f85c069551db81125e3ae5cf351879c728b201b0a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.1/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.2/manifest.json",
+      "sha256": "df04c785b110b04baf04215ccf5b5b4efe3697fd159cbb162b784f98959773df",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.2/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.3/manifest.json",
+      "sha256": "7ab60aa371717519bcfdbe5b04bdb103741ba293ea390e83e9ab36034a950668",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.3/manifest.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_smoke_wpf.json",
+      "sha256": "37002c64b33cbcd35227b52d5720c770191446b27ba3b71ff698a574943ccfd0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/round_b_smoke_wpf.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_000/journal.jsonl",
+      "sha256": "c2fca37c4c0615a4cdd6b21a7c7356da7ef614b0d17340ee6fb09b1b5717d748",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_000/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_001/journal.jsonl",
+      "sha256": "4dbbba3a483f7c3742889bfac0f9b56588d4f6bbb63c71c74ccd6192786a58ef",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_001/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_002/journal.jsonl",
+      "sha256": "d104a195792b4d5eddf5f2ad57bf799de65465ff3caee891c11b8714ff36c947",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_002/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_003/journal.jsonl",
+      "sha256": "720281efa1c3a9ed02ac2343a8ab0ea0ef5a47d91c69a2cb1c3fa115a544a393",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_003/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_004/journal.jsonl",
+      "sha256": "ce6aac9492136d7cb58a07cf81d429b9eaff30b751aaf6472689d3a0ca592a9f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_004/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_005/journal.jsonl",
+      "sha256": "176a197ece092614f180c37f8aa78aba42db92e2f7c96470e0690e74360d38ee",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_005/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_006/journal.jsonl",
+      "sha256": "82d2ad4fa7ef307aacfa2e7b30ccf37c12b73548c9a169f1b606a964f873cd0a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_006/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_007/journal.jsonl",
+      "sha256": "3d12dab3bfa10125b46ffa89f423a56af1a867d24545321d63796a6b3c65ee6d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_007/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_008/journal.jsonl",
+      "sha256": "d6f4bde58849934defc6d584bbf33e1a6491665e5f1b2dc7da3ff5899d4cbaf2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_008/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_009/journal.jsonl",
+      "sha256": "07a14665a92e333221e4da60a78236d1058b3470505e72e345b9aee9425f4297",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_009/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_010/journal.jsonl",
+      "sha256": "9888271565796261e73befa77ec1bc892ad29629f51c4915bb0f0a461dfa7d2e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_010/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_011/journal.jsonl",
+      "sha256": "3efa724eefc6c9bc84de01831fc55cab7d273fa4a1ca258f3b1d13b42ead1547",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_011/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_012/journal.jsonl",
+      "sha256": "cccba29b699f24d36ad012a9a67e6f547c4750cc6f4c595958ab304f6fc961aa",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_012/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_013/journal.jsonl",
+      "sha256": "c385e87866cf09f672e6d38bb0ef2fcb0255e7f88d6f75b3f01fff93d1ab2bb7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_013/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_014/journal.jsonl",
+      "sha256": "b89df27aa8e9e415883b38faafb39cfefca6391ad703f216d83b0a378f83ae6f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_014/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_015/journal.jsonl",
+      "sha256": "8bff6fead6f3cb83c2fbba1ac0c7fa5711f494507f3d40319244c5ad62144c50",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_015/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_016/journal.jsonl",
+      "sha256": "bddc865650ab0be6962a6120d2ab0c247b08137d4682b3ef93224daefb51efe0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_016/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_017/journal.jsonl",
+      "sha256": "1ae9a1b74ae449fd3e6cfb439cafabdde7d316f0a727e81e02268e7034c52f75",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_017/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_018/journal.jsonl",
+      "sha256": "a753fd93571c70d18c360544d1233ec4dc094478f82ed028d197722045186db9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_018/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_019/journal.jsonl",
+      "sha256": "84f494b9d6df6cd4afa591c6d7fe5e5b72466dd71586f541492db95bcd32ff71",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_019/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/cold/workspace_020/journal.jsonl",
+      "sha256": "a4ceab2a363ec3457bcf6ae64fa67d9d50f19c50657d25a2a31e4a578f0284df",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/cold/workspace_020/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/functional_01/workspace/journal.jsonl",
+      "sha256": "b1ec116d074128f2c46d9cc027fd6272831d9242443a1ad8c933f86f1f87bce5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/functional_01/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/functional_02/workspace/journal.jsonl",
+      "sha256": "43e5f9a13325fecf122d95ee575361f72b738187ce0fb795176e94386bbec200",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/functional_02/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/functional_03/workspace/journal.jsonl",
+      "sha256": "9408a86c877c130401267dd048be0bda13f430d6ec45fb0bd95e708fdd1f98ba",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/functional_03/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/rust_core/warm/workspace/journal.jsonl",
+      "sha256": "56b5afa8c8947ac6bbfe5f9a7ff64857d28798a406d71723ddf94bf4c3604105",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/rust_core/warm/workspace/journal.jsonl"
+    },
+    {
+      "path": "artifacts/technology_tournament/work/smoke.json",
+      "sha256": "4fbf996dea469b19c9f98c84068ed693c9079bf609d23775109dbc3e8ac954de",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/technology_tournament/work/smoke.json"
+    },
+    {
+      "path": "artifacts/test-results/catalog-narration-r48.trx",
+      "sha256": "e783a03d70b2a75108088fae74b7b1eb4453f12d597b405a1a7b67157be8a600",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/catalog-narration-r48.trx"
+    },
+    {
+      "path": "artifacts/test-results/contracts-prephysical-r48.trx",
+      "sha256": "83485538b144d270918fab2f7c8da18c7b22ee9310cc6f47f013627be597f9a0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/contracts-prephysical-r48.trx"
+    },
+    {
+      "path": "artifacts/test-results/dotnet-integration-r46-isolated.trx",
+      "sha256": "41a4c94edb43172bc1e4c36fc650e212612c0843a5057f4edc19d9ba5a5336b5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/dotnet-integration-r46-isolated.trx"
+    },
+    {
+      "path": "artifacts/test-results/dotnet-r46-r2-closed.trx",
+      "sha256": "68699dfbaade01fb056191da3d065f4408890f02fc6fcdbd2f372acb5408054b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/dotnet-r46-r2-closed.trx"
+    },
+    {
+      "path": "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_04.trx",
+      "sha256": "4aadef8d3da517970acb04d0a1dbb366e656d4842baa0ce4cb55596e769b52d3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_04.trx"
+    },
+    {
+      "path": "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_05.trx",
+      "sha256": "cb7adb3745a2b5eb4f37e8ec9f65161320800dd67143c821a7f33d4c6eb5cc94",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_05.trx"
+    },
+    {
+      "path": "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_05[1].trx",
+      "sha256": "aab33f6224e09f4ede13b70c33a3dff3d89e0070f66b28741fa95cf7bcfa0d1e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json#artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_05[1].trx"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-103-baxy-01-artifacts-technology_tournament-work",
+      "card_kind": "asset",
+      "corpus": "artifacts/technology_tournament/work",
+      "denominator": "75 files in group artifacts/technology_tournament/work; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/technology_tournament/work",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/ExtensionActivityEdge",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network Action Predictor",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Network/TransportSecurity",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Session Storage/000003.log",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Site Characteristics Database/000003.log",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/Top Sites",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/favorites_diagnostic.log",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/000003.log",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/component_crx_cache/metadata.json",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/first_party_sets.db",
+        "artifacts/technology_tournament/work/round_b/dotnet-webview/data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b/dotnet-wpf-rust/data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b/dotnet-wpf-rust/malformed_probe/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b/dotnet-wpf/data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b/dotnet-wpf/malformed_probe/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b/tauri-rust/data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_capture/data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_00/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_01/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_02/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_03/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_04/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_05/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/cold_06/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/scale_200/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/warm_ui/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_00/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_01/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_02/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_03/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_04/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_05/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/cold_06/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/lifecycle_data/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/scale_200/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf/warm_ui/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/round_b_lifecycle_smoke_wpf.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.1/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.2/manifest.json",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.3/manifest.json",
+        "artifacts/technology_tournament/work/round_b_smoke_wpf.json",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_000/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_001/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_002/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_003/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_004/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_005/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_006/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_007/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_008/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_009/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_010/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_011/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_012/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_013/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_014/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_015/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_016/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_017/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_018/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_019/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/cold/workspace_020/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/functional_01/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/functional_02/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/functional_03/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/rust_core/warm/workspace/journal.jsonl",
+        "artifacts/technology_tournament/work/smoke.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "ExtensionActivityEdge parser=binary_inventory rows=0 bytes=32768 dist={} | Network Action Predictor parser=binary_inventory rows=0 bytes=53248 dist={} | TransportSecurity parser=binary_inventory rows=0 bytes=188 dist={} | 000003.log parser=log rows=1 bytes=221 dist={\"fail_like\": 0, \"pass_like\": 0} | 000003.log parser=log rows=1 bytes=112 dist={\"fail_like\": 0, \"pass_like\": 0} | Top Sites parser=binary_inventory rows=0 bytes=20480 dist={}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b/dotnet-webview/data/WebView2/EBWebView/Default/ExtensionActivityEdge",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-103-baxy-02-artifacts-test-results-catalog-narration-r48.trx",
+      "card_kind": "corpus",
+      "corpus": "artifacts/test-results/catalog-narration-r48.trx",
+      "denominator": "1 files in group artifacts/test-results/catalog-narration-r48.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/test-results/catalog-narration-r48.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/test-results/catalog-narration-r48.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "catalog-narration-r48.trx parser=xml rows=29 bytes=5562 dist={\"tags\": {\"UnitTestResult\": 3, \"Execution\": 3, \"TestMethod\": 3, \"UnitTest\": 3, \"TestEntry\": 3, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"TestDe…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "artifacts/test-results/catalog-narration-r48.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-103-baxy-03-artifacts-test-results-contracts-prephysical-r48.trx",
+      "card_kind": "corpus",
+      "corpus": "artifacts/test-results/contracts-prephysical-r48.trx",
+      "denominator": "1 files in group artifacts/test-results/contracts-prephysical-r48.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/test-results/contracts-prephysical-r48.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/test-results/contracts-prephysical-r48.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "contracts-prephysical-r48.trx parser=xml rows=309 bytes=78247 dist={\"tags\": {\"UnitTestResult\": 59, \"Execution\": 59, \"TestMethod\": 59, \"UnitTest\": 59, \"TestEntry\": 59, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/test-results/contracts-prephysical-r48.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-103-baxy-04-artifacts-test-results-dotnet-integration-r46-isolated.trx",
+      "card_kind": "corpus",
+      "corpus": "artifacts/test-results/dotnet-integration-r46-isolated.trx",
+      "denominator": "1 files in group artifacts/test-results/dotnet-integration-r46-isolated.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/test-results/dotnet-integration-r46-isolated.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/test-results/dotnet-integration-r46-isolated.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "dotnet-integration-r46-isolated.trx parser=xml rows=6462 bytes=1778479 dist={\"tags\": {\"UnitTestResult\": 1282, \"TestEntry\": 1282, \"Execution\": 1281, \"TestMethod\": 1281, \"UnitTest\": 1281, \"StdOut\": 11, \"Output\": 11, \"Message\": 9, \"ErrorInfo\": 9, \"TestList\":…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/test-results/dotnet-integration-r46-isolated.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-103-baxy-05-artifacts-test-results-dotnet-r46-r2-closed.trx",
+      "card_kind": "corpus",
+      "corpus": "artifacts/test-results/dotnet-r46-r2-closed.trx",
+      "denominator": "1 files in group artifacts/test-results/dotnet-r46-r2-closed.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/test-results/dotnet-r46-r2-closed.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/test-results/dotnet-r46-r2-closed.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "dotnet-r46-r2-closed.trx parser=xml rows=6553 bytes=1855134 dist={\"tags\": {\"UnitTestResult\": 1282, \"TestEntry\": 1282, \"Execution\": 1281, \"TestMethod\": 1281, \"UnitTest\": 1281, \"Output\": 34, \"Message\": 33, \"ErrorInfo\": 33, \"StackTrace\": 23, \"StdO…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/test-results/dotnet-r46-r2-closed.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-103-baxy-06-artifacts-test-results-dotnet-r50-r4-closed",
+      "card_kind": "corpus",
+      "corpus": "artifacts/test-results/dotnet-r50-r4-closed",
+      "denominator": "3 files in group artifacts/test-results/dotnet-r50-r4-closed; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/test-results/dotnet-r50-r4-closed",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_04.trx",
+        "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_05.trx",
+        "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_05[1].trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "emman_REDNOTE_2026-08-03_09_36_04.trx parser=xml rows=309 bytes=78247 dist={\"tags\": {\"UnitTestResult\": 59, \"Execution\": 59, \"TestMethod\": 59, \"UnitTest\": 59, \"TestEntry\": 59, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T… | emman_REDNOTE_2026-08-03_09_36_05.trx parser=xml rows=598 bytes=151873 dist={\"tags\": {\"UnitTestResult\": 116, \"Execution\": 116, \"TestMethod\": 116, \"UnitTest\": 116, \"TestEntry\": 116, \"StdOut\": 2, \"Output\": 2, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"Tes… | emman_REDNOTE_2026-08-03_09_36_05[1].trx parser=xml rows=2260 bytes=615509 dist={\"tags\": {\"UnitTestResult\": 446, \"Execution\": 446, \"TestMethod\": 446, \"UnitTest\": 446, \"TestEntry\": 446, \"StdOut\": 5, \"Output\": 5, \"Message\": 4, \"ErrorInfo\": 4, \"TestList\": 2, \"Ti…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/test-results/dotnet-r50-r4-closed/emman_REDNOTE_2026-08-03_09_36_04.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=103 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-104-baxy",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-103-baxy.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

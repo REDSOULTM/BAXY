@@ -1,0 +1,4656 @@
+{
+  "batch_id": "evidence_assets-018-probando_gemma4",
+  "source_id": "probando_gemma4",
+  "file_count": 92,
+  "hash_ok": 92,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "documentacion/_router_artifact_bak/tool_head.json.bak": {
+      "parser": "binary_inventory",
+      "bytes": 486461,
+      "sha256": "49051b84958e3a9b836666ad05e53604e57a4b6ffaab6f4454521081ea0ddd45",
+      "format": "bak",
+      "magic_hex": "7b226d6f64656c5f76657273696f6e22",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/_router_artifact_bak/tool_head.json.bak"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "mind router / language routing experiments",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "bak"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 486460
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=7b226d6f64656c5f76657273696f6e22 format=bak"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 486460,
+            "line": 0,
+            "text": "eof bytes=486461"
+          }
+        ]
+      }
+    },
+    "documentacion/_tool_head_retrain_enc31.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 701,
+      "sha256": "fbec700698de82ee95e446009504934280532d7767203ae6191d73a430db1082",
+      "rows": 20,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 604,
+        "min_line_bytes": 16,
+        "max_line_bytes": 167
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0614 00:06:08.394000 46236 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 167,
+            "line": 2,
+            "text": "samples: 7459 (1676 real dev + 5783 synthetic)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 536,
+            "line": 19,
+            "text": "trained heads for 27/27 tools (rest fall back to keyword/semantic)"
+          },
+          {
+            "offset": 604,
+            "line": 20,
+            "text": "wrote <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\tool_head.json"
+          }
+        ]
+      }
+    },
+    "documentacion/_tools_reduce_router_eval_bytool_latest.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 16068,
+      "sha256": "47eb1ee55740c096100474d1536667bc4a75fb8f20d7c89dadc4f2a12928a58a",
+      "rows": 162,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15976,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿======================================================================"
+          },
+          {
+            "offset": 146,
+            "line": 2,
+            "text": "Router eval — router_eval_corpus.curated.jsonl (2102 rows; dev=1676 holdout=426)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15890,
+            "line": 161,
+            "text": "'metti Blocco note e Chrome affiancati'"
+          },
+          {
+            "offset": 15976,
+            "line": 162,
+            "text": "expected=['window'] subset=['session']"
+          }
+        ]
+      }
+    },
+    "documentacion/_tools_reduce_router_eval_fails.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 12018,
+      "sha256": "db26898cf0257a6e2737862fc03eab70e21e9d8d930f247899a3bee1a8842597",
+      "rows": 111,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11816,
+        "min_line_bytes": 4,
+        "max_line_bytes": 260
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿======================================================================"
+          },
+          {
+            "offset": 146,
+            "line": 2,
+            "text": "Router eval — router_eval_corpus.curated.jsonl (2102 rows; dev=1676 holdout=426)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 11772,
+            "line": 110,
+            "text": "'schalte wlan ein'"
+          },
+          {
+            "offset": 11816,
+            "line": 111,
+            "text": "expected=['device_settings'] subset=['app', 'audio', 'media', 'routine', 'session', 'window']"
+          }
+        ]
+      }
+    },
+    "documentacion/_tools_reduce_router_eval_fails_after_iter.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 6954,
+      "sha256": "f9d075f2963eaeaf77b6bfbc08b5f5ab0a1a077ca7f66f3fecf958746eeffab6",
+      "rows": 67,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6854,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿======================================================================"
+          },
+          {
+            "offset": 146,
+            "line": 2,
+            "text": "Router eval — router_eval_corpus.curated.jsonl (2102 rows; dev=1676 holdout=426)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6810,
+            "line": 66,
+            "text": "'Borralo de nuevo'"
+          },
+          {
+            "offset": 6854,
+            "line": 67,
+            "text": "expected=['filesystem'] subset=['session']"
+          }
+        ]
+      }
+    },
+    "documentacion/_tools_reduce_router_eval_fails_current.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 9214,
+      "sha256": "8357881d90dfa73fa441580d408f38e876544e8b4009eacba8e45c1a304f2ed5",
+      "rows": 89,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9084,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿======================================================================"
+          },
+          {
+            "offset": 146,
+            "line": 2,
+            "text": "Router eval — router_eval_corpus.curated.jsonl (2102 rows; dev=1676 holdout=426)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9040,
+            "line": 88,
+            "text": "'schalte wlan ein'"
+          },
+          {
+            "offset": 9084,
+            "line": 89,
+            "text": "expected=['device_settings'] subset=['safety', 'session']"
+          }
+        ]
+      }
+    },
+    "documentacion/_tools_reduce_router_eval_fails_final_candidate.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 7612,
+      "sha256": "c9980f959f902dbfca83d563420bcf81ac2e1734b77434f39d6ed7fff738dc29",
+      "rows": 73,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7482,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿======================================================================"
+          },
+          {
+            "offset": 146,
+            "line": 2,
+            "text": "Router eval — router_eval_corpus.curated.jsonl (2102 rows; dev=1676 holdout=426)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7438,
+            "line": 72,
+            "text": "'schalte wlan ein'"
+          },
+          {
+            "offset": 7482,
+            "line": 73,
+            "text": "expected=['device_settings'] subset=['safety', 'session']"
+          }
+        ]
+      }
+    },
+    "documentacion/_tools_reduce_router_eval_fails_latest.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 6736,
+      "sha256": "b8cdb156cdb7c3a5b2d950a9e3ed138774c0a3e9e5f62aea3c6eed4238c3d7dd",
+      "rows": 65,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6636,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿======================================================================"
+          },
+          {
+            "offset": 146,
+            "line": 2,
+            "text": "Router eval — router_eval_corpus.curated.jsonl (2102 rows; dev=1676 holdout=426)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6592,
+            "line": 64,
+            "text": "'Borralo de nuevo'"
+          },
+          {
+            "offset": 6636,
+            "line": 65,
+            "text": "expected=['filesystem'] subset=['session']"
+          }
+        ]
+      }
+    },
+    "documentacion/_wake_monitor_live.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2170,
+      "sha256": "500b69a4554a012f289dfbb3af74d1c427b15390528d853eb0adc06b38c7d982",
+      "rows": 23,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2074,
+        "min_line_bytes": 81,
+        "max_line_bytes": 133
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[17:34:15] === MONITOR ACTIVO === umbral wake=0.35 (cualquier WAKE ACEPTADO = falso positivo). Hablá/poné videos sin decir Baxy."
+          },
+          {
+            "offset": 133,
+            "line": 2,
+            "text": "[17:34:45] heartbeat: 0.5 min vivo | model-fires=0 WAKES-ACEPTADOS(falsos)=0 transcripciones=0"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1978,
+            "line": 22,
+            "text": "[17:40:45] heartbeat: 6.5 min vivo | model-fires=4 WAKES-ACEPTADOS(falsos)=3 transcripciones=1"
+          },
+          {
+            "offset": 2074,
+            "line": 23,
+            "text": "[17:41:15] heartbeat: 7.0 min vivo | model-fires=4 WAKES-ACEPTADOS(falsos)=3 transcripciones=1"
+          }
+        ]
+      }
+    },
+    "documentacion/_wake_v5_overnight.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 117046215,
+      "sha256": "0d2141405c80386177ed5bca89b149aa82982880a387c20b7717ddd58ef4bf55",
+      "rows": 2148,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 50,
+        "pass_like": 82
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 117046137,
+        "min_line_bytes": 2,
+        "max_line_bytes": 17374407
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[20:40:14] ### WAKE V5 OVERNIGHT — inicio ###"
+          },
+          {
+            "offset": 49,
+            "line": 2,
+            "text": "[20:40:14] anti-suspension activo (SetThreadExecutionState)"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 117046082,
+            "line": 2147,
+            "text": "[09:31:14] NO-DEPLOY: gates incompletos; prod intacto"
+          },
+          {
+            "offset": 117046137,
+            "line": 2148,
+            "text": "[09:31:14] ### FIN — GATES_FAIL (veredicto en _wake_v5_veredicto.json) ###"
+          }
+        ]
+      }
+    },
+    "documentacion/datos_crudos/carter540_consolidated_v6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 257989,
+      "sha256": "e58850eca396665573b8afb8dcb4454cbfd5e7c14f55d042a08b99b34da20f6f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 257988
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "documentacion/datos_crudos/carter540_v14_GANADOR.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 239781,
+      "sha256": "6fc0710b7f75676001e4bb8213073f3457ccaeeaa3fac3c81e77706e4bac80de",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 239780
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/01_fase2_22_modelos.png": {
+      "parser": "binary_inventory",
+      "bytes": 105044,
+      "sha256": "d2fb344125444bf8cb2907023a7c8c49d232b5046174261e70d15690cfa7b701",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/01_fase2_22_modelos.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1439,
+        "height": 1009
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 105043
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 105043,
+            "line": 0,
+            "text": "eof bytes=105044"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/02_fase2_top8_desglose.png": {
+      "parser": "binary_inventory",
+      "bytes": 57952,
+      "sha256": "fba9f42738624b96f1fe70ede8f9560f35590e89d7fd6c210a858785963e1a18",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/02_fase2_top8_desglose.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1195,
+        "height": 796
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 57951
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 57951,
+            "line": 0,
+            "text": "eof bytes=57952"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/03_vram_por_modelo.png": {
+      "parser": "binary_inventory",
+      "bytes": 102808,
+      "sha256": "cdd5b3b13fb100a448baa3ce5cce8d6fd56014857ce950c3c04fcfdbd350171a",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/03_vram_por_modelo.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1270,
+        "height": 1009
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 102807
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 102807,
+            "line": 0,
+            "text": "eof bytes=102808"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/04_gemma_vs_qwen_patrones.png": {
+      "parser": "binary_inventory",
+      "bytes": 61410,
+      "sha256": "6dfb8787a1f9393d3687ee40f5bd2a95d57183d111be598a975ca9a174021eb4",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/04_gemma_vs_qwen_patrones.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1407,
+        "height": 783
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61409
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 61409,
+            "line": 0,
+            "text": "eof bytes=61410"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/05_latencia_categoria_540.png": {
+      "parser": "binary_inventory",
+      "bytes": 55515,
+      "sha256": "7409c2b58c74ab95d5937c4b42c20a7aeccad1d0e4167acfc2c6af0da1b8b35a",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/05_latencia_categoria_540.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1396,
+        "height": 684
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55514
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 55514,
+            "line": 0,
+            "text": "eof bytes=55515"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/06_progresion_v1_v14.png": {
+      "parser": "binary_inventory",
+      "bytes": 81194,
+      "sha256": "9de1f0ba5cd3b180907a28cfdade4e8bd0e46f6b783ae235619acca6da5cc4fe",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/06_progresion_v1_v14.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1307,
+        "height": 684
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 81193
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 81193,
+            "line": 0,
+            "text": "eof bytes=81194"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/07_categorias_v14_540.png": {
+      "parser": "binary_inventory",
+      "bytes": 32112,
+      "sha256": "f0af7c54f9eaf76b5477f3690830ab657c09ccd3d7ab909c2722be8d71a24740",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/07_categorias_v14_540.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1407,
+        "height": 383
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32111
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 32111,
+            "line": 0,
+            "text": "eof bytes=32112"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/08_consolidated_vs_individual.png": {
+      "parser": "binary_inventory",
+      "bytes": 58368,
+      "sha256": "54d21ead989f240b2d597e405a33b677e58aec3202915502120ad656a2463e9c",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/08_consolidated_vs_individual.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1576,
+        "height": 529
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58367
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 58367,
+            "line": 0,
+            "text": "eof bytes=58368"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/09_escalabilidad_tools.png": {
+      "parser": "binary_inventory",
+      "bytes": 77654,
+      "sha256": "ea00d1593651e730b9e1167f8c39484717b0da1d5864566faf287b02a4aac976",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/09_escalabilidad_tools.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1228,
+        "height": 709
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77653
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 77653,
+            "line": 0,
+            "text": "eof bytes=77654"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/10_audio_gemma_vs_whisper.png": {
+      "parser": "binary_inventory",
+      "bytes": 35240,
+      "sha256": "a8e814f49cc3fd6063e82c1b184f84dbe7c9fd98245dfa87276a741d3bf9dd77",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/10_audio_gemma_vs_whisper.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1116,
+        "height": 596
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35239
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 35239,
+            "line": 0,
+            "text": "eof bytes=35240"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/11_consolidated_v1_v6.png": {
+      "parser": "binary_inventory",
+      "bytes": 56287,
+      "sha256": "10b91e5c58e4440487b57b70431164acca5de7d0f69f7a1052878523ea1f2e58",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/11_consolidated_v1_v6.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1206,
+        "height": 684
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56286
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 56286,
+            "line": 0,
+            "text": "eof bytes=56287"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/12_vulkan_vs_cuda.png": {
+      "parser": "binary_inventory",
+      "bytes": 33759,
+      "sha256": "92489a0001d9b0108b4888eadf944694871ca12327c8d1d7f19fb5cfaf40d26e",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/12_vulkan_vs_cuda.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1094,
+        "height": 583
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33758
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33758,
+            "line": 0,
+            "text": "eof bytes=33759"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/13_causas_raiz_fails.png": {
+      "parser": "binary_inventory",
+      "bytes": 47538,
+      "sha256": "94f932135a08c7b88a441fe283a2e31201e1aebddbcae9d5789db63749a056da",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/13_causas_raiz_fails.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 735,
+        "height": 676
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 47537
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 47537,
+            "line": 0,
+            "text": "eof bytes=47538"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/14_cobertura_fases.png": {
+      "parser": "binary_inventory",
+      "bytes": 54204,
+      "sha256": "27d57d60350178c0d22b5e6148a8c1d8dd72b31d0c17c00f5416d383d060076d",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/14_cobertura_fases.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1595,
+        "height": 550
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54203
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 54203,
+            "line": 0,
+            "text": "eof bytes=54204"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/15_selector_hardware.png": {
+      "parser": "binary_inventory",
+      "bytes": 56935,
+      "sha256": "fe1a35d17fb674a99dd7f02b3898eecb782cecab60ddfcfb56e7def7e06ff3c7",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/15_selector_hardware.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1407,
+        "height": 698
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56934
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 56934,
+            "line": 0,
+            "text": "eof bytes=56935"
+          }
+        ]
+      }
+    },
+    "documentacion/graficos/16_30_valores_carter.png": {
+      "parser": "binary_inventory",
+      "bytes": 36917,
+      "sha256": "3b95d5a1744278e1f1a0e319e0e59256f98505df788256cd02a39601f0eb36b6",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "documentacion/graficos/16_30_valores_carter.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 650,
+        "height": 576
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36916
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36916,
+            "line": 0,
+            "text": "eof bytes=36917"
+          }
+        ]
+      }
+    },
+    "gemma4_agent/logs/llama-server.err.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 71023249,
+      "sha256": "576a0018daf75b02e5c9622b2d671dae6a8c881408f69cfa18497075040fc15b",
+      "rows": 838191,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 48,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 71023175,
+        "min_line_bytes": 2,
+        "max_line_bytes": 1052446
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000…"
+          },
+          {
+            "offset": 1052446,
+            "line": 2,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 71023136,
+            "line": 838190,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 71023175,
+            "line": 838191,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "gemma4_agent/logs/llama-server.manual.err.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 69630,
+      "sha256": "7e9aa5bd6f773a3123a89446a853fffe58e8f6f3c328d559a0e966c9c3ff634d",
+      "rows": 891,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69556,
+        "min_line_bytes": 2,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 69517,
+            "line": 890,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 69556,
+            "line": 891,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "gemma4_agent/logs/llama-server.out.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 91784410,
+      "sha256": "fe6d8cb46ec3abd669adcbdb1eec0fef844b591172ca0f1d4799a64b4cced991",
+      "rows": 856019,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 91784327,
+        "min_line_bytes": 11,
+        "max_line_bytes": 11309482
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000…"
+          },
+          {
+            "offset": 11309482,
+            "line": 2,
+            "text": "[ 4147] slot get_availabl: id 0 | task -1 | selected slot by LCP similarity, sim_best = 0.992 (> 0.100 thold), f_keep = 0.951"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 91784279,
+            "line": 856018,
+            "text": "[ 6669] srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 91784327,
+            "line": 856019,
+            "text": "[ 6669] srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_de_mls/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1872,
+      "sha256": "032a73c26c681db65eff36cdb890ffc1bdee1fa2b7681ae2463d59bab68e03f2",
+      "rows": 21,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 3
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1773,
+        "min_line_bytes": 36,
+        "max_line_bytes": 168
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[12:31:28] ### PIPELINE BAXY_P2_DE_MLS phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_de_mls\\_pipeline.log ###"
+          },
+          {
+            "offset": 168,
+            "line": 2,
+            "text": "[12:31:28] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1640,
+            "line": 20,
+            "text": "[14:26:17] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1773,
+            "line": 21,
+            "text": "[14:26:17] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_es_sharvard/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1902,
+      "sha256": "484e2a524cda6f4888175306fdf8ac234045dd3e5bff791d9fab526b88c77fc4",
+      "rows": 21,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 3
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1803,
+        "min_line_bytes": 36,
+        "max_line_bytes": 178
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[13:45:54] ### PIPELINE BAXY_P2_ES_SHARVARD phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_es_sharvard\\_pipeline.log ###"
+          },
+          {
+            "offset": 178,
+            "line": 2,
+            "text": "[13:45:54] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1670,
+            "line": 20,
+            "text": "[14:29:16] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1803,
+            "line": 21,
+            "text": "[14:29:16] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_fr_mls/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1248,
+      "sha256": "c3655cbb23e7415b9512b115215b4ff543cd0c4e5d42512f1fe98fa1375c4a1d",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1149,
+        "min_line_bytes": 36,
+        "max_line_bytes": 168
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[13:05:03] ### PIPELINE BAXY_P2_FR_MLS phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_fr_mls\\_pipeline.log ###"
+          },
+          {
+            "offset": 168,
+            "line": 2,
+            "text": "[13:05:03] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1016,
+            "line": 13,
+            "text": "[13:52:51] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1149,
+            "line": 14,
+            "text": "[13:52:51] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_nl_pim/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1248,
+      "sha256": "455d5f9c11ab2904dda074fcc144ebe8b3c5bd9f134bf2f5d7390fe0dda1af97",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1149,
+        "min_line_bytes": 36,
+        "max_line_bytes": 168
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[14:06:21] ### PIPELINE BAXY_P2_NL_PIM phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_nl_pim\\_pipeline.log ###"
+          },
+          {
+            "offset": 168,
+            "line": 2,
+            "text": "[14:06:21] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1016,
+            "line": 13,
+            "text": "[14:40:19] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1149,
+            "line": 14,
+            "text": "[14:40:19] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_pl_mc_speech/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1680,
+      "sha256": "cd45992b730f4ad09d11aeb468a4590a3400f588f0b69aea6d361ab83911e11e",
+      "rows": 18,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1581,
+        "min_line_bytes": 36,
+        "max_line_bytes": 180
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[13:50:05] ### PIPELINE BAXY_P2_PL_MC_SPEECH phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_pl_mc_speech\\_pipeline.log ###"
+          },
+          {
+            "offset": 180,
+            "line": 2,
+            "text": "[13:50:05] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1448,
+            "line": 17,
+            "text": "[14:31:54] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1581,
+            "line": 18,
+            "text": "[14:31:54] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_pt_cadu/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1252,
+      "sha256": "82219282abe2ca5057015037194f20b57b76ebff4e14b1b1be90a51f34b6242f",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1153,
+        "min_line_bytes": 36,
+        "max_line_bytes": 170
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[14:02:12] ### PIPELINE BAXY_P2_PT_CADU phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_pt_cadu\\_pipeline.log ###"
+          },
+          {
+            "offset": 170,
+            "line": 2,
+            "text": "[14:02:12] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1020,
+            "line": 13,
+            "text": "[14:37:19] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1153,
+            "line": 14,
+            "text": "[14:37:19] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_ru_dmitri/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1260,
+      "sha256": "d592dbb2340b6d6cce44e51bd81b277e23f78cd17b1fbdfbca6d1d79af0160f1",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1161,
+        "min_line_bytes": 36,
+        "max_line_bytes": 174
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[13:57:54] ### PIPELINE BAXY_P2_RU_DMITRI phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_ru_dmitri\\_pipeline.log ###"
+          },
+          {
+            "offset": 174,
+            "line": 2,
+            "text": "[13:57:54] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1028,
+            "line": 13,
+            "text": "[14:34:41] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1161,
+            "line": 14,
+            "text": "[14:34:41] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "output/baxy_p2_zh_xiao_ya/_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1264,
+      "sha256": "9b3ffcf36d14c4ad2b2a777536fc015f46bc363a2d090cb77d82474796a250d9",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1165,
+        "min_line_bytes": 36,
+        "max_line_bytes": 176
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[14:10:31] ### PIPELINE BAXY_P2_ZH_XIAO_YA phase=generate gpu=True log=<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\output\\baxy_p2_zh_xiao_ya\\_pipeline.log ###"
+          },
+          {
+            "offset": 176,
+            "line": 2,
+            "text": "[14:10:31] === FASE: generate (CPU-threads-cap=si) ==="
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1032,
+            "line": 13,
+            "text": "[14:43:34] set GEMMA4_EVAL_WAKE=carter && python scripts/wake_universal_generate_positives.py (python del SISTEMA, tiene piper)"
+          },
+          {
+            "offset": 1165,
+            "line": 14,
+            "text": "[14:43:34] .venv_livekit/Scripts/python.exe scripts/_diag_wake_recall_probe.py --threshold 0.25"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_action_reply_lang.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1063,
+      "sha256": "df4c01cca60c989917ac39b86637a00ea69bd2945dae0744442b22e6cbfebea2",
+      "rows": 11,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 991,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:25:45.739000 13212 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 918,
+            "line": 10,
+            "text": "[it] 0.0s ES! 'apri la calcolatrice' -> 'Listo, abrí calcolatrice.'"
+          },
+          {
+            "offset": 991,
+            "line": 11,
+            "text": "[es] 0.0s ES! 'abrí la calculadora' -> 'Listo, abrí calculadora.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_action_reply_lang2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1024,
+      "sha256": "3344b5492f0c1d00dbbe6a29ea3bd667aad167a29bae48920f0d92f6f53f1888",
+      "rows": 11,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 6
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 956,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:28:01.599000 41832 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 889,
+            "line": 10,
+            "text": "[it] 0.1s OK 'apri la calcolatrice' -> 'Calcolatrice aperta.'"
+          },
+          {
+            "offset": 956,
+            "line": 11,
+            "text": "[es] 0.1s ES! 'abrí la calculadora' -> 'Abrí la calculadora.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_batch10_tmp.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 36636,
+      "sha256": "dd0c26eb53a8f41553669a7ca9cfbe8fdf471eaaa9c63da05a7aa66f89afbfb1",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36635
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 743, \"cat\": \"web\", \"lang\": \"es\", \"user\": \"cuanto vale el dolar hoy\", \"prev\": \"\", \"reply\": \"El precio actual del dólar es 916.55 pesos mexicanos.\", \"tools\": [{\"n\": \"web\", \"a\": \"search\"}], \"dt\": 3.0, \"passes\": 2, \"gt_tools\": [\"web\"], \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36635,
+            "line": 70,
+            "text": "{\"i\": 814, \"cat\": \"multimedia\", \"lang\": \"es\", \"user\": \"si hay algo sonando, pausalo\", \"prev\": \"\", \"reply\": \"Listo, te di el nivel actual del volumen del sistema; el resultado fue del 100%. Listo, pausé la reproducción de audio.\", \"tools\":…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_batch3_tmp.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 34139,
+      "sha256": "40885c6c99db9b89c45792f56d672a2b60938111d0cd2a6ab5d7d6f381c00d7f",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 216, \"cat\": \"web\", \"lang\": \"es\", \"user\": \"abre 127.0.0.1:3000\", \"prev\": \"\", \"reply\": \"Listo, abrí 127.0.0.1:3000.\", \"tools\": [{\"n\": \"app\", \"a\": \"open\"}], \"dt\": 0.01, \"passes\": 0, \"gt_tools\": [\"browser\"], \"signals\": []}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34138,
+            "line": 70,
+            "text": "{\"i\": 285, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"ejecuta echo CarterOK\", \"prev\": \"\", \"reply\": \"Listo, ejecuté echo CarterOK y el resultado fue CarterOK.\\n\\n[1 no confirmada(s)]\", \"tools\": [{\"n\": \"terminal\", \"a\": \"run\"}], \"dt\": 2.11, \"pa…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_batch4_slice.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 46358,
+      "sha256": "a9875b44d06d8f1a684a1d8582ee64123ff830db0bb02bf7ee7cb1e9f93256c8",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 46357
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 286, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"ejecuta pip --version\", \"prev\": \"\", \"reply\": \"Listo, ejecuté pip --version y el resultado es: Python 3.12.4.\\n\\n[1 no confirmada(s)]\", \"tools\": [{\"n\": \"terminal\", \"a\": \"run\"}], \"dt\": 2.54…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 46357,
+            "line": 70,
+            "text": "{\"i\": 357, \"cat\": \"gui\", \"lang\": \"es\", \"user\": \"busca Batman en campo visible de Steam\", \"prev\": \"\", \"reply\": \"Listo, abrí la búsqueda de Batman en la tienda de Steam.\", \"tools\": [{\"n\": \"steam\", \"a\": \"search_store\"}], \"dt\": 3.45, \"passes\":…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_batch6_350_420.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33825,
+      "sha256": "f7a8105b201d6e8b6453c909d784201e9248b3c14cbdaf279039be5fd9d02a6c",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33824
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 350, \"cat\": \"gui\", \"lang\": \"es\", \"user\": \"busca el campo de búsqueda visible\", \"prev\": \"\", \"reply\": \"Listo, encontré el campo de búsqueda visible con el ID 36660944, así que puedes empezar a escribir ahí.\", \"tools\": [{\"n\": \"uia\", \"a\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33824,
+            "line": 70,
+            "text": "{\"i\": 419, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"cancela misión si supera límite de tiempo configurado\", \"prev\": \"\", \"reply\": \"Cancelé la misión porque el tiempo de espera configurado se excedió.\", \"tools\": [{\"n\": \"media\", \"a\": \"play_pa…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/abri_calc.png": {
+      "parser": "binary_inventory",
+      "bytes": 91781,
+      "sha256": "ac2feac5fbf0cf83d8978c61f4a2dd7500e3ad53cc7e4db32d6e82e6c575f63f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/abri_calc.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 91780
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 91780,
+            "line": 0,
+            "text": "eof bytes=91781"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/calc_open.png": {
+      "parser": "binary_inventory",
+      "bytes": 108172,
+      "sha256": "69849e2f722a6b744c5aad83d58199f00a74c7dfd47b88c8e662ee0bbfba6677",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/calc_open.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 108171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 108171,
+            "line": 0,
+            "text": "eof bytes=108172"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/calc_type.png": {
+      "parser": "binary_inventory",
+      "bytes": 101031,
+      "sha256": "77d1ff4bdf4c68239957940669735aa8fd2f04c759b70c5db3eacf4fb37dedf4",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/calc_type.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 101030
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 101030,
+            "line": 0,
+            "text": "eof bytes=101031"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/carry_calc.png": {
+      "parser": "binary_inventory",
+      "bytes": 93178,
+      "sha256": "00dcbe35c2739ba8d7872f7768c1e57498e0409e230335b5c360b5fcbf02d786",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/carry_calc.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 93177
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 93177,
+            "line": 0,
+            "text": "eof bytes=93178"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/chain3.png": {
+      "parser": "binary_inventory",
+      "bytes": 101183,
+      "sha256": "d109794aac9a205cdeff8a2c40b91e39ad6bbbecddedc8f3074fa717846bcc79",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/chain3.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 101182
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 101182,
+            "line": 0,
+            "text": "eof bytes=101183"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/chain_open_type.png": {
+      "parser": "binary_inventory",
+      "bytes": 109128,
+      "sha256": "09a69d0cdccd91b5a6e826c7a852f44d5febe78032ed48a6f15a91608c9e2f04",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/chain_open_type.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 109127
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 109127,
+            "line": 0,
+            "text": "eof bytes=109128"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/dictation.png": {
+      "parser": "binary_inventory",
+      "bytes": 112887,
+      "sha256": "403de706be1dfd3be862b79603dfe79fc5659a5ba2d21145a5ecfd6806ea3cd1",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/dictation.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 112886
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 112886,
+            "line": 0,
+            "text": "eof bytes=112887"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/query.png": {
+      "parser": "binary_inventory",
+      "bytes": 109100,
+      "sha256": "69ca5985848f546ca14d909f7b04da6673b87ac9577fad32e44dbfbf050a6e35",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/query.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 109099
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 109099,
+            "line": 0,
+            "text": "eof bytes=109100"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/screenshot.png": {
+      "parser": "binary_inventory",
+      "bytes": 109087,
+      "sha256": "1b8c7a9b157593e00469b6477fa3414edd93c87b16ac7f0227b93933acd09b80",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/screenshot.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 109086
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 109086,
+            "line": 0,
+            "text": "eof bytes=109087"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/type_calc.png": {
+      "parser": "binary_inventory",
+      "bytes": 108436,
+      "sha256": "35cff4b9a55c2aac6fe3191613a91f59da4df5001d026fa03eb0baa518e1cc62",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/type_calc.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 108435
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 108435,
+            "line": 0,
+            "text": "eof bytes=108436"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/type_notepad.png": {
+      "parser": "binary_inventory",
+      "bytes": 108161,
+      "sha256": "dc2d4f468863d906bfe9659092c2483b9125f755090809a922d59c1e0beb1c8f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/type_notepad.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 108160
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 108160,
+            "line": 0,
+            "text": "eof bytes=108161"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/volume.png": {
+      "parser": "binary_inventory",
+      "bytes": 109150,
+      "sha256": "65746f728cc60383414ccda0bc5dc2acae74c84db6b9ec82a7eec1f327741031",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/volume.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 109149
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 109149,
+            "line": 0,
+            "text": "eof bytes=109150"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_battery/word_type.png": {
+      "parser": "binary_inventory",
+      "bytes": 75199,
+      "sha256": "9001f90d5c6fba238cf94fa5a8d41c19aa5a4fe33a50c01add1d873591e9abf1",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_battery/word_type.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75198
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 75198,
+            "line": 0,
+            "text": "eof bytes=75199"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_cancelturn.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 770,
+      "sha256": "6a585c7a20fa0131091e8dcf42905a1a03a6ec5d1080ac24213876709b0b1a9d",
+      "rows": 8,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 658,
+        "min_line_bytes": 11,
+        "max_line_bytes": 183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "[boot] OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 561,
+            "line": 7,
+            "text": "CANCEL: 'para' exec=[('session', 'cancel_turn')] -> 'Turn session cancelled.'"
+          },
+          {
+            "offset": 658,
+            "line": 8,
+            "text": "CANCEL: 'cancelá eso' exec=[('session', 'cancel_turn')] -> 'Listo, cancelé la acción pendiente.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_capture_lat.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1413,
+      "sha256": "bd8c9e1e217ee72d2ac0994c0dffcff17e4cbf817b1bf7d1c1dd85861b056377",
+      "rows": 25,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1333,
+        "min_line_bytes": 11,
+        "max_line_bytes": 80
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "[en] 0.1s 'open spotify' -> 'Spotify is open.'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1276,
+            "line": 24,
+            "text": "[es] 2.1s 'cerrá chrome' -> 'Listo, cerré Chrome.'"
+          },
+          {
+            "offset": 1333,
+            "line": 25,
+            "text": "[es] 1.9s 'subí el volumen' -> 'Listo, subí el volumen al 80 por ciento.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_capture_replies.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1575,
+      "sha256": "c025d9cb070bfa021d95ec48c0c29fbbfedce9ae209fbb12af04f97f62722391",
+      "rows": 29,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1534,
+        "min_line_bytes": 11,
+        "max_line_bytes": 89
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "[en] 'open spotify' -> 'Opened Spotify.'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1479,
+            "line": 28,
+            "text": "[it] 'fai uno screenshot' -> 'Fatto lo screenshot.'"
+          },
+          {
+            "offset": 1534,
+            "line": 29,
+            "text": "WROTE scripts/_diag/_lang_replies.jsonl"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_capture_replies2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1689,
+      "sha256": "a5875a379797ebfebf4b32bca582d52a42b7f181681efecd7c3d39c839e1e47b",
+      "rows": 29,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1648,
+        "min_line_bytes": 11,
+        "max_line_bytes": 93
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "[en] 'open spotify' -> 'Spotify is now open.'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1588,
+            "line": 28,
+            "text": "[it] 'fai uno screenshot' -> 'Listo, saqué la captura.'"
+          },
+          {
+            "offset": 1648,
+            "line": 29,
+            "text": "WROTE scripts/_diag/_lang_replies.jsonl"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_capture_replies3.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1637,
+      "sha256": "13f1b28b1c8a9041790f08d2a0ff6a8939787fce108d4761a249535e7bf28f5a",
+      "rows": 29,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1596,
+        "min_line_bytes": 11,
+        "max_line_bytes": 92
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "[en] 'open spotify' -> 'Spotify is open.'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1530,
+            "line": 28,
+            "text": "[it] 'fai uno screenshot' -> 'Fatto, ho fatto uno screenshot.'"
+          },
+          {
+            "offset": 1596,
+            "line": 29,
+            "text": "WROTE scripts/_diag/_lang_replies.jsonl"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_diag_bf.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 560,
+      "sha256": "e80bc55f0586b7e36356e161a801f15105ec466f744d20058eeff8774010fd31",
+      "rows": 8,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 515,
+        "min_line_bytes": 11,
+        "max_line_bytes": 183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "[boot] OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 457,
+            "line": 7,
+            "text": "TOOL EMITIDA: [('app', 'search'), ('browser', 'open')]"
+          },
+          {
+            "offset": 515,
+            "line": 8,
+            "text": "reply: 'Listo, abrí pivigames en Opera.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_dump_sysprompt.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1076,
+      "sha256": "351dc7222fa6059ce90326c2664c39f833f220f3e2acc4d451ca6f1d9a2e5586",
+      "rows": 5,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 833,
+        "min_line_bytes": 11,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:32:30.195000 37548 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 590,
+            "line": 4,
+            "text": "--- call 0: system[:200] = 'You are Baxy, a local Windows voice agent powered by the Gemma 4 model. ALWAYS reply in\\nthe SAME language the user wrote their latest message in (English→English,\\nportuguês→português, français→françai'"
+          },
+          {
+            "offset": 833,
+            "line": 5,
+            "text": "--- call 1: system[:200] = 'You are Baxy, a local Windows voice agent powered by the Gemma 4 model. ALWAYS reply in\\nthe SAME language the user wrote their latest message in (English→English,\\nportuguês→português, français→françai'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_e2e_proof.png": {
+      "parser": "binary_inventory",
+      "bytes": 221673,
+      "sha256": "81e7dbac40b3640ab37d83bd3027acf28da91fb8730975dca82f510b015ead94",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_e2e_proof.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1890,
+        "height": 1260
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 221672
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 221672,
+            "line": 0,
+            "text": "eof bytes=221673"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_encoder_clean.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 31678,
+      "sha256": "745137f597d3053f144b68abf0b7d6cb784683d0e5eaeccd7890e945b415ffca",
+      "rows": 11,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31299,
+        "min_line_bytes": 18,
+        "max_line_bytes": 30036
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 31237,
+            "line": 10,
+            "text": "pinned base tokenizer into the FT dir (cross-version safe)"
+          },
+          {
+            "offset": 31299,
+            "line": 11,
+            "text": "ONNX export skipped (Found too many ONNX model files in <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\router_encoder_onnx. ORTQuantizer does not support multi-file quantization. Please create separate ORTQuantizer inst…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_encoder_retrain.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 22169,
+      "sha256": "7977aac7b6ebc35eb6964273ee3b06bd403810a6af23af4324043c458bb28c69",
+      "rows": 10,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21790,
+        "min_line_bytes": 18,
+        "max_line_bytes": 20635
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21728,
+            "line": 9,
+            "text": "pinned base tokenizer into the FT dir (cross-version safe)"
+          },
+          {
+            "offset": 21790,
+            "line": 10,
+            "text": "ONNX export skipped (Found too many ONNX model files in <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\router_encoder_onnx. ORTQuantizer does not support multi-file quantization. Please create separate ORTQuantizer inst…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_encoder_retrain_full.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 33937,
+      "sha256": "899fb0c8d1609b2f091669df7df93a04b4c004c8505b8fb1ac309e9ecfe8fc93",
+      "rows": 11,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33558,
+        "min_line_bytes": 18,
+        "max_line_bytes": 32286
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33496,
+            "line": 10,
+            "text": "pinned base tokenizer into the FT dir (cross-version safe)"
+          },
+          {
+            "offset": 33558,
+            "line": 11,
+            "text": "ONNX export skipped (Found too many ONNX model files in <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\router_encoder_onnx. ORTQuantizer does not support multi-file quantization. Please create separate ORTQuantizer inst…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_florence/00_screen.png": {
+      "parser": "binary_inventory",
+      "bytes": 127403,
+      "sha256": "464f85f7708c8b886a3bd3ba145890a2cd9f5e445ccd69616522adab319c2423",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_florence/00_screen.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 127402
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 127402,
+            "line": 0,
+            "text": "eof bytes=127403"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_florence/01_od.png": {
+      "parser": "binary_inventory",
+      "bytes": 129304,
+      "sha256": "5d043a42a81eb7ac0f0f3bdd1cb5b3af325bd1d44cdf3060798a649295d9659f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_florence/01_od.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 129303
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129303,
+            "line": 0,
+            "text": "eof bytes=129304"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_florence/02_dense.png": {
+      "parser": "binary_inventory",
+      "bytes": 129405,
+      "sha256": "40dffc0da8d3d5b786a96eaae3203547bb87fa31a31e8b8f58aed1b5e8ac1639",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_florence/02_dense.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 129404
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129404,
+            "line": 0,
+            "text": "eof bytes=129405"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_florence/04_ground_button.png": {
+      "parser": "binary_inventory",
+      "bytes": 128947,
+      "sha256": "092652de7f483ab8b8c670c5cba1d250200fc6fddbb6a6215e6e4d6d01980f2c",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_florence/04_ground_button.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 128946
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 128946,
+            "line": 0,
+            "text": "eof bytes=128947"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_focos_balance.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3108,
+      "sha256": "28582d1735a30d40c873b3ee43a0778b0a67581aa3b05b79884e4f0c1cb77835",
+      "rows": 47,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 13
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3084,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "[boot] OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3068,
+            "line": 46,
+            "text": "routing: 1/4"
+          },
+          {
+            "offset": 3084,
+            "line": 47,
+            "text": "anti-regresión: 3/3"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_focos_balance2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2940,
+      "sha256": "c8e5c1368644987aa899d1ab380362936bd82db84b5bb1942f337222cf885dff",
+      "rows": 46,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 14
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2916,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:07:17.576000 41668 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2900,
+            "line": 45,
+            "text": "routing: 2/4"
+          },
+          {
+            "offset": 2916,
+            "line": 46,
+            "text": "anti-regresión: 3/3"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_focos_final.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2312,
+      "sha256": "93842dc8b1345961688645bcc3e55e5f6d089277b5a64f45b12a861fca5bcc29",
+      "rows": 44,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 19
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2288,
+        "min_line_bytes": 2,
+        "max_line_bytes": 102
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2272,
+            "line": 43,
+            "text": "routing: 2/4"
+          },
+          {
+            "offset": 2288,
+            "line": 44,
+            "text": "anti-regresión: 3/3"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_focos_final2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2398,
+      "sha256": "cb2d90dc835fa971436db0552269f99cbc401c5dd78aee3e775f037a42e68d1e",
+      "rows": 44,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 19
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2374,
+        "min_line_bytes": 2,
+        "max_line_bytes": 102
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2358,
+            "line": 43,
+            "text": "routing: 4/4"
+          },
+          {
+            "offset": 2374,
+            "line": 44,
+            "text": "anti-regresión: 3/3"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_analyses_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55548,
+      "sha256": "f3223fc93962e1e8c8d1808da0e50d81bf3f0a1ba23a6cfeed5f62501e8c54fc",
+      "rows": 5,
+      "schema": {
+        "root": "array",
+        "n": 5,
+        "elem_keys": [
+          "diagnostico",
+          "ejemplos_nuevos",
+          "fixes_a_existentes",
+          "foco",
+          "patron_raiz",
+          "riesgo_regresion"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55547
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"foco\": \"idioma — el reply POST-TOOL no espeja el idioma del user (user no-ES → \\\"Listo, abrí X\\\" en español)\", \"diagnostico\": \"Medido sobre los 1201 casos del failmode + el dataset: el modelo, tras ejecutar una tool con un user no-ES, em…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 55547,
+            "line": 5,
+            "text": "{\"foco\": \"transversal (bugs del juez) — análisis de los 992 bugs en _judge_bugs.json agrupados por eje, para separar lo que un RE-FINE-TUNING puede arreglar de lo que es código/prompt, y proponer los modos de falla con más ejemplos faltant…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_coverage_clean.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 163835,
+      "sha256": "922a372e164b3cbb14b1d9fe25cca8b57d36826c4feac6a87fce84de75e7e766",
+      "rows": 451,
+      "schema": {
+        "root": "array",
+        "n": 451,
+        "elem_keys": [
+          "_lote",
+          "category",
+          "correct_reply_style",
+          "correct_tools",
+          "lang",
+          "prev_text",
+          "tool_args",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 163834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"recordá: solo actuá si hay una confirmación pendiente, sino esperá\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"correct_reply_style\": \"Entendido, solo voy a actuar cuando haya una confirmación pendiente.\", \"categor…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 163834,
+            "line": 451,
+            "text": "{\"user_text\": \"sacá una captura de pantalla\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"gui\"], \"correct_reply_style\": \"Listo, saqué la captura.\", \"category\": \"gui\", \"tool_args\": {}, \"_lote\": \"completitud_0\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_coverage_new.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 101374,
+      "sha256": "9128da989b263b3bf2840bebd3f37915243f4a2a2650a2fe0495f0400161e03d",
+      "rows": 314,
+      "schema": {
+        "root": "array",
+        "n": 314,
+        "elem_keys": [
+          "_lote",
+          "category",
+          "correct_reply_style",
+          "correct_tools",
+          "lang",
+          "prev_text",
+          "tool_args",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 101373
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"recordá: solo actuá si hay una confirmación pendiente, sino esperá\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"correct_reply_style\": \"Entendido, solo voy a actuar cuando haya una confirmación pendiente.\", \"categor…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 101373,
+            "line": 314,
+            "text": "{\"user_text\": \"sacá una captura de pantalla\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"gui\"], \"correct_reply_style\": \"Listo, saqué la captura.\", \"category\": \"gui\", \"tool_args\": {}, \"_lote\": \"completitud_0\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_coverage_raw.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 186846,
+      "sha256": "058f50601397ab75fb77d911f792d95908aaca8937adbe4f8a1485858d76a0e7",
+      "rows": 494,
+      "schema": {
+        "root": "array",
+        "n": 494,
+        "elem_keys": [
+          "_lote",
+          "category",
+          "correct_reply_style",
+          "correct_tools",
+          "lang",
+          "prev_text",
+          "tool_args",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 186845
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"recordá: solo actuá si hay una confirmación pendiente, sino esperá\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"correct_reply_style\": \"Acusa recibo de la instrucción como una preferencia/regla a respetar de ahora e…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 186845,
+            "line": 494,
+            "text": "{\"user_text\": \"sacá una captura de pantalla\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"gui\"], \"correct_reply_style\": \"Listo, saqué la captura.\", \"category\": \"gui\", \"tool_args\": {}, \"_lote\": \"completitud_0\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_failmode_idioma.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42597,
+      "sha256": "c75a4c8873cdf32f8901a03f1c0f8dda693d7be6c3b09dc0c4fa4e60158a5025",
+      "rows": 200,
+      "schema": {
+        "root": "array",
+        "n": 200,
+        "elem_keys": [
+          "cat",
+          "gt",
+          "i",
+          "lang",
+          "reply",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42596
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 443, \"lang\": \"en\", \"cat\": \"accion_app\", \"user\": \"open notepad\", \"reply\": \"Listo, abrí notepad.\", \"tools\": [{\"n\": \"app\", \"a\": \"open\"}], \"gt\": [\"app\"]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 42596,
+            "line": 200,
+            "text": "{\"i\": 1974, \"lang\": \"en\", \"cat\": \"encadenamiento\", \"user\": \"open notepad, type hello, close it\", \"reply\": \"Listo, abrí el Bloc de Notas, escribí hello y lo cerré. (aunque no pude confirmar que se completara)\", \"tools\": [{\"n\": \"app\", \"a\": \"…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_generated_ok.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44885,
+      "sha256": "cd7c4d84588993e4bd055e2d6889af2114426297b948b699977302866ac51515",
+      "rows": 172,
+      "schema": {
+        "root": "array",
+        "n": 172,
+        "elem_keys": [
+          "_bloque",
+          "category",
+          "correct_reply_style",
+          "correct_tools",
+          "lang",
+          "prev_text",
+          "tool_args",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44884
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"open the calculator\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Opening the calculator now.\", \"category\": \"accion_app\", \"tool_args\": {}, \"_bloque\": \"idioma-en\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44884,
+            "line": 172,
+            "text": "{\"user_text\": \"qual é o meu nome\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"memory\"], \"correct_reply_style\": \"Seu nome é [nome salvo].\", \"category\": \"sistema\", \"tool_args\": {\"action\": \"recall\"}, \"_bloque\": \"identidad-multi\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_generated_raw.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51884,
+      "sha256": "a17a28e40b366519e0954753d2f31c18d3bf0edbedca76c50e84fe16c94fd763",
+      "rows": 172,
+      "schema": {
+        "root": "array",
+        "n": 172,
+        "elem_keys": [
+          "_bloque",
+          "category",
+          "correct_reply_style",
+          "correct_tools",
+          "lang",
+          "prev_text",
+          "tool_args",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51883
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"open the calculator\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Opening the calculator now.\", \"category\": \"accion_app\", \"tool_args\": {}, \"_bloque\": \"idioma-en\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 51883,
+            "line": 172,
+            "text": "{\"user_text\": \"vos sos Carter?\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"correct_reply_style\": \"No, soy Baxy, tu asistente de voz local en Windows, impulsado por el modelo Gemma 4.\", \"category\": \"conversacion\", \"tool_args\": {}…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_judge_bugs.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 206913,
+      "sha256": "52eaa14c3331d16d0b772ba9a71c4720e47ee64363a9e1ba132f7f9ffc36ecb5",
+      "rows": 992,
+      "schema": {
+        "root": "array",
+        "n": 992,
+        "elem_keys": [
+          "batch",
+          "eje",
+          "i",
+          "sev",
+          "why"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 206912
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 13, \"eje\": \"routing\", \"sev\": \"media\", \"why\": \"Meta-instrucción ('solo actúa si hay confirmación pendiente') se ejecuta como comando: corre notes_tasks(list) en vez de pedir contexto.\", \"batch\": \"000\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 206912,
+            "line": 992,
+            "text": "{\"i\": 3978, \"eje\": \"idioma\", \"sev\": \"media\", \"why\": \"user en inglés ('tell me the time'); reply en español 'Hola, soy Baxy. La hora actual es 1:42 PM'\", \"batch\": \"049\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_langbalance_ok.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 276924,
+      "sha256": "2abfa8c4ed556eebc26ab698b86619275eeb664b9a5b75873366891700086acc",
+      "rows": 1422,
+      "schema": {
+        "root": "array",
+        "n": 1422,
+        "elem_keys": [
+          "category",
+          "correct_reply_style",
+          "correct_tools",
+          "lang",
+          "prev_text",
+          "tool_args",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 276923
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"abre o Spotify\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Pronto, abri o Spotify.\", \"category\": \"app\", \"tool_args\": {}}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 276923,
+            "line": 1422,
+            "text": "{\"user_text\": \"please close Excel\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Done, Excel's closed.\", \"category\": \"app_close\", \"tool_args\": {}}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ftfail/_seed_examples.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 276924,
+      "sha256": "b0bf98b115c6fbda25669399f22fe044fb0ff12bd94fb376625c626e95a6951f",
+      "rows": 1422,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "correct_reply_style",
+          "category",
+          "tool_args"
+        ],
+        "key_freq": {
+          "user_text": 1422,
+          "prev_text": 1422,
+          "lang": 1422,
+          "correct_tools": 1422,
+          "correct_reply_style": 1422,
+          "category": 1422,
+          "tool_args": 1422
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 276740,
+        "min_line_bytes": 157,
+        "max_line_bytes": 272,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"abre o Spotify\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Pronto, abri o Spotify.\", \"category\": \"app\", \"tool_args\": {}}"
+          },
+          {
+            "offset": 176,
+            "line": 2,
+            "text": "{\"user_text\": \"fecha o Chrome por favor\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Chrome fechado.\", \"category\": \"app\", \"tool_args\": {}}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 276573,
+            "line": 1421,
+            "text": "{\"user_text\": \"open OBS\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"OBS is running.\", \"category\": \"app_open\", \"tool_args\": {}}"
+          },
+          {
+            "offset": 276740,
+            "line": 1422,
+            "text": "{\"user_text\": \"please close Excel\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"correct_reply_style\": \"Done, Excel's closed.\", \"category\": \"app_close\", \"tool_args\": {}}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_hunt_tanda_0.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 628258,
+      "sha256": "30521bdc2438972d840c69bcdf4d3aa314dbd8d588ed2d360f55930412640cb1",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 627903,
+        "min_line_bytes": 241,
+        "max_line_bytes": 8963,
+        "numeric": {
+          "i": {
+            "min": 0.0,
+            "max": 999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 35.8
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 13.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"hola\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola, soy Gemma 4. ¿En qué te ayudo?\", \"dt\": 0.3, \"passes\": 1, \"tools\": [], \"reply\": \"Hola,…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"i\": 1, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"hola Carter\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola. Por cierto, me llamo Gemma 4, no Carter. ¿En qué te doy una mano?\", \"dt\": 4.3,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 627539,
+            "line": 999,
+            "text": "{\"i\": 998, \"cat\": \"sistema\", \"lang\": \"pt\", \"user_text\": \"coloca o volume em 100\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Pronto, volume em 100.\", \"dt\": 2.03, \"passes\": 2, \"tools\": [{\"name\": \"…"
+          },
+          {
+            "offset": 627903,
+            "line": 1000,
+            "text": "{\"i\": 999, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"muteá\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, silencié el sonido.\", \"dt\": 2.71, \"passes\": 2, \"tools\": [{\"name\": \"audio\", \"acti…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_hunt_tanda_1000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 488318,
+      "sha256": "1e26e0125d4db739a61371d38adff1f6b4fead6d732d93085b10c58d43fd941c",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 487863,
+        "min_line_bytes": 247,
+        "max_line_bytes": 3176,
+        "numeric": {
+          "i": {
+            "min": 1000.0,
+            "max": 1999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 64.01
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 8.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1000, \"cat\": \"sistema\", \"lang\": \"en\", \"user_text\": \"mute the sound\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Done, sound muted.\", \"dt\": 4.18, \"passes\": 2, \"tools\": [{\"name\": \"audio\", \"ac…"
+          },
+          {
+            "offset": 358,
+            "line": 2,
+            "text": "{\"i\": 1001, \"cat\": \"sistema\", \"lang\": \"pt\", \"user_text\": \"silencia o som\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Pronto, som silenciado.\", \"dt\": 1.89, \"passes\": 2, \"tools\": [{\"name\": \"audio\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 487387,
+            "line": 999,
+            "text": "{\"i\": 1998, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"lista procesos y dime el más pesado\", \"prev_text\": \"\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"El proceso mas pesado es {nombre} con {mem}; aca esta l…"
+          },
+          {
+            "offset": 487863,
+            "line": 1000,
+            "text": "{\"i\": 1999, \"cat\": \"sistema\", \"lang\": \"en\", \"user_text\": \"list processes and tell me the heaviest\", \"prev_text\": \"\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"The heaviest process is {name} using {mem}; here's…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_hunt_tanda_2000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 480364,
+      "sha256": "6b43d17d2c7e3fb122d86eed2cf5a4de265d475fcc8f7c5faccb10f719b3c4e1",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 480074,
+        "min_line_bytes": 249,
+        "max_line_bytes": 2694,
+        "numeric": {
+          "i": {
+            "min": 2000.0,
+            "max": 2999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 72.44
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 9.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 2000, \"cat\": \"encadenamiento\", \"lang\": \"es\", \"user_text\": \"abre stean y luego ciérralo\", \"prev_text\": \"\", \"correct_tools\": [\"steam\", \"app\"], \"also_valid\": [\"app\"], \"correct_reply_style\": \"Abri Steam y despues lo cerre.\", \"dt\": 6.26,…"
+          },
+          {
+            "offset": 473,
+            "line": 2,
+            "text": "{\"i\": 2001, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"qué ventana está activa\", \"prev_text\": \"\", \"correct_tools\": [\"window\"], \"also_valid\": [], \"correct_reply_style\": \"La ventana activa es {titulo}.\", \"dt\": 1.11, \"passes\": 2, \"tools\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 479693,
+            "line": 999,
+            "text": "{\"i\": 2998, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"buenas, phrase_hook_test_1779048944 y dime la hora\", \"prev_text\": \"\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 16:15.\", \"dt\": 2.59, \"passes\": 2…"
+          },
+          {
+            "offset": 480074,
+            "line": 1000,
+            "text": "{\"i\": 2999, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"holoa\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola, en que puedo ayudarte hoy?\", \"dt\": 1.62, \"passes\": 1, \"tools\": [], \"reply\": \"Hola,…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_hunt_tanda_3000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 528213,
+      "sha256": "6e75715a8a6bc8c90c1729de38bfb8dd2db8aac1fb2e29434c49c5c0062aedda",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 527793,
+        "min_line_bytes": 238,
+        "max_line_bytes": 3957,
+        "numeric": {
+          "i": {
+            "min": 3000.0,
+            "max": 3999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 51.72
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 11.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 3000, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"Quiero saber quien eres\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Soy tu agente de voz local para Windows, impulsado por Gemma 4. Te ayu…"
+          },
+          {
+            "offset": 455,
+            "line": 2,
+            "text": "{\"i\": 3001, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"Que es gemma 4?\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [\"web\"], \"correct_reply_style\": \"Gemma 4 es un modelo de lenguaje de Google DeepMind; es el cerebro que me…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 527360,
+            "line": 999,
+            "text": "{\"i\": 3998, \"cat\": \"sistema\", \"lang\": \"fr\", \"user_text\": \"lance python -m pytest -q\", \"prev_text\": \"\", \"correct_tools\": [\"terminal\"], \"also_valid\": [], \"correct_reply_style\": \"C'est fait, j'ai lancé pytest -q ; je te donne le résumé des ré…"
+          },
+          {
+            "offset": 527793,
+            "line": 1000,
+            "text": "{\"i\": 3999, \"cat\": \"web\", \"lang\": \"fr\", \"user_text\": \"va sur netflix\", \"prev_text\": \"\", \"correct_tools\": [\"browser\"], \"also_valid\": [\"media\", \"app\"], \"correct_reply_style\": \"J'ouvre Netflix.\", \"dt\": 3.06, \"passes\": 2, \"tools\": [{\"name\": \"m…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_hunt_tanda_4000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 521977,
+      "sha256": "9bfcd086a5d86a9234d29db21f530177382adaaf70a4a735bfc79feba14b83ac",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 521202,
+        "min_line_bytes": 267,
+        "max_line_bytes": 2545,
+        "numeric": {
+          "i": {
+            "min": 4000.0,
+            "max": 4999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 31.61
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 8.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 4000, \"cat\": \"multimedia\", \"lang\": \"fr\", \"user_text\": \"mets du rock\", \"prev_text\": \"\", \"correct_tools\": [\"media\"], \"also_valid\": [], \"correct_reply_style\": \"Je mets du rock sur Spotify.\", \"dt\": 4.17, \"passes\": 2, \"tools\": [{\"name\": \"…"
+          },
+          {
+            "offset": 399,
+            "line": 2,
+            "text": "{\"i\": 4001, \"cat\": \"encadenamiento\", \"lang\": \"fr\", \"user_text\": \"efface et calcule 11 fois 11\", \"prev_text\": \"\", \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"J'efface l'écran et je fais 11 fois 11 sur la cal…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 520544,
+            "line": 999,
+            "text": "{\"i\": 4998, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user_text\": \"leggi l'ultimo messaggio di mamma e rispondile che sto arrivando\", \"prev_text\": \"\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"correct_reply_style\": \"Ho letto il messa…"
+          },
+          {
+            "offset": 521202,
+            "line": 1000,
+            "text": "{\"i\": 4999, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user_text\": \"apri il browser, cerca un hotel a Firenze e copia il link\", \"prev_text\": \"\", \"correct_tools\": [\"browser\", \"web\", \"clipboard\"], \"also_valid\": [], \"correct_reply_style\": \"Ho ap…"
+          }
+        ]
+      }
+    }
+  }
+}

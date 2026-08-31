@@ -1,0 +1,1539 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:40:28Z",
+  "closed_utc": "2026-08-31T05:40:29Z",
+  "estimated_tokens": 293627,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 52,
+  "subsystem": "pg4_dataset_finetune",
+  "subsystems": [
+    "pg4_dataset_finetune"
+  ],
+  "files": [
+    {
+      "path": "dataset_finetune/_router_pipeline_v2.log",
+      "sha256": "0ae89553c917ecf02026794dba562bde43f9097e6472ab28420f6e2376a26fdd",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_router_pipeline_v2.log"
+    },
+    {
+      "path": "dataset_finetune/_router_v2.log",
+      "sha256": "b674ad3908b9087af7cc1aa8fb8911aaafdaa9bc819b868f7eca0de2ea2e6542",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_router_v2.log"
+    },
+    {
+      "path": "dataset_finetune/_server_baseline.log",
+      "sha256": "3108d7fb9df0376311dcd646c2041f8e2832ee0003218b69262c12cbb2911781",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_baseline.log"
+    },
+    {
+      "path": "dataset_finetune/_server_e2bft.log",
+      "sha256": "609e6b826334ce95537bb2adaddff2e984d5eb99e5693050b82f374aa676ce74",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_e2bft.log"
+    },
+    {
+      "path": "dataset_finetune/_server_ft.log",
+      "sha256": "7a88bcb55fff2d9013e1fb758d97f0a4eeed0b4763e1b6c0f7749fb3a79da3cf",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_ft.log"
+    },
+    {
+      "path": "dataset_finetune/_server_ft2.log",
+      "sha256": "30ea11123c771ea54a4139edd68703934aa723d1afa5afb637621214dec6a70c",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_ft2.log"
+    },
+    {
+      "path": "dataset_finetune/_server_ft3.log",
+      "sha256": "d8ac1d5cc2e8f916f40494db4b6d89e9d31eb74781e7b4b296b05482cc3cd0fa",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_ft3.log"
+    },
+    {
+      "path": "dataset_finetune/_server_iq3.log",
+      "sha256": "0e3ba66513ddf907909d43fc58854c93cedd4cf5df6c42c6c102b3ef36c69a69",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_iq3.log"
+    },
+    {
+      "path": "dataset_finetune/_server_leanval.log",
+      "sha256": "32411fe2f38fc959e1cb99e17287f2d087e8abe3c6f0022dcd591b838b747afc",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_leanval.log"
+    },
+    {
+      "path": "dataset_finetune/_server_v2.log",
+      "sha256": "48adba33b8be23e107f304e6935586df236f70601746cbd3f3462b1ec150c432",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_v2.log"
+    },
+    {
+      "path": "dataset_finetune/_server_val.log",
+      "sha256": "8c77fa5984b008c604ec28ca652686bf7ef8b6280247589df3940a81e4979376",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_val.log"
+    },
+    {
+      "path": "dataset_finetune/_server_vision.log",
+      "sha256": "6757cb4f5c380129a675f498f90087dcdf56c59b5a8a40eae899a4010b6728ed",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_server_vision.log"
+    },
+    {
+      "path": "dataset_finetune/_smart_home.py.REMOVED",
+      "sha256": "172c979ca7ee0d29ac5f2533f1b0f02b1d6f10a987bd331743773000939742bd",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_smart_home.py.REMOVED",
+      "binary_format": "removed"
+    },
+    {
+      "path": "dataset_finetune/_smoke.log",
+      "sha256": "fb3e284526a54567d7169a53b128a2c1415450b3107481500b3b9faf87ffbdf3",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_smoke.log"
+    },
+    {
+      "path": "dataset_finetune/_smoke_caceria.log",
+      "sha256": "466c8eecba17db1f83575b344461d545c70637d6b2138120e1be2237a7d9f574",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_smoke_caceria.log"
+    },
+    {
+      "path": "dataset_finetune/_smoke_control.log",
+      "sha256": "2367835d0c4ec64fcbda134ee032c1730bc1adf085b042ba61b5db972f9864d3",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_smoke_control.log"
+    },
+    {
+      "path": "dataset_finetune/_smoke_e2b.log",
+      "sha256": "484b8ddaa4a87b14a5ede53023164e8325d156536a268511726950a5b5414e10",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_smoke_e2b.log"
+    },
+    {
+      "path": "dataset_finetune/_test_smart_home_coverage.py.REMOVED",
+      "sha256": "1793ef735306b034ac4e457ea14e537b883a0e94bc5ee208a580b35b8b927c01",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_test_smart_home_coverage.py.REMOVED",
+      "binary_format": "removed"
+    },
+    {
+      "path": "dataset_finetune/_tool_coverage.json",
+      "sha256": "6cad3eb213f838ea4c2d2fc4d23a5e31985a2e3b1001172184b237c7e31290d0",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/_tool_coverage.json"
+    },
+    {
+      "path": "dataset_finetune/out/_history_turns.json",
+      "sha256": "b6e3fb4a120e63def2e41a5d09a73895d1c6e93438d09ebb3f467e6f6f5bd931",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/_history_turns.json"
+    },
+    {
+      "path": "dataset_finetune/out/_readonly_shapes.json",
+      "sha256": "e56f984e85a6af7550affbe754d79580b680efe4ff365e0ca3180237d6368985",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/_readonly_shapes.json"
+    },
+    {
+      "path": "dataset_finetune/out/_real_result_samples.json",
+      "sha256": "ef8abd7cc687ea3e3648a1c692217b4d2c80f4a9435adf7a300fe54e2c720918",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/_real_result_samples.json"
+    },
+    {
+      "path": "dataset_finetune/out/_real_result_samples.pkl",
+      "sha256": "68cc08a1f6bce44dc93542f1f894b6f4576c65694f175720211593369d53ef1e",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/_real_result_samples.pkl",
+      "binary_format": "pkl"
+    },
+    {
+      "path": "dataset_finetune/out/_tool_action_enums.json",
+      "sha256": "0ff24ea9027eeed78b78617b55a51ee52960b1d2ccddcf885b300c8a993c0f22",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/_tool_action_enums.json"
+    },
+    {
+      "path": "dataset_finetune/out/_uncovered_history.json",
+      "sha256": "7575795c6fb61d28c6ffb42f024cc57905b68d722e980937f97aef3274881a64",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/_uncovered_history.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_dims_baseline.jsonl",
+      "sha256": "deac744e5902c1751f0abe903007086a9e6c2604dbb937e3acc7997e7c123d53",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_dims_baseline.jsonl"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_dims_baseline_v3.jsonl",
+      "sha256": "03f171abf18e047781a6351e56220cf87828cf33780fe30f49fad508ab83040d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_dims_baseline_v3.jsonl"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_dims_ft.jsonl",
+      "sha256": "0b35e0b807f821f963f86250e447217effcd7adf54256a5e5fd6083fb31d8162",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_dims_ft.jsonl"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_dims_ft_r2_v3.jsonl",
+      "sha256": "34b1369e8cd594bc209a59089a858daef7bed8df674319fc3d66b045be46dc12",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_dims_ft_r2_v3.jsonl"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_dims_ft_v3.jsonl",
+      "sha256": "4ba9a2d020873faac68dc729c70f52d74ca699f770a33c0019d3a2a41ecb7fd2",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_dims_ft_v3.jsonl"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_e2bft_v2_detail.json",
+      "sha256": "037f66a67505a41cee8d3534b650dd3505ff352497ebb7e1bed3cbed07203968",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_e2bft_v2_detail.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_e2bft_v2_eval.json",
+      "sha256": "daaf6dad0ed1d3993b647e0e82fbc49638e95a8fb3579c2d9e408fe6f0c18a89",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_e2bft_v2_eval.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_baseline.json",
+      "sha256": "b6052ac3293c99652a3480bb66443ad156745cf5a22dac808686882cfc0eba9d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_baseline.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_deploy_smoke.json",
+      "sha256": "8115ca5d345801f4731b76a19241fa2b7fffd76482fa59a87852d239169d4c82",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_deploy_smoke.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft.json",
+      "sha256": "83b0bbcbb970ca6742736cb310c9c9cac522f06af620f52839a0535390e6fa0c",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft_r2.json",
+      "sha256": "74507730cf71b8d6b993c7c9bb464294a36a514dc67de97cfd89943e303edc82",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft_r2.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft_r2_guard.json",
+      "sha256": "2a5cdfa38ac50c2d12f42b19fdf41dc602cdd66ee4988048ca2bac9deb135f40",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft_r2_guard.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft_r2_guard2.json",
+      "sha256": "c2860f34582a97e806a355e6d003ad43aa11a6d60fc750ac51bf9c364f556750",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft_r2_guard2.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft_r2_guard3.json",
+      "sha256": "1637a2a13dd7717b202e0296558254c0407d5bd2c3d7db7d55d4212a4750fdc4",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft_r2_guard3.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft_r2_guard4.json",
+      "sha256": "add448cb66db6af6dc118fd01cbeaa9b6c73b0010eb609c8c8753d70a2616c78",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft_r2_guard4.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_gates_ft_r2_guard5.json",
+      "sha256": "8a6a65e62d9c894674cdc63227f225a72d8beddd68bd5f035219fb51915f9320",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_gates_ft_r2_guard5.json"
+    },
+    {
+      "path": "dataset_finetune/out/eval/_sample_ft.jsonl",
+      "sha256": "d6351b48008fc86ef335173ef202c5e14c2ad0653a59f63384d810b6f5af2493",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/eval/_sample_ft.jsonl"
+    },
+    {
+      "path": "dataset_finetune/out/imatrix.dat",
+      "sha256": "c12a7440264379fd7e11c693d94e2132f670d7429329f9021a5a77fe90604f52",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/imatrix.dat",
+      "binary_format": "dat"
+    },
+    {
+      "path": "dataset_finetune/out/lora.BAK_precaceria/adapter_config.json",
+      "sha256": "db06231ba49d1ec3b0e82a0d6730fecf6880b3d74a95b8327ee0c634e95b9bae",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.BAK_precaceria/adapter_config.json"
+    },
+    {
+      "path": "dataset_finetune/out/lora.BAK_precaceria/adapter_model.safetensors",
+      "sha256": "79770fa177532aa895c571ba3d11cefa2bc361c4a3b79d85e05d9acbfbc08f2f",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.BAK_precaceria/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "dataset_finetune/out/lora.BAK_precaceria/processor_config.json",
+      "sha256": "b3469bcaa0b2d274a8135da5e4c0c5081563a2c8d16a11fd256ba4da3686a4df",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.BAK_precaceria/processor_config.json"
+    },
+    {
+      "path": "dataset_finetune/out/lora.BAK_precaceria/tokenizer.json",
+      "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.BAK_precaceria/tokenizer.json"
+    },
+    {
+      "path": "dataset_finetune/out/lora.BAK_precaceria/tokenizer_config.json",
+      "sha256": "1fa6e57b77ca0981d8d8501eb7ef1394e9e413851d75f1a3af71897eae2fc2c1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.BAK_precaceria/tokenizer_config.json"
+    },
+    {
+      "path": "dataset_finetune/out/lora.CACERIA-v2/adapter_config.json",
+      "sha256": "e22ee2ee01b71196ff2a8d6036afa60ffe5263ce1e94e67f0c74165182202339",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.CACERIA-v2/adapter_config.json"
+    },
+    {
+      "path": "dataset_finetune/out/lora.CACERIA-v2/adapter_model.safetensors",
+      "sha256": "340e4875ef93f42ec27532fcccbdff529d8edbe8770cf50ca819944ed81156ba",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora.CACERIA-v2/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "dataset_finetune/out/lora/adapter_config.json",
+      "sha256": "c50cf6dc115089ffc4856aabe7e7e72e37ca7663fe8342a8e2436915f81b4ca4",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora/adapter_config.json"
+    },
+    {
+      "path": "dataset_finetune/out/lora/adapter_model.safetensors",
+      "sha256": "d3b0fed4c0a6806fdcc48754cfe40483015c7b796b7cb5b45b0e10d9aeddc3ec",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json#dataset_finetune/out/lora/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-01-dataset_finetune-_router_pipeline_v2.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_router_pipeline_v2.log",
+      "denominator": "1 files in group dataset_finetune/_router_pipeline_v2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_router_pipeline_v2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_router_pipeline_v2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_router_pipeline_v2.log parser=log rows=126 bytes=7286 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "dataset_finetune/_router_pipeline_v2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-02-dataset_finetune-_router_v2.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_router_v2.log",
+      "denominator": "1 files in group dataset_finetune/_router_v2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_router_v2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_router_v2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_router_v2.log parser=log rows=16 bytes=22371 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "dataset_finetune/_router_v2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-03-dataset_finetune-_server_baseline.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_baseline.log",
+      "denominator": "1 files in group dataset_finetune/_server_baseline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_baseline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_baseline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_baseline.log parser=log rows=3556 bytes=307159 dist={\"fail_like\": 2, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_baseline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-04-dataset_finetune-_server_e2bft.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_e2bft.log",
+      "denominator": "1 files in group dataset_finetune/_server_e2bft.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_e2bft.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_e2bft.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_e2bft.log parser=log rows=2008 bytes=181732 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_e2bft.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-05-dataset_finetune-_server_ft.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_ft.log",
+      "denominator": "1 files in group dataset_finetune/_server_ft.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_ft.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_ft.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_ft.log parser=log rows=2808 bytes=242506 dist={\"fail_like\": 2, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_ft.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-06-dataset_finetune-_server_ft2.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_ft2.log",
+      "denominator": "1 files in group dataset_finetune/_server_ft2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_ft2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_ft2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_ft2.log parser=log rows=681 bytes=54859 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_ft2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-07-dataset_finetune-_server_ft3.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_ft3.log",
+      "denominator": "1 files in group dataset_finetune/_server_ft3.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_ft3.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_ft3.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_ft3.log parser=log rows=3599 bytes=312094 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_ft3.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-08-dataset_finetune-_server_iq3.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_iq3.log",
+      "denominator": "1 files in group dataset_finetune/_server_iq3.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_iq3.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_iq3.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_iq3.log parser=log rows=27 bytes=2248 dist={\"fail_like\": 8, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_iq3.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-09-dataset_finetune-_server_leanval.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_leanval.log",
+      "denominator": "1 files in group dataset_finetune/_server_leanval.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_leanval.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_leanval.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_leanval.log parser=log rows=403 bytes=30925 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_leanval.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-10-dataset_finetune-_server_v2.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_v2.log",
+      "denominator": "1 files in group dataset_finetune/_server_v2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_v2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_v2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_v2.log parser=log rows=6235 bytes=553988 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_v2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-11-dataset_finetune-_server_val.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_val.log",
+      "denominator": "1 files in group dataset_finetune/_server_val.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_val.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_val.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_val.log parser=log rows=1984 bytes=181845 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_val.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-12-dataset_finetune-_server_vision.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_server_vision.log",
+      "denominator": "1 files in group dataset_finetune/_server_vision.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_server_vision.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_server_vision.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_server_vision.log parser=log rows=387 bytes=25007 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_server_vision.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-13-dataset_finetune-_smart_home.py.REMOVED",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/_smart_home.py.REMOVED",
+      "denominator": "1 files in group dataset_finetune/_smart_home.py.REMOVED; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_smart_home.py.REMOVED",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_smart_home.py.REMOVED"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smart_home.py.REMOVED parser=binary_inventory rows=0 bytes=17113 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_smart_home.py.REMOVED",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-14-dataset_finetune-_smoke.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_smoke.log",
+      "denominator": "1 files in group dataset_finetune/_smoke.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_smoke.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_smoke.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke.log parser=log rows=39 bytes=8731 dist={\"fail_like\": 1, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_smoke.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-15-dataset_finetune-_smoke_caceria.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_smoke_caceria.log",
+      "denominator": "1 files in group dataset_finetune/_smoke_caceria.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_smoke_caceria.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_smoke_caceria.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke_caceria.log parser=log rows=43 bytes=9787 dist={\"fail_like\": 1, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_smoke_caceria.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-16-dataset_finetune-_smoke_control.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_smoke_control.log",
+      "denominator": "1 files in group dataset_finetune/_smoke_control.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_smoke_control.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_smoke_control.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke_control.log parser=log rows=43 bytes=9088 dist={\"fail_like\": 1, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_smoke_control.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-17-dataset_finetune-_smoke_e2b.log",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/_smoke_e2b.log",
+      "denominator": "1 files in group dataset_finetune/_smoke_e2b.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_smoke_e2b.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_smoke_e2b.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke_e2b.log parser=log rows=39 bytes=7570 dist={\"fail_like\": 1, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_smoke_e2b.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-18-dataset_finetune-_test_smart_home_coverage.py.REMOVED",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/_test_smart_home_coverage.py.REMOVED",
+      "denominator": "1 files in group dataset_finetune/_test_smart_home_coverage.py.REMOVED; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_test_smart_home_coverage.py.REMOVED",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_test_smart_home_coverage.py.REMOVED"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_test_smart_home_coverage.py.REMOVED parser=binary_inventory rows=0 bytes=10286 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/_test_smart_home_coverage.py.REMOVED",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-19-dataset_finetune-_tool_coverage.json",
+      "card_kind": "run",
+      "corpus": "dataset_finetune/_tool_coverage.json",
+      "denominator": "1 files in group dataset_finetune/_tool_coverage.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/_tool_coverage.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/_tool_coverage.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tool_coverage.json parser=json rows=1 bytes=15737 dist={\"scalar_keys\": [], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "dataset_finetune/_tool_coverage.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-20-dataset_finetune-out-_history_turns.json",
+      "card_kind": "run",
+      "corpus": "dataset_finetune/out/_history_turns.json",
+      "denominator": "1 files in group dataset_finetune/out/_history_turns.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/_history_turns.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/_history_turns.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_history_turns.json parser=json rows=165 bytes=44251 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/_history_turns.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-21-dataset_finetune-out-_readonly_shapes.json",
+      "card_kind": "run",
+      "corpus": "dataset_finetune/out/_readonly_shapes.json",
+      "denominator": "1 files in group dataset_finetune/out/_readonly_shapes.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/_readonly_shapes.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/_readonly_shapes.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_readonly_shapes.json parser=json rows=1 bytes=7357 dist={\"scalar_keys\": [], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/_readonly_shapes.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-22-dataset_finetune-out-_real_result_samples.json",
+      "card_kind": "run",
+      "corpus": "dataset_finetune/out/_real_result_samples.json",
+      "denominator": "1 files in group dataset_finetune/out/_real_result_samples.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/_real_result_samples.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/_real_result_samples.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_real_result_samples.json parser=json rows=1 bytes=229865 dist={\"scalar_keys\": [], \"list_lengths\": {\"window|list\": 5, \"filesystem|delete\": 0, \"app|close\": 5, \"safety|confirm\": 3, \"session|cancel_turn\": 5, \"session|\": 5, \"app|\": 5, \"computer_u…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/_real_result_samples.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-23-dataset_finetune-out-_real_result_samples.pkl",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/out/_real_result_samples.pkl",
+      "denominator": "1 files in group dataset_finetune/out/_real_result_samples.pkl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/_real_result_samples.pkl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/_real_result_samples.pkl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_real_result_samples.pkl parser=binary_inventory rows=0 bytes=147308 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/_real_result_samples.pkl",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-24-dataset_finetune-out-_tool_action_enums.json",
+      "card_kind": "run",
+      "corpus": "dataset_finetune/out/_tool_action_enums.json",
+      "denominator": "1 files in group dataset_finetune/out/_tool_action_enums.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/_tool_action_enums.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/_tool_action_enums.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tool_action_enums.json parser=json rows=1 bytes=21305 dist={\"scalar_keys\": [], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "dataset_finetune/out/_tool_action_enums.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-25-dataset_finetune-out-_uncovered_history.json",
+      "card_kind": "run",
+      "corpus": "dataset_finetune/out/_uncovered_history.json",
+      "denominator": "1 files in group dataset_finetune/out/_uncovered_history.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/_uncovered_history.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/_uncovered_history.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_uncovered_history.json parser=json rows=165 bytes=9884 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/_uncovered_history.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-26-dataset_finetune-out-eval",
+      "card_kind": "metric",
+      "corpus": "dataset_finetune/out/eval",
+      "denominator": "17 files in group dataset_finetune/out/eval; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/eval",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/eval/_dims_baseline.jsonl",
+        "dataset_finetune/out/eval/_dims_baseline_v3.jsonl",
+        "dataset_finetune/out/eval/_dims_ft.jsonl",
+        "dataset_finetune/out/eval/_dims_ft_r2_v3.jsonl",
+        "dataset_finetune/out/eval/_dims_ft_v3.jsonl",
+        "dataset_finetune/out/eval/_e2bft_v2_detail.json",
+        "dataset_finetune/out/eval/_e2bft_v2_eval.json",
+        "dataset_finetune/out/eval/_gates_baseline.json",
+        "dataset_finetune/out/eval/_gates_deploy_smoke.json",
+        "dataset_finetune/out/eval/_gates_ft.json",
+        "dataset_finetune/out/eval/_gates_ft_r2.json",
+        "dataset_finetune/out/eval/_gates_ft_r2_guard.json",
+        "dataset_finetune/out/eval/_gates_ft_r2_guard2.json",
+        "dataset_finetune/out/eval/_gates_ft_r2_guard3.json",
+        "dataset_finetune/out/eval/_gates_ft_r2_guard4.json",
+        "dataset_finetune/out/eval/_gates_ft_r2_guard5.json",
+        "dataset_finetune/out/eval/_sample_ft.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_dims_baseline.jsonl parser=jsonl rows=198 bytes=65527 dist={\"status\": {}, \"error_rows\": 0} | _dims_baseline_v3.jsonl parser=jsonl rows=198 bytes=43658 dist={\"status\": {}, \"error_rows\": 0} | _dims_ft.jsonl parser=jsonl rows=198 bytes=44805 dist={\"status\": {}, \"error_rows\": 0} | _dims_ft_r2_v3.jsonl parser=jsonl rows=198 bytes=43703 dist={\"status\": {}, \"error_rows\": 0} | _dims_ft_v3.jsonl parser=jsonl rows=198 bytes=43836 dist={\"status\": {}, \"error_rows\": 0} | _e2bft_v2_detail.json parser=json rows=202 bytes=25950 dist={}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/eval/_dims_baseline.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-27-dataset_finetune-out-imatrix.dat",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/out/imatrix.dat",
+      "denominator": "1 files in group dataset_finetune/out/imatrix.dat; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/imatrix.dat",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/imatrix.dat"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "imatrix.dat parser=binary_inventory rows=0 bytes=2785197 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/imatrix.dat",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-28-dataset_finetune-out-lora",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/out/lora",
+      "denominator": "2 files in group dataset_finetune/out/lora; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/lora",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/lora/adapter_config.json",
+        "dataset_finetune/out/lora/adapter_model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "adapter_config.json parser=json rows=1 bytes=1391 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=124277728 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/lora/adapter_config.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-29-dataset_finetune-out-lora.BAK_precaceria",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/out/lora.BAK_precaceria",
+      "denominator": "5 files in group dataset_finetune/out/lora.BAK_precaceria; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/lora.BAK_precaceria",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/lora.BAK_precaceria/adapter_config.json",
+        "dataset_finetune/out/lora.BAK_precaceria/adapter_model.safetensors",
+        "dataset_finetune/out/lora.BAK_precaceria/processor_config.json",
+        "dataset_finetune/out/lora.BAK_precaceria/tokenizer.json",
+        "dataset_finetune/out/lora.BAK_precaceria/tokenizer_config.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "adapter_config.json parser=json rows=1 bytes=1391 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=124277728 dist={} | processor_config.json parser=json rows=1 bytes=1763 dist={\"scalar_keys\": [\"audio_ms_per_token\", \"audio_seq_length\", \"image_seq_length\", \"processor_class\"], \"list_lengths\": {}} | tokenizer.json parser=json rows=1 bytes=32169626 dist={\"scalar_keys\": [\"padding\", \"truncation\", \"version\"], \"list_lengths\": {\"added_tokens\": 24}} | tokenizer_config.json parser=json rows=1 bytes=7177 dist={\"scalar_keys\": [\"audio_token\", \"backend\", \"boa_token\", \"boi_token\", \"bos_token\", \"eoa_token\",…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/lora.BAK_precaceria/adapter_config.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune-30-dataset_finetune-out-lora.CACERIA-v2",
+      "card_kind": "asset",
+      "corpus": "dataset_finetune/out/lora.CACERIA-v2",
+      "denominator": "2 files in group dataset_finetune/out/lora.CACERIA-v2; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:dataset_finetune/out/lora.CACERIA-v2",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "dataset_finetune/out/lora.CACERIA-v2/adapter_config.json",
+        "dataset_finetune/out/lora.CACERIA-v2/adapter_model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "adapter_config.json parser=json rows=1 bytes=1391 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=124277728 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "dataset_finetune/out/lora.CACERIA-v2/adapter_config.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=52 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-017-probando_gemma4",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

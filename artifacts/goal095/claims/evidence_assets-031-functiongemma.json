@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-031-functiongemma",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:41:48Z",
+  "lease_expires_utc": "2026-08-31T11:41:48Z",
+  "estimated_tokens": 297602,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 37,
+  "source_id": "functiongemma",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/evidence_assets-031-functiongemma.json",
+  "closed_utc": "2026-08-31T05:41:50Z"
+}

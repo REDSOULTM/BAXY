@@ -1,0 +1,4573 @@
+{
+  "batch_id": "evidence_assets-064-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 44,
+  "hash_ok": 44,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/gpu_turn_tail_post_max112_baseline_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42771,
+      "sha256": "33580617627fa71a679cd1721bc9ebefb22c3437568715a8ae78149cd9b883b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42770,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 144.425,
+          "max": 144.425
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 139.5828,
+          "max": 139.5828
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_post_reasoning_format_baseline_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 34047,
+      "sha256": "2ccc995e4b9ff158531f667728675dfc762762fcf63dab157d1ff97d2d21be40",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 33,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34046,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 138.87,
+          "max": 138.87
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 134.6571,
+          "max": 134.6571
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"primary_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"primary_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_primary_max112_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42773,
+      "sha256": "63ca72c3dde1a748419b3699325dac58c90155e35ad8e90c79c2321b918d1e76",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42772,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 137.998,
+          "max": 137.998
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "primary_max_tokens": {
+          "min": 112,
+          "max": 112
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 133.0623,
+          "max": 133.0623
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_primary_max112_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12317,
+      "sha256": "b5e26501b36b284d9b2ff797f78ec5907d1e1f16f322e7c6cf230992bd852528",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 5,
+          "retry_cases": 1,
+          "slowest": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12316,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 43.024,
+          "max": 43.024
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "primary_max_tokens": {
+          "min": 112,
+          "max": 112
+        },
+        "requests_completed": {
+          "min": 5,
+          "max": 5
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 37.9588,
+          "max": 37.9588
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_primary_reasoning_format_none_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31750,
+      "sha256": "4803c2fa4bac97f9267fa2093dcb53d533fd0fbc75f7b260b31241ed6a26f60a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 31,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31749,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 143.574,
+          "max": 143.574
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 138.7747,
+          "max": 138.7747
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_primary_retry_reasoning_format_none_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33939,
+      "sha256": "8773bbac2fa692fc91d74eb0854aaeda0bbc8269bf66bc98e209993a617485cc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 33,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33938,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 143.383,
+          "max": 143.383
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 2,
+          "max": 2
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 138.6195,
+          "max": 138.6195
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"primary_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"primary_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_product_repro_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42772,
+      "sha256": "0eba9213d9d1284f8f982b4b84d19d134b77e81bafddacde012eece4f6ed05c1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 1,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42771,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 141.394,
+          "max": 141.394
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 134.0339,
+          "max": 134.0339
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_abort_full_activation_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 23294,
+      "sha256": "a18aa6cf14050c795fe2d207a6b47af05444c46214d87aaca5ee74c15910044e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 26,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23293,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 230.464,
+          "max": 230.464
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 1,
+          "max": 1
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_abort_primary_only_activation_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 23297,
+      "sha256": "0f759d0ae9176185223e89a39c17b3a5a009d29032a75636860b5fa3379d4043",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 26,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23296,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 245.757,
+          "max": 245.757
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 1,
+          "max": 1
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_abort_smoke_order1_baseline_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4807,
+      "sha256": "352a5e6bd01859505260b42c38889698ec51c4a57d3bb0e74337e09081cab96b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 26,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 3,
+          "retry_cases": 0,
+          "slowest": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4806,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 38.179,
+          "max": 38.179
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 3,
+          "max": 3
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_abort_smoke_order1_candidate_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4787,
+      "sha256": "59d26b8b435184ae57ace98dbef336e11c54508f43b923a04a7694e7ecc13c08",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 26,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 3,
+          "retry_cases": 0,
+          "slowest": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4786,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 37.76,
+          "max": 37.76
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 3,
+          "max": 3
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_abort_target_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4478,
+      "sha256": "9a14118389673fd61dbddc2ae9796a8f91fb73f3ee26fa9a5707080ee1b274f4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 3,
+          "retry_cases": 0,
+          "slowest": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4477,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 34.89,
+          "max": 34.89
+        },
+        "requests_completed": {
+          "min": 3,
+          "max": 3
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_control_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12222,
+      "sha256": "81313e318e042255856d366c3dd74d582d54be41ef2aa7eec32ff1c293b8998a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 39,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 5,
+          "retry_cases": 1,
+          "slowest": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12221,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 44.188,
+          "max": 44.188
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 4,
+          "max": 4
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 4,
+          "max": 4
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 5,
+          "max": 5
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 39.3369,
+          "max": 39.3369
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_cutoff130_activation_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31613,
+      "sha256": "759159e8b795990b177bfe3a079251af317b380226d27caf5b711f322be00691",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 30,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31612,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 262.037,
+          "max": 262.037
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "primary_reasoning_cutoff": {
+          "min": 130,
+          "max": 130
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 256.3981,
+          "max": 256.3981
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_cutoff130_target_instrumented_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6203,
+      "sha256": "1ef2fff1ef4528e0caaba26aa51d20b678aaefb1853e56de55b399e680ea6196",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 30,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 3,
+          "retry_cases": 0,
+          "slowest": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6202,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 36.802,
+          "max": 36.802
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "primary_reasoning_cutoff": {
+          "min": 130,
+          "max": 130
+        },
+        "requests_completed": {
+          "min": 3,
+          "max": 3
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 31.1216,
+          "max": 31.1216
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_early_abort_post_baseline_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33929,
+      "sha256": "80e24190544ae3e2413b6b75b39bb553b15e1ecdf4235db831c9f9d5875fba72",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 33,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33928,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 123.036,
+          "max": 123.036
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 2,
+          "max": 2
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 118.314,
+          "max": 118.314
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"primary_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"primary_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_reasoning_early_abort_target_instrumented_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6203,
+      "sha256": "8c351ba644209a97ccb5724303e61981ef943e9e78af70c1541227962d8da494",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 30,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 3,
+          "retry_cases": 0,
+          "slowest": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6202,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 37.381,
+          "max": 37.381
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 3,
+          "max": 3
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 31.7551,
+          "max": 31.7551
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_capture_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2580,
+      "sha256": "507d2dca80e8770d9a84d49be342cfbfbc9a951fd8b6c33372bd34b8614c8eb1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "validation_errors"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 2,
+          "retry_cases": 0,
+          "slowest": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2579,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 16.048,
+          "max": 16.048
+        },
+        "requests_completed": {
+          "min": 2,
+          "max": 2
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_errors\"], \"n_keys\": 12, \"ro…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_errors\"], \"n_keys\": 12, \"ro…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_reuse_guard_language_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17117,
+      "sha256": "9d854326e58e801bccdab46eaca0b04ab333cd104fd32c73eb3b6e3f750a3439",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17116,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 173.987,
+          "max": 173.987
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_reuse_guard_language_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4326,
+      "sha256": "4ba1c41c4e8e71d0c2957d54d43ca213ad4432897bb1d7e3335d8aa0da0093fc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4325,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 35.638,
+          "max": 35.638
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_reuse_pair_baseline_after_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17120,
+      "sha256": "20a428ffd71a31e1a6df581f41fc82ddad722a789bceb67b1e0cc48c983eb488",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17119,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 176.043,
+          "max": 176.043
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_reuse_pair_candidate_after_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17141,
+      "sha256": "1d2453be47d76a4179535c7c4811251fd9e64c474d86c7d3e2ea4d7030bdf363",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17140,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 178.134,
+          "max": 178.134
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_reuse_product_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17118,
+      "sha256": "94a37451a42e707d06c0afa2db128bdf0dc4ca0e60a0718103a5c2de572de4dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17117,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 175.054,
+          "max": 175.054
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_reuse_verified_guard_language\", \"retry_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_retry_without_speculative_v_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17093,
+      "sha256": "907ed42e8391794339b1900ee265dfb744628efd06f79724687e5ea30e891b94",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17092,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 182.435,
+          "max": 182.435
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_without_speculative_v\", \"runtime\", \"sch…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"retry_without_speculative_v\", \"runtime\", \"sch…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_server_reasoning_auto_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12318,
+      "sha256": "27de78959b7ea9efe09f70ec0cda90651c2329af38fc132ae1448aa32678df2c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 5,
+          "retry_cases": 1,
+          "slowest": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12317,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 44.309,
+          "max": 44.309
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 5,
+          "max": 5
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 39.629,
+          "max": 39.629
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_speculative_retry_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38057,
+      "sha256": "6e6f1eb5fc8333fd8bc9610defb882936b59727091152250f7b92459788ff19b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 36,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38056,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 145.829,
+          "max": 145.829
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 6,
+          "max": 6
+        },
+        "policy_speculative_retries_used": {
+          "min": 6,
+          "max": 6
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 141.0202,
+          "max": 141.0202
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"policy_sp…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"policy_sp…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_speculative_retry_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11023,
+      "sha256": "24467aec34227dcf2d022235c5f05edb885208612b87270f8d0e2dd52c662f2a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 36,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 5,
+          "retry_cases": 1,
+          "slowest": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11022,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 45.77,
+          "max": 45.77
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 5,
+          "max": 5
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 40.9839,
+          "max": 40.9839
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"policy_sp…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"policy_sp…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_speculative_retry_turn23_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3782,
+      "sha256": "067f552da82836af6f030ac3fb789b460f39581b11267d1ea0fae8ab9bf82735",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 36,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 1,
+          "retry_cases": 0,
+          "slowest": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3781,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 7.745,
+          "max": 7.745
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 1,
+          "max": 1
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 3.0078,
+          "max": 3.0078
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"policy_sp…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"policy_reasoning_format_none_retries\", \"policy_sp…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_count_overlap_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 65801,
+      "sha256": "8efaa151124367d9a8abc9c4a9033fb60df4520125253379aec40d5740e43f6d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "exact_outputs",
+          "latency_delta_overlap_minus_baseline",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "timeline_evidence"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65800
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_overlap_minus_baseline\", \"promotion_rule\", \"safety\", \"schema\", \"timeline_evidence\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_overlap_minus_baseline\", \"promotion_rule\", \"safety\", \"schema\", \"timeline_evidence\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_count_overlap_ab_reverse_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 65813,
+      "sha256": "2429d60ad8587353be36d7dbf8b7d2ded28634ae80d6893b593e06bf6bac7380",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "exact_outputs",
+          "latency_delta_overlap_minus_baseline",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "timeline_evidence"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65812
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_overlap_minus_baseline\", \"promotion_rule\", \"safety\", \"schema\", \"timeline_evidence\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_overlap_minus_baseline\", \"promotion_rule\", \"safety\", \"schema\", \"timeline_evidence\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_count_overlap_ab_third_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 65789,
+      "sha256": "650b49424dda1d27c716e93ec43db70bc6fbf43a08a7184f1d6770c94811dfc2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "exact_outputs",
+          "latency_delta_overlap_minus_baseline",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "timeline_evidence"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65788
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_overlap_minus_baseline\", \"promotion_rule\", \"safety\", \"schema\", \"timeline_evidence\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_overlap_minus_baseline\", \"promotion_rule\", \"safety\", \"schema\", \"timeline_evidence\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_count_overlap_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2204,
+      "sha256": "f7019cca2ef0efcb1e526475e6fa50fa3c7b968663a5d596bc81e36e511dbc0e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "candidate",
+          "date",
+          "reason",
+          "replicas",
+          "safety",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate",
+          "date",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {
+          "replicas": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2203
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"candidate\", \"date\", \"reason\", \"replicas\", \"safety\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"candidate\", \"date\", \"reason\", \"replicas\", \"safety\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_gated_language_full_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69054,
+      "sha256": "e3b18bb8c5cb60847c8a89cd91e08a0f12b6b301f11103660865703e3bdedfd9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "case_deltas",
+          "control",
+          "language_calls_by_expected_mode",
+          "latency_delta",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "case_deltas": 6,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69053
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_gated_language_full_ba_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 72761,
+      "sha256": "46b12cab961de6bf20407870c5e93dccea3d62c484d07cd5d0ab4a631025d978",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "case_deltas",
+          "control",
+          "language_calls_by_expected_mode",
+          "latency_delta",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "case_deltas": 6,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 72760
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_gated_language_smoke_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 28775,
+      "sha256": "80abbf70d6dc26bb76f3daef1d625d68223a246b2f61b335a20ce12f1db36d35",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "case_deltas",
+          "control",
+          "language_calls_by_expected_mode",
+          "latency_delta",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "case_deltas": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28774
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/guard_gated_language_smoke_ba_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 28576,
+      "sha256": "2c41cc5351c5045b745ea70f96b06d686d52e184b33a46806134c634beac1bd8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "case_deltas",
+          "control",
+          "language_calls_by_expected_mode",
+          "latency_delta",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "case_deltas": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28575
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"case_deltas\", \"control\", \"language_calls_by_expected_mode\", \"latency_delta\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/heldout_family_classifier_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39979,
+      "sha256": "7770f552bd53d253e850b6ea9bf6293a3f5388b0e029ba96bbe5e7a5c6b1e3d2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "holdout",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "population",
+          "runtime_manifest_changed",
+          "schema",
+          "selection"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39978,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"holdout\", \"installation_touched\", \"measured_at_utc\", \"method\", \"population\", \"runtime_manifest_changed\", \"schema\", \"selection\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"holdout\", \"installation_touched\", \"measured_at_utc\", \"method\", \"population\", \"runtime_manifest_changed\", \"schema\", \"selection\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/heldout_family_classifier_components_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40104,
+      "sha256": "6faba09bda2e5a2f56bfc08ce8c93e445144fdda4215f04ff65657985144aeca",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "holdout",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "population",
+          "runtime_manifest_changed",
+          "schema",
+          "selection"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40103,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"holdout\", \"installation_touched\", \"measured_at_utc\", \"method\", \"population\", \"runtime_manifest_changed\", \"schema\", \"selection\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"holdout\", \"installation_touched\", \"measured_at_utc\", \"method\", \"population\", \"runtime_manifest_changed\", \"schema\", \"selection\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/heldout_family_classifier_lexical_frozen_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58118,
+      "sha256": "0cb5cf552fb7dcd67c9fff929a34fc34517c00193b8e75bf161d0ffec189c1e3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "holdout",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "population",
+          "runtime_manifest_changed",
+          "schema",
+          "selection",
+          "universal_holdout"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58117,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"holdout\", \"installation_touched\", \"measured_at_utc\", \"method\", \"population\", \"runtime_manifest_changed\", \"schema\", \"selection\", \"universal_holdout\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"holdout\", \"installation_touched\", \"measured_at_utc\", \"method\", \"population\", \"runtime_manifest_changed\", \"schema\", \"selection\", \"universal_holdout\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/integral_review_ledger_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27305,
+      "sha256": "1fe588cd6b96e18ee6a0ae2a0a1d7d9cc501d68b6151647d53a6e585c4e59506",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "R10_deterministic_system_status_scope",
+          "closure_note",
+          "entries",
+          "gates_after_promotion",
+          "measured_at_utc",
+          "open_work_not_yet_done",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "closure_note",
+          "gates_after_promotion",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "entries": 9,
+          "open_work_not_yet_done": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27304
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"R10_deterministic_system_status_scope\", \"closure_note\", \"entries\", \"gates_after_promotion\", \"measured_at_utc\", \"open_work_not_yet_done\", \"schema\", \"scope\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"R10_deterministic_system_status_scope\", \"closure_note\", \"entries\", \"gates_after_promotion\", \"measured_at_utc\", \"open_work_not_yet_done\", \"schema\", \"scope\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/integral_review_ledger_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69308,
+      "sha256": "05d7f60c15d6fb0a526a65745192c70993144b66832e5581beb0526d4de0794f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "R10_deterministic_system_status_scope",
+          "closure",
+          "entries",
+          "final_validation",
+          "gates_after_promotion",
+          "measured_at_utc",
+          "open_work_not_yet_done",
+          "schema",
+          "scope",
+          "supersedes"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "closure",
+          "gates_after_promotion",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "supersedes"
+        ],
+        "list_lengths": {
+          "entries": 23,
+          "open_work_not_yet_done": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69307
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"R10_deterministic_system_status_scope\", \"closure\", \"entries\", \"final_validation\", \"gates_after_promotion\", \"measured_at_utc\", \"open_work_not_yet_done\", \"schema\", \"scope\", \"supersedes\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"R10_deterministic_system_status_scope\", \"closure\", \"entries\", \"final_validation\", \"gates_after_promotion\", \"measured_at_utc\", \"open_work_not_yet_done\", \"schema\", \"scope\", \"supersedes\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/integral_review_ledger_20260810.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9456,
+      "sha256": "8534cb5e78def4d1a1785391bc80925fb1a92592cff9e1e4d84964b89a4d4074",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy_state",
+          "closed_previous_debt",
+          "closure",
+          "final_validation",
+          "gates_after_repairs",
+          "known_defects_open",
+          "measured_at_utc",
+          "open_work_not_yet_done",
+          "schema",
+          "scope",
+          "supersedes",
+          "wake_validation"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "closure",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {
+          "closed_previous_debt": 6,
+          "known_defects_open": 1,
+          "open_work_not_yet_done": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9455
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy_state\", \"closed_previous_debt\", \"closure\", \"final_validation\", \"gates_after_repairs\", \"known_defects_open\", \"measured_at_utc\", \"open_work_not_yet_done\", \"schema\", \"scope\", \"supersedes\", \"wake_validation\"], \"n_keys\": 12,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy_state\", \"closed_previous_debt\", \"closure\", \"final_validation\", \"gates_after_repairs\", \"known_defects_open\", \"measured_at_utc\", \"open_work_not_yet_done\", \"schema\", \"scope\", \"supersedes\", \"wake_validation\"], \"n_keys\": 12,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/integral_review_ledger_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 301552,
+      "sha256": "309226b9ba4c24f10c9abe8da4c5bf9a8096a10ae074a6cc3221a9d8226b1b1a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy_state",
+          "active_decision_path_r280",
+          "bge_m3_prototype_domain_r252_r253",
+          "bge_m3_r207_operation_retrieval_r256_r257",
+          "bge_m3_r207_prototype_domain_r254_r255",
+          "bge_m3_retrieval_candidate_r231_r233",
+          "bge_m3_semantic_abstention_r235",
+          "bge_reranker_r237",
+          "bge_reranker_r239_r240",
+          "catalog_derived_domain_grounding",
+          "clause_recognizer_repair",
+          "clean_lifecycle_preflight",
+          "clinc_oos_development_r251",
+          "closure",
+          "corpus_debt_inventory",
+          "counterfactual_behind_a_denial_frame_located",
+          "cross_encoder_and_structural_grounding_r207_r212",
+          "current_conditional_omission_audit",
+          "current_core_catalog_snapshot_r219",
+          "current_explicit_test_audit",
+          "current_mind_budget_qwen",
+          "current_model_candidate_phi4_mini",
+          "current_model_candidate_qwen35_4b",
+          "current_model_candidate_qwen3_4b_instruct_2507",
+          "current_mvp_real_application_smoke",
+          "current_mvp_visual_review",
+          "current_opened_wake_confusable_development_diagnostic",
+          "current_opened_wake_hyperspotter_research",
+          "current_opened_wake_phonetic_domain_research",
+          "current_opened_wake_prosody_spectral_research",
+          "current_opened_wake_split_alias_ctc_research",
+          "current_opened_wake_v20_development_diagnostic",
+          "current_physical_wake_v17",
+          "current_source_quality_fast",
+          "current_source_quality_full",
+          "current_tree_compound_r4",
+          "current_tree_compound_r5",
+          "current_tree_cut_b_r25",
+          "current_tree_cut_b_r26",
+          "current_tree_cut_b_r27",
+          "current_tree_cut_b_r28",
+          "current_tree_oracle_r1",
+          "current_tree_oracle_r2",
+          "current_tree_oracle_repair",
+          "current_voice_technology_research",
+          "cut_b_current_tree_r22",
+          "cut_d_open_population_honesty",
+          "defects_closed_by_v6",
+          "deterministic_recogniser_bypass",
+          "direct_abstain_classifier_r247_r250",
+          "domain_gate_is_inverted_on_paraphrase",
+          "domain_veto_over_veto_measurement",
+          "final_validation",
+          "first_signal_latency",
+          "fresh_independent_cut_b_r264",
+          "fresh_independent_cut_b_recogniser_r265",
+          "fresh_independent_cut_b_recogniser_r266",
+          "frozen_seal_reseal",
+          "frozen_tree_pin_moved_by_itself",
+          "guard_confirmations_withdrawn",
+          "hacer_with_a_conjugated_form",
+          "head_only_reranker_domain_r245",
+          "independent_clarification_cut_b_entry_path_r273",
+          "independent_clarification_cut_b_entry_path_r274",
+          "independent_clarification_cut_b_model_path_r275",
+          "independent_clarification_cut_b_r270",
+          "independent_clarification_cut_b_recogniser_r271",
+          "independent_clarification_cut_b_recogniser_r272",
+          "independent_cut_b_r213_r214",
+          "inherited_evidence",
+          "instruction_frame_lexicon_restructure",
+          "instruction_frame_repair",
+          "invented_instrument_reading_repaired",
+          "known_defects_open",
+          "line_ending_seal_damage_r278",
+          "measured_at_utc",
+          "mind_social_closure_repair",
+          "mvp",
+          "near_miss_authority_vetoes",
+          "officebench_word_source_r259"
+        ],
+        "n_keys": 149,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "closure",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {
+          "known_defects_open": 31,
+          "open_work_not_yet_done": 7,
+          "visible_prose_defects_closed": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 301551
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy_state\", \"active_decision_path_r280\", \"bge_m3_prototype_domain_r252_r253\", \"bge_m3_r207_operation_retrieval_r256_r257\", \"bge_m3_r207_prototype_domain_r254_r255\", \"bge_m3_retrieval_candidate_r231_r233\", \"bge_m3_semantic_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy_state\", \"active_decision_path_r280\", \"bge_m3_prototype_domain_r252_r253\", \"bge_m3_r207_operation_retrieval_r256_r257\", \"bge_m3_r207_prototype_domain_r254_r255\", \"bge_m3_retrieval_candidate_r231_r233\", \"bge_m3_semantic_a…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/invalid_empty_length_retry_temperature_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2561251,
+      "sha256": "abe49e8db68570c0d27ee35ae65d5cf9fe6566d56bdeb9845e5b81e98e0cc749",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparisons",
+          "effects_executed",
+          "gates",
+          "measured_at_utc",
+          "promotion_rule",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "measured_at_utc",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2561250,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"gates\", \"measured_at_utc\", \"promotion_rule\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"gates\", \"measured_at_utc\", \"promotion_rule\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

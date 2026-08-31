@@ -1,0 +1,2824 @@
+{
+  "batch_id": "evidence_assets-081-baxy-baxy_art_holdout",
+  "source_id": "baxy",
+  "file_count": 40,
+  "hash_ok": 40,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/holdout/generalization_product_holdout_r12_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1679917,
+      "sha256": "4c5ecf26e10ce7d21c845e21930d4b29b275ad72363b4d7dc7990a01aad488ba",
+      "rows": 1365,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1365,
+          "phase": 1365,
+          "raw_decision": 1365,
+          "request_id": 1365,
+          "schema": 1365,
+          "stages": 1365,
+          "final": 689,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1678171,
+        "min_line_bytes": 237,
+        "max_line_bytes": 3376,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1677800,
+            "line": 1364,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1678171,
+            "line": 1365,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r12_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18340,
+      "sha256": "12f40a9ce459e43349c7fd148d59742496019ca2594aabf828d3238ee748b4c0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18339,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r13_memory.trx": {
+      "parser": "xml",
+      "bytes": 17534,
+      "sha256": "d300bbf0fdc6cce74ce5feef9f866e215e887567f143aceb8ef9ba1180ee2207",
+      "rows": 74,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17533
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 73,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 74,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r13_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 775946,
+      "sha256": "f3c3726a9faa3087d4f6a3799495686d19113cb1f7aa3c1079e3ac54315ca6cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 775945,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r13_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1674644,
+      "sha256": "d61ad94c5e032d2d3ee0fdf49da04bc245abf3ef4ab253ff779898e9a99e4b2f",
+      "rows": 1364,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1364,
+          "phase": 1364,
+          "raw_decision": 1364,
+          "request_id": 1364,
+          "schema": 1364,
+          "stages": 1364,
+          "final": 689,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1672898,
+        "min_line_bytes": 231,
+        "max_line_bytes": 3412,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1672527,
+            "line": 1363,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1672898,
+            "line": 1364,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r13_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12030,
+      "sha256": "ac3660951d5d1f12b4d89b9a84885eecbbd5f095c30488b85ce7f5ad2bbbfb7e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12029,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r14_memory.trx": {
+      "parser": "xml",
+      "bytes": 23319,
+      "sha256": "e17cc6eab088fa19c7860c11d2c4df69382b755f705c547c005f549d23f8b469",
+      "rows": 82,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "Output": 3,
+          "Message": 2,
+          "StackTrace": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23318
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 81,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 82,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r14_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 791557,
+      "sha256": "cb7c5b3aa5ede62f55314a259255cb17474d864fa1d297b715c41c0b6ce5df11",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 791556,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r14_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1687109,
+      "sha256": "5e266017d40a99c1fbaf0222aa02f21b7beab1ba9def8ed919f73e3e3a875de0",
+      "rows": 1415,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1415,
+          "phase": 1415,
+          "raw_decision": 1415,
+          "request_id": 1415,
+          "schema": 1415,
+          "stages": 1415,
+          "final": 689,
+          "error_type": 41,
+          "failure_kind": 41,
+          "recovery": 18
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1685363,
+        "min_line_bytes": 222,
+        "max_line_bytes": 3373,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1684992,
+            "line": 1414,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1685363,
+            "line": 1415,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r14_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 36617,
+      "sha256": "808c74de80767691d6b9a856a7dc76875d9fcaad61b0229abd2d63c4d636a49f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36616,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r15_memory.trx": {
+      "parser": "xml",
+      "bytes": 23331,
+      "sha256": "3892e09aa625d59bde7f0eaa6395f577eda92a119a7a073835f9785d3fd1104a",
+      "rows": 82,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "Output": 3,
+          "Message": 2,
+          "StackTrace": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23330
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 81,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 82,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r15_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 831697,
+      "sha256": "8bc6df8e04fe776cefb549197788dd5327dc904bc6e52f0b8c656747abcfefac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 831696,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r15_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1747835,
+      "sha256": "4884319dcfbc1c968a442337f40c16394fb24e2f5182efe68d838dc18c1e8d20",
+      "rows": 1398,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1398,
+          "phase": 1398,
+          "raw_decision": 1398,
+          "request_id": 1398,
+          "schema": 1398,
+          "stages": 1398,
+          "final": 689,
+          "error_type": 37,
+          "failure_kind": 37,
+          "recovery": 16
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1745539,
+        "min_line_bytes": 226,
+        "max_line_bytes": 3385,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1744618,
+            "line": 1397,
+            "text": "{\"candidate_operations\":[\"notification.diagnose\",\"notification.cancel.at\",\"notification.list.due\",\"system.identity\",\"system.recyclebin.empty\",\"clipboard.paste\",\"clipboard.copy\",\"clipboard.write.text\",\"input.keyboard.status\",\"input.keyboard…"
+          },
+          {
+            "offset": 1745539,
+            "line": 1398,
+            "text": "{\"candidate_operations\":[\"notification.diagnose\",\"notification.cancel.at\",\"notification.list.due\",\"system.identity\",\"system.recyclebin.empty\",\"clipboard.paste\",\"clipboard.copy\",\"clipboard.write.text\",\"input.keyboard.status\",\"input.keyboard…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r15_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38178,
+      "sha256": "acdcc39f8ffa776820818c30f0da3fa72ae3b388f10f6180323e753c20caa751",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38177,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r16_memory.trx": {
+      "parser": "xml",
+      "bytes": 17534,
+      "sha256": "b242534dcedc0747441be9002633712d384b591c9835679219c0c4fcff1e2dfb",
+      "rows": 74,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17533
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 73,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 74,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r16_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 776536,
+      "sha256": "73c1998fee5f2c6b2829d872b873b805f83b4e6ec77e7a405c455e85b917775e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 776535,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r16_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1674569,
+      "sha256": "8fa547ce49d87e82142d2e9ca51ff710168b3f75a2fe593c5a1f3f5f177c2144",
+      "rows": 1358,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 1358,
+          "phase": 1358,
+          "raw_decision": 1358,
+          "request_id": 1358,
+          "schema": 1358,
+          "stages": 1358,
+          "final": 689
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1672823,
+        "min_line_bytes": 352,
+        "max_line_bytes": 3376,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1672452,
+            "line": 1357,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1672823,
+            "line": 1358,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r16_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11055,
+      "sha256": "bff2eddb6c1c8c854a57ce1e63494da05d087cff7d22a9489836317bfb6c2dbb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11054,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r17_interrupted_failure.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3548,
+      "sha256": "0333c67fffa19895d117afb80d47d0decbe3e993af5266d362bb514339c8eedb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "conservative_metrics",
+          "effects_executed",
+          "interpretation",
+          "measured_at_utc",
+          "measurement_failure",
+          "runtime_manifest_changed",
+          "runtime_manifest_sha256",
+          "schema",
+          "source",
+          "status"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "interpretation",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "runtime_manifest_sha256",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3547,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"conservative_metrics\", \"effects_executed\", \"interpretation\", \"measured_at_utc\", \"measurement_failure\", \"runtime_manifest_changed\", \"runtime_manifest_sha256\", \"schema\", \"source\", \"status\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"conservative_metrics\", \"effects_executed\", \"interpretation\", \"measured_at_utc\", \"measurement_failure\", \"runtime_manifest_changed\", \"runtime_manifest_sha256\", \"schema\", \"source\", \"status\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r17_memory.trx": {
+      "parser": "xml",
+      "bytes": 51839,
+      "sha256": "582c6fe35d2c79cbf78391c19c8535ba8ca3cba9f659a290ab95f9cf091c47e2",
+      "rows": 122,
+      "schema": {
+        "keys": [
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "Output": 13,
+          "Message": 12,
+          "StackTrace": 12,
+          "ErrorInfo": 12,
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51838
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 121,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 122,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r17_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1778902,
+      "sha256": "4336873fa742843ba5803d8b7703bb61f550a156210a979bf07960f3c90e4a42",
+      "rows": 1428,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "recovery",
+          "failure_reason"
+        ],
+        "key_freq": {
+          "candidate_operations": 1428,
+          "phase": 1428,
+          "raw_decision": 1428,
+          "request_id": 1428,
+          "schema": 1428,
+          "stages": 1428,
+          "final": 688,
+          "error_type": 88,
+          "failure_kind": 88,
+          "failure_stage": 88,
+          "recovery": 42,
+          "failure_reason": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1778231,
+        "min_line_bytes": 255,
+        "max_line_bytes": 3220,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1776253,
+            "line": 1427,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 1778231,
+            "line": 1428,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.application.status\",\"window.focus\",\"window.maximize\",\"window.minimize\",\"window.move\",\"window.resize\",\"window.resolve\",\"window.restore\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r18_memory.trx": {
+      "parser": "xml",
+      "bytes": 17534,
+      "sha256": "e7d1999421993c41cac2591c727b505a09feb1fc19fbafc288290b3afa7aa1b5",
+      "rows": 74,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17533
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 73,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 74,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r18_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 776684,
+      "sha256": "447b054bc33eeaebb28f17ae89152504290238950708df1994d893a3e93216cc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 776683,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r18_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1676863,
+      "sha256": "2cb09e2575e103049b4059dbf56c5aad8977feef375b4dcfd76a429f5d676ea4",
+      "rows": 1359,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage"
+        ],
+        "key_freq": {
+          "candidate_operations": 1359,
+          "phase": 1359,
+          "raw_decision": 1359,
+          "request_id": 1359,
+          "schema": 1359,
+          "stages": 1359,
+          "final": 689,
+          "error_type": 1,
+          "failure_kind": 1,
+          "failure_stage": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1675114,
+        "min_line_bytes": 273,
+        "max_line_bytes": 3397,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1674740,
+            "line": 1358,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1675114,
+            "line": 1359,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r18_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11469,
+      "sha256": "4ecd943f8d447cf93616386eab669cd7065f6c61b9328fb1cccef0e689b7be9e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11468,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r19_memory.trx": {
+      "parser": "xml",
+      "bytes": 17534,
+      "sha256": "353b9558729b232927d3ea26ccde3aff93c3be0488b5943e1106b17fbc293a55",
+      "rows": 74,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17533
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 73,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 74,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r19_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 777455,
+      "sha256": "215cd3cb85a18d51c8559bc54cf3b6a3d308551bd3e929576347ed610562a43f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 777454,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r19_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1679891,
+      "sha256": "2f1c627015f7c9c5d14016a6d8986fe78014c792047b4791ab0b6a0b07e41e9e",
+      "rows": 1361,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1361,
+          "phase": 1361,
+          "raw_decision": 1361,
+          "request_id": 1361,
+          "schema": 1361,
+          "stages": 1361,
+          "final": 689,
+          "error_type": 3,
+          "failure_kind": 3,
+          "failure_stage": 3,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1678142,
+        "min_line_bytes": 269,
+        "max_line_bytes": 3373,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1677768,
+            "line": 1360,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1678142,
+            "line": 1361,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r19_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10120,
+      "sha256": "dee2393ab2783f0ba53bd6c2b646f044aa422453d1b7b764bf92283683b136d4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10119,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r20_memory.trx": {
+      "parser": "xml",
+      "bytes": 51839,
+      "sha256": "ad2bc95139804d9a58debd5c673ece78cf133155ada482c2a3551281e3324bc6",
+      "rows": 122,
+      "schema": {
+        "keys": [
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "Output": 13,
+          "Message": 12,
+          "StackTrace": 12,
+          "ErrorInfo": 12,
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51838
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 121,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 122,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r20_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 877245,
+      "sha256": "4af8b5148accf2af0abee05e060cf1c32500bc0108c8b4f4c1c186460ecdfaf5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 877244,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r20_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1806263,
+      "sha256": "5337d2e5c586efd447c83f831bc5da4ae4219cdf33ff244d3b1e8283dc4c473c",
+      "rows": 1429,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "recovery",
+          "failure_reason"
+        ],
+        "key_freq": {
+          "candidate_operations": 1429,
+          "phase": 1429,
+          "raw_decision": 1429,
+          "request_id": 1429,
+          "schema": 1429,
+          "stages": 1429,
+          "final": 689,
+          "error_type": 77,
+          "failure_kind": 77,
+          "failure_stage": 77,
+          "recovery": 37,
+          "failure_reason": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1804162,
+        "min_line_bytes": 266,
+        "max_line_bytes": 2829,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1803436,
+            "line": 1428,
+            "text": "{\"candidate_operations\":[\"network.ip.list\",\"network.status\",\"network.port.list\",\"clipboard.paste\",\"system.status\",\"input.keyboard.open\",\"streaming.play.named\",\"task.search\",\"game.install.cancel.active\",\"game.install.prepare\",\"game.install.…"
+          },
+          {
+            "offset": 1804162,
+            "line": 1429,
+            "text": "{\"candidate_operations\":[\"network.ip.list\",\"network.status\",\"network.port.list\",\"clipboard.paste\",\"system.status\",\"input.keyboard.open\",\"streaming.play.named\",\"task.search\",\"game.install.cancel.active\",\"game.install.prepare\",\"game.install.…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r20_mind.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 925,
+      "sha256": "650e223df228110cb5b31ac867b38d9a9b284c114a056658c873c836fd260f9a",
+      "rows": 30,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 922,
+        "min_line_bytes": 3,
+        "max_line_bytes": 57
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 688,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 893,
+            "line": 29,
+            "text": "\"total_seconds\": 1282.209"
+          },
+          {
+            "offset": 922,
+            "line": 30,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r20_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 127342,
+      "sha256": "598ad08d49133ba130c8249db385942d82917925120a61f94b4251efc94cbf54",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 127341,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r21_memory.trx": {
+      "parser": "xml",
+      "bytes": 17534,
+      "sha256": "1cab88e8ad35428bffd8ff41d75a95e9cf207bb72618c751aae49f8fae46ce4f",
+      "rows": 74,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17533
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 73,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 74,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r21_mind.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 775478,
+      "sha256": "8ff1a27dd1e84e1376e381a4c927a7de951632f6a6d60969025052590f896875",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "owner",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "owner",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 688
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 775477,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"owner\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r21_mind.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1673635,
+      "sha256": "c1f31d1ee911507e00c0a2b49d7ed7f93a706771349199936f89a4537bba7ff5",
+      "rows": 1358,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 1358,
+          "phase": 1358,
+          "raw_decision": 1358,
+          "request_id": 1358,
+          "schema": 1358,
+          "stages": 1358,
+          "final": 689
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1671886,
+        "min_line_bytes": 352,
+        "max_line_bytes": 3385,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1671512,
+            "line": 1357,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1671886,
+            "line": 1358,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r21_product.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10163,
+      "sha256": "0c65c06b385a27eff03add9cbc70937568c269a76e363588ea9cd63c8ce88261",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "effects_executed",
+          "failures",
+          "measured_at_utc",
+          "memory_rows",
+          "metrics",
+          "ownership_aware",
+          "schema",
+          "scope",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_holdout",
+          "effects_executed",
+          "measured_at_utc",
+          "ownership_aware",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "memory_rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10162,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_holdout\", \"effects_executed\", \"failures\", \"measured_at_utc\", \"memory_rows\", \"metrics\", \"ownership_aware\", \"schema\", \"scope\", \"sources\", \"thresholds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r2_failure_analysis.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2722,
+      "sha256": "6494e4b8ff9c6baaa62d44d3ef3a425e51d53024ab993da91590b5d4b1269727",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "created_at_utc",
+          "development_output",
+          "effects_executed",
+          "holdout_reuse_policy",
+          "metrics",
+          "schema",
+          "source"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "created_at_utc",
+          "effects_executed",
+          "holdout_reuse_policy",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2721,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"created_at_utc\", \"development_output\", \"effects_executed\", \"holdout_reuse_policy\", \"metrics\", \"schema\", \"source\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"created_at_utc\", \"development_output\", \"effects_executed\", \"holdout_reuse_policy\", \"metrics\", \"schema\", \"source\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_r2_memory.trx": {
+      "parser": "xml",
+      "bytes": 20524,
+      "sha256": "476bb80343dfe4dd20fa525de8ea669ee947da22713a07a54684705982ae9929",
+      "rows": 72,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 10,
+          "Execution": 10,
+          "TestMethod": 10,
+          "UnitTest": 10,
+          "TestEntry": 10,
+          "Output": 3,
+          "Message": 2,
+          "StackTrace": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20523
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 71,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 72,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    }
+  }
+}

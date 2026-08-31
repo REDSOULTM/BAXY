@@ -1,0 +1,624 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-019-probando_gemma4-pg4_scripts",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:40:56Z",
+  "closed_utc": "2026-08-31T05:40:56Z",
+  "estimated_tokens": 295168,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 37,
+  "subsystem": "pg4_scripts",
+  "subsystems": [
+    "pg4_scripts"
+  ],
+  "files": [
+    {
+      "path": "scripts/_diag/_hunt_tanda_5000.jsonl",
+      "sha256": "aa2f25c811a867b88cf517e23f1690406454caba835d5ba5e2044a56058dc7cc",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_hunt_tanda_5000.jsonl"
+    },
+    {
+      "path": "scripts/_diag/_iso_proof.png",
+      "sha256": "6f0b5e80ede3b507d1aae7667310e83e7eebbe2afad62b1a6e09aaaff5275121",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_iso_proof.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_000.json",
+      "sha256": "9d5d2b225bcd9f9300d9c459f99d7e86aca45faacf3a8d34f96a14728c65a925",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_000.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_001.json",
+      "sha256": "036727d5b666c5a6c1b01c3ed3995d22328c6a04e63c2ba14dddf4c0fd95a035",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_001.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_002.json",
+      "sha256": "7565eaa1acf218acf73b9d7d69b14e41b00ea3b6f3b25a422273d64691ad9520",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_002.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_003.json",
+      "sha256": "84767966911596b0f8793e71c5989147033e525c2c3abf72b4a79b92cd5dd5c7",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_003.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_004.json",
+      "sha256": "d57c4e168a22293dfdb5f52b825ea971373f99c9235399b622c1c3db4228f655",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_004.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_005.json",
+      "sha256": "097909ae681c864786533c9f7686e1eebb3865f2d2f2384fa7583af828314441",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_005.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_007.json",
+      "sha256": "9c0ceb3c5f02d9057cfcdcf56b125236d4a8312768b8021e4bfd8a162debe348",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_007.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_008.json",
+      "sha256": "1323633f87694464555317ac9298d43eca66d4f095179c4d3be45f4bee511557",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_008.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_009.json",
+      "sha256": "73e1febca94b9dc8e89fb47b209c2db594d167a446ec6e5d52ce43afc4676f13",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_009.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_011.json",
+      "sha256": "835349bee4e1bba5324bbb53246b4df56441abc5d010ee6c1e37eaac2aff4c77",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_011.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_015.json",
+      "sha256": "b3469e7372441b4c19de3401950c15df35a8dc6d98e9e7f5b23f4ce3247c17e9",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_015.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_016.json",
+      "sha256": "fed0554391d3068031f9af0356557912634019146b68c88519a2c295e90260d3",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_016.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_018.json",
+      "sha256": "83a621ffc354c53f2d085cd743d8a52603675e35d80f1fcaaeb977ee9cd6fa60",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_018.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_019.json",
+      "sha256": "6e64e8e69cdde9b0e2e85da84681f674365d2c6406be916b54c367a8f1bd3648",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_019.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_023.json",
+      "sha256": "6dcc29c38e42055c80742aa2a45697bd477c059ed3faa3b7a2dcb57f29fd9c5d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_023.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_024.json",
+      "sha256": "5cc3bd9b72485b9d48d592ec734fe7f66a8799b50d12108b368569453178f9d1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_024.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_028.json",
+      "sha256": "fe71c8dbcf718bd24de8c57a04930ebf773db68dc59021c7f658a98c867636ad",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_028.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_029.json",
+      "sha256": "172c4ee554d85e4bf245f1b83fed17b93b661357e3bda44e7dc75c74a6812745",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_029.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_030.json",
+      "sha256": "2779f2435b004d31a05362dbf5b54e89c4d7bb11ed97959cdbaee12db9567989",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_030.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_031.json",
+      "sha256": "54f85b55b11c73b103855b47f6cbe8a8dde239e2d031afbc1dcc3cb91a765834",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_031.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_032.json",
+      "sha256": "baba1ca844409def6e9d05179a7a5bb285789bfd775830a649c5269c41ada526",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_032.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_033.json",
+      "sha256": "f2a48ef1ec070a2dec09199a45bd84f771cb84b5a9f1d308c8ec1b904b3034c6",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_033.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_038.json",
+      "sha256": "bb120adbf70dbb8dd4ed612ead794d22b3a4c29b9d185ce61ec0d4de249d1661",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_038.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_040.json",
+      "sha256": "4bb529222ae9b45f858b57e152be6603d7d78b89274e8b571f64a21d99cdefec",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_040.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_041.json",
+      "sha256": "f5b0dcfdfda3ed1cc6dcfe94d0e36849882ce85c999d7d91be60c951d7a6a27b",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_041.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_042.json",
+      "sha256": "e19dd7ff895de2ec080a9559adca7142270c6aaa14711e98a0f37027e6ca36af",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_042.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_044.json",
+      "sha256": "9ac4f5528249935553e7a5d5812ebff24d46f491bb3d41c42d071b7015fd3cbd",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_044.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_045.json",
+      "sha256": "681aadb34da15d5c31f33e0443d84b56a9e4657e1e1537235a7be57cd35ecf7b",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_045.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_046.json",
+      "sha256": "e58c0678ee773bb03fd879a8afbc27f26b6439d4fccc26707ac4a2b309859d19",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_046.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_047.json",
+      "sha256": "ec2b5e23bcdb5c92b14c7fa8b8024b7841639596c52ae024d9f84c03f14065dd",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_047.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_048.json",
+      "sha256": "47d02fcb4786d044926d4405e529447327577187e29d45d573be3b311a948644",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_048.json"
+    },
+    {
+      "path": "scripts/_diag/_jbatch/_judge_batch_049.json",
+      "sha256": "037f2812388c62a90c6b5d77076eb7a8b8358196d9a6af0283cb78f93e695e7d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_jbatch/_judge_batch_049.json"
+    },
+    {
+      "path": "scripts/_diag/_judge_batch5.json",
+      "sha256": "5fe57ce546f572332a6c25fdce0866e50ceee10180bdc7b2d4e4a0e176b8c04c",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_judge_batch5.json"
+    },
+    {
+      "path": "scripts/_diag/_judge_input_0.json",
+      "sha256": "a921ad16fd94dcb05ca8d616376e2ef1b52642c4f376df23523babc4e1d463cd",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_judge_input_0.json"
+    },
+    {
+      "path": "scripts/_diag/_judge_input_1000.json",
+      "sha256": "9ee94c6a06d1f92af506e1317f4ade0cbfdb94387d738d0467c7d47edd06a9f2",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json#scripts/_diag/_judge_input_1000.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-019-probando_gemma4-pg4_scripts-01-scripts-_diag-_hunt_tanda_5000.jsonl",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_hunt_tanda_5000.jsonl",
+      "denominator": "1 files in group scripts/_diag/_hunt_tanda_5000.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_hunt_tanda_5000.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_hunt_tanda_5000.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_hunt_tanda_5000.jsonl parser=jsonl rows=1162 bytes=903579 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_hunt_tanda_5000.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-019-probando_gemma4-pg4_scripts-02-scripts-_diag-_iso_proof.png",
+      "card_kind": "asset",
+      "corpus": "scripts/_diag/_iso_proof.png",
+      "denominator": "1 files in group scripts/_diag/_iso_proof.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_iso_proof.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_iso_proof.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_iso_proof.png parser=binary_inventory rows=0 bytes=9374 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_iso_proof.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-019-probando_gemma4-pg4_scripts-03-scripts-_diag-_jbatch",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_jbatch",
+      "denominator": "32 files in group scripts/_diag/_jbatch; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_jbatch",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_jbatch/_judge_batch_000.json",
+        "scripts/_diag/_jbatch/_judge_batch_001.json",
+        "scripts/_diag/_jbatch/_judge_batch_002.json",
+        "scripts/_diag/_jbatch/_judge_batch_003.json",
+        "scripts/_diag/_jbatch/_judge_batch_004.json",
+        "scripts/_diag/_jbatch/_judge_batch_005.json",
+        "scripts/_diag/_jbatch/_judge_batch_007.json",
+        "scripts/_diag/_jbatch/_judge_batch_008.json",
+        "scripts/_diag/_jbatch/_judge_batch_009.json",
+        "scripts/_diag/_jbatch/_judge_batch_011.json",
+        "scripts/_diag/_jbatch/_judge_batch_015.json",
+        "scripts/_diag/_jbatch/_judge_batch_016.json",
+        "scripts/_diag/_jbatch/_judge_batch_018.json",
+        "scripts/_diag/_jbatch/_judge_batch_019.json",
+        "scripts/_diag/_jbatch/_judge_batch_023.json",
+        "scripts/_diag/_jbatch/_judge_batch_024.json",
+        "scripts/_diag/_jbatch/_judge_batch_028.json",
+        "scripts/_diag/_jbatch/_judge_batch_029.json",
+        "scripts/_diag/_jbatch/_judge_batch_030.json",
+        "scripts/_diag/_jbatch/_judge_batch_031.json",
+        "scripts/_diag/_jbatch/_judge_batch_032.json",
+        "scripts/_diag/_jbatch/_judge_batch_033.json",
+        "scripts/_diag/_jbatch/_judge_batch_038.json",
+        "scripts/_diag/_jbatch/_judge_batch_040.json",
+        "scripts/_diag/_jbatch/_judge_batch_041.json",
+        "scripts/_diag/_jbatch/_judge_batch_042.json",
+        "scripts/_diag/_jbatch/_judge_batch_044.json",
+        "scripts/_diag/_jbatch/_judge_batch_045.json",
+        "scripts/_diag/_jbatch/_judge_batch_046.json",
+        "scripts/_diag/_jbatch/_judge_batch_047.json",
+        "scripts/_diag/_jbatch/_judge_batch_048.json",
+        "scripts/_diag/_jbatch/_judge_batch_049.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_judge_batch_000.json parser=json rows=80 bytes=33785 dist={} | _judge_batch_001.json parser=json rows=80 bytes=34771 dist={} | _judge_batch_002.json parser=json rows=80 bytes=36103 dist={} | _judge_batch_003.json parser=json rows=80 bytes=40704 dist={} | _judge_batch_004.json parser=json rows=80 bytes=48025 dist={} | _judge_batch_005.json parser=json rows=80 bytes=33167 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_jbatch/_judge_batch_000.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-019-probando_gemma4-pg4_scripts-04-scripts-_diag-_judge_batch5.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_judge_batch5.json",
+      "denominator": "1 files in group scripts/_diag/_judge_batch5.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_judge_batch5.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_judge_batch5.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_judge_batch5.json parser=json rows=70 bytes=40767 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_judge_batch5.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-019-probando_gemma4-pg4_scripts-05-scripts-_diag-_judge_input_0.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_judge_input_0.json",
+      "denominator": "1 files in group scripts/_diag/_judge_input_0.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_judge_input_0.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_judge_input_0.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_judge_input_0.json parser=json rows=1000 bytes=312565 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_judge_input_0.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-019-probando_gemma4-pg4_scripts-06-scripts-_diag-_judge_input_1000.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_judge_input_1000.json",
+      "denominator": "1 files in group scripts/_diag/_judge_input_1000.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_judge_input_1000.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_judge_input_1000.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_judge_input_1000.json parser=json rows=1000 bytes=300390 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_judge_input_1000.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=37 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-020-probando_gemma4-pg4_scripts",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-019-probando_gemma4-pg4_scripts.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

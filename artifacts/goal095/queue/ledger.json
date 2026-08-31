@@ -5529,7 +5529,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-001-carter.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:05Z",
+      "lease_expires_utc": "2026-08-31T11:38:05Z",
+      "closed_utc": "2026-08-31T05:38:09Z"
     },
     {
       "batch_id": "evidence_assets-002-carter",
@@ -5538,7 +5541,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-002-carter.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:22Z",
+      "lease_expires_utc": "2026-08-31T11:38:22Z",
+      "closed_utc": "2026-08-31T05:38:25Z"
     },
     {
       "batch_id": "evidence_assets-003-carter",
@@ -5547,7 +5553,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-003-carter.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:25Z",
+      "lease_expires_utc": "2026-08-31T11:38:25Z",
+      "closed_utc": "2026-08-31T05:38:27Z"
     },
     {
       "batch_id": "evidence_assets-004-carter-carter_legacy_Carter_v3",
@@ -5556,7 +5565,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-004-carter-carter_legacy_Carter_v3.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:27Z",
+      "lease_expires_utc": "2026-08-31T11:38:27Z",
+      "closed_utc": "2026-08-31T05:38:28Z"
     },
     {
       "batch_id": "evidence_assets-005-carter-carter_legacy_Carter_v3",
@@ -5565,7 +5577,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-005-carter-carter_legacy_Carter_v3.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:28Z",
+      "lease_expires_utc": "2026-08-31T11:38:28Z",
+      "closed_utc": "2026-08-31T05:38:29Z"
     },
     {
       "batch_id": "evidence_assets-006-carter-carter_legacy_Carter_v3",
@@ -5574,7 +5589,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-006-carter-carter_legacy_Carter_v3.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:29Z",
+      "lease_expires_utc": "2026-08-31T11:38:29Z",
+      "closed_utc": "2026-08-31T05:38:30Z"
     },
     {
       "batch_id": "evidence_assets-007-carter-carter_legacy_Carter_v3",
@@ -5583,7 +5601,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-007-carter-carter_legacy_Carter_v3.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:30Z",
+      "lease_expires_utc": "2026-08-31T11:38:30Z",
+      "closed_utc": "2026-08-31T05:38:31Z"
     },
     {
       "batch_id": "evidence_assets-008-carter",
@@ -5592,7 +5613,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-008-carter.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:31Z",
+      "lease_expires_utc": "2026-08-31T11:38:31Z",
+      "closed_utc": "2026-08-31T05:38:32Z"
     },
     {
       "batch_id": "evidence_assets-009-carter-carter_legacy_Carter_v4",
@@ -5601,7 +5625,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-009-carter-carter_legacy_Carter_v4.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:32Z",
+      "lease_expires_utc": "2026-08-31T11:38:32Z",
+      "closed_utc": "2026-08-31T05:38:33Z"
     },
     {
       "batch_id": "evidence_assets-010-carter",
@@ -5610,7 +5637,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-010-carter.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:34Z",
+      "lease_expires_utc": "2026-08-31T11:38:34Z",
+      "closed_utc": "2026-08-31T05:38:37Z"
     },
     {
       "batch_id": "evidence_assets-011-carter",
@@ -5619,7 +5649,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-011-carter.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:38:37Z",
+      "lease_expires_utc": "2026-08-31T11:38:37Z",
+      "closed_utc": "2026-08-31T05:39:46Z"
     },
     {
       "batch_id": "evidence_assets-012-probando_gemma4",
@@ -5628,7 +5661,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-012-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:39:46Z",
+      "lease_expires_utc": "2026-08-31T11:39:46Z",
+      "closed_utc": "2026-08-31T05:39:59Z"
     },
     {
       "batch_id": "evidence_assets-013-probando_gemma4-pg4_data",
@@ -5637,7 +5673,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-013-probando_gemma4-pg4_data.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:00Z",
+      "lease_expires_utc": "2026-08-31T11:40:00Z",
+      "closed_utc": "2026-08-31T05:40:08Z"
     },
     {
       "batch_id": "evidence_assets-014-probando_gemma4-pg4_data",
@@ -5646,7 +5685,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-014-probando_gemma4-pg4_data.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:08Z",
+      "lease_expires_utc": "2026-08-31T11:40:08Z",
+      "closed_utc": "2026-08-31T05:40:22Z"
     },
     {
       "batch_id": "evidence_assets-015-probando_gemma4",
@@ -5655,7 +5697,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-015-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:23Z",
+      "lease_expires_utc": "2026-08-31T11:40:23Z",
+      "closed_utc": "2026-08-31T05:40:27Z"
     },
     {
       "batch_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune",
@@ -5664,7 +5709,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-016-probando_gemma4-pg4_dataset_finetune.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:28Z",
+      "lease_expires_utc": "2026-08-31T11:40:28Z",
+      "closed_utc": "2026-08-31T05:40:29Z"
     },
     {
       "batch_id": "evidence_assets-017-probando_gemma4",
@@ -5673,7 +5721,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-017-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:29Z",
+      "lease_expires_utc": "2026-08-31T11:40:29Z",
+      "closed_utc": "2026-08-31T05:40:33Z"
     },
     {
       "batch_id": "evidence_assets-018-probando_gemma4",
@@ -5682,7 +5733,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-018-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:33Z",
+      "lease_expires_utc": "2026-08-31T11:40:33Z",
+      "closed_utc": "2026-08-31T05:40:56Z"
     },
     {
       "batch_id": "evidence_assets-019-probando_gemma4-pg4_scripts",
@@ -5691,7 +5745,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-019-probando_gemma4-pg4_scripts.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:56Z",
+      "lease_expires_utc": "2026-08-31T11:40:56Z",
+      "closed_utc": "2026-08-31T05:40:56Z"
     },
     {
       "batch_id": "evidence_assets-020-probando_gemma4-pg4_scripts",
@@ -5700,7 +5757,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-020-probando_gemma4-pg4_scripts.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:56Z",
+      "lease_expires_utc": "2026-08-31T11:40:56Z",
+      "closed_utc": "2026-08-31T05:40:58Z"
     },
     {
       "batch_id": "evidence_assets-021-probando_gemma4",
@@ -5709,7 +5769,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-021-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:40:58Z",
+      "lease_expires_utc": "2026-08-31T11:40:58Z",
+      "closed_utc": "2026-08-31T05:41:01Z"
     },
     {
       "batch_id": "evidence_assets-022-probando_gemma4-probando_gemma4_root_assets",
@@ -5718,7 +5781,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-022-probando_gemma4-probando_gemma4_root_assets.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:01Z",
+      "lease_expires_utc": "2026-08-31T11:41:01Z",
+      "closed_utc": "2026-08-31T05:41:01Z"
     },
     {
       "batch_id": "evidence_assets-023-functiongemma",
@@ -5727,7 +5793,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-023-functiongemma.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:01Z",
+      "lease_expires_utc": "2026-08-31T11:41:01Z",
+      "closed_utc": "2026-08-31T05:41:25Z"
     },
     {
       "batch_id": "evidence_assets-024-functiongemma-fg_curated",
@@ -5736,7 +5805,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-024-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:25Z",
+      "lease_expires_utc": "2026-08-31T11:41:25Z",
+      "closed_utc": "2026-08-31T05:41:26Z"
     },
     {
       "batch_id": "evidence_assets-025-functiongemma-fg_curated",
@@ -5745,7 +5817,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-025-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:26Z",
+      "lease_expires_utc": "2026-08-31T11:41:26Z",
+      "closed_utc": "2026-08-31T05:41:26Z"
     },
     {
       "batch_id": "evidence_assets-026-functiongemma-fg_curated",
@@ -5754,7 +5829,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-026-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:26Z",
+      "lease_expires_utc": "2026-08-31T11:41:26Z",
+      "closed_utc": "2026-08-31T05:41:27Z"
     },
     {
       "batch_id": "evidence_assets-027-functiongemma-fg_curated",
@@ -5763,7 +5841,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-027-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:27Z",
+      "lease_expires_utc": "2026-08-31T11:41:27Z",
+      "closed_utc": "2026-08-31T05:41:28Z"
     },
     {
       "batch_id": "evidence_assets-028-functiongemma-fg_curated",
@@ -5772,7 +5853,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-028-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:28Z",
+      "lease_expires_utc": "2026-08-31T11:41:28Z",
+      "closed_utc": "2026-08-31T05:41:46Z"
     },
     {
       "batch_id": "evidence_assets-029-functiongemma-fg_curated",
@@ -5781,7 +5865,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-029-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:47Z",
+      "lease_expires_utc": "2026-08-31T11:41:47Z",
+      "closed_utc": "2026-08-31T05:41:47Z"
     },
     {
       "batch_id": "evidence_assets-030-functiongemma-fg_curated",
@@ -5790,7 +5877,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-030-functiongemma-fg_curated.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:47Z",
+      "lease_expires_utc": "2026-08-31T11:41:47Z",
+      "closed_utc": "2026-08-31T05:41:48Z"
     },
     {
       "batch_id": "evidence_assets-031-functiongemma",
@@ -5799,7 +5889,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-031-functiongemma.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:48Z",
+      "lease_expires_utc": "2026-08-31T11:41:48Z",
+      "closed_utc": "2026-08-31T05:41:50Z"
     },
     {
       "batch_id": "evidence_assets-032-functiongemma",
@@ -5808,7 +5901,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-032-functiongemma.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:41:50Z",
+      "lease_expires_utc": "2026-08-31T11:41:50Z",
+      "closed_utc": "2026-08-31T05:42:03Z"
     },
     {
       "batch_id": "evidence_assets-033-functiongemma-functiongemma_root_assets",
@@ -5817,7 +5913,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-033-functiongemma-functiongemma_root_assets.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:03Z",
+      "lease_expires_utc": "2026-08-31T11:42:03Z",
+      "closed_utc": "2026-08-31T05:42:04Z"
     },
     {
       "batch_id": "evidence_assets-034-baxy-baxy_art_audit",
@@ -5826,7 +5925,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-034-baxy-baxy_art_audit.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:04Z",
+      "lease_expires_utc": "2026-08-31T11:42:04Z",
+      "closed_utc": "2026-08-31T05:42:06Z"
     },
     {
       "batch_id": "evidence_assets-035-baxy-baxy_art_audit",
@@ -5835,7 +5937,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-035-baxy-baxy_art_audit.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:06Z",
+      "lease_expires_utc": "2026-08-31T11:42:06Z",
+      "closed_utc": "2026-08-31T05:42:07Z"
     },
     {
       "batch_id": "evidence_assets-036-baxy",
@@ -5844,7 +5949,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-036-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:07Z",
+      "lease_expires_utc": "2026-08-31T11:42:07Z",
+      "closed_utc": "2026-08-31T05:42:09Z"
     },
     {
       "batch_id": "evidence_assets-037-baxy-baxy_art_development",
@@ -5853,7 +5961,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-037-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:09Z",
+      "lease_expires_utc": "2026-08-31T11:42:09Z",
+      "closed_utc": "2026-08-31T05:42:10Z"
     },
     {
       "batch_id": "evidence_assets-038-baxy-baxy_art_development",
@@ -5862,7 +5973,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-038-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:10Z",
+      "lease_expires_utc": "2026-08-31T11:42:10Z",
+      "closed_utc": "2026-08-31T05:42:11Z"
     },
     {
       "batch_id": "evidence_assets-039-baxy-baxy_art_development",
@@ -5871,7 +5985,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-039-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:11Z",
+      "lease_expires_utc": "2026-08-31T11:42:11Z",
+      "closed_utc": "2026-08-31T05:42:12Z"
     },
     {
       "batch_id": "evidence_assets-040-baxy-baxy_art_development",
@@ -5880,7 +5997,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-040-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:12Z",
+      "lease_expires_utc": "2026-08-31T11:42:12Z",
+      "closed_utc": "2026-08-31T05:42:12Z"
     },
     {
       "batch_id": "evidence_assets-041-baxy-baxy_art_development",
@@ -5889,7 +6009,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-041-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:13Z",
+      "lease_expires_utc": "2026-08-31T11:42:13Z",
+      "closed_utc": "2026-08-31T05:42:13Z"
     },
     {
       "batch_id": "evidence_assets-042-baxy-baxy_art_development",
@@ -5898,7 +6021,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-042-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:13Z",
+      "lease_expires_utc": "2026-08-31T11:42:13Z",
+      "closed_utc": "2026-08-31T05:42:15Z"
     },
     {
       "batch_id": "evidence_assets-043-baxy-baxy_art_development",
@@ -5907,7 +6033,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-043-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:15Z",
+      "lease_expires_utc": "2026-08-31T11:42:15Z",
+      "closed_utc": "2026-08-31T05:42:16Z"
     },
     {
       "batch_id": "evidence_assets-044-baxy-baxy_art_development",
@@ -5916,7 +6045,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-044-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:16Z",
+      "lease_expires_utc": "2026-08-31T11:42:16Z",
+      "closed_utc": "2026-08-31T05:42:18Z"
     },
     {
       "batch_id": "evidence_assets-045-baxy-baxy_art_development",
@@ -5925,7 +6057,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-045-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:18Z",
+      "lease_expires_utc": "2026-08-31T11:42:18Z",
+      "closed_utc": "2026-08-31T05:42:19Z"
     },
     {
       "batch_id": "evidence_assets-046-baxy-baxy_art_development",
@@ -5934,7 +6069,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-046-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:19Z",
+      "lease_expires_utc": "2026-08-31T11:42:19Z",
+      "closed_utc": "2026-08-31T05:42:26Z"
     },
     {
       "batch_id": "evidence_assets-047-baxy-baxy_art_development",
@@ -5943,7 +6081,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-047-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:26Z",
+      "lease_expires_utc": "2026-08-31T11:42:26Z",
+      "closed_utc": "2026-08-31T05:42:27Z"
     },
     {
       "batch_id": "evidence_assets-048-baxy-baxy_art_development",
@@ -5952,7 +6093,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-048-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:27Z",
+      "lease_expires_utc": "2026-08-31T11:42:27Z",
+      "closed_utc": "2026-08-31T05:42:27Z"
     },
     {
       "batch_id": "evidence_assets-049-baxy-baxy_art_development",
@@ -5961,7 +6105,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-049-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:27Z",
+      "lease_expires_utc": "2026-08-31T11:42:27Z",
+      "closed_utc": "2026-08-31T05:42:29Z"
     },
     {
       "batch_id": "evidence_assets-050-baxy-baxy_art_development",
@@ -5970,7 +6117,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-050-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:29Z",
+      "lease_expires_utc": "2026-08-31T11:42:29Z",
+      "closed_utc": "2026-08-31T05:42:31Z"
     },
     {
       "batch_id": "evidence_assets-051-baxy-baxy_art_development",
@@ -5979,7 +6129,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-051-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:31Z",
+      "lease_expires_utc": "2026-08-31T11:42:31Z",
+      "closed_utc": "2026-08-31T05:42:31Z"
     },
     {
       "batch_id": "evidence_assets-052-baxy-baxy_art_development",
@@ -5988,7 +6141,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-052-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:32Z",
+      "lease_expires_utc": "2026-08-31T11:42:32Z",
+      "closed_utc": "2026-08-31T05:42:33Z"
     },
     {
       "batch_id": "evidence_assets-053-baxy-baxy_art_development",
@@ -5997,7 +6153,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-053-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:33Z",
+      "lease_expires_utc": "2026-08-31T11:42:33Z",
+      "closed_utc": "2026-08-31T05:42:34Z"
     },
     {
       "batch_id": "evidence_assets-054-baxy-baxy_art_development",
@@ -6006,7 +6165,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-054-baxy-baxy_art_development.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:34Z",
+      "lease_expires_utc": "2026-08-31T11:42:34Z",
+      "closed_utc": "2026-08-31T05:42:35Z"
     },
     {
       "batch_id": "evidence_assets-055-baxy",
@@ -6015,7 +6177,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-055-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:35Z",
+      "lease_expires_utc": "2026-08-31T11:42:35Z",
+      "closed_utc": "2026-08-31T05:42:36Z"
     },
     {
       "batch_id": "evidence_assets-056-baxy-baxy_art_fixes",
@@ -6024,7 +6189,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-056-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:36Z",
+      "lease_expires_utc": "2026-08-31T11:42:36Z",
+      "closed_utc": "2026-08-31T05:42:38Z"
     },
     {
       "batch_id": "evidence_assets-057-baxy-baxy_art_fixes",
@@ -6033,7 +6201,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-057-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:38Z",
+      "lease_expires_utc": "2026-08-31T11:42:38Z",
+      "closed_utc": "2026-08-31T05:42:39Z"
     },
     {
       "batch_id": "evidence_assets-058-baxy-baxy_art_fixes",
@@ -6042,7 +6213,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-058-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:39Z",
+      "lease_expires_utc": "2026-08-31T11:42:39Z",
+      "closed_utc": "2026-08-31T05:42:50Z"
     },
     {
       "batch_id": "evidence_assets-059-baxy-baxy_art_fixes",
@@ -6051,7 +6225,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-059-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:50Z",
+      "lease_expires_utc": "2026-08-31T11:42:50Z",
+      "closed_utc": "2026-08-31T05:42:51Z"
     },
     {
       "batch_id": "evidence_assets-060-baxy-baxy_art_fixes",
@@ -6060,7 +6237,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-060-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:51Z",
+      "lease_expires_utc": "2026-08-31T11:42:51Z",
+      "closed_utc": "2026-08-31T05:42:52Z"
     },
     {
       "batch_id": "evidence_assets-061-baxy-baxy_art_fixes",
@@ -6069,7 +6249,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-061-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:52Z",
+      "lease_expires_utc": "2026-08-31T11:42:52Z",
+      "closed_utc": "2026-08-31T05:42:53Z"
     },
     {
       "batch_id": "evidence_assets-062-baxy-baxy_art_fixes",
@@ -6078,7 +6261,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-062-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:53Z",
+      "lease_expires_utc": "2026-08-31T11:42:53Z",
+      "closed_utc": "2026-08-31T05:42:54Z"
     },
     {
       "batch_id": "evidence_assets-063-baxy-baxy_art_fixes",
@@ -6087,7 +6273,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-063-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:54Z",
+      "lease_expires_utc": "2026-08-31T11:42:54Z",
+      "closed_utc": "2026-08-31T05:42:55Z"
     },
     {
       "batch_id": "evidence_assets-064-baxy-baxy_art_fixes",
@@ -6096,7 +6285,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-064-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:55Z",
+      "lease_expires_utc": "2026-08-31T11:42:55Z",
+      "closed_utc": "2026-08-31T05:42:56Z"
     },
     {
       "batch_id": "evidence_assets-065-baxy-baxy_art_fixes",
@@ -6105,7 +6297,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-065-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:56Z",
+      "lease_expires_utc": "2026-08-31T11:42:56Z",
+      "closed_utc": "2026-08-31T05:42:57Z"
     },
     {
       "batch_id": "evidence_assets-066-baxy-baxy_art_fixes",
@@ -6114,7 +6309,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-066-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:42:57Z",
+      "lease_expires_utc": "2026-08-31T11:42:57Z",
+      "closed_utc": "2026-08-31T05:42:59Z"
     },
     {
       "batch_id": "evidence_assets-067-baxy-baxy_art_fixes",
@@ -6123,7 +6321,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-067-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:00Z",
+      "lease_expires_utc": "2026-08-31T11:43:00Z",
+      "closed_utc": "2026-08-31T05:43:01Z"
     },
     {
       "batch_id": "evidence_assets-068-baxy-baxy_art_fixes",
@@ -6132,7 +6333,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-068-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:01Z",
+      "lease_expires_utc": "2026-08-31T11:43:01Z",
+      "closed_utc": "2026-08-31T05:43:02Z"
     },
     {
       "batch_id": "evidence_assets-069-baxy-baxy_art_fixes",
@@ -6141,7 +6345,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-069-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:02Z",
+      "lease_expires_utc": "2026-08-31T11:43:02Z",
+      "closed_utc": "2026-08-31T05:43:03Z"
     },
     {
       "batch_id": "evidence_assets-070-baxy-baxy_art_fixes",
@@ -6150,7 +6357,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-070-baxy-baxy_art_fixes.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:03Z",
+      "lease_expires_utc": "2026-08-31T11:43:03Z",
+      "closed_utc": "2026-08-31T05:43:04Z"
     },
     {
       "batch_id": "evidence_assets-071-baxy",
@@ -6159,7 +6369,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-071-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:04Z",
+      "lease_expires_utc": "2026-08-31T11:43:04Z",
+      "closed_utc": "2026-08-31T05:43:53Z"
     },
     {
       "batch_id": "evidence_assets-072-baxy-baxy_art_historical_exhaustive",
@@ -6168,7 +6381,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-072-baxy-baxy_art_historical_exhaustive.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:53Z",
+      "lease_expires_utc": "2026-08-31T11:43:53Z",
+      "closed_utc": "2026-08-31T05:43:57Z"
     },
     {
       "batch_id": "evidence_assets-073-baxy-baxy_art_historical_exhaustive",
@@ -6177,7 +6393,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-073-baxy-baxy_art_historical_exhaustive.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:43:57Z",
+      "lease_expires_utc": "2026-08-31T11:43:57Z",
+      "closed_utc": "2026-08-31T05:44:01Z"
     },
     {
       "batch_id": "evidence_assets-074-baxy-baxy_art_historical_exhaustive",
@@ -6186,7 +6405,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-074-baxy-baxy_art_historical_exhaustive.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:01Z",
+      "lease_expires_utc": "2026-08-31T11:44:01Z",
+      "closed_utc": "2026-08-31T05:44:06Z"
     },
     {
       "batch_id": "evidence_assets-075-baxy-baxy_art_historical_exhaustive",
@@ -6195,7 +6417,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-075-baxy-baxy_art_historical_exhaustive.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:06Z",
+      "lease_expires_utc": "2026-08-31T11:44:06Z",
+      "closed_utc": "2026-08-31T05:44:09Z"
     },
     {
       "batch_id": "evidence_assets-076-baxy-baxy_art_historical_exhaustive",
@@ -6204,7 +6429,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-076-baxy-baxy_art_historical_exhaustive.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:09Z",
+      "lease_expires_utc": "2026-08-31T11:44:09Z",
+      "closed_utc": "2026-08-31T05:44:14Z"
     },
     {
       "batch_id": "evidence_assets-077-baxy-baxy_art_historical_exhaustive",
@@ -6213,7 +6441,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-077-baxy-baxy_art_historical_exhaustive.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:14Z",
+      "lease_expires_utc": "2026-08-31T11:44:14Z",
+      "closed_utc": "2026-08-31T05:44:17Z"
     },
     {
       "batch_id": "evidence_assets-078-baxy",
@@ -6222,7 +6453,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-078-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:17Z",
+      "lease_expires_utc": "2026-08-31T11:44:17Z",
+      "closed_utc": "2026-08-31T05:44:20Z"
     },
     {
       "batch_id": "evidence_assets-079-baxy-baxy_art_holdout",
@@ -6231,7 +6465,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-079-baxy-baxy_art_holdout.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:21Z",
+      "lease_expires_utc": "2026-08-31T11:44:21Z",
+      "closed_utc": "2026-08-31T05:44:22Z"
     },
     {
       "batch_id": "evidence_assets-080-baxy-baxy_art_holdout",
@@ -6240,7 +6477,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-080-baxy-baxy_art_holdout.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:22Z",
+      "lease_expires_utc": "2026-08-31T11:44:22Z",
+      "closed_utc": "2026-08-31T05:44:24Z"
     },
     {
       "batch_id": "evidence_assets-081-baxy-baxy_art_holdout",
@@ -6249,7 +6489,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-081-baxy-baxy_art_holdout.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:24Z",
+      "lease_expires_utc": "2026-08-31T11:44:24Z",
+      "closed_utc": "2026-08-31T05:44:26Z"
     },
     {
       "batch_id": "evidence_assets-082-baxy-baxy_art_holdout",
@@ -6258,7 +6501,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-082-baxy-baxy_art_holdout.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:26Z",
+      "lease_expires_utc": "2026-08-31T11:44:26Z",
+      "closed_utc": "2026-08-31T05:44:28Z"
     },
     {
       "batch_id": "evidence_assets-083-baxy-baxy_art_holdout",
@@ -6267,7 +6513,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-083-baxy-baxy_art_holdout.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:28Z",
+      "lease_expires_utc": "2026-08-31T11:44:28Z",
+      "closed_utc": "2026-08-31T05:44:30Z"
     },
     {
       "batch_id": "evidence_assets-084-baxy",
@@ -6276,7 +6525,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-084-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:30Z",
+      "lease_expires_utc": "2026-08-31T11:44:30Z",
+      "closed_utc": "2026-08-31T05:44:32Z"
     },
     {
       "batch_id": "evidence_assets-085-baxy",
@@ -6285,7 +6537,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-085-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:32Z",
+      "lease_expires_utc": "2026-08-31T11:44:32Z",
+      "closed_utc": "2026-08-31T05:44:34Z"
     },
     {
       "batch_id": "evidence_assets-086-baxy-baxy_art_product",
@@ -6294,7 +6549,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-086-baxy-baxy_art_product.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:44:34Z",
+      "lease_expires_utc": "2026-08-31T11:44:34Z",
+      "closed_utc": "2026-08-31T05:45:31Z"
     },
     {
       "batch_id": "evidence_assets-087-baxy-baxy_art_product",
@@ -6303,7 +6561,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-087-baxy-baxy_art_product.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:31Z",
+      "lease_expires_utc": "2026-08-31T11:45:31Z",
+      "closed_utc": "2026-08-31T05:45:33Z"
     },
     {
       "batch_id": "evidence_assets-088-baxy-baxy_art_product",
@@ -6312,7 +6573,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-088-baxy-baxy_art_product.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:33Z",
+      "lease_expires_utc": "2026-08-31T11:45:33Z",
+      "closed_utc": "2026-08-31T05:45:35Z"
     },
     {
       "batch_id": "evidence_assets-089-baxy-baxy_art_product",
@@ -6321,7 +6585,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-089-baxy-baxy_art_product.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:35Z",
+      "lease_expires_utc": "2026-08-31T11:45:35Z",
+      "closed_utc": "2026-08-31T05:45:38Z"
     },
     {
       "batch_id": "evidence_assets-090-baxy-baxy_art_product",
@@ -6330,7 +6597,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-090-baxy-baxy_art_product.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:38Z",
+      "lease_expires_utc": "2026-08-31T11:45:38Z",
+      "closed_utc": "2026-08-31T05:45:41Z"
     },
     {
       "batch_id": "evidence_assets-091-baxy-baxy_art_research",
@@ -6339,7 +6609,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-091-baxy-baxy_art_research.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:41Z",
+      "lease_expires_utc": "2026-08-31T11:45:41Z",
+      "closed_utc": "2026-08-31T05:45:43Z"
     },
     {
       "batch_id": "evidence_assets-092-baxy-baxy_art_research",
@@ -6348,7 +6621,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-092-baxy-baxy_art_research.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:43Z",
+      "lease_expires_utc": "2026-08-31T11:45:43Z",
+      "closed_utc": "2026-08-31T05:45:45Z"
     },
     {
       "batch_id": "evidence_assets-093-baxy-baxy_art_research",
@@ -6357,7 +6633,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-093-baxy-baxy_art_research.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:45Z",
+      "lease_expires_utc": "2026-08-31T11:45:45Z",
+      "closed_utc": "2026-08-31T05:45:48Z"
     },
     {
       "batch_id": "evidence_assets-094-baxy-baxy_art_research",
@@ -6366,7 +6645,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-094-baxy-baxy_art_research.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:48Z",
+      "lease_expires_utc": "2026-08-31T11:45:48Z",
+      "closed_utc": "2026-08-31T05:45:50Z"
     },
     {
       "batch_id": "evidence_assets-095-baxy-baxy_art_research",
@@ -6375,7 +6657,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-095-baxy-baxy_art_research.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:50Z",
+      "lease_expires_utc": "2026-08-31T11:45:50Z",
+      "closed_utc": "2026-08-31T05:45:51Z"
     },
     {
       "batch_id": "evidence_assets-096-baxy-baxy_art_research",
@@ -6384,7 +6669,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-096-baxy-baxy_art_research.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:51Z",
+      "lease_expires_utc": "2026-08-31T11:45:51Z",
+      "closed_utc": "2026-08-31T05:45:53Z"
     },
     {
       "batch_id": "evidence_assets-097-baxy",
@@ -6393,7 +6681,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-097-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:45:54Z",
+      "lease_expires_utc": "2026-08-31T11:45:54Z",
+      "closed_utc": "2026-08-31T05:46:17Z"
     },
     {
       "batch_id": "evidence_assets-098-baxy-baxy_art_technology_tournament",
@@ -6402,7 +6693,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-098-baxy-baxy_art_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:17Z",
+      "lease_expires_utc": "2026-08-31T11:46:17Z",
+      "closed_utc": "2026-08-31T05:46:21Z"
     },
     {
       "batch_id": "evidence_assets-099-baxy-baxy_art_technology_tournament",
@@ -6411,7 +6705,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-099-baxy-baxy_art_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:21Z",
+      "lease_expires_utc": "2026-08-31T11:46:21Z",
+      "closed_utc": "2026-08-31T05:46:22Z"
     },
     {
       "batch_id": "evidence_assets-100-baxy-baxy_art_technology_tournament",
@@ -6420,7 +6717,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-100-baxy-baxy_art_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:22Z",
+      "lease_expires_utc": "2026-08-31T11:46:22Z",
+      "closed_utc": "2026-08-31T05:46:23Z"
     },
     {
       "batch_id": "evidence_assets-101-baxy-baxy_art_technology_tournament",
@@ -6429,7 +6729,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-101-baxy-baxy_art_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:23Z",
+      "lease_expires_utc": "2026-08-31T11:46:23Z",
+      "closed_utc": "2026-08-31T05:46:24Z"
     },
     {
       "batch_id": "evidence_assets-102-baxy-baxy_art_technology_tournament",
@@ -6438,7 +6741,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-102-baxy-baxy_art_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:24Z",
+      "lease_expires_utc": "2026-08-31T11:46:24Z",
+      "closed_utc": "2026-08-31T05:46:26Z"
     },
     {
       "batch_id": "evidence_assets-103-baxy",
@@ -6447,7 +6753,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-103-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:26Z",
+      "lease_expires_utc": "2026-08-31T11:46:26Z",
+      "closed_utc": "2026-08-31T05:46:27Z"
     },
     {
       "batch_id": "evidence_assets-104-baxy",
@@ -6456,7 +6765,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-104-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:46:28Z",
+      "lease_expires_utc": "2026-08-31T11:46:28Z",
+      "closed_utc": "2026-08-31T05:47:32Z"
     },
     {
       "batch_id": "evidence_assets-105-baxy",
@@ -6465,7 +6777,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-105-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:32Z",
+      "lease_expires_utc": "2026-08-31T11:47:32Z",
+      "closed_utc": "2026-08-31T05:47:51Z"
     },
     {
       "batch_id": "evidence_assets-106-baxy-baxy_exp_technology_tournament",
@@ -6474,7 +6789,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-106-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:51Z",
+      "lease_expires_utc": "2026-08-31T11:47:51Z",
+      "closed_utc": "2026-08-31T05:47:53Z"
     },
     {
       "batch_id": "evidence_assets-107-baxy-baxy_exp_technology_tournament",
@@ -6483,7 +6801,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-107-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:53Z",
+      "lease_expires_utc": "2026-08-31T11:47:53Z",
+      "closed_utc": "2026-08-31T05:47:53Z"
     },
     {
       "batch_id": "evidence_assets-108-baxy-baxy_exp_technology_tournament",
@@ -6492,7 +6813,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-108-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:53Z",
+      "lease_expires_utc": "2026-08-31T11:47:53Z",
+      "closed_utc": "2026-08-31T05:47:54Z"
     },
     {
       "batch_id": "evidence_assets-109-baxy-baxy_exp_technology_tournament",
@@ -6501,7 +6825,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-109-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:54Z",
+      "lease_expires_utc": "2026-08-31T11:47:54Z",
+      "closed_utc": "2026-08-31T05:47:54Z"
     },
     {
       "batch_id": "evidence_assets-110-baxy-baxy_exp_technology_tournament",
@@ -6510,7 +6837,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-110-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:54Z",
+      "lease_expires_utc": "2026-08-31T11:47:54Z",
+      "closed_utc": "2026-08-31T05:47:54Z"
     },
     {
       "batch_id": "evidence_assets-111-baxy-baxy_exp_technology_tournament",
@@ -6519,7 +6849,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-111-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:54Z",
+      "lease_expires_utc": "2026-08-31T11:47:54Z",
+      "closed_utc": "2026-08-31T05:47:55Z"
     },
     {
       "batch_id": "evidence_assets-112-baxy-baxy_exp_technology_tournament",
@@ -6528,7 +6861,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-112-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:55Z",
+      "lease_expires_utc": "2026-08-31T11:47:55Z",
+      "closed_utc": "2026-08-31T05:47:55Z"
     },
     {
       "batch_id": "evidence_assets-113-baxy-baxy_exp_technology_tournament",
@@ -6537,7 +6873,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-113-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:55Z",
+      "lease_expires_utc": "2026-08-31T11:47:55Z",
+      "closed_utc": "2026-08-31T05:47:55Z"
     },
     {
       "batch_id": "evidence_assets-114-baxy-baxy_exp_technology_tournament",
@@ -6546,7 +6885,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-114-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:55Z",
+      "lease_expires_utc": "2026-08-31T11:47:55Z",
+      "closed_utc": "2026-08-31T05:47:56Z"
     },
     {
       "batch_id": "evidence_assets-115-baxy-baxy_exp_technology_tournament",
@@ -6555,7 +6897,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-115-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:56Z",
+      "lease_expires_utc": "2026-08-31T11:47:56Z",
+      "closed_utc": "2026-08-31T05:47:56Z"
     },
     {
       "batch_id": "evidence_assets-116-baxy-baxy_exp_technology_tournament",
@@ -6564,7 +6909,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-116-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:56Z",
+      "lease_expires_utc": "2026-08-31T11:47:56Z",
+      "closed_utc": "2026-08-31T05:47:56Z"
     },
     {
       "batch_id": "evidence_assets-117-baxy-baxy_exp_technology_tournament",
@@ -6573,7 +6921,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-117-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:56Z",
+      "lease_expires_utc": "2026-08-31T11:47:56Z",
+      "closed_utc": "2026-08-31T05:47:57Z"
     },
     {
       "batch_id": "evidence_assets-118-baxy-baxy_exp_technology_tournament",
@@ -6582,7 +6933,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-118-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:57Z",
+      "lease_expires_utc": "2026-08-31T11:47:57Z",
+      "closed_utc": "2026-08-31T05:47:57Z"
     },
     {
       "batch_id": "evidence_assets-119-baxy-baxy_exp_technology_tournament",
@@ -6591,7 +6945,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-119-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:57Z",
+      "lease_expires_utc": "2026-08-31T11:47:57Z",
+      "closed_utc": "2026-08-31T05:47:57Z"
     },
     {
       "batch_id": "evidence_assets-120-baxy-baxy_exp_technology_tournament",
@@ -6600,7 +6957,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-120-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:58Z",
+      "lease_expires_utc": "2026-08-31T11:47:58Z",
+      "closed_utc": "2026-08-31T05:47:58Z"
     },
     {
       "batch_id": "evidence_assets-121-baxy-baxy_exp_technology_tournament",
@@ -6609,7 +6969,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-121-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:58Z",
+      "lease_expires_utc": "2026-08-31T11:47:58Z",
+      "closed_utc": "2026-08-31T05:47:58Z"
     },
     {
       "batch_id": "evidence_assets-122-baxy-baxy_exp_technology_tournament",
@@ -6618,7 +6981,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-122-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:58Z",
+      "lease_expires_utc": "2026-08-31T11:47:58Z",
+      "closed_utc": "2026-08-31T05:47:58Z"
     },
     {
       "batch_id": "evidence_assets-123-baxy-baxy_exp_technology_tournament",
@@ -6627,7 +6993,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-123-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:59Z",
+      "lease_expires_utc": "2026-08-31T11:47:59Z",
+      "closed_utc": "2026-08-31T05:47:59Z"
     },
     {
       "batch_id": "evidence_assets-124-baxy-baxy_exp_technology_tournament",
@@ -6636,7 +7005,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-124-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:47:59Z",
+      "lease_expires_utc": "2026-08-31T11:47:59Z",
+      "closed_utc": "2026-08-31T05:48:02Z"
     },
     {
       "batch_id": "evidence_assets-125-baxy-baxy_exp_technology_tournament",
@@ -6645,7 +7017,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-125-baxy-baxy_exp_technology_tournament.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:02Z",
+      "lease_expires_utc": "2026-08-31T11:48:02Z",
+      "closed_utc": "2026-08-31T05:48:04Z"
     },
     {
       "batch_id": "evidence_assets-126-baxy",
@@ -6654,7 +7029,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-126-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:04Z",
+      "lease_expires_utc": "2026-08-31T11:48:04Z",
+      "closed_utc": "2026-08-31T05:48:09Z"
     },
     {
       "batch_id": "evidence_assets-127-baxy-baxy_legacy_data",
@@ -6663,7 +7041,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-127-baxy-baxy_legacy_data.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:09Z",
+      "lease_expires_utc": "2026-08-31T11:48:09Z",
+      "closed_utc": "2026-08-31T05:48:12Z"
     },
     {
       "batch_id": "evidence_assets-128-baxy-baxy_legacy_data",
@@ -6672,7 +7053,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-128-baxy-baxy_legacy_data.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:12Z",
+      "lease_expires_utc": "2026-08-31T11:48:12Z",
+      "closed_utc": "2026-08-31T05:48:14Z"
     },
     {
       "batch_id": "evidence_assets-129-baxy-baxy_legacy_data",
@@ -6681,7 +7065,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-129-baxy-baxy_legacy_data.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:14Z",
+      "lease_expires_utc": "2026-08-31T11:48:14Z",
+      "closed_utc": "2026-08-31T05:48:16Z"
     },
     {
       "batch_id": "evidence_assets-130-baxy",
@@ -6690,7 +7077,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-130-baxy.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:16Z",
+      "lease_expires_utc": "2026-08-31T11:48:16Z",
+      "closed_utc": "2026-08-31T05:48:36Z"
     },
     {
       "batch_id": "evidence_assets-131-baxy-baxy_tests",
@@ -6699,7 +7089,10 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-131-baxy-baxy_tests.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:36Z",
+      "lease_expires_utc": "2026-08-31T11:48:36Z",
+      "closed_utc": "2026-08-31T05:48:41Z"
     },
     {
       "batch_id": "evidence_assets-132-baxy_schema_agent",
@@ -6708,11 +7101,15 @@
       "kind": "evidence_assets",
       "output": "artifacts/goal095/ledger/evidence_assets-132-baxy_schema_agent.json",
       "owner": "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T05:48:42Z",
+      "lease_expires_utc": "2026-08-31T11:48:42Z",
+      "closed_utc": "2026-08-31T05:48:42Z"
     }
   ],
   "first_docs_batch_id": null,
   "goal": "09.5.1",
   "status": "queues_ready",
-  "first_code_tests_batch_id": null
+  "first_code_tests_batch_id": null,
+  "first_evidence_assets_batch_id": null
 }

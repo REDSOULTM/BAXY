@@ -1,0 +1,545 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-056-baxy-baxy_art_fixes",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:42:36Z",
+  "closed_utc": "2026-08-31T05:42:38Z",
+  "estimated_tokens": 294943,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 44,
+  "subsystem": "baxy_art_fixes",
+  "subsystems": [
+    "baxy_art_fixes"
+  ],
+  "files": [
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Providers.Windows.Tests.trx",
+      "sha256": "902cc141b0b068cd0281529a9c936c067ed86f7965ad9d1d842df80f89d4d70f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Providers.Windows.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Contracts.Tests.trx",
+      "sha256": "2592b9c33880c87fecad80d4c8f700a1f133d747ee6b31e26163ffa80e4dd28e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Contracts.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Integration.Tests.trx",
+      "sha256": "ac80f9474e3fdd4de3f025a0433a054a957a2eec47e2a1e4c5656c0bfd4a1dc3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Integration.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Kernel.Tests.trx",
+      "sha256": "78d45e8f3776956abfe10b315cc2979641e6c9e4f4d5f8cb090b3b17f278b4a4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Kernel.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Providers.Windows.Tests.trx",
+      "sha256": "493c31e0e8dee350f7db0cb8930cafcf86bacf73506dbfdcfee67dee9d2533d2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Providers.Windows.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Contracts.Tests.trx",
+      "sha256": "8ff4fd8b9750c8c5e60f3b8b41317f62aa0319e572359a662821baa323bbd427",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Contracts.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Integration.Tests.trx",
+      "sha256": "1fa4b56d206cc5167d43ebb5b9eebcf88d167810809e63cccf334fad93a2d4a9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Integration.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Kernel.Tests.trx",
+      "sha256": "3107cdfd8895c058240d5720bb7f129dc9d234005798ec2bdce206883b2caf41",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Kernel.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Providers.Windows.Tests.trx",
+      "sha256": "91431ff43f8889ecb35e498b544c7b17626c31ac8b89230f06460d88e086f027",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Providers.Windows.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Setup.Tests.trx",
+      "sha256": "4f52a9e32b9fd9ac398fd92b9f47012ffa0b7cabeef57a2b3e1a7a6f75683356",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Setup.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Contracts.Tests.trx",
+      "sha256": "29e106389aa575ac964a4a75213728947236d8f1cbccd3da365e8996dfb5e95f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Contracts.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Integration.Tests.trx",
+      "sha256": "9ec051527166f1f6ee9fd7a4cfaac7439520c326819ad2e41704a119cd11f384",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Integration.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Kernel.Tests.trx",
+      "sha256": "fd20470471625f78a33180882633e6ac21813bf1c74a69ec039a42255be4a68c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Kernel.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Providers.Windows.Tests.trx",
+      "sha256": "65fade1dcc726d6e423b6e174bfe8814661986614ca4f3fe111ed61acf98460e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Providers.Windows.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Setup.Tests.trx",
+      "sha256": "2332603bb774ae32e8f2c4c28e6f12ce39da33ffa4ca73657b601646c6360397",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Setup.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Contracts.Tests.trx",
+      "sha256": "71625ea3214b4025c0a69c4b1fed59eef724cf4b911559d052a4bf13351f51d8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Contracts.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Integration.Tests.trx",
+      "sha256": "4c131d1773aaafde1bc31e2480e117f7a8705a3f3fb1a69209c46f77616e1277",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Integration.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Kernel.Tests.trx",
+      "sha256": "9401514ad87dafa8629c88377132de2ecc7e99d6a30dea5ae71566b300717a36",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Kernel.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Providers.Windows.Tests.trx",
+      "sha256": "22ad1c5d225de57373ba0f9fa2a571b66a35678b83c165acdc618176e99a7076",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Providers.Windows.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Setup.Tests.trx",
+      "sha256": "f49b433cebdebe4fe280b4dc28adeadcae000304f351486c0f37a2dc8ac08da2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Setup.Tests.trx"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/abrupt-restart-20x100.json",
+      "sha256": "150dfc484c7134e0521a41fec201e8a48f9f73fd3d60ad747f3707c3cbb35228",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/abrupt-restart-20x100.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/catalog-smoke-168.json",
+      "sha256": "0e45ecf7d7011b3826f0b07203d3a4027bf74df43d589aad9255ee38d61730f5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/catalog-smoke-168.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/final-audio-status.json",
+      "sha256": "e7fb89dbfc85e8d64f80b05fcc5f98dd8076158762e2469518e0665f946b7af7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/final-audio-status.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/parallel-core-start-12x3.json",
+      "sha256": "39295e47acd11e021b18d7b4ea0b85356e7a6cc3a28faab9797badcfbe9d1240",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/parallel-core-start-12x3.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-burst-5000.json",
+      "sha256": "dbccba562b47011168fc8c625b70fb9a5d82adc3f23544e0a94908ca7a0cd7ba",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-burst-5000.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-fuzz-500.json",
+      "sha256": "d05b6fc922c5fb67e599ba7fc80e9d4fe462e7dad0847fde6d275cdfff9e7252",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-fuzz-500.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-recovery.json",
+      "sha256": "80b582298aac3217590697861d5cf09d7222759e7a2f0f6006cf90778eb085b6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-recovery.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/replay-chain.json",
+      "sha256": "b4e1e655d77cba1207cba8ce53d4cbf2b212536bf3faba2141e98fdd5381f555",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/replay-chain.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/restart-replay-chain.json",
+      "sha256": "6a0d6334efea97bea70e7a33ba78bb7b217e258845388bfb15b3a0298259e979",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/restart-replay-chain.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final-v2.json",
+      "sha256": "ca421a9a1c40f7c3f28d87581515c287477f2f8e0f534b1d8b483a7dc5f0724b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final-v2.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final.json",
+      "sha256": "4931d913f3a9ad227e3300b03b21a680cfee81c34d4cc8ac42efa8260c690d7d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62.json",
+      "sha256": "a429a89905eadb98f2042012f5b3c47c95f0473f0cbec6b136425ac3f47edeff",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final-v2.json",
+      "sha256": "63d3b1e3a6c57d40320531e2cd8be17423aaa0a3e19ef21bb3a98431f4ffd0f8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final-v2.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final.json",
+      "sha256": "2ba9c8d5b8eb9cea64efcc19dbf15ac785c34c24f9268331600735f429bde80e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10-final-v2.json",
+      "sha256": "8639454232bbe9587c2b7c492e0a6847fb80a666e94b38b945106e35d1bc69a1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10-final-v2.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10.json",
+      "sha256": "6b52105f7b83e5d3e2dbcd39cf1ece82d5ff1b41af837fabfc0ebff0e3d7e0e3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v2.json",
+      "sha256": "1911306aabd095850f226689357cb9b0e0e6e048f9ba68da537a0fbff774a778",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v2.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v3.json",
+      "sha256": "d7678443a67d3c9f07bc42f099abd5c05ef97cd230cc7a583fafff92a389d497",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v3.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v4.json",
+      "sha256": "4a2ec7afb219af624807a66969b3eee6b686b8ba5f7c1989819357ec39e460f3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v4.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final.json",
+      "sha256": "d6249bf8254eb72c8f4da672d6b2ae90b11c8772bb02fa9a7655da69896c1f7c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60.json",
+      "sha256": "2aecfa0a2c0b90d8b81e3c08921927ddf71549518daaf55e947fbeb802133793",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final-v2.json",
+      "sha256": "ca03db18f0962944d0adedafad3850f57611767b9a40aba139418a2e00044541",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final-v2.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final.json",
+      "sha256": "a94b2df9a741f5b83369146957c518ba85b9313e7b32249fa280931ce2ab1464",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final.json"
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/python-full-final-v2.xml",
+      "sha256": "708aa7bb6fac075f5d1632606ff187987537ad059c14a483c55bf9d979d58b3f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json#artifacts/fixes/2026-07-27-audit-remediation/evidence/python-full-final-v2.xml"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-056-baxy-baxy_art_fixes-01-artifacts-fixes-2026-07-27-audit-remediation",
+      "card_kind": "run",
+      "corpus": "artifacts/fixes/2026-07-27-audit-remediation",
+      "denominator": "44 files in group artifacts/fixes/2026-07-27-audit-remediation; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/fixes/2026-07-27-audit-remediation",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Providers.Windows.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Contracts.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Integration.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Kernel.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Providers.Windows.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Contracts.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Integration.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Kernel.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Providers.Windows.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Setup.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Contracts.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Integration.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Kernel.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Providers.Windows.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Setup.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Contracts.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Integration.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Kernel.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Providers.Windows.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Setup.Tests.trx",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/abrupt-restart-20x100.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/catalog-smoke-168.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/final-audio-status.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/parallel-core-start-12x3.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-burst-5000.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-fuzz-500.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-recovery.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/replay-chain.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/restart-replay-chain.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final-v2.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final-v2.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10-final-v2.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v2.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v3.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v4.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final-v2.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final.json",
+        "artifacts/fixes/2026-07-27-audit-remediation/evidence/python-full-final-v2.xml"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Baxy.Providers.Windows.Tests.trx parser=xml rows=2066 bytes=560595 dist={\"tags\": {\"UnitTestResult\": 404, \"Execution\": 404, \"TestMethod\": 404, \"UnitTest\": 404, \"TestEntry\": 404, \"StdOut\": 9, \"Output\": 9, \"Message\": 8, \"ErrorInfo\": 8, \"TestList\": 2, \"Ti… | Baxy.Contracts.Tests.trx parser=xml rows=269 bytes=67890 dist={\"tags\": {\"UnitTestResult\": 51, \"Execution\": 51, \"TestMethod\": 51, \"UnitTest\": 51, \"TestEntry\": 51, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T… | Baxy.Integration.Tests.trx parser=xml rows=5725 bytes=1590138 dist={\"tags\": {\"UnitTestResult\": 1126, \"TestEntry\": 1126, \"Execution\": 1125, \"TestMethod\": 1125, \"UnitTest\": 1125, \"Output\": 22, \"Message\": 21, \"ErrorInfo\": 21, \"StackTrace\": 13, \"StdO… | Baxy.Kernel.Tests.trx parser=xml rows=472 bytes=1…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Providers.Windows.Tests.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=44 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-057-baxy-baxy_art_fixes",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-056-baxy-baxy_art_fixes.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

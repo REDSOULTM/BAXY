@@ -1,0 +1,157 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-132-baxy_schema_agent",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:48:42Z",
+  "closed_utc": "2026-08-31T05:48:42Z",
+  "estimated_tokens": 20921,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy_schema_agent",
+  "source_head": "e6f9c1e5130d17d8de2c1b9447c327e53f468948",
+  "source_root": "Programacion/BAXY (Schema Agent git blobs)",
+  "file_count": 3,
+  "subsystem": "baxy_docs_datos_crudos",
+  "subsystems": [
+    "baxy_docs_datos_crudos",
+    "baxy_schema_agent"
+  ],
+  "files": [
+    {
+      "path": "documentacion/datos_crudos/schemas_16_consolidated.json",
+      "sha256": "981897f35736c0d06436a34db368ba84f06205e2e7ac18962b74e86be3559450",
+      "source_id": "baxy_schema_agent",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-132-baxy_schema_agent.parse.json#documentacion/datos_crudos/schemas_16_consolidated.json"
+    },
+    {
+      "path": "documentacion/datos_crudos/schemas_60_individuales.json",
+      "sha256": "8de7f6145d3bb228722e1af3a305b1d0ffb2cbffb3eae601231bca7f95d731ac",
+      "source_id": "baxy_schema_agent",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-132-baxy_schema_agent.parse.json#documentacion/datos_crudos/schemas_60_individuales.json"
+    },
+    {
+      "path": "gemma4_agent/data/fg/tool_schemas_slim.json",
+      "sha256": "5e391b8d05f562fc34904c2c9752392dae71d76afe0d4fd0279984ad6da19784",
+      "source_id": "baxy_schema_agent",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-132-baxy_schema_agent.parse.json#gemma4_agent/data/fg/tool_schemas_slim.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-132-baxy_schema_agent-01-documentacion-datos_crudos-schemas_16_consolidated.json",
+      "card_kind": "run",
+      "corpus": "documentacion/datos_crudos/schemas_16_consolidated.json",
+      "denominator": "1 files in group documentacion/datos_crudos/schemas_16_consolidated.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy_schema_agent head=e6f9c1e5130d",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy_schema_agent:documentacion/datos_crudos/schemas_16_consolidated.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/datos_crudos/schemas_16_consolidated.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "schemas_16_consolidated.json parser=json rows=16 bytes=9074 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "documentacion/datos_crudos/schemas_16_consolidated.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "e6f9c1e5130d17d8de2c1b9447c327e53f468948"
+      }
+    },
+    {
+      "card_id": "evidence_assets-132-baxy_schema_agent-02-documentacion-datos_crudos-schemas_60_individuales.json",
+      "card_kind": "run",
+      "corpus": "documentacion/datos_crudos/schemas_60_individuales.json",
+      "denominator": "1 files in group documentacion/datos_crudos/schemas_60_individuales.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy_schema_agent head=e6f9c1e5130d",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy_schema_agent:documentacion/datos_crudos/schemas_60_individuales.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/datos_crudos/schemas_60_individuales.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "schemas_60_individuales.json parser=json rows=60 bytes=32185 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "documentacion/datos_crudos/schemas_60_individuales.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "e6f9c1e5130d17d8de2c1b9447c327e53f468948"
+      }
+    },
+    {
+      "card_id": "evidence_assets-132-baxy_schema_agent-03-gemma4_agent-data-fg",
+      "card_kind": "run",
+      "corpus": "gemma4_agent/data/fg",
+      "denominator": "1 files in group gemma4_agent/data/fg; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy_schema_agent head=e6f9c1e5130d",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy_schema_agent:gemma4_agent/data/fg",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "gemma4_agent/data/fg/tool_schemas_slim.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "tool_schemas_slim.json parser=json rows=110 bytes=43345 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "gemma4_agent/data/fg/tool_schemas_slim.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "e6f9c1e5130d17d8de2c1b9447c327e53f468948"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=3 drift=0 miss=0",
+  "next_evidence_assets_batch_id": null,
+  "next_prompt": "documentacion/sprints/09.5.5_MODELOS_ROUTER_IDIOMAS.md",
+  "inspect": "artifacts/goal095/extract/evidence_assets-132-baxy_schema_agent.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

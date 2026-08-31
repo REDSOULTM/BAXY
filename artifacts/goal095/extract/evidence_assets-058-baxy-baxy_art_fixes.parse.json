@@ -1,0 +1,2292 @@
+{
+  "batch_id": "evidence_assets-058-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 36,
+  "hash_ok": 36,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/catalog_cross_action_tail_composition_r2_clause_scoped.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1196945,
+      "sha256": "3e1d2390ada11aa48d69d96b8929f650796a3390dd73b7582e0db1fb9f1bcdb5",
+      "rows": 1106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 1106,
+          "phase": 1106,
+          "raw_decision": 1106,
+          "request_id": 1106,
+          "schema": 1106,
+          "stages": 1106,
+          "final": 553
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1195291,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2010,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1194903,
+            "line": 1105,
+            "text": "{\"candidate_operations\":[\"note.create\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"app.close\"],\"effect_verification\":\"multiple\",\"mode\":\"plan\",\"oper…"
+          },
+          {
+            "offset": 1195291,
+            "line": 1106,
+            "text": "{\"candidate_operations\":[\"note.create\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"app.close\"],\"intent_operations\":[\"note.create\",\"app.close\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_coun…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_action_tail_composition_r3_final_baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1854283,
+      "sha256": "3c99ca506ca35dab75bf5090975c3cae147f9b79b094d96c85ec4543ba6ef95c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 552
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1854282,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_action_tail_composition_r4_surface_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1854256,
+      "sha256": "40d521f0baff8630a8cab82a2e33e0d17760447cee178a9ce2359c1e5e1a3cef",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 552
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1854255,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_quad_composition_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27576345,
+      "sha256": "d898c29c77f1d574b960525046977796c3528ccf33350340763c2380eeb0eca8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 6624
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27576344,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_quad_composition_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17361921,
+      "sha256": "c6cd0f8e41e0c195acadbbdeb276de620afd3b1024a7e27ec6d4aea06bd291bb",
+      "rows": 13250,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 13250,
+          "phase": 13250,
+          "raw_decision": 13250,
+          "request_id": 13250,
+          "schema": 13250,
+          "stages": 13250,
+          "final": 6625
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17359851,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2421,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17359353,
+            "line": 13249,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"task.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"task.lis…"
+          },
+          {
+            "offset": 17359851,
+            "line": 13250,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"task.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"task.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"task…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_quad_composition_r2_long_dependency.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27576373,
+      "sha256": "087e5a7c8e94ac97431856117693c51d48b2b303b5ca950fdeb14fefcb41372b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 6624
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27576372,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r5_bidirectional.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1941200,
+      "sha256": "bc87defbec9e742b63d68d8f617c380597d61d777d067b07194476379ea3791f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1941199,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r5_bidirectional.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1217260,
+      "sha256": "4a3fdf47e1372ef0ebef2ddf851dedc9237a7cf3e9a7fbdb0b305066f42265a6",
+      "rows": 1125,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1125,
+          "phase": 1125,
+          "raw_decision": 1125,
+          "request_id": 1125,
+          "schema": 1125,
+          "stages": 1125,
+          "final": 561,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1215520,
+        "min_line_bytes": 212,
+        "max_line_bytes": 2090,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1215118,
+            "line": 1124,
+            "text": "{\"candidate_operations\":[\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"system.process.list\",\"app.close\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 1215520,
+            "line": 1125,
+            "text": "{\"candidate_operations\":[\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"system.process.list\",\"app.close\"],\"intent_operations\":[\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r6_absorption_fix.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1945328,
+      "sha256": "eff45f814c0367b1119ea8d599e6b92bbc42fb031be00e9fbe32475694f1aba7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1945327,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r6_absorption_fix.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1218265,
+      "sha256": "ab81748f60a3932b842c70fd25d2b482ab2c03c8435ef414b2f692c64521e643",
+      "rows": 1122,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 1122,
+          "phase": 1122,
+          "raw_decision": 1122,
+          "request_id": 1122,
+          "schema": 1122,
+          "stages": 1122,
+          "final": 561
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1216525,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2090,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1216123,
+            "line": 1121,
+            "text": "{\"candidate_operations\":[\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"system.process.list\",\"app.close\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 1216525,
+            "line": 1122,
+            "text": "{\"candidate_operations\":[\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"system.process.list\",\"app.close\"],\"intent_operations\":[\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r7_final_baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1875632,
+      "sha256": "84d1199bb2e64ccf39b362499a7551d42a201dfa21c325ad1861ae1459f16f34",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1875631,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r8_action_baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1875644,
+      "sha256": "69bb18a6dcc5cf3d0d87c1f8b8261a73fff0204164445277245bcc6c1ad3fb16",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1875643,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_tail_composition_r9_surface_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1875633,
+      "sha256": "d5092af2ff32b3c917247ec953ea6a2f419b09f288ca1c6b1f7456a6a3e39bce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1875632,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_composition_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6228708,
+      "sha256": "1967966fe794714c71944c8d600d64b63ce8016a49f99c6275ea6198f1fb2abb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 1656
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6228707,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_composition_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3966273,
+      "sha256": "724e9e66642df6d7e7497bea049de35af4e698986a3d2567188a69903ba05dbb",
+      "rows": 3314,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 3314,
+          "phase": 3314,
+          "raw_decision": 3314,
+          "request_id": 3314,
+          "schema": 3314,
+          "stages": 3314,
+          "final": 1657
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3964356,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2267,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3963903,
+            "line": 3313,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 3964356,
+            "line": 3314,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_composition_r2_surface_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6344630,
+      "sha256": "358e2418ed95b695db2e24c28cb8d519b210f39750867bcaface48ab6ecd2c7d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 1656
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6344629,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_composition_r2_surface_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4012641,
+      "sha256": "ca4175e273426b14822cdb55075e9f259f3a8599f135d76464704006f5e34d0b",
+      "rows": 3314,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 3314,
+          "phase": 3314,
+          "raw_decision": 3314,
+          "request_id": 3314,
+          "schema": 3314,
+          "stages": 3314,
+          "final": 1657
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4010710,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2281,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4010243,
+            "line": 3313,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 4010710,
+            "line": 3314,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_lexical_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12896369,
+      "sha256": "61d2f843c766efb91f1462a7d7a7273367444f52cd2d8898c1eae726694a584c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 3312
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12896368,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_lexical_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 8089593,
+      "sha256": "0b3438cffc7b913d56fbd41257609bf9343a4d711fbcfcccefdf42852277397d",
+      "rows": 6626,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 6626,
+          "phase": 6626,
+          "raw_decision": 6626,
+          "request_id": 6626,
+          "schema": 6626,
+          "stages": 6626,
+          "final": 3313
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8087652,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2291,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8087175,
+            "line": 6625,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 8087652,
+            "line": 6626,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r1.partial.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2941374,
+      "sha256": "85a4445d5221ae8854fbe87912cceb41103ed1e61451605495b5c79a470f6c69",
+      "rows": 2519,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 2519,
+          "phase": 2519,
+          "raw_decision": 2519,
+          "request_id": 2519,
+          "schema": 2519,
+          "stages": 2519,
+          "final": 1244,
+          "error_type": 20,
+          "failure_kind": 20,
+          "recovery": 10
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2940302,
+        "min_line_bytes": 254,
+        "max_line_bytes": 2455,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 335,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2937951,
+            "line": 2518,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"game.catalog.list\",\"game.install.cancel\",\"game.install.cancel.active\",\"game.install.commit\",\"game.install.named\",\"game.install.prepare\",\"game.install.status\",\"game.installed.…"
+          },
+          {
+            "offset": 2940302,
+            "line": 2519,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"game.catalog.list\",\"game.install.cancel\",\"game.install.cancel.active\",\"game.install.commit\",\"game.install.named\",\"game.install.prepare\",\"game.install.status\",\"game.installed.…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 24364,
+      "sha256": "f31f638f1fbdbd50ee6129d82571f8a9bccd7ad9baf565fc4634798b036eac95",
+      "rows": 18,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 18,
+          "phase": 18,
+          "raw_decision": 18,
+          "request_id": 18,
+          "schema": 18,
+          "stages": 18,
+          "final": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23968,
+        "min_line_bytes": 395,
+        "max_line_bytes": 2395,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"game.catalog.list\",\"game.install.cancel\",\"game.install.cancel.active\",\"game.install.commit\",\"game.install.named\",\"game.install.prepare\",\"game.install.status\",\"game.installed.…"
+          },
+          {
+            "offset": 2334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"game.catalog.list\",\"game.install.cancel\",\"game.install.cancel.active\",\"game.install.commit\",\"game.install.named\",\"game.install.prepare\",\"game.install.status\",\"game.installed.…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 22347,
+            "line": 17,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          },
+          {
+            "offset": 23968,
+            "line": 18,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 66798903,
+      "sha256": "bb14a5f5ab239d9ae3a21dd8679b2e4ef53c6de80eb6a8dd3e8f43dac7dfa704",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 16560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 66798902,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 40581854,
+      "sha256": "1e090e19869378b35e5304aeef7d2655a0fe7c66e4621f082a2c9c330f0931f2",
+      "rows": 33139,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 33139,
+          "phase": 33139,
+          "raw_decision": 33139,
+          "request_id": 33139,
+          "schema": 33139,
+          "stages": 33139,
+          "final": 16561,
+          "error_type": 11,
+          "failure_kind": 11,
+          "recovery": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40579911,
+        "min_line_bytes": 257,
+        "max_line_bytes": 2841,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40579432,
+            "line": 33138,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 40579911,
+            "line": 33139,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 64725957,
+      "sha256": "415bb1bd48d860623e37aefc43251adf24aebe1755468c283836365744c3e0cd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 16560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 64725956,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 40592889,
+      "sha256": "aa78f457fc8645ee323eca1003873defbbc7f420ffb4779947a73e675015e794",
+      "rows": 33122,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 33122,
+          "phase": 33122,
+          "raw_decision": 33122,
+          "request_id": 33122,
+          "schema": 33122,
+          "stages": 33122,
+          "final": 16561
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40590946,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2298,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40590467,
+            "line": 33121,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 40590946,
+            "line": 33122,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_lexical_r4_long_dependency.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 64725858,
+      "sha256": "9a48c58b96aa4a7555763958ea62c0e5847d175ebc005900b00a2d39bdea3434",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 16560
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 64725857,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r1.partial.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 842635,
+      "sha256": "80798a50f1383f3710933552cc51f9cab70db0281a2d907eb8d460f9249eea92",
+      "rows": 717,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 717,
+          "phase": 717,
+          "raw_decision": 717,
+          "request_id": 717,
+          "schema": 717,
+          "stages": 717,
+          "final": 354,
+          "error_type": 6,
+          "failure_kind": 6,
+          "recovery": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 841013,
+        "min_line_bytes": 245,
+        "max_line_bytes": 2322,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 335,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 840615,
+            "line": 716,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 841013,
+            "line": 717,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4306514,
+      "sha256": "7cb8f0256dbe2ec61441eb53bb0bb2749d6e81f033eb2c1905dd203fff2f7f57",
+      "rows": 3582,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 3582,
+          "phase": 3582,
+          "raw_decision": 3582,
+          "request_id": 3582,
+          "schema": 3582,
+          "stages": 3582,
+          "final": 1740,
+          "error_type": 77,
+          "failure_kind": 77,
+          "recovery": 36
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4304501,
+        "min_line_bytes": 247,
+        "max_line_bytes": 2376,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"note.create\",\"app.open\",\"system.process.list\",\"note.list\",\"note.read\",\"note.restore\",\"note.search\",\"note.trash\",\"note.update\",\"game.catalog.list\",\"game.install.cancel\",\"game.install.cancel.active\",\"game.install.co…"
+          },
+          {
+            "offset": 886,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"note.create\",\"app.open\",\"system.process.list\",\"note.list\",\"note.read\",\"note.restore\",\"note.search\",\"note.trash\",\"note.update\",\"game.catalog.list\",\"game.install.cancel\",\"game.install.cancel.active\",\"game.install.co…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4304015,
+            "line": 3581,
+            "text": "{\"candidate_operations\":[\"task.create\",\"app.open\",\"input.text.type\",\"note.list\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"task.create\",\"app.open\",\"input.text.type\",\"note.l…"
+          },
+          {
+            "offset": 4304501,
+            "line": 3582,
+            "text": "{\"candidate_operations\":[\"task.create\",\"app.open\",\"input.text.type\",\"note.list\"],\"final\":{\"effect_operations\":[\"task.create\",\"app.open\",\"input.text.type\",\"note.list\"],\"intent_operations\":[\"task.create\",\"app.open\",\"input.text.type\",\"note.li…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 32887912,
+      "sha256": "2c7c6b21df251237656499612afc34178b71e0edef20405e9197adb40ad13c65",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 8280
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32887911,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 20074714,
+      "sha256": "2347f7bc437c48ac98932780ec2897819227b60ccb57e0442f614f79feee28ac",
+      "rows": 16546,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 16546,
+          "phase": 16546,
+          "raw_decision": 16546,
+          "request_id": 16546,
+          "schema": 16546,
+          "stages": 16546,
+          "final": 8281
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20072781,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2288,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20072312,
+            "line": 16545,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 20072781,
+            "line": 16546,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31841555,
+      "sha256": "6645c20e148dba9ffd310e26453fb5f3e55187f1876e68f97ec7412d103ff971",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 8280
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31841554,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 20131953,
+      "sha256": "06fbed3a2a29b367a930574d27666ffe647470e4abfb37bcb2becd362477fd4f",
+      "rows": 16562,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 16562,
+          "phase": 16562,
+          "raw_decision": 16562,
+          "request_id": 16562,
+          "schema": 16562,
+          "stages": 16562,
+          "final": 8281
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20130020,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2288,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20129551,
+            "line": 16561,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"effect_…"
+          },
+          {
+            "offset": 20130020,
+            "line": 16562,
+            "text": "{\"candidate_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"intent_operations\":[\"note.create\",\"system.process.list\",\"app.close\"],\"kind\":\"plan\"},\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_triad_surface_r4_lexical_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 32156214,
+      "sha256": "ad3469f18a9ebc94b1e0f2c10ebe2e88ef7b27bc3e8382a0cf5379cc6f2eeee0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 8280
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32156213,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_narration_visibility_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27015,
+      "sha256": "244da5709e61d132238c660db19f15ed27d9b1cae64f00b3f438300c46dd8e1e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 62
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27014,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_narration_visibility_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 26996,
+      "sha256": "0ee564894c6f3cb60d304c5e21f927f126037e97760d70f8789948d43fb6177e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 62
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26995,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_pairwise_composition_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 185173,
+      "sha256": "11716be56458d4cb75767d5c39b9097515ae9acb9cb2007a98cef56227efb3ca",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 70
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185172,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

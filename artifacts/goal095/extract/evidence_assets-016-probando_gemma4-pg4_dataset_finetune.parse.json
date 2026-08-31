@@ -1,0 +1,3489 @@
+{
+  "batch_id": "evidence_assets-016-probando_gemma4-pg4_dataset_finetune",
+  "source_id": "probando_gemma4",
+  "file_count": 52,
+  "hash_ok": 52,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "dataset_finetune/_router_pipeline_v2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7286,
+      "sha256": "0ae89553c917ecf02026794dba562bde43f9097e6472ab28420f6e2376a26fdd",
+      "rows": 126,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7171,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0602 20:00:53.180000 31684 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 167,
+            "line": 2,
+            "text": "The tokenizer you are loading from '<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\gemma4_agent\\data\\router_encoder_ft' with an incorrect regex pattern: https://huggingface.co/mistralai/Mistral-Small-3.1-24B-Instruct-2503/discussions/84#…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7169,
+            "line": 125,
+            "text": ""
+          },
+          {
+            "offset": 7171,
+            "line": 126,
+            "text": "DONE. To make the FT encoder the runtime default, set GEMMA4_SEMANTIC_MODEL to the ft dir (or wire it in config)."
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_router_v2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 22371,
+      "sha256": "b674ad3908b9087af7cc1aa8fb8911aaafdaa9bc819b868f7eca0de2ea2e6542",
+      "rows": 16,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22284,
+        "min_line_bytes": 26,
+        "max_line_bytes": 20299
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0602 19:12:09.755000 47284 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 167,
+            "line": 2,
+            "text": "scripts/train_router_encoder.py:70: DeprecationWarning: Importing from 'sentence_transformers.losses' is deprecated and will be removed in a future version. Please use 'sentence_transformers.sentence_transformer.losses' instead."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 22222,
+            "line": 15,
+            "text": "pinned base tokenizer into the FT dir (cross-version safe)"
+          },
+          {
+            "offset": 22284,
+            "line": 16,
+            "text": "ONNX export skipped (No module named 'optimum.utils'); the ST dir still works on CPU."
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_baseline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 307159,
+      "sha256": "3108d7fb9df0376311dcd646c2041f8e2832ee0003218b69262c12cbb2911781",
+      "rows": 3556,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 307086,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 307041,
+            "line": 3555,
+            "text": "cudaStreamSynchronize(cuda_ctx->stream())"
+          },
+          {
+            "offset": 307086,
+            "line": 3556,
+            "text": "D:\\a\\llama.cpp\\llama.cpp\\ggml\\src\\ggml-cuda\\ggml-cuda.cu:98: CUDA error"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_e2bft.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 181732,
+      "sha256": "609e6b826334ce95537bb2adaddff2e984d5eb99e5693050b82f374aa676ce74",
+      "rows": 2008,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 181658,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 181619,
+            "line": 2007,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 181658,
+            "line": 2008,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_ft.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 242506,
+      "sha256": "7a88bcb55fff2d9013e1fb758d97f0a4eeed0b4763e1b6c0f7749fb3a79da3cf",
+      "rows": 2808,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 242433,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 242388,
+            "line": 2807,
+            "text": "cudaStreamSynchronize(cuda_ctx->stream())"
+          },
+          {
+            "offset": 242433,
+            "line": 2808,
+            "text": "D:\\a\\llama.cpp\\llama.cpp\\ggml\\src\\ggml-cuda\\ggml-cuda.cu:98: CUDA error"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_ft2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 54859,
+      "sha256": "30ea11123c771ea54a4139edd68703934aa723d1afa5afb637621214dec6a70c",
+      "rows": 681,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54820,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 54732,
+            "line": 680,
+            "text": "slot release: id 2 | task 4746 | stop processing: n_tokens = 1482, truncated = 0"
+          },
+          {
+            "offset": 54820,
+            "line": 681,
+            "text": "srv update_slots: all slots are idle"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_ft3.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 312094,
+      "sha256": "d8ac1d5cc2e8f916f40494db4b6d89e9d31eb74781e7b4b296b05482cc3cd0fa",
+      "rows": 3599,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 312020,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 311981,
+            "line": 3598,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 312020,
+            "line": 3599,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_iq3.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2248,
+      "sha256": "0e3ba66513ddf907909d43fc58854c93cedd4cf5df6c42c6c102b3ef36c69a69",
+      "rows": 27,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 8,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2206,
+        "min_line_bytes": 21,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2147,
+            "line": 26,
+            "text": "srv operator(): operator(): cleaning up before exit..."
+          },
+          {
+            "offset": 2206,
+            "line": 27,
+            "text": "main: exiting due to model loading error"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_leanval.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 30925,
+      "sha256": "32411fe2f38fc959e1cb99e17287f2d087e8abe3c6f0022dcd591b838b747afc",
+      "rows": 403,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 30851,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 30812,
+            "line": 402,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 30851,
+            "line": 403,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_v2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 553988,
+      "sha256": "48adba33b8be23e107f304e6935586df236f70601746cbd3f3462b1ec150c432",
+      "rows": 6235,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 553914,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 553875,
+            "line": 6234,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 553914,
+            "line": 6235,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_val.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 181845,
+      "sha256": "8c77fa5984b008c604ec28ca652686bf7ef8b6280247589df3940a81e4979376",
+      "rows": 1984,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 181771,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 181732,
+            "line": 1983,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 181771,
+            "line": 1984,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_server_vision.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 25007,
+      "sha256": "6757cb4f5c380129a675f498f90087dcdf56c59b5a8a40eae899a4010b6728ed",
+      "rows": 387,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24933,
+        "min_line_bytes": 2,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24894,
+            "line": 386,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 24933,
+            "line": 387,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_smart_home.py.REMOVED": {
+      "parser": "binary_inventory",
+      "bytes": 17113,
+      "sha256": "172c979ca7ee0d29ac5f2533f1b0f02b1d6f10a987bd331743773000939742bd",
+      "format": "removed",
+      "magic_hex": "222222536d61727420486f6d6520646f",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/_smart_home.py.REMOVED"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "removed"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17112
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=222222536d61727420486f6d6520646f format=removed"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17112,
+            "line": 0,
+            "text": "eof bytes=17113"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_smoke.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8731,
+      "sha256": "fb3e284526a54567d7169a53b128a2c1415450b3107481500b3b9faf87ffbdf3",
+      "rows": 39,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8625,
+        "min_line_bytes": 20,
+        "max_line_bytes": 3864
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0602 12:43:58.279000 25996 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8599,
+            "line": 38,
+            "text": "[ft] VRAM peak: 11.13 GB"
+          },
+          {
+            "offset": 8625,
+            "line": 39,
+            "text": "[ft] LoRA guardado en <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\dataset_finetune\\out\\lora"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_smoke_caceria.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 9787,
+      "sha256": "466c8eecba17db1f83575b344461d545c70637d6b2138120e1be2237a7d9f574",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9681,
+        "min_line_bytes": 20,
+        "max_line_bytes": 2924
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0605 17:54:11.518000 16820 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9656,
+            "line": 42,
+            "text": "[ft] VRAM peak: 8.71 GB"
+          },
+          {
+            "offset": 9681,
+            "line": 43,
+            "text": "[ft] LoRA guardado en <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\dataset_finetune\\out\\lora"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_smoke_control.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 9088,
+      "sha256": "2367835d0c4ec64fcbda134ee032c1730bc1adf085b042ba61b5db972f9864d3",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8982,
+        "min_line_bytes": 20,
+        "max_line_bytes": 2719
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0605 20:28:25.225000 31468 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8957,
+            "line": 42,
+            "text": "[ft] VRAM peak: 8.71 GB"
+          },
+          {
+            "offset": 8982,
+            "line": 43,
+            "text": "[ft] LoRA guardado en <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\dataset_finetune\\out\\lora"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_smoke_e2b.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7570,
+      "sha256": "484b8ddaa4a87b14a5ede53023164e8325d156536a268511726950a5b5414e10",
+      "rows": 39,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7464,
+        "min_line_bytes": 20,
+        "max_line_bytes": 2704
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0602 17:32:46.678000 26524 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7439,
+            "line": 38,
+            "text": "[ft] VRAM peak: 8.38 GB"
+          },
+          {
+            "offset": 7464,
+            "line": 39,
+            "text": "[ft] LoRA guardado en <home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\dataset_finetune\\out\\lora"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_test_smart_home_coverage.py.REMOVED": {
+      "parser": "binary_inventory",
+      "bytes": 10286,
+      "sha256": "1793ef735306b034ac4e457ea14e537b883a0e94bc5ee208a580b35b8b927c01",
+      "format": "removed",
+      "magic_hex": "222222436f6265727475726120646564",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/_test_smart_home_coverage.py.REMOVED"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "removed"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10285
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=222222436f6265727475726120646564 format=removed"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10285,
+            "line": 0,
+            "text": "eof bytes=10286"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/_tool_coverage.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15737,
+      "sha256": "6cad3eb213f838ea4c2d2fc4d23a5e31985a2e3b1001172184b237c7e31290d0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "app",
+          "audio",
+          "audio_device",
+          "backup_sync",
+          "browser",
+          "browser_real",
+          "clipboard",
+          "computer_use",
+          "contacts",
+          "container",
+          "creative_local",
+          "data_analysis",
+          "database",
+          "dependency",
+          "desktop_layout",
+          "developer",
+          "device_settings",
+          "document",
+          "download",
+          "email",
+          "env",
+          "fact_check",
+          "filesystem",
+          "form_filler",
+          "game_launcher",
+          "gui",
+          "habit_tracker",
+          "input",
+          "job_manager",
+          "knowledge",
+          "local_calendar",
+          "local_search",
+          "maintenance",
+          "media",
+          "media_edit",
+          "memory",
+          "network",
+          "notes_tasks",
+          "notification",
+          "office",
+          "package",
+          "peripheral",
+          "photo_library",
+          "printer_scanner",
+          "registry",
+          "reminder",
+          "routine",
+          "safety",
+          "source_manager",
+          "state",
+          "steam",
+          "study",
+          "system",
+          "terminal",
+          "uia",
+          "verify",
+          "vision",
+          "web",
+          "whatsapp",
+          "window"
+        ],
+        "n_keys": 61,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15736
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"app\", \"audio\", \"audio_device\", \"backup_sync\", \"browser\", \"browser_real\", \"clipboard\", \"computer_use\", \"contacts\", \"container\", \"creative_local\", \"data_analysis\", \"database\", \"dependency\", \"desktop_layout\", \"deve…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"app\", \"audio\", \"audio_device\", \"backup_sync\", \"browser\", \"browser_real\", \"clipboard\", \"computer_use\", \"contacts\", \"container\", \"creative_local\", \"data_analysis\", \"database\", \"dependency\", \"desktop_layout\", \"deve…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/_history_turns.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44251,
+      "sha256": "b6e3fb4a120e63def2e41a5d09a73895d1c6e93438d09ebb3f467e6f6f5bd931",
+      "rows": 165,
+      "schema": {
+        "root": "array",
+        "n": 165,
+        "elem_keys": [
+          "file",
+          "reply",
+          "tools",
+          "ts",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44250
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user\": \"abre Steam\", \"tools\": [], \"reply\": \"Listo, abrí Steam.\", \"ts\": \"13:39:08\", \"file\": \"_pre_session\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44250,
+            "line": 165,
+            "text": "{\"user\": \"pon una canción de Michael Jackson\", \"tools\": [\"media({\\\"action\\\": \\\"play\\\", \\\"provider\\\": \\\"spotify\\\", \\\"song\\\": \\\"Bohemian Rhapsody\\\"})\"], \"reply\": \"Es las 10:42 de la mañana.\", \"ts\": \"21:56:18\", \"file\": \"_pre_session\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/_readonly_shapes.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7357,
+      "sha256": "e56f984e85a6af7550affbe754d79580b680efe4ff365e0ca3180237d6368985",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "app|search",
+          "audio|get_volume",
+          "filesystem|list",
+          "memory|recall",
+          "memory|save",
+          "system|battery",
+          "system|cpu_ram_gpu",
+          "system|ip",
+          "system|time",
+          "window|active",
+          "window|list"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7356
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app|search\", \"audio|get_volume\", \"filesystem|list\", \"memory|recall\", \"memory|save\", \"system|battery\", \"system|cpu_ram_gpu\", \"system|ip\", \"system|time\", \"window|active\", \"window|list\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app|search\", \"audio|get_volume\", \"filesystem|list\", \"memory|recall\", \"memory|save\", \"system|battery\", \"system|cpu_ram_gpu\", \"system|ip\", \"system|time\", \"window|active\", \"window|list\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/_real_result_samples.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 229865,
+      "sha256": "ef8abd7cc687ea3e3648a1c692217b4d2c80f4a9435adf7a300fe54e2c720918",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "app|",
+          "app|close",
+          "app|open",
+          "app|restart",
+          "app|search",
+          "app|type",
+          "app|{'\"name\"': 2}",
+          "audio|get_volume",
+          "audio|mute",
+          "audio|set",
+          "audio|set_volume",
+          "browser_real|find",
+          "browser_real|open",
+          "browser|active_tab_title",
+          "browser|goto",
+          "browser|open",
+          "clipboard|paste",
+          "computer_use|",
+          "computer_use|computer_use",
+          "creative_local|submit",
+          "device_settings|brightness_down",
+          "device_settings|brightness_set",
+          "device_settings|brightness_up",
+          "filesystem|delete",
+          "gui|",
+          "gui|click",
+          "gui|find",
+          "gui|keypress",
+          "gui|type",
+          "gui|wait_for",
+          "input|language_list",
+          "knowledge|",
+          "knowledge|list",
+          "knowledge|search",
+          "media|",
+          "media|next",
+          "media|pause",
+          "media|play",
+          "media|resume",
+          "media|status",
+          "memory|delete",
+          "memory|list",
+          "memory|recall",
+          "memory|save",
+          "notes_tasks|create_note",
+          "notes_tasks|note_list",
+          "notification|reminder_create",
+          "notification|status",
+          "notification|toast_now",
+          "office|close",
+          "reminder|create",
+          "reminder|list",
+          "reminder|status",
+          "safety|confirm",
+          "safety|status",
+          "session|",
+          "session|cancel_turn",
+          "session|save_reminder",
+          "state|checkpoint",
+          "steam|click",
+          "steam|launch_game",
+          "steam|maximize",
+          "steam|open",
+          "steam|store",
+          "steam|store_page",
+          "system|",
+          "system|battery",
+          "system|calculator",
+          "system|cpu_ram_gpu",
+          "system|processes",
+          "system|time",
+          "terminal|run",
+          "uia|click",
+          "uia|find",
+          "verify|window_exists",
+          "vision|describe_screen",
+          "web|open",
+          "web|read",
+          "web|research",
+          "web|search"
+        ],
+        "n_keys": 87,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "window|list": 5,
+          "filesystem|delete": 0,
+          "app|close": 5,
+          "safety|confirm": 3,
+          "session|cancel_turn": 5,
+          "session|": 5,
+          "app|": 5,
+          "computer_use|": 5,
+          "system|": 2,
+          "gui|": 1,
+          "app|{'\"name\"': 2}": 1,
+          "window|": 1,
+          "media|": 1,
+          "gui|type": 3,
+          "window|active": 5,
+          "system|time": 5,
+          "memory|save": 5,
+          "media|play": 5,
+          "app|search": 4,
+          "browser|open": 5,
+          "safety|status": 5,
+          "audio|set_volume": 5,
+          "app|open": 1,
+          "media|pause": 5,
+          "audio|mute": 5,
+          "device_settings|brightness_set": 1,
+          "state|checkpoint": 2,
+          "system|cpu_ram_gpu": 5,
+          "system|battery": 1,
+          "system|processes": 1,
+          "notes_tasks|note_list": 2,
+          "vision|describe_screen": 5,
+          "uia|find": 5,
+          "gui|click": 5,
+          "gui|wait_for": 1,
+          "gui|find": 2,
+          "browser_real|find": 1,
+          "computer_use|computer_use": 4,
+          "web|search": 5,
+          "web|research": 5,
+          "knowledge|search": 5,
+          "browser_real|open": 5,
+          "web|read": 0,
+          "media|status": 5,
+          "media|resume": 5,
+          "browser|active_tab_title": 1,
+          "steam|click": 0,
+          "steam|launch_game": 0,
+          "uia|click": 0,
+          "knowledge|": 0,
+          "web|open": 2,
+          "input|language_list": 2,
+          "steam|store_page": 5,
+          "steam|maximize": 0,
+          "verify|window_exists": 0,
+          "creative_local|submit": 0,
+          "audio|get_volume": 3,
+          "media|next": 1,
+          "notes_tasks|create_note": 0,
+          "app|type": 0,
+          "session|save_reminder": 2,
+          "notification|reminder_create": 1,
+          "notification|status": 1,
+          "notification|toast_now": 1,
+          "reminder|create": 5,
+          "memory|recall": 5,
+          "reminder|list": 2,
+          "device_settings|brightness_up": 5,
+          "device_settings|brightness_down": 5,
+          "office|close": 1,
+          "app|restart": 5,
+          "window|focus": 5,
+          "window|activate": 1,
+          "window|maximize": 2,
+          "reminder|status": 1,
+          "memory|list": 3,
+          "memory|delete": 1,
+          "clipboard|paste": 1,
+          "steam|store": 1,
+          "gui|keypress": 1,
+          "browser|goto": 0,
+          "steam|open": 3,
+          "knowledge|list": 1,
+          "system|calculator": 1,
+          "audio|set": 1,
+          "window|minimize": 0,
+          "terminal|run": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 229864
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app|\", \"app|close\", \"app|open\", \"app|restart\", \"app|search\", \"app|type\", \"app|{'\\\"name\\\"': 2}\", \"audio|get_volume\", \"audio|mute\", \"audio|set\", \"audio|set_volume\", \"browser_real|find\", \"browser_real|open\", \"browser|active_tab_tit…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app|\", \"app|close\", \"app|open\", \"app|restart\", \"app|search\", \"app|type\", \"app|{'\\\"name\\\"': 2}\", \"audio|get_volume\", \"audio|mute\", \"audio|set\", \"audio|set_volume\", \"browser_real|find\", \"browser_real|open\", \"browser|active_tab_tit…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/_real_result_samples.pkl": {
+      "parser": "binary_inventory",
+      "bytes": 147308,
+      "sha256": "68cc08a1f6bce44dc93542f1f894b6f4576c65694f175720211593369d53ef1e",
+      "format": "pkl",
+      "magic_hex": "8004958b0c0100000000007d94288c07",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/out/_real_result_samples.pkl"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pkl"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 147307
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=8004958b0c0100000000007d94288c07 format=pkl"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 147307,
+            "line": 0,
+            "text": "eof bytes=147308"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/_tool_action_enums.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 21305,
+      "sha256": "0ff24ea9027eeed78b78617b55a51ee52960b1d2ccddcf885b300c8a993c0f22",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "app",
+          "audio",
+          "audio_device",
+          "backup_sync",
+          "browser",
+          "browser_real",
+          "clipboard",
+          "computer_use",
+          "contacts",
+          "container",
+          "creative_local",
+          "data_analysis",
+          "database",
+          "dependency",
+          "desktop_layout",
+          "developer",
+          "device_settings",
+          "document",
+          "download",
+          "email",
+          "env",
+          "fact_check",
+          "file_process",
+          "filesystem",
+          "form_filler",
+          "game_launcher",
+          "gui",
+          "habit_tracker",
+          "input",
+          "job_manager",
+          "knowledge",
+          "local_calendar",
+          "local_search",
+          "maintenance",
+          "mcp",
+          "media",
+          "media_edit",
+          "memory",
+          "network",
+          "notes_tasks",
+          "notification",
+          "office",
+          "package",
+          "peripheral",
+          "photo_library",
+          "printer_scanner",
+          "registry",
+          "reminder",
+          "routine",
+          "safety",
+          "session",
+          "skill_load",
+          "source_manager",
+          "state",
+          "steam",
+          "study",
+          "subagent",
+          "system",
+          "terminal",
+          "uia",
+          "verify",
+          "vision",
+          "watcher",
+          "web",
+          "whatsapp",
+          "window"
+        ],
+        "n_keys": 67,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21304
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"app\", \"audio\", \"audio_device\", \"backup_sync\", \"browser\", \"browser_real\", \"clipboard\", \"computer_use\", \"contacts\", \"container\", \"creative_local\", \"data_analysis\", \"database\", \"dependency\", \"desktop_layout\", \"deve…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"app\", \"audio\", \"audio_device\", \"backup_sync\", \"browser\", \"browser_real\", \"clipboard\", \"computer_use\", \"contacts\", \"container\", \"creative_local\", \"data_analysis\", \"database\", \"dependency\", \"desktop_layout\", \"deve…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/_uncovered_history.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9884,
+      "sha256": "7575795c6fb61d28c6ffb42f024cc57905b68d722e980937f97aef3274881a64",
+      "rows": 165,
+      "schema": {
+        "root": "array",
+        "n": 165
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9883
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[0.0, \"12.66\"]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9883,
+            "line": 165,
+            "text": "[0.62, \"reproduce el video que estoy viendo en YouTube\"]"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_dims_baseline.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 65527,
+      "sha256": "deac744e5902c1751f0abe903007086a9e6c2604dbb937e3acc7997e7c123d53",
+      "rows": 198,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "lang",
+          "mode",
+          "want_tools",
+          "n_steps_expected",
+          "category",
+          "emitted_tool",
+          "reply",
+          "is_error"
+        ],
+        "key_freq": {
+          "user_text": 198,
+          "lang": 198,
+          "mode": 198,
+          "want_tools": 198,
+          "n_steps_expected": 198,
+          "category": 198,
+          "emitted_tool": 198,
+          "reply": 198,
+          "is_error": 198
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65225,
+        "min_line_bytes": 185,
+        "max_line_bytes": 1220,
+        "numeric": {
+          "n_steps_expected": {
+            "min": 1.0,
+            "max": 6.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 210,
+            "line": 2,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"no_vidente\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 64978,
+            "line": 197,
+            "text": "{\"user_text\": \"La domanda: Quale gioco per PC ha la dimensione più grande di file?\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"info\", \"emitted_tool\": \"\", \"reply\": \"<ERROR URLError>\", \"is_error\":…"
+          },
+          {
+            "offset": 65225,
+            "line": 198,
+            "text": "{\"user_text\": \"Qual è la categoria della seguente domanda?\\n\\\"Quanti scrittori italiani hanno vinto il Premio Nobel per la Letteratura?\\\"\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"info\", \"emitt…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_dims_baseline_v3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 43658,
+      "sha256": "03f171abf18e047781a6351e56220cf87828cf33780fe30f49fad508ab83040d",
+      "rows": 198,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "lang",
+          "mode",
+          "want_tools",
+          "n_steps_expected",
+          "category",
+          "emitted_tool",
+          "reply",
+          "is_error"
+        ],
+        "key_freq": {
+          "user_text": 198,
+          "lang": 198,
+          "mode": 198,
+          "want_tools": 198,
+          "n_steps_expected": 198,
+          "category": 198,
+          "emitted_tool": 198,
+          "reply": 198,
+          "is_error": 198
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43456,
+        "min_line_bytes": 182,
+        "max_line_bytes": 422,
+        "numeric": {
+          "n_steps_expected": {
+            "min": 1.0,
+            "max": 6.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 210,
+            "line": 2,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"no_vidente\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43262,
+            "line": 197,
+            "text": "{\"user_text\": \"Lol non ci credo\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"conversacion\", \"emitted_tool\": \"memory\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 43456,
+            "line": 198,
+            "text": "{\"user_text\": \"Che ridere, sei simpatica\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"conversacion\", \"emitted_tool\": \"audio\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_dims_ft.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 44805,
+      "sha256": "0b35e0b807f821f963f86250e447217effcd7adf54256a5e5fd6083fb31d8162",
+      "rows": 198,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "lang",
+          "mode",
+          "want_tools",
+          "n_steps_expected",
+          "category",
+          "emitted_tool",
+          "reply",
+          "is_error"
+        ],
+        "key_freq": {
+          "user_text": 198,
+          "lang": 198,
+          "mode": 198,
+          "want_tools": 198,
+          "n_steps_expected": 198,
+          "category": 198,
+          "emitted_tool": 198,
+          "reply": 198,
+          "is_error": 198
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44509,
+        "min_line_bytes": 180,
+        "max_line_bytes": 495,
+        "numeric": {
+          "n_steps_expected": {
+            "min": 1.0,
+            "max": 6.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 210,
+            "line": 2,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"no_vidente\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44274,
+            "line": 197,
+            "text": "{\"user_text\": \"La domanda: Quale gioco per PC ha la dimensione più grande di file?\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"info\", \"emitted_tool\": \"web\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 44509,
+            "line": 198,
+            "text": "{\"user_text\": \"Qual è la categoria della seguente domanda?\\n\\\"Quanti scrittori italiani hanno vinto il Premio Nobel per la Letteratura?\\\"\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"info\", \"emitt…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_dims_ft_r2_v3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 43703,
+      "sha256": "34b1369e8cd594bc209a59089a858daef7bed8df674319fc3d66b045be46dc12",
+      "rows": 198,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "lang",
+          "mode",
+          "want_tools",
+          "n_steps_expected",
+          "category",
+          "emitted_tool",
+          "reply",
+          "is_error"
+        ],
+        "key_freq": {
+          "user_text": 198,
+          "lang": 198,
+          "mode": 198,
+          "want_tools": 198,
+          "n_steps_expected": 198,
+          "category": 198,
+          "emitted_tool": 198,
+          "reply": 198,
+          "is_error": 198
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43501,
+        "min_line_bytes": 180,
+        "max_line_bytes": 422,
+        "numeric": {
+          "n_steps_expected": {
+            "min": 1.0,
+            "max": 6.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 210,
+            "line": 2,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"no_vidente\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43308,
+            "line": 197,
+            "text": "{\"user_text\": \"Lol non ci credo\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"conversacion\", \"emitted_tool\": \"input\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 43501,
+            "line": 198,
+            "text": "{\"user_text\": \"Che ridere, sei simpatica\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"conversacion\", \"emitted_tool\": \"audio\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_dims_ft_v3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 43836,
+      "sha256": "4ba9a2d020873faac68dc729c70f52d74ca699f770a33c0019d3a2a41ecb7fd2",
+      "rows": 198,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "lang",
+          "mode",
+          "want_tools",
+          "n_steps_expected",
+          "category",
+          "emitted_tool",
+          "reply",
+          "is_error"
+        ],
+        "key_freq": {
+          "user_text": 198,
+          "lang": 198,
+          "mode": 198,
+          "want_tools": 198,
+          "n_steps_expected": 198,
+          "category": 198,
+          "emitted_tool": 198,
+          "reply": 198,
+          "is_error": 198
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43634,
+        "min_line_bytes": 185,
+        "max_line_bytes": 422,
+        "numeric": {
+          "n_steps_expected": {
+            "min": 1.0,
+            "max": 6.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 210,
+            "line": 2,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"no_vidente\", \"want_tools\": [\"browser\"], \"n_steps_expected\": 1, \"category\": \"web\", \"emitted_tool\": \"browser\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43440,
+            "line": 197,
+            "text": "{\"user_text\": \"Lol non ci credo\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"conversacion\", \"emitted_tool\": \"memory\", \"reply\": \"\", \"is_error\": false}"
+          },
+          {
+            "offset": 43634,
+            "line": 198,
+            "text": "{\"user_text\": \"Che ridere, sei simpatica\", \"lang\": \"it\", \"mode\": \"normal\", \"want_tools\": [], \"n_steps_expected\": 1, \"category\": \"conversacion\", \"emitted_tool\": \"audio\", \"reply\": \"\", \"is_error\": false}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_e2bft_v2_detail.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25950,
+      "sha256": "037f66a67505a41cee8d3534b650dd3505ff352497ebb7e1bed3cbed07203968",
+      "rows": 202,
+      "schema": {
+        "root": "array",
+        "n": 202,
+        "elem_keys": [
+          "got",
+          "hit",
+          "lang",
+          "mode",
+          "u",
+          "want"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25949
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"u\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want\": [\"browser\"], \"got\": \"browser\", \"hit\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25949,
+            "line": 202,
+            "text": "{\"u\": \"Sei sempre disponibile, grazie\", \"lang\": \"it\", \"mode\": \"normal\", \"want\": [], \"got\": \"memory\", \"hit\": false}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_e2bft_v2_eval.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 428,
+      "sha256": "daaf6dad0ed1d3993b647e0e82fbc49638e95a8fb3579c2d9e408fe6f0c18a89",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_lang",
+          "by_mode",
+          "emitted",
+          "n",
+          "notool",
+          "out_vocab"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "emitted",
+          "n",
+          "out_vocab"
+        ],
+        "list_lengths": {
+          "notool": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 427,
+        "out_vocab": {
+          "min": 0,
+          "max": 0
+        },
+        "emitted": {
+          "min": 195,
+          "max": 195
+        },
+        "n": {
+          "min": 202,
+          "max": 202
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_lang\", \"by_mode\", \"emitted\", \"n\", \"notool\", \"out_vocab\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_lang\", \"by_mode\", \"emitted\", \"n\", \"notool\", \"out_vocab\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14395,
+      "sha256": "b6052ac3293c99652a3480bb66443ad156745cf5a22dac808686882cfc0eba9d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14394,
+        "g2_fabricaciones": {
+          "min": 7,
+          "max": 7
+        },
+        "g4_ok": {
+          "min": 5,
+          "max": 5
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_deploy_smoke.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13033,
+      "sha256": "8115ca5d345801f4731b76a19241fa2b7fffd76482fa59a87852d239169d4c82",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13032,
+        "g2_fabricaciones": {
+          "min": 0,
+          "max": 0
+        },
+        "g4_ok": {
+          "min": 6,
+          "max": 6
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13721,
+      "sha256": "83b0bbcbb970ca6742736cb310c9c9cac522f06af620f52839a0535390e6fa0c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13720,
+        "g2_fabricaciones": {
+          "min": 10,
+          "max": 10
+        },
+        "g4_ok": {
+          "min": 6,
+          "max": 6
+        },
+        "g6_pass": {
+          "min": 13,
+          "max": 13
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13845,
+      "sha256": "74507730cf71b8d6b993c7c9bb464294a36a514dc67de97cfd89943e303edc82",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13844,
+        "g2_fabricaciones": {
+          "min": 7,
+          "max": 7
+        },
+        "g4_ok": {
+          "min": 5,
+          "max": 5
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft_r2_guard.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13949,
+      "sha256": "2a5cdfa38ac50c2d12f42b19fdf41dc602cdd66ee4988048ca2bac9deb135f40",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13948,
+        "g2_fabricaciones": {
+          "min": 6,
+          "max": 6
+        },
+        "g4_ok": {
+          "min": 5,
+          "max": 5
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft_r2_guard2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13186,
+      "sha256": "c2860f34582a97e806a355e6d003ad43aa11a6d60fc750ac51bf9c364f556750",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13185,
+        "g2_fabricaciones": {
+          "min": 3,
+          "max": 3
+        },
+        "g4_ok": {
+          "min": 6,
+          "max": 6
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft_r2_guard3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13197,
+      "sha256": "1637a2a13dd7717b202e0296558254c0407d5bd2c3d7db7d55d4212a4750fdc4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13196,
+        "g2_fabricaciones": {
+          "min": 3,
+          "max": 3
+        },
+        "g4_ok": {
+          "min": 6,
+          "max": 6
+        },
+        "g6_pass": {
+          "min": 13,
+          "max": 13
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft_r2_guard4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13914,
+      "sha256": "add448cb66db6af6dc118fd01cbeaa9b6c73b0010eb609c8c8753d70a2616c78",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13913,
+        "g2_fabricaciones": {
+          "min": 0,
+          "max": 0
+        },
+        "g4_ok": {
+          "min": 6,
+          "max": 6
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_gates_ft_r2_guard5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13507,
+      "sha256": "8a6a65e62d9c894674cdc63227f225a72d8beddd68bd5f035219fb51915f9320",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "g2",
+          "g2_fabricaciones",
+          "g4",
+          "g4_ok",
+          "g6",
+          "g6_pass",
+          "tag"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "g2_fabricaciones",
+          "g4_ok",
+          "g6_pass",
+          "tag"
+        ],
+        "list_lengths": {
+          "g2": 53,
+          "g4": 6,
+          "g6": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13506,
+        "g2_fabricaciones": {
+          "min": 0,
+          "max": 0
+        },
+        "g4_ok": {
+          "min": 6,
+          "max": 6
+        },
+        "g6_pass": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"g2\", \"g2_fabricaciones\", \"g4\", \"g4_ok\", \"g6\", \"g6_pass\", \"tag\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/eval/_sample_ft.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 38413,
+      "sha256": "d6351b48008fc86ef335173ef202c5e14c2ad0653a59f63384d810b6f5af2493",
+      "rows": 178,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "lang",
+          "mode",
+          "want",
+          "emitted_tool",
+          "reply",
+          "hit",
+          "no_tool_expected",
+          "is_error"
+        ],
+        "key_freq": {
+          "user_text": 178,
+          "lang": 178,
+          "mode": 178,
+          "want": 178,
+          "emitted_tool": 178,
+          "reply": 178,
+          "hit": 178,
+          "no_tool_expected": 178,
+          "is_error": 178
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38137,
+        "min_line_bytes": 164,
+        "max_line_bytes": 420,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"movilidad\", \"want\": [\"browser\"], \"emitted_tool\": \"browser\", \"reply\": \"\", \"hit\": true, \"no_tool_expected\": false, \"is_error\": false}"
+          },
+          {
+            "offset": 202,
+            "line": 2,
+            "text": "{\"user_text\": \"Abri YouTube en el navegador\", \"lang\": \"es\", \"mode\": \"no_vidente\", \"want\": [\"browser\"], \"emitted_tool\": \"browser\", \"reply\": \"\", \"hit\": true, \"no_tool_expected\": false, \"is_error\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 37898,
+            "line": 177,
+            "text": "{\"user_text\": \"L'Australia è il sesto Paese del mondo per estensione. Vero o falso?\", \"lang\": \"it\", \"mode\": \"normal\", \"want\": [], \"emitted_tool\": \"\", \"reply\": \"<ERROR HTTPError>\", \"hit\": true, \"no_tool_expected\": true, \"is_error\": true}"
+          },
+          {
+            "offset": 38137,
+            "line": 178,
+            "text": "{\"user_text\": \"Qual è la risposta corretta alla questa domanda: Quanti giochi Spyro ci sono nella PlayStation originale?\", \"lang\": \"it\", \"mode\": \"normal\", \"want\": [], \"emitted_tool\": \"\", \"reply\": \"<ERROR HTTPError>\", \"hit\": true, \"no_tool_…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/imatrix.dat": {
+      "parser": "binary_inventory",
+      "bytes": 2785197,
+      "sha256": "c12a7440264379fd7e11c693d94e2132f670d7429329f9021a5a77fe90604f52",
+      "format": "dat",
+      "magic_hex": "1301000013000000626c6b2e302e6174",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/out/imatrix.dat"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "dat"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2785196
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=1301000013000000626c6b2e302e6174 format=dat"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2785196,
+            "line": 0,
+            "text": "eof bytes=2785197"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.BAK_precaceria/adapter_config.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1391,
+      "sha256": "db06231ba49d1ec3b0e82a0d6730fecf6880b3d74a95b8327ee0c634e95b9bae",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "alora_invocation_tokens",
+          "alpha_pattern",
+          "arrow_config",
+          "auto_mapping",
+          "base_model_name_or_path",
+          "bias",
+          "corda_config",
+          "ensure_weight_tying",
+          "eva_config",
+          "exclude_modules",
+          "fan_in_fan_out",
+          "inference_mode",
+          "init_lora_weights",
+          "layer_replication",
+          "layers_pattern",
+          "layers_to_transform",
+          "loftq_config",
+          "lora_alpha",
+          "lora_bias",
+          "lora_dropout",
+          "lora_ga_config",
+          "megatron_config",
+          "megatron_core",
+          "modules_to_save",
+          "peft_type",
+          "peft_version",
+          "qalora_group_size",
+          "r",
+          "rank_pattern",
+          "revision",
+          "target_modules",
+          "target_parameters",
+          "task_type",
+          "trainable_token_indices",
+          "use_bdlora",
+          "use_dora",
+          "use_qalora",
+          "use_rslora"
+        ],
+        "n_keys": 38,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "alora_invocation_tokens",
+          "arrow_config",
+          "base_model_name_or_path",
+          "bias",
+          "corda_config",
+          "ensure_weight_tying",
+          "eva_config",
+          "exclude_modules",
+          "fan_in_fan_out",
+          "inference_mode",
+          "init_lora_weights",
+          "layer_replication",
+          "layers_pattern",
+          "layers_to_transform",
+          "lora_alpha",
+          "lora_bias",
+          "lora_dropout",
+          "lora_ga_config",
+          "megatron_config",
+          "megatron_core",
+          "modules_to_save",
+          "peft_type",
+          "peft_version",
+          "qalora_group_size",
+          "r",
+          "revision",
+          "target_parameters",
+          "task_type",
+          "trainable_token_indices",
+          "use_bdlora",
+          "use_dora",
+          "use_qalora",
+          "use_rslora"
+        ],
+        "list_lengths": {
+          "target_modules": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1390,
+        "lora_alpha": {
+          "min": 32,
+          "max": 32
+        },
+        "lora_dropout": {
+          "min": 0.05,
+          "max": 0.05
+        },
+        "qalora_group_size": {
+          "min": 16,
+          "max": 16
+        },
+        "r": {
+          "min": 16,
+          "max": 16
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"alora_invocation_tokens\", \"alpha_pattern\", \"arrow_config\", \"auto_mapping\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_out\", \"inference_mode\", \"init_lora…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"alora_invocation_tokens\", \"alpha_pattern\", \"arrow_config\", \"auto_mapping\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_out\", \"inference_mode\", \"init_lora…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.BAK_precaceria/adapter_model.safetensors": {
+      "parser": "binary_inventory",
+      "bytes": 124277728,
+      "sha256": "79770fa177532aa895c571ba3d11cefa2bc361c4a3b79d85e05d9acbfbc08f2f",
+      "format": "safetensors",
+      "magic_hex": "d8d30100000000007b225f5f6d657461",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/out/lora.BAK_precaceria/adapter_model.safetensors"
+      },
+      "recipe": "training checkpoint in sibling tree; do not resume here",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "header_len": 119768,
+        "tensor_count": 786,
+        "tensor_names_head": [
+          "base_model.model.model.audio_tower.layers.0.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.11.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.11.self_attn.k_proj.linear.lora_B.weight"
+        ],
+        "metadata_keys": [
+          "format"
+        ]
+      },
+      "rows": 0,
+      "schema": {
+        "format": "safetensors"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 124277727
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=d8d30100000000007b225f5f6d657461 format=safetensors"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 124277727,
+            "line": 0,
+            "text": "eof bytes=124277728"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.BAK_precaceria/processor_config.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1763,
+      "sha256": "b3469bcaa0b2d274a8135da5e4c0c5081563a2c8d16a11fd256ba4da3686a4df",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_ms_per_token",
+          "audio_seq_length",
+          "feature_extractor",
+          "image_processor",
+          "image_seq_length",
+          "processor_class",
+          "video_processor"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_ms_per_token",
+          "audio_seq_length",
+          "image_seq_length",
+          "processor_class"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1762,
+        "audio_ms_per_token": {
+          "min": 40,
+          "max": 40
+        },
+        "audio_seq_length": {
+          "min": 750,
+          "max": 750
+        },
+        "image_seq_length": {
+          "min": 280,
+          "max": 280
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_ms_per_token\", \"audio_seq_length\", \"feature_extractor\", \"image_processor\", \"image_seq_length\", \"processor_class\", \"video_processor\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_ms_per_token\", \"audio_seq_length\", \"feature_extractor\", \"image_processor\", \"image_seq_length\", \"processor_class\", \"video_processor\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.BAK_precaceria/tokenizer.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 32169626,
+      "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "added_tokens",
+          "decoder",
+          "model",
+          "normalizer",
+          "padding",
+          "post_processor",
+          "pre_tokenizer",
+          "truncation",
+          "version"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "padding",
+          "truncation",
+          "version"
+        ],
+        "list_lengths": {
+          "added_tokens": 24
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32169625
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"added_tokens\", \"decoder\", \"model\", \"normalizer\", \"padding\", \"post_processor\", \"pre_tokenizer\", \"truncation\", \"version\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"added_tokens\", \"decoder\", \"model\", \"normalizer\", \"padding\", \"post_processor\", \"pre_tokenizer\", \"truncation\", \"version\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.BAK_precaceria/tokenizer_config.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7177,
+      "sha256": "1fa6e57b77ca0981d8d8501eb7ef1394e9e413851d75f1a3af71897eae2fc2c1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "added_tokens_decoder",
+          "audio_token",
+          "backend",
+          "boa_token",
+          "boi_token",
+          "bos_token",
+          "eoa_token",
+          "eoc_token",
+          "eoi_token",
+          "eos_token",
+          "eot_token",
+          "escape_token",
+          "etc_token",
+          "etd_token",
+          "etr_token",
+          "extra_special_tokens",
+          "image_token",
+          "is_local",
+          "mask_token",
+          "model_max_length",
+          "model_specific_special_tokens",
+          "pad_token",
+          "padding_side",
+          "processor_class",
+          "response_schema",
+          "soc_token",
+          "sot_token",
+          "stc_token",
+          "std_token",
+          "str_token",
+          "think_token",
+          "tokenizer_class",
+          "unk_token"
+        ],
+        "n_keys": 33,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_token",
+          "backend",
+          "boa_token",
+          "boi_token",
+          "bos_token",
+          "eoa_token",
+          "eoc_token",
+          "eoi_token",
+          "eos_token",
+          "eot_token",
+          "escape_token",
+          "etc_token",
+          "etd_token",
+          "etr_token",
+          "image_token",
+          "is_local",
+          "mask_token",
+          "model_max_length",
+          "pad_token",
+          "padding_side",
+          "processor_class",
+          "soc_token",
+          "sot_token",
+          "stc_token",
+          "std_token",
+          "str_token",
+          "think_token",
+          "tokenizer_class",
+          "unk_token"
+        ],
+        "list_lengths": {
+          "extra_special_tokens": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7176,
+        "model_max_length": {
+          "min": 1000000000000000019884624838656,
+          "max": 1000000000000000019884624838656
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"added_tokens_decoder\", \"audio_token\", \"backend\", \"boa_token\", \"boi_token\", \"bos_token\", \"eoa_token\", \"eoc_token\", \"eoi_token\", \"eos_token\", \"eot_token\", \"escape_token\", \"etc_token\", \"etd_token\", \"etr_token\", \"extra_special_token…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"added_tokens_decoder\", \"audio_token\", \"backend\", \"boa_token\", \"boi_token\", \"bos_token\", \"eoa_token\", \"eoc_token\", \"eoi_token\", \"eos_token\", \"eot_token\", \"escape_token\", \"etc_token\", \"etd_token\", \"etr_token\", \"extra_special_token…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.CACERIA-v2/adapter_config.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1391,
+      "sha256": "e22ee2ee01b71196ff2a8d6036afa60ffe5263ce1e94e67f0c74165182202339",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "alora_invocation_tokens",
+          "alpha_pattern",
+          "arrow_config",
+          "auto_mapping",
+          "base_model_name_or_path",
+          "bias",
+          "corda_config",
+          "ensure_weight_tying",
+          "eva_config",
+          "exclude_modules",
+          "fan_in_fan_out",
+          "inference_mode",
+          "init_lora_weights",
+          "layer_replication",
+          "layers_pattern",
+          "layers_to_transform",
+          "loftq_config",
+          "lora_alpha",
+          "lora_bias",
+          "lora_dropout",
+          "lora_ga_config",
+          "megatron_config",
+          "megatron_core",
+          "modules_to_save",
+          "peft_type",
+          "peft_version",
+          "qalora_group_size",
+          "r",
+          "rank_pattern",
+          "revision",
+          "target_modules",
+          "target_parameters",
+          "task_type",
+          "trainable_token_indices",
+          "use_bdlora",
+          "use_dora",
+          "use_qalora",
+          "use_rslora"
+        ],
+        "n_keys": 38,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "alora_invocation_tokens",
+          "arrow_config",
+          "base_model_name_or_path",
+          "bias",
+          "corda_config",
+          "ensure_weight_tying",
+          "eva_config",
+          "exclude_modules",
+          "fan_in_fan_out",
+          "inference_mode",
+          "init_lora_weights",
+          "layer_replication",
+          "layers_pattern",
+          "layers_to_transform",
+          "lora_alpha",
+          "lora_bias",
+          "lora_dropout",
+          "lora_ga_config",
+          "megatron_config",
+          "megatron_core",
+          "modules_to_save",
+          "peft_type",
+          "peft_version",
+          "qalora_group_size",
+          "r",
+          "revision",
+          "target_parameters",
+          "task_type",
+          "trainable_token_indices",
+          "use_bdlora",
+          "use_dora",
+          "use_qalora",
+          "use_rslora"
+        ],
+        "list_lengths": {
+          "target_modules": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1390,
+        "lora_alpha": {
+          "min": 32,
+          "max": 32
+        },
+        "lora_dropout": {
+          "min": 0.05,
+          "max": 0.05
+        },
+        "qalora_group_size": {
+          "min": 16,
+          "max": 16
+        },
+        "r": {
+          "min": 16,
+          "max": 16
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"alora_invocation_tokens\", \"alpha_pattern\", \"arrow_config\", \"auto_mapping\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_out\", \"inference_mode\", \"init_lora…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"alora_invocation_tokens\", \"alpha_pattern\", \"arrow_config\", \"auto_mapping\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_out\", \"inference_mode\", \"init_lora…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora.CACERIA-v2/adapter_model.safetensors": {
+      "parser": "binary_inventory",
+      "bytes": 124277728,
+      "sha256": "340e4875ef93f42ec27532fcccbdff529d8edbe8770cf50ca819944ed81156ba",
+      "format": "safetensors",
+      "magic_hex": "d8d30100000000007b225f5f6d657461",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/out/lora.CACERIA-v2/adapter_model.safetensors"
+      },
+      "recipe": "training checkpoint in sibling tree; do not resume here",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "header_len": 119768,
+        "tensor_count": 786,
+        "tensor_names_head": [
+          "base_model.model.model.audio_tower.layers.0.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.11.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.11.self_attn.k_proj.linear.lora_B.weight"
+        ],
+        "metadata_keys": [
+          "format"
+        ]
+      },
+      "rows": 0,
+      "schema": {
+        "format": "safetensors"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 124277727
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=d8d30100000000007b225f5f6d657461 format=safetensors"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 124277727,
+            "line": 0,
+            "text": "eof bytes=124277728"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora/adapter_config.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1391,
+      "sha256": "c50cf6dc115089ffc4856aabe7e7e72e37ca7663fe8342a8e2436915f81b4ca4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "alora_invocation_tokens",
+          "alpha_pattern",
+          "arrow_config",
+          "auto_mapping",
+          "base_model_name_or_path",
+          "bias",
+          "corda_config",
+          "ensure_weight_tying",
+          "eva_config",
+          "exclude_modules",
+          "fan_in_fan_out",
+          "inference_mode",
+          "init_lora_weights",
+          "layer_replication",
+          "layers_pattern",
+          "layers_to_transform",
+          "loftq_config",
+          "lora_alpha",
+          "lora_bias",
+          "lora_dropout",
+          "lora_ga_config",
+          "megatron_config",
+          "megatron_core",
+          "modules_to_save",
+          "peft_type",
+          "peft_version",
+          "qalora_group_size",
+          "r",
+          "rank_pattern",
+          "revision",
+          "target_modules",
+          "target_parameters",
+          "task_type",
+          "trainable_token_indices",
+          "use_bdlora",
+          "use_dora",
+          "use_qalora",
+          "use_rslora"
+        ],
+        "n_keys": 38,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "alora_invocation_tokens",
+          "arrow_config",
+          "base_model_name_or_path",
+          "bias",
+          "corda_config",
+          "ensure_weight_tying",
+          "eva_config",
+          "exclude_modules",
+          "fan_in_fan_out",
+          "inference_mode",
+          "init_lora_weights",
+          "layer_replication",
+          "layers_pattern",
+          "layers_to_transform",
+          "lora_alpha",
+          "lora_bias",
+          "lora_dropout",
+          "lora_ga_config",
+          "megatron_config",
+          "megatron_core",
+          "modules_to_save",
+          "peft_type",
+          "peft_version",
+          "qalora_group_size",
+          "r",
+          "revision",
+          "target_parameters",
+          "task_type",
+          "trainable_token_indices",
+          "use_bdlora",
+          "use_dora",
+          "use_qalora",
+          "use_rslora"
+        ],
+        "list_lengths": {
+          "target_modules": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1390,
+        "lora_alpha": {
+          "min": 32,
+          "max": 32
+        },
+        "lora_dropout": {
+          "min": 0.05,
+          "max": 0.05
+        },
+        "qalora_group_size": {
+          "min": 16,
+          "max": 16
+        },
+        "r": {
+          "min": 16,
+          "max": 16
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"alora_invocation_tokens\", \"alpha_pattern\", \"arrow_config\", \"auto_mapping\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_out\", \"inference_mode\", \"init_lora…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"alora_invocation_tokens\", \"alpha_pattern\", \"arrow_config\", \"auto_mapping\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_out\", \"inference_mode\", \"init_lora…"
+          }
+        ]
+      }
+    },
+    "dataset_finetune/out/lora/adapter_model.safetensors": {
+      "parser": "binary_inventory",
+      "bytes": 124277728,
+      "sha256": "d3b0fed4c0a6806fdcc48754cfe40483015c7b796b7cb5b45b0e10d9aeddc3ec",
+      "format": "safetensors",
+      "magic_hex": "d8d30100000000007b225f5f6d657461",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "dataset_finetune/out/lora/adapter_model.safetensors"
+      },
+      "recipe": "training checkpoint in sibling tree; do not resume here",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "header_len": 119768,
+        "tensor_count": 786,
+        "tensor_names_head": [
+          "base_model.model.model.audio_tower.layers.0.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.0.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.1.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.k_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.q_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.q_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.v_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.10.self_attn.v_proj.linear.lora_B.weight",
+          "base_model.model.model.audio_tower.layers.11.self_attn.k_proj.linear.lora_A.weight",
+          "base_model.model.model.audio_tower.layers.11.self_attn.k_proj.linear.lora_B.weight"
+        ],
+        "metadata_keys": [
+          "format"
+        ]
+      },
+      "rows": 0,
+      "schema": {
+        "format": "safetensors"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 124277727
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=d8d30100000000007b225f5f6d657461 format=safetensors"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 124277727,
+            "line": 0,
+            "text": "eof bytes=124277728"
+          }
+        ]
+      }
+    }
+  }
+}

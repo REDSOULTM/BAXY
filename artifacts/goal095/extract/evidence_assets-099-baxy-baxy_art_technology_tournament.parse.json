@@ -1,0 +1,2592 @@
+{
+  "batch_id": "evidence_assets-099-baxy-baxy_art_technology_tournament",
+  "source_id": "baxy",
+  "file_count": 59,
+  "hash_ok": 59,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/libserde_core-beb5161ee5401298.rlib": {
+      "parser": "exclude",
+      "bytes": 5077794,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/libserde_core-beb5161ee5401298.rmeta": {
+      "parser": "exclude",
+      "bytes": 4997478,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/libserde_json-c7191a84c1f4d73d.rlib": {
+      "parser": "exclude",
+      "bytes": 2031668,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/libserde_json-c7191a84c1f4d73d.rmeta": {
+      "parser": "exclude",
+      "bytes": 1689332,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/memchr-0d0654d916fff060.d": {
+      "parser": "exclude",
+      "bytes": 11799,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_depfile"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/serde_core-beb5161ee5401298.d": {
+      "parser": "exclude",
+      "bytes": 8923,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_depfile"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/serde_json-c7191a84c1f4d73d.d": {
+      "parser": "exclude",
+      "bytes": 7000,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_depfile"
+    },
+    "artifacts/technology_tournament/build/round_b_official/rust_target/release/deps/zmij-48c0dbb8d9e44da8.d": {
+      "parser": "exclude",
+      "bytes": 1605,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_depfile"
+    },
+    "artifacts/technology_tournament/protocol.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10962,
+      "sha256": "383a9e54cfc5a186de61f060aeb2a6cd013bab3ec21bdeb387063d935d99a892",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "contenders",
+          "disqualification",
+          "frozen_at_git_commit",
+          "frozen_utc",
+          "hard_gates",
+          "hardware",
+          "historical_corpus",
+          "pareto_dimensions",
+          "product_contract",
+          "protocol_id",
+          "reproducibility",
+          "request_contract",
+          "response_contract",
+          "rounds",
+          "schema_version",
+          "scoring",
+          "status",
+          "toolchains",
+          "weights"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "disqualification",
+          "frozen_at_git_commit",
+          "frozen_utc",
+          "protocol_id",
+          "schema_version",
+          "status"
+        ],
+        "list_lengths": {
+          "contenders": 4,
+          "hard_gates": 8,
+          "pareto_dimensions": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10961,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contenders\", \"disqualification\", \"frozen_at_git_commit\", \"frozen_utc\", \"hard_gates\", \"hardware\", \"historical_corpus\", \"pareto_dimensions\", \"product_contract\", \"protocol_id\", \"reproducibility\", \"request_contract\", \"response_contr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contenders\", \"disqualification\", \"frozen_at_git_commit\", \"frozen_utc\", \"hard_gates\", \"hardware\", \"historical_corpus\", \"pareto_dimensions\", \"product_contract\", \"protocol_id\", \"reproducibility\", \"request_contract\", \"response_contr…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/packaging_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 748817,
+      "sha256": "19d508c1510ff330c2f234e51c01b2ed77f5bc102424dbbb2f90e33a40063ce2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "ambient_after",
+          "ambient_before",
+          "cases_sha256",
+          "core_harness_sha256",
+          "finished_utc",
+          "git_commit",
+          "package_harness_sha256",
+          "packager_environment",
+          "protocol_id",
+          "protocol_sha256",
+          "schema_version",
+          "started_utc",
+          "variants"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases_sha256",
+          "core_harness_sha256",
+          "finished_utc",
+          "git_commit",
+          "package_harness_sha256",
+          "packager_environment",
+          "protocol_id",
+          "protocol_sha256",
+          "schema_version",
+          "started_utc"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 748816,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"ambient_after\", \"ambient_before\", \"cases_sha256\", \"core_harness_sha256\", \"finished_utc\", \"git_commit\", \"package_harness_sha256\", \"packager_environment\", \"protocol_id\", \"protocol_sha256\", \"schema_version\", \"started_utc\", \"variant…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"ambient_after\", \"ambient_before\", \"cases_sha256\", \"core_harness_sha256\", \"finished_utc\", \"git_commit\", \"package_harness_sha256\", \"packager_environment\", \"protocol_id\", \"protocol_sha256\", \"schema_version\", \"started_utc\", \"variant…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_a_rejected_pre_workspace_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 378208,
+      "sha256": "969c1b0c48a08ddec970658d3f8becbc74e664c329734e074eb255a9ec37aeeb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_sha256",
+          "contenders",
+          "environment_allowlist",
+          "finished_utc",
+          "host",
+          "protocol_id",
+          "protocol_sha256",
+          "schema_version",
+          "started_utc",
+          "toolchains_observed"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases_sha256",
+          "finished_utc",
+          "protocol_id",
+          "protocol_sha256",
+          "schema_version",
+          "started_utc"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 378207,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_sha256\", \"contenders\", \"environment_allowlist\", \"finished_utc\", \"host\", \"protocol_id\", \"protocol_sha256\", \"schema_version\", \"started_utc\", \"toolchains_observed\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_sha256\", \"contenders\", \"environment_allowlist\", \"finished_utc\", \"host\", \"protocol_id\", \"protocol_sha256\", \"schema_version\", \"started_utc\", \"toolchains_observed\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_a_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 665873,
+      "sha256": "c8d213801253b9bdf69d71ef860c726bf8f69fc1c8866a56929a8f9295bb5c5b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "ambient_after",
+          "ambient_before",
+          "cases_sha256",
+          "contenders",
+          "environment_allowlist",
+          "finished_utc",
+          "git_commit",
+          "harness_sha256",
+          "host",
+          "protocol_id",
+          "protocol_sha256",
+          "schema_version",
+          "started_utc",
+          "toolchains_observed"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases_sha256",
+          "finished_utc",
+          "git_commit",
+          "harness_sha256",
+          "protocol_id",
+          "protocol_sha256",
+          "schema_version",
+          "started_utc"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 665872,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"ambient_after\", \"ambient_before\", \"cases_sha256\", \"contenders\", \"environment_allowlist\", \"finished_utc\", \"git_commit\", \"harness_sha256\", \"host\", \"protocol_id\", \"protocol_sha256\", \"schema_version\", \"started_utc\", \"toolchains_obse…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"ambient_after\", \"ambient_before\", \"cases_sha256\", \"contenders\", \"environment_allowlist\", \"finished_utc\", \"git_commit\", \"harness_sha256\", \"host\", \"protocol_id\", \"protocol_sha256\", \"schema_version\", \"started_utc\", \"toolchains_obse…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_webview_rejected_network.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 29140,
+      "sha256": "3095d66e3426afa67d72d48ad78e52f3dbb54879b66a7d949ed3c72fbc93de47",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29139,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 3511.3312,
+          "max": 3511.3312
+        },
+        "bundle_bytes": {
+          "min": 2305178,
+          "max": 2305178
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"ready_ms\", \"resources\", \"round\", \"schema_version\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"ready_ms\", \"resources\", \"round\", \"schema_version\", \"s…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_wpf_run01.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50709,
+      "sha256": "5f3d41dd3b1930816031883af89c673f49a0f6937cf18190dfcb38e86a83189b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "core_bytes",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "provenance",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_bundle_scope",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "core_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50708,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1726.8605,
+          "max": 1726.8605
+        },
+        "shell_bundle_bytes": {
+          "min": 228304,
+          "max": 228304
+        },
+        "core_bytes": {
+          "min": 1850880,
+          "max": 1850880
+        },
+        "bundle_bytes": {
+          "min": 2079184,
+          "max": 2079184
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_wpf_run02.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50710,
+      "sha256": "bd600637055872c850a221b96b93e4a7585dab169937b4a1aef8f2b67f43ae9f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "core_bytes",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "provenance",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_bundle_scope",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "core_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50709,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1592.6311,
+          "max": 1592.6311
+        },
+        "shell_bundle_bytes": {
+          "min": 228304,
+          "max": 228304
+        },
+        "core_bytes": {
+          "min": 1850880,
+          "max": 1850880
+        },
+        "bundle_bytes": {
+          "min": 2079184,
+          "max": 2079184
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_wpf_run03.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50710,
+      "sha256": "1b7f822769ea16c990546434e895e8df02ab80119414da7af8f94b4bd2b72e9b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "core_bytes",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "provenance",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_bundle_scope",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "core_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50709,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1565.9374,
+          "max": 1565.9374
+        },
+        "shell_bundle_bytes": {
+          "min": 228304,
+          "max": 228304
+        },
+        "core_bytes": {
+          "min": 1850880,
+          "max": 1850880
+        },
+        "bundle_bytes": {
+          "min": 2079184,
+          "max": 2079184
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust_run01.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50707,
+      "sha256": "60d3325063140ab5e223ed7746c480136a7625b5ee4564d5079e407f199a65fd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "core_bytes",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "provenance",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_bundle_scope",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "core_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50706,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1587.4917,
+          "max": 1587.4917
+        },
+        "shell_bundle_bytes": {
+          "min": 228304,
+          "max": 228304
+        },
+        "core_bytes": {
+          "min": 413696,
+          "max": 413696
+        },
+        "bundle_bytes": {
+          "min": 642000,
+          "max": 642000
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust_run02.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50686,
+      "sha256": "3ca22d6c1d3a22359839e7b8b2c0e882279fd841974f0240281d0821ccdb8f85",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "core_bytes",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "provenance",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_bundle_scope",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "core_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50685,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1547.5435,
+          "max": 1547.5435
+        },
+        "shell_bundle_bytes": {
+          "min": 228304,
+          "max": 228304
+        },
+        "core_bytes": {
+          "min": 413696,
+          "max": 413696
+        },
+        "bundle_bytes": {
+          "min": 642000,
+          "max": 642000
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_dotnet_wpf_rust_run03.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50707,
+      "sha256": "d47578573d7a45142a4b0f63de38f2aae8416de78055a6ece8786083dbfd9b9c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "core_bytes",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "provenance",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_bundle_scope",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "core_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_bundle_bytes",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50706,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1592.8721,
+          "max": 1592.8721
+        },
+        "shell_bundle_bytes": {
+          "min": 228304,
+          "max": 228304
+        },
+        "core_bytes": {
+          "min": 413696,
+          "max": 413696
+        },
+        "bundle_bytes": {
+          "min": 642000,
+          "max": 642000
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"core_bytes\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"provenance\", \"ready_ms\", \"resources\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_lifecycle_dotnet_wpf.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15040,
+      "sha256": "cae72419b81743f8bacd6f6912e278c70edd1bedad99c1ac7c61c8f3f4a9a868",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cold_start",
+          "crash_and_restart",
+          "finished_utc",
+          "hashes",
+          "protocol_id",
+          "provenance",
+          "round",
+          "scale_and_contrast",
+          "schema_version",
+          "single_instance",
+          "started_utc",
+          "system_id",
+          "warm_ui"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "finished_utc",
+          "protocol_id",
+          "round",
+          "schema_version",
+          "started_utc",
+          "system_id"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15039,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cold_start\", \"crash_and_restart\", \"finished_utc\", \"hashes\", \"protocol_id\", \"provenance\", \"round\", \"scale_and_contrast\", \"schema_version\", \"single_instance\", \"started_utc\", \"system_id\", \"warm_ui\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cold_start\", \"crash_and_restart\", \"finished_utc\", \"hashes\", \"protocol_id\", \"provenance\", \"round\", \"scale_and_contrast\", \"schema_version\", \"single_instance\", \"started_utc\", \"system_id\", \"warm_ui\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_lifecycle_dotnet_wpf_rust.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15021,
+      "sha256": "bf4dea54a4626fe8f75a4ed738b640cdce01e05f2ddd0a465e493ac9446003be",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cold_start",
+          "crash_and_restart",
+          "finished_utc",
+          "hashes",
+          "protocol_id",
+          "provenance",
+          "round",
+          "scale_and_contrast",
+          "schema_version",
+          "single_instance",
+          "started_utc",
+          "system_id",
+          "warm_ui"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "finished_utc",
+          "protocol_id",
+          "round",
+          "schema_version",
+          "started_utc",
+          "system_id"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15020,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cold_start\", \"crash_and_restart\", \"finished_utc\", \"hashes\", \"protocol_id\", \"provenance\", \"round\", \"scale_and_contrast\", \"schema_version\", \"single_instance\", \"started_utc\", \"system_id\", \"warm_ui\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cold_start\", \"crash_and_restart\", \"finished_utc\", \"hashes\", \"protocol_id\", \"provenance\", \"round\", \"scale_and_contrast\", \"schema_version\", \"single_instance\", \"started_utc\", \"system_id\", \"warm_ui\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_package_dotnet_wpf.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18307,
+      "sha256": "bfd81e5e6f1bf4e8b662ad808a95678bcb05deee7b7fa37379329bbb1c07887a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "failed_gates",
+          "gates",
+          "hashes",
+          "install",
+          "overall_passed",
+          "package_bytes",
+          "package_integrity",
+          "protocol_id",
+          "provenance",
+          "reinstall",
+          "reparse_defense",
+          "rollback",
+          "round",
+          "runtime_resolution_probe",
+          "schema_version",
+          "scope",
+          "signatures",
+          "system_id",
+          "tampered_update",
+          "uninstall_keep_data",
+          "uninstall_purge_data",
+          "update"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "overall_passed",
+          "package_bytes",
+          "protocol_id",
+          "round",
+          "schema_version",
+          "scope",
+          "system_id"
+        ],
+        "list_lengths": {
+          "failed_gates": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18306,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        },
+        "package_bytes": {
+          "min": 70890462,
+          "max": 70890462
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"failed_gates\", \"gates\", \"hashes\", \"install\", \"overall_passed\", \"package_bytes\", \"package_integrity\", \"protocol_id\", \"provenance\", \"reinstall\", \"reparse_defense\", \"rollback\", \"round\", \"runtime_resolution_probe\", \"schema_version\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"failed_gates\", \"gates\", \"hashes\", \"install\", \"overall_passed\", \"package_bytes\", \"package_integrity\", \"protocol_id\", \"provenance\", \"reinstall\", \"reparse_defense\", \"rollback\", \"round\", \"runtime_resolution_probe\", \"schema_version\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_package_dotnet_wpf_rust.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18312,
+      "sha256": "24276c876512d8e098d48cf280c84a959ebbb9e20b49a83b79796236931689e2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "failed_gates",
+          "gates",
+          "hashes",
+          "install",
+          "overall_passed",
+          "package_bytes",
+          "package_integrity",
+          "protocol_id",
+          "provenance",
+          "reinstall",
+          "reparse_defense",
+          "rollback",
+          "round",
+          "runtime_resolution_probe",
+          "schema_version",
+          "scope",
+          "signatures",
+          "system_id",
+          "tampered_update",
+          "uninstall_keep_data",
+          "uninstall_purge_data",
+          "update"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "overall_passed",
+          "package_bytes",
+          "protocol_id",
+          "round",
+          "schema_version",
+          "scope",
+          "system_id"
+        ],
+        "list_lengths": {
+          "failed_gates": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18311,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        },
+        "package_bytes": {
+          "min": 69453280,
+          "max": 69453280
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"failed_gates\", \"gates\", \"hashes\", \"install\", \"overall_passed\", \"package_bytes\", \"package_integrity\", \"protocol_id\", \"provenance\", \"reinstall\", \"reparse_defense\", \"rollback\", \"round\", \"runtime_resolution_probe\", \"schema_version\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"failed_gates\", \"gates\", \"hashes\", \"install\", \"overall_passed\", \"package_bytes\", \"package_integrity\", \"protocol_id\", \"provenance\", \"reinstall\", \"reparse_defense\", \"rollback\", \"round\", \"runtime_resolution_probe\", \"schema_version\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_reproducibility.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 105728,
+      "sha256": "bb69ad4e8c47321ee385e6a83a5517be87c7f3d98cbcf54f35736dd81a0c1ce1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "builds",
+          "comparisons",
+          "evidence_id",
+          "gate_semantics",
+          "gates",
+          "generated_utc",
+          "input_snapshots",
+          "passed",
+          "provenance",
+          "recipe",
+          "rust_static_runtime",
+          "schema_version",
+          "scope",
+          "toolchains"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "evidence_id",
+          "generated_utc",
+          "passed",
+          "schema_version"
+        ],
+        "list_lengths": {
+          "builds": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 105727,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"builds\", \"comparisons\", \"evidence_id\", \"gate_semantics\", \"gates\", \"generated_utc\", \"input_snapshots\", \"passed\", \"provenance\", \"recipe\", \"rust_static_runtime\", \"schema_version\", \"scope\", \"toolchains\"], \"n_keys\": 14, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"builds\", \"comparisons\", \"evidence_id\", \"gate_semantics\", \"gates\", \"generated_utc\", \"input_snapshots\", \"passed\", \"provenance\", \"recipe\", \"rust_static_runtime\", \"schema_version\", \"scope\", \"toolchains\"], \"n_keys\": 14, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_supply_chain.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5226,
+      "sha256": "cbc8c180fbe9b2118fc9bf87720470f18c03d76a741ad53dbef15e750591e57e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "known_gaps",
+          "protocol_id",
+          "provenance",
+          "round",
+          "schema_version",
+          "systems"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "protocol_id",
+          "round",
+          "schema_version"
+        ],
+        "list_lengths": {
+          "systems": 2,
+          "known_gaps": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5225,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"known_gaps\", \"protocol_id\", \"provenance\", \"round\", \"schema_version\", \"systems\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"known_gaps\", \"protocol_id\", \"provenance\", \"round\", \"schema_version\", \"systems\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/raw/round_b_tauri_rust_rejected_network.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25629,
+      "sha256": "f3a6a6ede482967c287b1a137c34961b9f649da69bfe0ce145ad8b166e33d852",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accessibility",
+          "bundle_bytes",
+          "cleanup",
+          "command",
+          "display_name",
+          "environment",
+          "finished_utc",
+          "functional",
+          "hashes",
+          "owned_process_ids_before_close",
+          "protocol_id",
+          "ready_ms",
+          "resources",
+          "round",
+          "schema_version",
+          "shell_id",
+          "started_utc"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bundle_bytes",
+          "display_name",
+          "finished_utc",
+          "protocol_id",
+          "ready_ms",
+          "round",
+          "schema_version",
+          "shell_id",
+          "started_utc"
+        ],
+        "list_lengths": {
+          "command": 1,
+          "owned_process_ids_before_close": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25628,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "ready_ms": {
+          "min": 1436.224,
+          "max": 1436.224
+        },
+        "bundle_bytes": {
+          "min": 4278784,
+          "max": 4278784
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"ready_ms\", \"resources\", \"round\", \"schema_version\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accessibility\", \"bundle_bytes\", \"cleanup\", \"command\", \"display_name\", \"environment\", \"finished_utc\", \"functional\", \"hashes\", \"owned_process_ids_before_close\", \"protocol_id\", \"ready_ms\", \"resources\", \"round\", \"schema_version\", \"s…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/round_a_scorecard.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61386,
+      "sha256": "9dd92637a9444a58a4b101eff890fda9a7aaed3df553a21870afd5a1c8172295",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "pareto",
+          "protocol_id",
+          "round_a_promotion",
+          "schema_version",
+          "scores",
+          "source_results_sha256",
+          "weights_unchanged"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "protocol_id",
+          "schema_version",
+          "source_results_sha256",
+          "weights_unchanged"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61385,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"pareto\", \"protocol_id\", \"round_a_promotion\", \"schema_version\", \"scores\", \"source_results_sha256\", \"weights_unchanged\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"pareto\", \"protocol_id\", \"round_a_promotion\", \"schema_version\", \"scores\", \"source_results_sha256\", \"weights_unchanged\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/round_b_sbom_dotnet_wpf.cdx.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6030,
+      "sha256": "ea26e7c9d40450421a0629c222cbef731ee6f54b1892004b0c11c73b82695396",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "$schema",
+          "bomFormat",
+          "components",
+          "dependencies",
+          "metadata",
+          "serialNumber",
+          "specVersion",
+          "version"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "$schema",
+          "bomFormat",
+          "serialNumber",
+          "specVersion",
+          "version"
+        ],
+        "list_lengths": {
+          "components": 4,
+          "dependencies": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6029,
+        "version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"$schema\", \"bomFormat\", \"components\", \"dependencies\", \"metadata\", \"serialNumber\", \"specVersion\", \"version\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"$schema\", \"bomFormat\", \"components\", \"dependencies\", \"metadata\", \"serialNumber\", \"specVersion\", \"version\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/round_b_sbom_dotnet_wpf_rust.cdx.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10422,
+      "sha256": "c51876e4bb51433a139e3e03a910d7f7e4de6c81e56a8b01a921df792f04ddf6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "$schema",
+          "bomFormat",
+          "components",
+          "dependencies",
+          "metadata",
+          "serialNumber",
+          "specVersion",
+          "version"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "$schema",
+          "bomFormat",
+          "serialNumber",
+          "specVersion",
+          "version"
+        ],
+        "list_lengths": {
+          "components": 11,
+          "dependencies": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10421,
+        "version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"$schema\", \"bomFormat\", \"components\", \"dependencies\", \"metadata\", \"serialNumber\", \"specVersion\", \"version\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"$schema\", \"bomFormat\", \"components\", \"dependencies\", \"metadata\", \"serialNumber\", \"specVersion\", \"version\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/round_b_scorecard.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 52929,
+      "sha256": "c6d273b5c59641b982603243af0a784f2ceb804bf80a9cba2759f8484766cf91",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "decision",
+          "limitations",
+          "pareto",
+          "protocol_id",
+          "rejected_candidates",
+          "round",
+          "rounding",
+          "schema_version",
+          "scores",
+          "source_evidence",
+          "weights",
+          "weights_unchanged"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "protocol_id",
+          "round",
+          "rounding",
+          "schema_version",
+          "weights_unchanged"
+        ],
+        "list_lengths": {
+          "rejected_candidates": 2,
+          "limitations": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 52928,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"decision\", \"limitations\", \"pareto\", \"protocol_id\", \"rejected_candidates\", \"round\", \"rounding\", \"schema_version\", \"scores\", \"source_evidence\", \"weights\", \"weights_unchanged\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"decision\", \"limitations\", \"pareto\", \"protocol_id\", \"rejected_candidates\", \"round\", \"rounding\", \"schema_version\", \"scores\", \"source_evidence\", \"weights\", \"weights_unchanged\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/round_b_wpf.png": {
+      "parser": "binary_inventory",
+      "bytes": 106556,
+      "sha256": "17eaf1dc861bc3452edff14356735a19a0778e2826d3c6207b0421da7819f3b1",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/round_b_wpf.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1740,
+        "height": 1020
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 106555
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 106555,
+            "line": 0,
+            "text": "eof bytes=106556"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A568A03-BA3C.pma": {
+      "parser": "binary_inventory",
+      "bytes": 1310720,
+      "sha256": "448f4c9f9d284d5766c436753c4413062bd24a406404cd6a77b6b10108984a13",
+      "format": "pma",
+      "magic_hex": "dc058340000014000000140003000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A568A03-BA3C.pma"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pma"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1310719
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=dc058340000014000000140003000000 format=pma"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1310719,
+            "line": 0,
+            "text": "eof bytes=1310720"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Crashpad/settings.dat": {
+      "parser": "binary_inventory",
+      "bytes": 288,
+      "sha256": "3486ee85d6b2815d2cccedcf9c0f653744d038c5924e53dc2c9cb5042c2e7912",
+      "format": "dat",
+      "magic_hex": "73645043070000000100000000000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Crashpad/settings.dat"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "dat"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=73645043070000000100000000000000 format=dat"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 287,
+            "line": 0,
+            "text": "eof bytes=288"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Crashpad/throttle_store.dat": {
+      "parser": "binary_inventory",
+      "bytes": 20,
+      "sha256": "41c91a9c93d76295746a149dce7ebb3b9ee2cb551d84365fff108e59a61cc304",
+      "format": "dat",
+      "magic_hex": "6c6576656c3d6e6f6e65206578706972",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Crashpad/throttle_store.dat"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "dat"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=6c6576656c3d6e6f6e65206578706972 format=dat"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19,
+            "line": 0,
+            "text": "eof bytes=20"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/CrashpadMetrics-active.pma": {
+      "parser": "binary_inventory",
+      "bytes": 16384,
+      "sha256": "c82d72062886b640799e58407912fa943a8aa0fd25f398225e2316dc414d6527",
+      "format": "pma",
+      "magic_hex": "dc058340004000000040000003000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/CrashpadMetrics-active.pma"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pma"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16383
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=dc058340004000000040000003000000 format=pma"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16383,
+            "line": 0,
+            "text": "eof bytes=16384"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/BookmarkMergedSurfaceOrdering": {
+      "parser": "binary_inventory",
+      "bytes": 6,
+      "sha256": "4489f9e3e454748b3521eb214e0a5694d562cff3d9ff511cb456953c8f534c00",
+      "format": "unknown",
+      "magic_hex": "7b0d0a7d0d0a",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/BookmarkMergedSurfaceOrdering"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=7b0d0a7d0d0a format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5,
+            "line": 0,
+            "text": "eof bytes=6"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0": {
+      "parser": "binary_inventory",
+      "bytes": 230,
+      "sha256": "7b6aaf3bb6c91a8cdbeb23274b2c063af9f322e22c8c27675cae2eb5e1c4f45d",
+      "format": "unknown",
+      "magic_hex": "305c72a71b6dfbfc0500000032000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 229
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=305c72a71b6dfbfc0500000032000000 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 229,
+            "line": 0,
+            "text": "eof bytes=230"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Code Cache/js/index": {
+      "parser": "exclude",
+      "bytes": 24,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Code Cache/js/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 72,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Code Cache/wasm/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 48,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/DawnGraphiteCache/data_0": {
+      "parser": "exclude",
+      "bytes": 8192,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/DawnGraphiteCache/data_1": {
+      "parser": "exclude",
+      "bytes": 270336,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/DawnGraphiteCache/data_2": {
+      "parser": "exclude",
+      "bytes": 8192,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/DawnGraphiteCache/data_3": {
+      "parser": "exclude",
+      "bytes": 8192,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/DawnGraphiteCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/DawnWebGPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Rules/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 38,
+      "sha256": "1c43a1bda1e458863c46dfae7fb43bfb3e27802169f37320399b1dd799a819ac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 38,
+        "max_line_bytes": 38
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Rules/CURRENT": {
+      "parser": "binary_inventory",
+      "bytes": 16,
+      "sha256": "0f1bad70c7bd1e0a69562853ec529355462fcd0423263a3d39d6d0d70b780443",
+      "format": "unknown",
+      "magic_hex": "4d414e49464553542d3030303030310a",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Rules/CURRENT"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=4d414e49464553542d3030303030310a format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15,
+            "line": 0,
+            "text": "eof bytes=16"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Rules/LOG": {
+      "parser": "exclude",
+      "bytes": 441,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Rules/MANIFEST-000001": {
+      "parser": "binary_inventory",
+      "bytes": 41,
+      "sha256": "f9d31b278e215eb0d0e9cd709edfa037e828f36214ab7906f612160fead4b2b4",
+      "format": "unknown",
+      "magic_hex": "957cb9c5220001011a6c6576656c6462",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Rules/MANIFEST-000001"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=957cb9c5220001011a6c6576656c6462 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40,
+            "line": 0,
+            "text": "eof bytes=41"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension Scripts/LOG": {
+      "parser": "exclude",
+      "bytes": 445,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension State/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 114,
+      "sha256": "e2610960c3757d1757f206c7b84378efa22d86dcf161a98096a5f0e56e1a367e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 114,
+        "max_line_bytes": 114
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�f�5 \u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Extension State/LOG": {
+      "parser": "exclude",
+      "bytes": 441,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Favicons": {
+      "parser": "binary_inventory",
+      "bytes": 20480,
+      "sha256": "3acaa11cefe4c5008978f3db3014ae1f8939ee079c031832bebe29d442292add",
+      "format": "sqlite",
+      "magic_hex": "53514c69746520666f726d6174203300",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Favicons"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "sqlite"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=53514c69746520666f726d6174203300 format=sqlite"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 0,
+            "text": "eof bytes=20480"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/GPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/History": {
+      "parser": "exclude",
+      "bytes": 212992,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Local Storage/leveldb/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 30,
+      "sha256": "8bd2ea70a0b70c91de138a5b87c7936c6a6fa7c4275c54b97f4ef0ccc5b79bb4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 30,
+        "max_line_bytes": 30
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�\u001b�5\u0017\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u0007VERSION\u00011"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�\u001b�5\u0017\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u0007VERSION\u00011"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Local Storage/leveldb/LOG": {
+      "parser": "exclude",
+      "bytes": 453,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Login Data": {
+      "parser": "binary_inventory",
+      "bytes": 43008,
+      "sha256": "8cc791561cb03ab43e11efdb930e3e74f22ecf51b8ad9782f13785334515822b",
+      "format": "sqlite",
+      "magic_hex": "53514c69746520666f726d6174203300",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Login Data"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "sqlite"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43007
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=53514c69746520666f726d6174203300 format=sqlite"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43007,
+            "line": 0,
+            "text": "eof bytes=43008"
+          }
+        ]
+      }
+    }
+  }
+}

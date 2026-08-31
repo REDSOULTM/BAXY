@@ -1,0 +1,3376 @@
+{
+  "batch_id": "evidence_assets-056-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 44,
+  "hash_ok": 44,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Providers.Windows.Tests.trx": {
+      "parser": "xml",
+      "bytes": 560595,
+      "sha256": "902cc141b0b068cd0281529a9c936c067ed86f7965ad9d1d842df80f89d4d70f",
+      "rows": 2066,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 404,
+          "Execution": 404,
+          "TestMethod": 404,
+          "UnitTest": 404,
+          "TestEntry": 404,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 560594
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2065,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2066,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Contracts.Tests.trx": {
+      "parser": "xml",
+      "bytes": 67890,
+      "sha256": "2592b9c33880c87fecad80d4c8f700a1f133d747ee6b31e26163ffa80e4dd28e",
+      "rows": 269,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 51,
+          "Execution": 51,
+          "TestMethod": 51,
+          "UnitTest": 51,
+          "TestEntry": 51,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67889
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 268,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 269,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Integration.Tests.trx": {
+      "parser": "xml",
+      "bytes": 1590138,
+      "sha256": "ac80f9474e3fdd4de3f025a0433a054a957a2eec47e2a1e4c5656c0bfd4a1dc3",
+      "rows": 5725,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "TestEntry",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "StackTrace",
+          "StdOut",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 1126,
+          "TestEntry": 1126,
+          "Execution": 1125,
+          "TestMethod": 1125,
+          "UnitTest": 1125,
+          "Output": 22,
+          "Message": 21,
+          "ErrorInfo": 21,
+          "StackTrace": 13,
+          "StdOut": 9,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1590137
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 5724,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 5725,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Kernel.Tests.trx": {
+      "parser": "xml",
+      "bytes": 116939,
+      "sha256": "78d45e8f3776956abfe10b315cc2979641e6c9e4f4d5f8cb090b3b17f278b4a4",
+      "rows": 472,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 90,
+          "Execution": 90,
+          "TestMethod": 90,
+          "UnitTest": 90,
+          "TestEntry": 90,
+          "StdOut": 3,
+          "Output": 3,
+          "Message": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 116938
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 471,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 472,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v3/Baxy.Providers.Windows.Tests.trx": {
+      "parser": "xml",
+      "bytes": 560595,
+      "sha256": "493c31e0e8dee350f7db0cb8930cafcf86bacf73506dbfdcfee67dee9d2533d2",
+      "rows": 2066,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 404,
+          "Execution": 404,
+          "TestMethod": 404,
+          "UnitTest": 404,
+          "TestEntry": 404,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 560594
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2065,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2066,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Contracts.Tests.trx": {
+      "parser": "xml",
+      "bytes": 67890,
+      "sha256": "8ff4fd8b9750c8c5e60f3b8b41317f62aa0319e572359a662821baa323bbd427",
+      "rows": 269,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 51,
+          "Execution": 51,
+          "TestMethod": 51,
+          "UnitTest": 51,
+          "TestEntry": 51,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67889
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 268,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 269,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Integration.Tests.trx": {
+      "parser": "xml",
+      "bytes": 1568750,
+      "sha256": "1fa4b56d206cc5167d43ebb5b9eebcf88d167810809e63cccf334fad93a2d4a9",
+      "rows": 5673,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "TestEntry",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 1126,
+          "TestEntry": 1126,
+          "Execution": 1125,
+          "TestMethod": 1125,
+          "UnitTest": 1125,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1568749
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 5672,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 5673,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Kernel.Tests.trx": {
+      "parser": "xml",
+      "bytes": 116939,
+      "sha256": "3107cdfd8895c058240d5720bb7f129dc9d234005798ec2bdce206883b2caf41",
+      "rows": 472,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 90,
+          "Execution": 90,
+          "TestMethod": 90,
+          "UnitTest": 90,
+          "TestEntry": 90,
+          "StdOut": 3,
+          "Output": 3,
+          "Message": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 116938
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 471,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 472,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Providers.Windows.Tests.trx": {
+      "parser": "xml",
+      "bytes": 560595,
+      "sha256": "91431ff43f8889ecb35e498b544c7b17626c31ac8b89230f06460d88e086f027",
+      "rows": 2066,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 404,
+          "Execution": 404,
+          "TestMethod": 404,
+          "UnitTest": 404,
+          "TestEntry": 404,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 560594
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2065,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2066,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v4/Baxy.Setup.Tests.trx": {
+      "parser": "xml",
+      "bytes": 629436,
+      "sha256": "4f52a9e32b9fd9ac398fd92b9f47012ffa0b7cabeef57a2b3e1a7a6f75683356",
+      "rows": 2415,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 473,
+          "Execution": 473,
+          "TestMethod": 473,
+          "UnitTest": 473,
+          "TestEntry": 473,
+          "StdOut": 10,
+          "Output": 10,
+          "Message": 9,
+          "ErrorInfo": 9,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 629435
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2414,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2415,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Contracts.Tests.trx": {
+      "parser": "xml",
+      "bytes": 67890,
+      "sha256": "29e106389aa575ac964a4a75213728947236d8f1cbccd3da365e8996dfb5e95f",
+      "rows": 269,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 51,
+          "Execution": 51,
+          "TestMethod": 51,
+          "UnitTest": 51,
+          "TestEntry": 51,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67889
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 268,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 269,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Integration.Tests.trx": {
+      "parser": "xml",
+      "bytes": 1567446,
+      "sha256": "9ec051527166f1f6ee9fd7a4cfaac7439520c326819ad2e41704a119cd11f384",
+      "rows": 5668,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "TestEntry",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 1125,
+          "TestEntry": 1125,
+          "Execution": 1124,
+          "TestMethod": 1124,
+          "UnitTest": 1124,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1567445
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 5667,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 5668,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Kernel.Tests.trx": {
+      "parser": "xml",
+      "bytes": 116939,
+      "sha256": "fd20470471625f78a33180882633e6ac21813bf1c74a69ec039a42255be4a68c",
+      "rows": 472,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 90,
+          "Execution": 90,
+          "TestMethod": 90,
+          "UnitTest": 90,
+          "TestEntry": 90,
+          "StdOut": 3,
+          "Output": 3,
+          "Message": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 116938
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 471,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 472,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Providers.Windows.Tests.trx": {
+      "parser": "xml",
+      "bytes": 560595,
+      "sha256": "65fade1dcc726d6e423b6e174bfe8814661986614ca4f3fe111ed61acf98460e",
+      "rows": 2066,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 404,
+          "Execution": 404,
+          "TestMethod": 404,
+          "UnitTest": 404,
+          "TestEntry": 404,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 560594
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2065,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2066,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final/Baxy.Setup.Tests.trx": {
+      "parser": "xml",
+      "bytes": 629436,
+      "sha256": "2332603bb774ae32e8f2c4c28e6f12ce39da33ffa4ca73657b601646c6360397",
+      "rows": 2415,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 473,
+          "Execution": 473,
+          "TestMethod": 473,
+          "UnitTest": 473,
+          "TestEntry": 473,
+          "StdOut": 10,
+          "Output": 10,
+          "Message": 9,
+          "ErrorInfo": 9,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 629435
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2414,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2415,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Contracts.Tests.trx": {
+      "parser": "xml",
+      "bytes": 67890,
+      "sha256": "71625ea3214b4025c0a69c4b1fed59eef724cf4b911559d052a4bf13351f51d8",
+      "rows": 269,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 51,
+          "Execution": 51,
+          "TestMethod": 51,
+          "UnitTest": 51,
+          "TestEntry": 51,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67889
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 268,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 269,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Integration.Tests.trx": {
+      "parser": "xml",
+      "bytes": 1564822,
+      "sha256": "4c131d1773aaafde1bc31e2480e117f7a8705a3f3fb1a69209c46f77616e1277",
+      "rows": 5658,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "TestEntry",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 1123,
+          "TestEntry": 1123,
+          "Execution": 1122,
+          "TestMethod": 1122,
+          "UnitTest": 1122,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1564821
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 5657,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 5658,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Kernel.Tests.trx": {
+      "parser": "xml",
+      "bytes": 116939,
+      "sha256": "9401514ad87dafa8629c88377132de2ecc7e99d6a30dea5ae71566b300717a36",
+      "rows": 472,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 90,
+          "Execution": 90,
+          "TestMethod": 90,
+          "UnitTest": 90,
+          "TestEntry": 90,
+          "StdOut": 3,
+          "Output": 3,
+          "Message": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 116938
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 471,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 472,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Providers.Windows.Tests.trx": {
+      "parser": "xml",
+      "bytes": 560595,
+      "sha256": "22ad1c5d225de57373ba0f9fa2a571b66a35678b83c165acdc618176e99a7076",
+      "rows": 2066,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 404,
+          "Execution": 404,
+          "TestMethod": 404,
+          "UnitTest": 404,
+          "TestEntry": 404,
+          "StdOut": 9,
+          "Output": 9,
+          "Message": 8,
+          "ErrorInfo": 8,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 560594
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2065,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2066,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full/Baxy.Setup.Tests.trx": {
+      "parser": "xml",
+      "bytes": 629436,
+      "sha256": "f49b433cebdebe4fe280b4dc28adeadcae000304f351486c0f37a2dc8ac08da2",
+      "rows": 2415,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 473,
+          "Execution": 473,
+          "TestMethod": 473,
+          "UnitTest": 473,
+          "TestEntry": 473,
+          "StdOut": 10,
+          "Output": 10,
+          "Message": 9,
+          "ErrorInfo": 9,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 629435
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2414,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2415,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/abrupt-restart-20x100.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7928,
+      "sha256": "150dfc484c7134e0521a41fec201e8a48f9f73fd3d60ad747f3707c3cbb35228",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "cycles",
+          "errors",
+          "queuedRequestsBeforeKill",
+          "results",
+          "schema",
+          "successfulCycles"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "cycles",
+          "queuedRequestsBeforeKill",
+          "schema",
+          "successfulCycles"
+        ],
+        "list_lengths": {
+          "errors": 0,
+          "results": 20
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7927,
+        "cycles": {
+          "min": 20,
+          "max": 20
+        },
+        "queuedRequestsBeforeKill": {
+          "min": 100,
+          "max": 100
+        },
+        "successfulCycles": {
+          "min": 20,
+          "max": 20
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"cycles\", \"errors\", \"queuedRequestsBeforeKill\", \"results\", \"schema\", \"successfulCycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"cycles\", \"errors\", \"queuedRequestsBeforeKill\", \"results\", \"schema\", \"successfulCycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/catalog-smoke-168.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 73475,
+      "sha256": "0e45ecf7d7011b3826f0b07203d3a4027bf74df43d589aad9255ee38d61730f5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "core",
+          "core_version",
+          "measured_at",
+          "schema",
+          "seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "measured_at",
+          "schema",
+          "seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 168
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 73474,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "seconds": {
+          "min": 145.535,
+          "max": 145.535
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"measured_at\", \"schema\", \"seconds\", \"stderr\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"measured_at\", \"schema\", \"seconds\", \"stderr\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/final-audio-status.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1208,
+      "sha256": "e7fb89dbfc85e8d64f80b05fcc5f98dd8076158762e2469518e0665f946b7af7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1207,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 80980,
+          "max": 80980
+        },
+        "elapsed_seconds": {
+          "min": 1.3278415000095265,
+          "max": 1.3278415000095265
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/parallel-core-start-12x3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17917,
+      "sha256": "39295e47acd11e021b18d7b4ea0b85356e7a6cc3a28faab9797badcfbe9d1240",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "errors",
+          "hello_seconds",
+          "instances",
+          "parallel",
+          "response_seconds",
+          "results",
+          "rounds",
+          "schema",
+          "successful_instances"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "instances",
+          "parallel",
+          "rounds",
+          "schema",
+          "successful_instances"
+        ],
+        "list_lengths": {
+          "errors": 0,
+          "results": 36
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17916,
+        "parallel": {
+          "min": 12,
+          "max": 12
+        },
+        "rounds": {
+          "min": 3,
+          "max": 3
+        },
+        "instances": {
+          "min": 36,
+          "max": 36
+        },
+        "successful_instances": {
+          "min": 36,
+          "max": 36
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"errors\", \"hello_seconds\", \"instances\", \"parallel\", \"response_seconds\", \"results\", \"rounds\", \"schema\", \"successful_instances\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"errors\", \"hello_seconds\", \"instances\", \"parallel\", \"response_seconds\", \"results\", \"rounds\", \"schema\", \"successful_instances\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-burst-5000.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 574,
+      "sha256": "dbccba562b47011168fc8c625b70fb9a5d82adc3f23544e0a94908ca7a0cd7ba",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "mismatches",
+          "missing_count",
+          "missing_request_ids",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "statuses",
+          "stderr",
+          "writer_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "missing_count",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "missing_request_ids": 0,
+          "mismatches": 0,
+          "writer_errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 573,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "requests": {
+          "min": 5000,
+          "max": 5000
+        },
+        "responses": {
+          "min": 5000,
+          "max": 5000
+        },
+        "elapsed_seconds": {
+          "min": 258.75811650000105,
+          "max": 258.75811650000105
+        },
+        "responses_per_second": {
+          "min": 19.3230653694296,
+          "max": 19.3230653694296
+        },
+        "missing_count": {
+          "min": 0,
+          "max": 0
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-fuzz-500.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 536,
+      "sha256": "d05b6fc922c5fb67e599ba7fc80e9d4fe462e7dad0847fde6d275cdfff9e7252",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalogCount",
+          "completedCases",
+          "core",
+          "coreVersion",
+          "elapsedSeconds",
+          "invalidErrorCodes",
+          "invalidResponseTypes",
+          "problems",
+          "processExitCode",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "catalogCount",
+          "completedCases",
+          "core",
+          "coreVersion",
+          "elapsedSeconds",
+          "processExitCode",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "problems": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 535,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "cases": {
+          "min": 500,
+          "max": 500
+        },
+        "completedCases": {
+          "min": 500,
+          "max": 500
+        },
+        "elapsedSeconds": {
+          "min": 16.280569700000342,
+          "max": 16.280569700000342
+        },
+        "processExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"completedCases\", \"core\", \"coreVersion\", \"elapsedSeconds\", \"invalidErrorCodes\", \"invalidResponseTypes\", \"problems\", \"processExitCode\", \"schema\", \"stderr\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"completedCases\", \"core\", \"coreVersion\", \"elapsedSeconds\", \"invalidErrorCodes\", \"invalidResponseTypes\", \"problems\", \"processExitCode\", \"schema\", \"stderr\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/protocol-recovery.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2815,
+      "sha256": "80b582298aac3217590697861d5cf09d7222759e7a2f0f6006cf90778eb085b6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "errors",
+          "process_exit_code",
+          "safe_rejections",
+          "schema",
+          "stderr",
+          "successful_recoveries"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "process_exit_code",
+          "safe_rejections",
+          "schema",
+          "stderr",
+          "successful_recoveries"
+        ],
+        "list_lengths": {
+          "cases": 11,
+          "errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2814,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "safe_rejections": {
+          "min": 11,
+          "max": 11
+        },
+        "successful_recoveries": {
+          "min": 11,
+          "max": 11
+        },
+        "elapsed_seconds": {
+          "min": 0.3822593000004417,
+          "max": 0.3822593000004417
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"errors\", \"process_exit_code\", \"safe_rejections\", \"schema\", \"stderr\", \"successful_recoveries\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"errors\", \"process_exit_code\", \"safe_rejections\", \"schema\", \"stderr\", \"successful_recoveries\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/replay-chain.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3211,
+      "sha256": "b4e1e655d77cba1207cba8ce53d4cbf2b212536bf3faba2141e98fdd5381f555",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "responses",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "responses": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3210,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 0.14088339999580057,
+          "max": 0.14088339999580057
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"responses\", \"schema\", \"stderr\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"responses\", \"schema\", \"stderr\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/restart-replay-chain.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4154,
+      "sha256": "6a0d6334efea97bea70e7a33ba78bb7b217e258845388bfb15b3a0298259e979",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogCount",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "rounds",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema"
+        ],
+        "list_lengths": {
+          "rounds": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4153,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 3.250496500004374,
+          "max": 3.250496500004374
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"rounds\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"rounds\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50596,
+      "sha256": "ca421a9a1c40f7c3f28d87581515c287477f2f8e0f534b1d8b483a7dc5f0724b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 62
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50595,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 62,
+          "max": 62
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50854,
+      "sha256": "4931d913f3a9ad227e3300b03b21a680cfee81c34d4cc8ac42efa8260c690d7d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 62
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50853,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 62,
+          "max": 62
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-adversarial-62.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 48192,
+      "sha256": "a429a89905eadb98f2042012f5b3c47c95f0473f0cbec6b136425ac3f47edeff",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 62
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 48191,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 59,
+          "max": 59
+        },
+        "failed": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19800,
+      "sha256": "63d3b1e3a6c57d40320531e2cd8be17423aaa0a3e19ef21bb3a98431f4ffd0f8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19799,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 12,
+          "max": 12
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-cardinality-12-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19799,
+      "sha256": "2ba9c8d5b8eb9cea64efcc19dbf15ac785c34c24f9268331600735f429bde80e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19798,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 12,
+          "max": 12
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10932,
+      "sha256": "8639454232bbe9587c2b7c492e0a6847fb80a666e94b38b945106e35d1bc69a1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10931,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 10,
+          "max": 10
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-live-regressions-10.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10946,
+      "sha256": "6b52105f7b83e5d3e2dbcd39cf1ece82d5ff1b41af837fabfc0ebff0e3d7e0e3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10945,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 10,
+          "max": 10
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43700,
+      "sha256": "1911306aabd095850f226689357cb9b0e0e6e048f9ba68da537a0fbff774a778",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43699,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 60,
+          "max": 60
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43700,
+      "sha256": "d7678443a67d3c9f07bc42f099abd5c05ef97cd230cc7a583fafff92a389d497",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43699,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 60,
+          "max": 60
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final-v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43687,
+      "sha256": "4a2ec7afb219af624807a66969b3eee6b686b8ba5f7c1989819357ec39e460f3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43686,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 60,
+          "max": 60
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43819,
+      "sha256": "d6249bf8254eb72c8f4da672d6b2ae90b11c8772bb02fa9a7655da69896c1f7c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43818,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 59,
+          "max": 59
+        },
+        "failed": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-original-60.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42898,
+      "sha256": "2aecfa0a2c0b90d8b81e3c08921927ddf71549518daaf55e947fbeb802133793",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42897,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 57,
+          "max": 57
+        },
+        "failed": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3456,
+      "sha256": "ca03db18f0962944d0adedafad3850f57611767b9a40aba139418a2e00044541",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3455,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 4,
+          "max": 4
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/global/routing-partial-effects-4-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3457,
+      "sha256": "a94b2df9a741f5b83369146957c518ba85b9313e7b32249fa280931ce2ab1464",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3456,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 4,
+          "max": 4
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/python-full-final-v2.xml": {
+      "parser": "xml",
+      "bytes": 168481,
+      "sha256": "708aa7bb6fac075f5d1632606ff187987537ad059c14a483c55bf9d979d58b3f",
+      "rows": 1078,
+      "schema": {
+        "keys": [
+          "testcase",
+          "testsuite",
+          "testsuites"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "testcase": 1076,
+          "testsuite": 1,
+          "testsuites": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 168480
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<testcase>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<testcase>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1077,
+            "text": "<testsuite>"
+          },
+          {
+            "offset": 0,
+            "line": 1078,
+            "text": "<testsuites>"
+          }
+        ]
+      }
+    }
+  }
+}

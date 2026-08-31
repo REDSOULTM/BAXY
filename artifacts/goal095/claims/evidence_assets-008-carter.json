@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-008-carter",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:38:31Z",
+  "lease_expires_utc": "2026-08-31T11:38:31Z",
+  "estimated_tokens": 294680,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 71,
+  "source_id": "carter",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/evidence_assets-008-carter.json",
+  "closed_utc": "2026-08-31T05:38:32Z"
+}

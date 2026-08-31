@@ -107,7 +107,20 @@ Campana `code_tests` (09.5.3, 2026-08-31):
 - Cursor: `artifacts/goal095/campaigns/code_tests.json`
 - `next_human_prompt`: `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` (`docs` ya vacio)
 
+Campana `evidence_assets` (09.5.4, 2026-08-31):
+
+- **132/132 complete**, pending 0, claimed 0
+- Cola v1 envuelta in situ; `evidence_assets-001-carter` se reclamo y se reanudo (claimed_utc conservado)
+- 13138 archivos: 7212 `parseado_completo`, 3884 `binario_inventariado`, 2042 `excluido_razonado` (rust/dotnet leftovers, shm, caches). Cero `leido`. El manifiesto 09.5.1 ya habia sacado duplicados de la cola; no hubo colision de hash con docs/code
+- Parsers streaming: schema, filas, sha256, bytes, distribucion, extremos, errores, muestras head+tail. Inventario binario: hash, formato, tamano, procedencia, receta, consumidores, benchmark; `works=false` (existir no es funcionar)
+- Metricas con corpus, denominador, version, hardware y limitaciones. 543 tarjetas `negative` (false positives) y 2500 `fracaso`/`negativo` se conservan. Cero ranking «modelo mejor» sin comparacion equivalente
+- Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
+- Smoke contemporaneo omitido; resultados recuperados
+- Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
+- `next_human_prompt`: `09.5.5_MODELOS_ROUTER_IDIOMAS.md`
+- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md`
+
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md`.
-No relanzar 09.5.1, 09.5.2 ni 09.5.3.
+Prompt humano distinto: `documentacion/sprints/09.5.5_MODELOS_ROUTER_IDIOMAS.md`.
+No relanzar 09.5.1, 09.5.2, 09.5.3 ni 09.5.4.

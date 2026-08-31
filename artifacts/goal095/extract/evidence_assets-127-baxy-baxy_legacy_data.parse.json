@@ -1,0 +1,3873 @@
+{
+  "batch_id": "evidence_assets-127-baxy-baxy_legacy_data",
+  "source_id": "baxy",
+  "file_count": 58,
+  "hash_ok": 58,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "legacy/data/logs/gemma4-audit/activation-legacy-b9959-release-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 29383,
+      "sha256": "8eb0dad938d62dcb40b57cd34937ea16daf320612962473d8db8651304369647",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29382,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-legacy-b9959.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 29742,
+      "sha256": "360ade2c68e2f8a503a2441e3e6c7887a7c595245f65c44bf65d7846f31471ef",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29741,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-legacy-post-hardening-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 35871,
+      "sha256": "ebad90f7bf0c7b908341b78da10c353fc4938fe62e6578aa627fe5ac6ba8e174",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35870,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-b9959-contract-official-mmproj.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37777,
+      "sha256": "201ed921c7773ffb2a6461105b6bf06959b8a9544555c7a798a1baedfb60beaa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37776,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-b9959-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31458,
+      "sha256": "632e9685c4850855ddc94959d873f429ff4932b2c44d386086ce85eb4c3db9b8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31457,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-b9959-release-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31206,
+      "sha256": "41bd2ed788038a97c795b3c1fa33b119adab26b3a61984a7aa2380ee886467f0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31205,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-b9959.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31428,
+      "sha256": "cd7a2e84dd1db8ae520d5c99db39318310a5d0f2a10a52f882bffdfcbdb53a20",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31427,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-b9980-contract-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39236,
+      "sha256": "d1c18a7e7bf65f9c5c5f86a15de2b225fbcc3c64b2676ef8018b9f23f30f37b9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39235,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-b9980-q2-contract-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 41872,
+      "sha256": "8e39a7b8afb2d7ac4d5e9bc5952bad3eaedc84e6490a88fed148d787075bb0d1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 41871,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38107,
+      "sha256": "1ef9bb94b56198300efb88638a77441055a1a7be1eca6768dacee0bab6a288bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38106,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37907,
+      "sha256": "5c998f417f8b873178d9ded1600e19ba8d134c1f8fe748a5f16ca794c9899ffe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37906,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/b9959-18080.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 86616,
+      "sha256": "ea04eb842d357c115f82a61fb48530823fb8d8f52f4ec11d87d8c9da773a116f",
+      "rows": 722,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 86514,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.113.059 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.183.339 I srv init: The UI is disabled"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 86429,
+            "line": 721,
+            "text": "21.11.734.105 I slot print_timing: id 0 | task 853 | graphs reused = 418"
+          },
+          {
+            "offset": 86514,
+            "line": 722,
+            "text": "21.11.734.137 I slot release: id 0 | task 853 | stop processing: n_tokens = 170, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/b9959-bf16-18082.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 369095,
+      "sha256": "01c648bd01b9f490561f387a5f25ada5e6bc388ed41393ce644cc7c85a6f48a2",
+      "rows": 3136,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 368992,
+        "min_line_bytes": 48,
+        "max_line_bytes": 164
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.119.261 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.186.778 I srv init: The UI is disabled"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 368907,
+            "line": 3135,
+            "text": "8.49.039.465 I slot print_timing: id 0 | task 7323 | graphs reused = 5463"
+          },
+          {
+            "offset": 368992,
+            "line": 3136,
+            "text": "8.49.039.542 I slot release: id 0 | task 7323 | stop processing: n_tokens = 1014, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/b9959-f16-18081.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 81526,
+      "sha256": "a7657da4dc70a34f83b331b2077e86c17bf512224bb1961c93b7886b8ff577d0",
+      "rows": 684,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 81425,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.118.647 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.189.058 I srv init: The UI is disabled"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 81341,
+            "line": 683,
+            "text": "0.57.560.222 I slot print_timing: id 0 | task 707 | graphs reused = 297"
+          },
+          {
+            "offset": 81425,
+            "line": 684,
+            "text": "0.57.560.258 I slot release: id 0 | task 707 | stop processing: n_tokens = 167, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/functiongemma-routing-live-lifecycle-20260713-205314.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37903,
+      "sha256": "365a430e999118d4ffc0ae5e9520abef91eb70b4df469af1ad1a1ef8a4ed5d82",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37902,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gemma4-routing-live-durable-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39241,
+      "sha256": "0d4ce6be17707f147d5597df645f5e8a2e9ac70760a6dff02542ebaba2da7631",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39240,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gemma4-routing-live-lifecycle-20260713-204807.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40166,
+      "sha256": "eed1f78b6825e33a65b460eebc97ac169fcc403761d650304dbaafe6ffaba108",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40165,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gemma4-routing-live-owned-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39241,
+      "sha256": "9c88503fefa1b4de9dcbf5a400bce6f011dac5972052643115f07bca2617b503",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39240,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gemma4-routing-live-postreboot-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 29234,
+      "sha256": "4790c8ee84a2946bff41434ab141e2018e3fea4bef36c92e5ea6eb3ba3c8b96c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29233,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gemma4-unified-b9980-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39241,
+      "sha256": "6b316983fd8d29259e1105a622a090f2a3f71a95a136aff344dd3461904b9bc1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39240,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 132,
+      "sha256": "bb0190d340f8dea31a0803a6b94df30ec789b441ec527880982d80d1a47b6b30",
+      "rows": 4,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 91,
+        "min_line_bytes": 25,
+        "max_line_bytes": 41
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "tts_started text_len=56"
+          },
+          {
+            "offset": 25,
+            "line": 2,
+            "text": "tts_finished duration_s=3.625 reason=ok"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 66,
+            "line": 3,
+            "text": "tts_started text_len=56"
+          },
+          {
+            "offset": 91,
+            "line": 4,
+            "text": "tts_finished duration_s=3.547 reason=ok"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 146,
+      "sha256": "40f00479b8153c99786b5d4d51a363b1bc0a5066ad8d380e7c291292349096aa",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 87,
+        "min_line_bytes": 59,
+        "max_line_bytes": 87
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_NAV=http://127.0.0.1:8765/#bootstrap=rgFqIFCCtsVZ313G4G3BX_QbFeYgxLqu6mLkx6CfE6c"
+          },
+          {
+            "offset": 87,
+            "line": 2,
+            "text": "BAXY GUI en http://127.0.0.1:8765/ — Ctrl+C para salir."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_NAV=http://127.0.0.1:8765/#bootstrap=rgFqIFCCtsVZ313G4G3BX_QbFeYgxLqu6mLkx6CfE6c"
+          },
+          {
+            "offset": 87,
+            "line": 2,
+            "text": "BAXY GUI en http://127.0.0.1:8765/ — Ctrl+C para salir."
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 132,
+      "sha256": "13120d21ba0e4837d38690dcbfcc6ce1370f7a92410b80060d0df56f314f42e7",
+      "rows": 4,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 91,
+        "min_line_bytes": 25,
+        "max_line_bytes": 41
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "tts_started text_len=56"
+          },
+          {
+            "offset": 25,
+            "line": 2,
+            "text": "tts_finished duration_s=3.547 reason=ok"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 66,
+            "line": 3,
+            "text": "tts_started text_len=56"
+          },
+          {
+            "offset": 91,
+            "line": 4,
+            "text": "tts_finished duration_s=3.453 reason=ok"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 146,
+      "sha256": "334ffd1399ba0face363366ef7971d0317c81595e4ccafc9760a570c08f4eccf",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 87,
+        "min_line_bytes": 59,
+        "max_line_bytes": 87
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_NAV=http://127.0.0.1:8765/#bootstrap=HsL2gw-t05KPDfFqZcghYDIDDvtpYlcwcTrM4BixKAU"
+          },
+          {
+            "offset": 87,
+            "line": 2,
+            "text": "BAXY GUI en http://127.0.0.1:8765/ — Ctrl+C para salir."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_NAV=http://127.0.0.1:8765/#bootstrap=HsL2gw-t05KPDfFqZcghYDIDDvtpYlcwcTrM4BixKAU"
+          },
+          {
+            "offset": 87,
+            "line": 2,
+            "text": "BAXY GUI en http://127.0.0.1:8765/ — Ctrl+C para salir."
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980/stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 156,
+      "sha256": "f29b15afc86e46447c23d45d270d87361f7ae36b9efe9ecb5021a6d6f098fe38",
+      "rows": 5,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 131,
+        "min_line_bytes": 24,
+        "max_line_bytes": 41
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "tts_started text_len=5"
+          },
+          {
+            "offset": 24,
+            "line": 2,
+            "text": "tts_finished duration_s=0.578 reason=ok"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 90,
+            "line": 4,
+            "text": "tts_finished duration_s=1.375 reason=ok"
+          },
+          {
+            "offset": 131,
+            "line": 5,
+            "text": "tts_started text_len=56"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/routing-29.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37282,
+      "sha256": "8bd31faad11df49bc492580184d083ba0a7c30f1a2fed2ddc6a6ca0d709b12cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37281,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-identity.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 1630,
+      "sha256": "39fe8c5636c4bfa1215ad4a41a74be7bbdb1411d38962870555923f9cfb3bbdd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "args",
+          "exe",
+          "mmproj",
+          "model",
+          "parent_pid",
+          "pid"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "exe",
+          "mmproj",
+          "model",
+          "parent_pid",
+          "pid"
+        ],
+        "list_lengths": {
+          "args": 33
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1629,
+        "pid": {
+          "min": 34836,
+          "max": 34836
+        },
+        "parent_pid": {
+          "min": 35368,
+          "max": 35368
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"args\", \"exe\", \"mmproj\", \"model\", \"parent_pid\", \"pid\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"args\", \"exe\", \"mmproj\", \"model\", \"parent_pid\", \"pid\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-props.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 25307,
+      "sha256": "34ddb06c04e6ba36dafc741bb88157e79e75d1e94be891684ca777350e75bcfe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "bos_token",
+          "build_info",
+          "chat_template",
+          "chat_template_caps",
+          "cors_proxy_enabled",
+          "default_generation_settings",
+          "endpoint_metrics",
+          "endpoint_props",
+          "endpoint_slots",
+          "eos_token",
+          "is_sleeping",
+          "media_marker",
+          "modalities",
+          "model_alias",
+          "model_ftype",
+          "model_path",
+          "total_slots",
+          "ui",
+          "ui_settings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bos_token",
+          "build_info",
+          "chat_template",
+          "cors_proxy_enabled",
+          "endpoint_metrics",
+          "endpoint_props",
+          "endpoint_slots",
+          "eos_token",
+          "is_sleeping",
+          "media_marker",
+          "model_alias",
+          "model_ftype",
+          "model_path",
+          "total_slots",
+          "ui"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25306,
+        "total_slots": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"bos_token\", \"build_info\", \"chat_template\", \"chat_template_caps\", \"cors_proxy_enabled\", \"default_generation_settings\", \"endpoint_metrics\", \"endpoint_props\", \"endpoint_slots\", \"eos_token\", \"is_sleeping\", \"media_marker\", \"modalitie…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"bos_token\", \"build_info\", \"chat_template\", \"chat_template_caps\", \"cors_proxy_enabled\", \"default_generation_settings\", \"endpoint_metrics\", \"endpoint_props\", \"endpoint_slots\", \"eos_token\", \"is_sleeping\", \"media_marker\", \"modalitie…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 44109,
+      "sha256": "83bd163a38f78b09cbbfe752e4d1de7275c2aeb619e213eb6eb1994a6190d10d",
+      "rows": 367,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44008,
+        "min_line_bytes": 48,
+        "max_line_bytes": 167
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.116.785 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.180.468 I srv init: The UI is disabled"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43924,
+            "line": 366,
+            "text": "0.31.328.574 I slot print_timing: id 0 | task 713 | graphs reused = 526"
+          },
+          {
+            "offset": 44008,
+            "line": 367,
+            "text": "0.31.328.627 I slot release: id 0 | task 713 | stop processing: n_tokens = 333, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/tooling-live.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "4e06a4bc1f13c5038e2bcadfac190ddb09e2a13c7e7b11b0929a55659ae49d7a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/routing-29.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37281,
+      "sha256": "3f9bbf12fb51f03677363e1f78dcfc3870e805fd75d5e8218042b95585ef6011",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37280,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-identity.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 1630,
+      "sha256": "3ce12f4b94b6dbacc076f59377cb706353546a2bfac0b6b133ff871856fd4cb4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "args",
+          "exe",
+          "mmproj",
+          "model",
+          "parent_pid",
+          "pid"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "exe",
+          "mmproj",
+          "model",
+          "parent_pid",
+          "pid"
+        ],
+        "list_lengths": {
+          "args": 33
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1629,
+        "pid": {
+          "min": 37196,
+          "max": 37196
+        },
+        "parent_pid": {
+          "min": 29952,
+          "max": 29952
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"args\", \"exe\", \"mmproj\", \"model\", \"parent_pid\", \"pid\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"args\", \"exe\", \"mmproj\", \"model\", \"parent_pid\", \"pid\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-props.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 25307,
+      "sha256": "42e0b931e9f776d589ff6aa591c4eaf023e6834a692f54db16dbd7303a00ccbe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "bos_token",
+          "build_info",
+          "chat_template",
+          "chat_template_caps",
+          "cors_proxy_enabled",
+          "default_generation_settings",
+          "endpoint_metrics",
+          "endpoint_props",
+          "endpoint_slots",
+          "eos_token",
+          "is_sleeping",
+          "media_marker",
+          "modalities",
+          "model_alias",
+          "model_ftype",
+          "model_path",
+          "total_slots",
+          "ui",
+          "ui_settings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "bos_token",
+          "build_info",
+          "chat_template",
+          "cors_proxy_enabled",
+          "endpoint_metrics",
+          "endpoint_props",
+          "endpoint_slots",
+          "eos_token",
+          "is_sleeping",
+          "media_marker",
+          "model_alias",
+          "model_ftype",
+          "model_path",
+          "total_slots",
+          "ui"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25306,
+        "total_slots": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"bos_token\", \"build_info\", \"chat_template\", \"chat_template_caps\", \"cors_proxy_enabled\", \"default_generation_settings\", \"endpoint_metrics\", \"endpoint_props\", \"endpoint_slots\", \"eos_token\", \"is_sleeping\", \"media_marker\", \"modalitie…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"bos_token\", \"build_info\", \"chat_template\", \"chat_template_caps\", \"cors_proxy_enabled\", \"default_generation_settings\", \"endpoint_metrics\", \"endpoint_props\", \"endpoint_slots\", \"eos_token\", \"is_sleeping\", \"media_marker\", \"modalitie…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 44109,
+      "sha256": "eb9d5cedee2ff97611049991e8186a70071cbb7bb8ae8255746becb66e9fc573",
+      "rows": 367,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44008,
+        "min_line_bytes": 48,
+        "max_line_bytes": 167
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.120.420 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.223.195 I srv init: The UI is disabled"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43924,
+            "line": 366,
+            "text": "0.32.248.032 I slot print_timing: id 0 | task 712 | graphs reused = 525"
+          },
+          {
+            "offset": 44008,
+            "line": 367,
+            "text": "0.32.248.074 I slot release: id 0 | task 712 | stop processing: n_tokens = 333, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/tooling-live.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "2ebe89b795485e65ac983e07f28d450a79e6d25a226e46e11dda41ac42a6d877",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4632,
+      "sha256": "0520fe67ebd435f652d654edb6dc5dbcb9061dbaa6c7951c22e86fe64648c5ba",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4631,
+        "continuous_elapsed_s": {
+          "min": 19382.391,
+          "max": 19382.391
+        },
+        "max_sample_gap_s": {
+          "min": 17.297,
+          "max": 17.297
+        },
+        "max_workload_gap_s": {
+          "min": 312.359,
+          "max": 312.359
+        },
+        "samples": {
+          "min": 3836,
+          "max": 3836
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/controller.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 180,
+      "sha256": "e9ac1f63e0a7b19d33244afc2806cca156ba35ed3ea4ddd99810647620a1a7c5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 180,
+        "max_line_bytes": 180
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-20260711-103747-2b17d05 dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-20260711-103747-2b17d05"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-20260711-103747-2b17d05 dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-20260711-103747-2b17d05"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 6449165,
+      "sha256": "1b2951dbc1220332b022e9642acbfcbb5e1f5eaa1082a20025e0223e483f85ef",
+      "rows": 3969,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "controller",
+          "fingerprint",
+          "expected",
+          "new_pid",
+          "old_pid",
+          "path",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 3969,
+          "kind": 3969,
+          "monotonic_s": 3969,
+          "index": 3965,
+          "resources": 3901,
+          "server": 3901,
+          "gap_s": 3836,
+          "image_count_before": 64,
+          "chat": 64,
+          "success": 64,
+          "vision": 64,
+          "controller": 1,
+          "fingerprint": 1,
+          "expected": 1,
+          "new_pid": 1,
+          "old_pid": 1,
+          "path": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6448087,
+        "min_line_bytes": 134,
+        "max_line_bytes": 2495,
+        "numeric": {
+          "monotonic_s": {
+            "min": 87535.39,
+            "max": 106926.328
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 40.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 3836.0
+          },
+          "gap_s": {
+            "min": 5.0,
+            "max": 17.297
+          },
+          "new_pid": {
+            "min": 40524.0,
+            "max": 40524.0
+          },
+          "old_pid": {
+            "min": 44504.0,
+            "max": 44504.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T14:37:55.345326+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"86400\", \"--workload-interval-seconds\",…"
+          },
+          {
+            "offset": 869,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T14:38:03.087554+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6447848,
+            "line": 3968,
+            "text": "{\"at\": \"2026-07-11T20:01:08.043483+00:00\", \"kind\": \"abort_requested\", \"monotonic_s\": 106925.562, \"path\": \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\data\\\\logs\\\\gemma4-audit\\\\long-soak-24h-20260711-103747-2b17d05\\\\abort.request\"}"
+          },
+          {
+            "offset": 6448087,
+            "line": 3969,
+            "text": "{\"at\": \"2026-07-11T20:01:08.800870+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9819,
+      "sha256": "e7832a18163851be637354bcbe217eab2609bc57954c683506698d56e349d271",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 7,
+          "restart_events": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9818,
+        "continuous_elapsed_s": {
+          "min": 19382.391,
+          "max": 19382.391
+        },
+        "max_sample_gap_s": {
+          "min": 17.297,
+          "max": 17.297
+        },
+        "max_workload_gap_s": {
+          "min": 312.359,
+          "max": 312.359
+        },
+        "samples": {
+          "min": 3836,
+          "max": 3836
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 7.687558,
+          "max": 7.687558
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 200,
+      "sha256": "9e025eb111aa70eda13406e1f5299805c2ca49ea9b822ccb8193669b838aa885",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 199,
+        "controller_pid": {
+          "min": 32572,
+          "max": 32572
+        },
+        "monotonic_s": {
+          "min": 106926.328,
+          "max": 106926.328
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2611,
+      "sha256": "e23af05fa61e879da74cfa89a09149ff6c589d5684cac82590c39484f04a4a41",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2610,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4888,
+      "sha256": "b1166300a7b1403dcbf278ee95e6942738b0c5581065a5fab9d972cbc6a86625",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4887,
+        "continuous_elapsed_s": {
+          "min": 5231.64,
+          "max": 5231.64
+        },
+        "max_sample_gap_s": {
+          "min": 8.562,
+          "max": 8.562
+        },
+        "max_workload_gap_s": {
+          "min": 303.625,
+          "max": 303.625
+        },
+        "samples": {
+          "min": 1036,
+          "max": 1036
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/controller.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 182,
+      "sha256": "849bda58958390f53e4e8bb019bb734a4289651aa19b83673f4af18cca305f5a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 182,
+        "max_line_bytes": 182
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-20260711-160203-7768eddb dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-20260711-160203-7768eddb"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-20260711-160203-7768eddb dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-20260711-160203-7768eddb"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1746965,
+      "sha256": "8cd861ae3f54ac38550bdfea377dda4f4a2449eb5e0ca6dee9603a9d632ade35",
+      "rows": 1076,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "controller",
+          "fingerprint",
+          "error",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 1076,
+          "kind": 1076,
+          "monotonic_s": 1076,
+          "index": 1072,
+          "resources": 1055,
+          "server": 1055,
+          "gap_s": 1036,
+          "image_count_before": 18,
+          "chat": 18,
+          "success": 18,
+          "vision": 18,
+          "controller": 1,
+          "fingerprint": 1,
+          "error": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1745887,
+        "min_line_bytes": 133,
+        "max_line_bytes": 2496,
+        "numeric": {
+          "monotonic_s": {
+            "min": 106990.14,
+            "max": 112230.375
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 17.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 1036.0
+          },
+          "gap_s": {
+            "min": 5.0,
+            "max": 8.562
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T20:02:12.613222+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"86400\", \"--workload-interval-seconds\",…"
+          },
+          {
+            "offset": 974,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T20:02:20.386290+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1745410,
+            "line": 1075,
+            "text": "{\"at\": \"2026-07-11T21:29:32.065385+00:00\", \"error\": \"PermissionError: [WinError 5] Acceso denegado: 'C:\\\\\\\\Users\\\\\\\\usuario\\\\\\\\Desktop\\\\\\\\ETC\\\\\\\\Programacion\\\\\\\\BAXY\\\\\\\\data\\\\\\\\logs\\\\\\\\gemma4-audit\\\\\\\\long-soak-24h-20260711-160203-7768eddb\\\\…"
+          },
+          {
+            "offset": 1745887,
+            "line": 1076,
+            "text": "{\"at\": \"2026-07-11T21:29:32.857514+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10397,
+      "sha256": "bdb27db721ab5ffb273b6c47c1c8d43d761652dcfd6b8dc0f10300a912479b4f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 6,
+          "restart_events": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10396,
+        "continuous_elapsed_s": {
+          "min": 5231.64,
+          "max": 5231.64
+        },
+        "max_sample_gap_s": {
+          "min": 8.562,
+          "max": 8.562
+        },
+        "max_workload_gap_s": {
+          "min": 303.625,
+          "max": 303.625
+        },
+        "samples": {
+          "min": 1036,
+          "max": 1036
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 7.671197,
+          "max": 7.671197
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 200,
+      "sha256": "171852b5a8f612584f982b481f52c1a1d8ec27319b4893f5054cca03f8c6eba6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 199,
+        "controller_pid": {
+          "min": 46692,
+          "max": 46692
+        },
+        "monotonic_s": {
+          "min": 112230.39,
+          "max": 112230.39
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2779,
+      "sha256": "0d6c0b9adc32ce50780201f0328f4d340f9e0f88a699ae0251898ff38ca42c3b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2778,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4592,
+      "sha256": "69337515d787c18e05b8506232557d99277cd2670c387720336c8baa3aa8db01",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4591,
+        "continuous_elapsed_s": {
+          "min": 86400.0,
+          "max": 86400.0
+        },
+        "max_sample_gap_s": {
+          "min": 17.266,
+          "max": 17.266
+        },
+        "max_workload_gap_s": {
+          "min": 312.297,
+          "max": 312.297
+        },
+        "samples": {
+          "min": 17090,
+          "max": 17090
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "terminal_workload_gap_s": {
+          "min": 260.906,
+          "max": 260.906
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/controller.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 182,
+      "sha256": "f3fa3771216a41c0984c9a91b707f77c56ee252901e3952a63ed3f8c6ed602ef",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 182,
+        "max_line_bytes": 182
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-20260711-173152-18427391 dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-20260711-173152-18427391"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-20260711-173152-18427391 dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-20260711-173152-18427391"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28738774,
+      "sha256": "ebea357d652e2653a507110626d337af4dcbb2cd2a94145a498a77c964dc2ba8",
+      "rows": 17670,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "expected",
+          "new_pid",
+          "old_pid",
+          "controller",
+          "fingerprint",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 17670,
+          "kind": 17670,
+          "monotonic_s": 17670,
+          "index": 17667,
+          "resources": 17376,
+          "server": 17376,
+          "gap_s": 17090,
+          "image_count_before": 285,
+          "chat": 285,
+          "success": 285,
+          "vision": 285,
+          "expected": 7,
+          "new_pid": 7,
+          "old_pid": 7,
+          "controller": 1,
+          "fingerprint": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28737696,
+        "min_line_bytes": 134,
+        "max_line_bytes": 2497,
+        "numeric": {
+          "monotonic_s": {
+            "min": 112379.437,
+            "max": 198788.265
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 40.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 17090.0
+          },
+          "gap_s": {
+            "min": 5.0,
+            "max": 17.266
+          },
+          "new_pid": {
+            "min": 8092.0,
+            "max": 48228.0
+          },
+          "old_pid": {
+            "min": 8092.0,
+            "max": 39304.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T21:32:01.913190+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"86400\", \"--workload-interval-seconds\",…"
+          },
+          {
+            "offset": 976,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T21:32:09.913975+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28736046,
+            "line": 17669,
+            "text": "{\"at\": \"2026-07-12T21:32:09.925005+00:00\", \"gap_s\": 5.0, \"index\": 17090, \"kind\": \"sample\", \"monotonic_s\": 198784.656, \"resources\": {\"gpu_error\": null, \"gpu_used_mib_by_device\": [3670.0], \"gpu_used_mib_total\": 3670.0, \"memory_error\": null,…"
+          },
+          {
+            "offset": 28737696,
+            "line": 17670,
+            "text": "{\"at\": \"2026-07-12T21:32:13.533239+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10452,
+      "sha256": "31895db028066371ae4f26fa6895c8dcfe3e9225d6a91e0855d7a607c2a11b02",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "restart_events": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10451,
+        "continuous_elapsed_s": {
+          "min": 86400.0,
+          "max": 86400.0
+        },
+        "max_sample_gap_s": {
+          "min": 17.266,
+          "max": 17.266
+        },
+        "max_workload_gap_s": {
+          "min": 312.297,
+          "max": 312.297
+        },
+        "samples": {
+          "min": 17090,
+          "max": 17090
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 7.942231,
+          "max": 7.942231
+        },
+        "terminal_workload_gap_s": {
+          "min": 260.906,
+          "max": 260.906
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 201,
+      "sha256": "0ba51bc50f270a5341c93e60b819b98ec54259dc18ada07761c992a3b0ce5eb5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 200,
+        "controller_pid": {
+          "min": 38184,
+          "max": 38184
+        },
+        "monotonic_s": {
+          "min": 198788.265,
+          "max": 198788.265
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2780,
+      "sha256": "36d2c097f46589c1b56bc82597b5ab696eb7d3ae1d28027eccc772ca94564eca",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2779,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11481,
+      "sha256": "cde3532a668cdd527f02b7afceb2ca1cebf72bae0e52631ba4477ec799df0244",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "gpu_evidence",
+          "gpu_lifecycle",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11480,
+        "continuous_elapsed_s": {
+          "min": 25884.313,
+          "max": 25884.313
+        },
+        "max_sample_gap_s": {
+          "min": 16.016,
+          "max": 16.016
+        },
+        "max_workload_gap_s": {
+          "min": 311.079,
+          "max": 311.079
+        },
+        "samples": {
+          "min": 5163,
+          "max": 5163
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"gpu_evidence\", \"gpu_lifecycle\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"gpu_evidence\", \"gpu_lifecycle\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/controller.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 194,
+      "sha256": "005f6f2e848cb398cde61e48bd2e32bf58bf5264aa936b2300ed1709fe9ad922",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 194,
+        "max_line_bytes": 194
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-b9980-20260713-070840-43a834ba dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-b9980-20260713-070840-43a834ba"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Gemma 4 long soak: FAIL run_id=long-soak-24h-b9980-20260713-070840-43a834ba dir=<home>\\Desktop\\ETC\\Programacion\\BAXY\\data\\logs\\gemma4-audit\\long-soak-24h-b9980-20260713-070840-43a834ba"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 11110471,
+      "sha256": "5a9f96356c4f3ff2663d4517053f31bb38d88637088683ecf9826db0abff0b86",
+      "rows": 5346,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "phase",
+          "expected",
+          "new_pid",
+          "old_pid",
+          "controller",
+          "fingerprint",
+          "path",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 5346,
+          "kind": 5346,
+          "monotonic_s": 5346,
+          "index": 5339,
+          "resources": 5254,
+          "server": 5251,
+          "gap_s": 5163,
+          "image_count_before": 87,
+          "chat": 87,
+          "success": 87,
+          "vision": 87,
+          "phase": 3,
+          "expected": 2,
+          "new_pid": 2,
+          "old_pid": 2,
+          "controller": 1,
+          "fingerprint": 1,
+          "path": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11109396,
+        "min_line_bytes": 132,
+        "max_line_bytes": 3216,
+        "numeric": {
+          "monotonic_s": {
+            "min": 16217.828,
+            "max": 42124.0
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 40.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 5163.0
+          },
+          "gap_s": {
+            "min": 5.0,
+            "max": 16.016
+          },
+          "new_pid": {
+            "min": 28220.0,
+            "max": 34756.0
+          },
+          "old_pid": {
+            "min": 34756.0,
+            "max": 35936.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-13T11:08:41.050194+00:00\", \"kind\": \"gpu_lifecycle\", \"monotonic_s\": 16217.828, \"phase\": \"pre_boot\", \"resources\": {\"gpu_attribution\": {\"global\": {\"exact_llama_process\": false, \"scope\": \"system_global_proxy\", \"source\": \"nvidia…"
+          },
+          {
+            "offset": 793,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-13T11:08:50.180291+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"-u\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"86400\", \"--workload-interval-sec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 11108603,
+            "line": 5345,
+            "text": "{\"at\": \"2026-07-13T18:20:27.220928+00:00\", \"kind\": \"gpu_lifecycle\", \"monotonic_s\": 42124.0, \"phase\": \"post_cleanup\", \"resources\": {\"gpu_attribution\": {\"global\": {\"exact_llama_process\": false, \"scope\": \"system_global_proxy\", \"source\": \"nvid…"
+          },
+          {
+            "offset": 11109396,
+            "line": 5346,
+            "text": "{\"at\": \"2026-07-13T18:20:27.221938+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16893,
+      "sha256": "cd44e923a17f1122773f9474bab9680225815613ab964cadf341db8723bd90f2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "gpu_evidence",
+          "gpu_lifecycle",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 31,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "restart_events": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16892,
+        "continuous_elapsed_s": {
+          "min": 25884.313,
+          "max": 25884.313
+        },
+        "max_sample_gap_s": {
+          "min": 16.016,
+          "max": 16.016
+        },
+        "max_workload_gap_s": {
+          "min": 311.079,
+          "max": 311.079
+        },
+        "samples": {
+          "min": 5163,
+          "max": 5163
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 9.946682,
+          "max": 9.946682
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"gpu_evidence\", \"gpu_lifecycle\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"gpu_evidence\", \"gpu_lifecycle\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 204,
+      "sha256": "186d9b00b30d0f2febdeff4db62f1f7623503b455f37957f1e581b71b0adf09a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 203,
+        "controller_pid": {
+          "min": 34744,
+          "max": 34744
+        },
+        "monotonic_s": {
+          "min": 42124.0,
+          "max": 42124.0
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

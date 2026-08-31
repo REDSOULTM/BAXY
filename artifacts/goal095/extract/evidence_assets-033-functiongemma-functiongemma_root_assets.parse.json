@@ -1,0 +1,1110 @@
+{
+  "batch_id": "evidence_assets-033-functiongemma-functiongemma_root_assets",
+  "source_id": "functiongemma",
+  "file_count": 22,
+  "hash_ok": 22,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "_fg_server_integ.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 12754,
+      "sha256": "df91f055be3263a35c014ca7e7f1545527eb959ae27c6615657f2abb690fe0d4",
+      "rows": 205,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12715,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12682,
+            "line": 204,
+            "text": "main: starting the main loop..."
+          },
+          {
+            "offset": 12715,
+            "line": 205,
+            "text": "srv update_slots: all slots are idle"
+          }
+        ]
+      }
+    },
+    "baxy_canonical_map.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1009,
+      "sha256": "f741d4b0b84b8574e496e394d21289b19d90d7b8f1187892858aab4bb867ad11",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "answer",
+          "args",
+          "backup",
+          "backup_id",
+          "body",
+          "container",
+          "db",
+          "dependency",
+          "dest",
+          "destination",
+          "dir",
+          "expected_sha256",
+          "from_x",
+          "from_y",
+          "hotkey",
+          "ics",
+          "input",
+          "input_method",
+          "instruction",
+          "message",
+          "number",
+          "on_conflict",
+          "out",
+          "plan",
+          "preset",
+          "printer",
+          "process",
+          "profile_name",
+          "question",
+          "recipient",
+          "resource_id",
+          "send_delay_s",
+          "snapshot",
+          "song",
+          "source",
+          "text_value",
+          "time",
+          "to",
+          "to_x",
+          "to_y",
+          "topic",
+          "username",
+          "value_name",
+          "vcard",
+          "x_col",
+          "y_col"
+        ],
+        "n_keys": 46,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "answer",
+          "args",
+          "backup",
+          "backup_id",
+          "body",
+          "container",
+          "db",
+          "dependency",
+          "dest",
+          "destination",
+          "dir",
+          "expected_sha256",
+          "from_x",
+          "from_y",
+          "hotkey",
+          "ics",
+          "input",
+          "input_method",
+          "instruction",
+          "message",
+          "number",
+          "on_conflict",
+          "out",
+          "plan",
+          "preset",
+          "printer",
+          "process",
+          "profile_name",
+          "question",
+          "recipient",
+          "resource_id",
+          "send_delay_s",
+          "snapshot",
+          "song",
+          "source",
+          "text_value",
+          "time",
+          "to",
+          "to_x",
+          "to_y"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1008
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"answer\", \"args\", \"backup\", \"backup_id\", \"body\", \"container\", \"db\", \"dependency\", \"dest\", \"destination\", \"dir\", \"expected_sha256\", \"from_x\", \"from_y\", \"hotkey\", \"ics\", \"input\", \"input_method\", \"instruction\", \"message\", \"number\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"answer\", \"args\", \"backup\", \"backup_id\", \"body\", \"container\", \"db\", \"dependency\", \"dest\", \"destination\", \"dir\", \"expected_sha256\", \"from_x\", \"from_y\", \"hotkey\", \"ics\", \"input\", \"input_method\", \"instruction\", \"message\", \"number\",…"
+          }
+        ]
+      }
+    },
+    "enc_test.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 296,
+      "sha256": "3a46cced2af141c542a33e935b4355b7eeeb1a44daa95305114a87f0a06c6709",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125,
+        "min_line_bytes": 125,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.7.0+cu126)."
+          },
+          {
+            "offset": 125,
+            "line": 2,
+            "text": "W0617 12:24:57.078000 24312 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.7.0+cu126)."
+          },
+          {
+            "offset": 125,
+            "line": 2,
+            "text": "W0617 12:24:57.078000 24312 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ]
+      }
+    },
+    "fg_corrections_decisions.tsv": {
+      "parser": "csv",
+      "encoding": "utf-8",
+      "bytes": 9737,
+      "sha256": "1dab89182303a68b35f2ef558591b5a8a021d79f8a7c75f26332451c167d3a3a",
+      "rows": 142,
+      "schema": {
+        "keys": [
+          "cls",
+          "query",
+          "fg_tool",
+          "fg_fam",
+          "exp_fam",
+          "via"
+        ],
+        "delimiter": "\t"
+      },
+      "distribution": {
+        "header_cols": 6
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9736
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "cls query fg_tool fg_fam exp_fam via"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "HIT abra a calculadora app_open app app FG"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9375,
+            "line": 142,
+            "text": "WRONG wie sieht meine Lesestreak diesen Monat aus? habit_tracker_stats habit_tracker knowledge FG"
+          },
+          {
+            "offset": 9473,
+            "line": 143,
+            "text": "HIT wie spät ist es? time system system FG"
+          }
+        ]
+      }
+    },
+    "fg_corrections_eval.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5900,
+      "sha256": "b369f4b4e320247036beb663f8a3fc2c112a5337fb30f45bf70d9bff9e26a1a4",
+      "rows": 83,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5848,
+        "min_line_bytes": 2,
+        "max_line_bytes": 428
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5846,
+            "line": 82,
+            "text": ""
+          },
+          {
+            "offset": 5848,
+            "line": 83,
+            "text": "[volcado completo -> fg_corrections_decisions.tsv]"
+          }
+        ]
+      }
+    },
+    "fg_mling_fresh_probe.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2348,
+      "sha256": "61c5f003ec99f30442381f3c98762851909032371374d962e6da928a83e5b0c7",
+      "rows": 32,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "q",
+          "lang",
+          "tool"
+        ],
+        "key_freq": {
+          "q": 32,
+          "lang": 32,
+          "tool": 32
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2263,
+        "min_line_bytes": 54,
+        "max_line_bytes": 99,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"q\": \"Kannst du mir Firefox aufmachen?\", \"lang\": \"de\", \"tool\": \"app_open\"}"
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "{\"q\": \"Starte bitte Telegram\", \"lang\": \"de\", \"tool\": \"app_open\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2164,
+            "line": 31,
+            "text": "{\"q\": \"kannst du es etwas dunkler machen am Bildschirm?\", \"lang\": \"de\", \"tool\": \"brightness_down\"}"
+          },
+          {
+            "offset": 2263,
+            "line": 32,
+            "text": "{\"q\": \"deixa a tela mais escura por favor\", \"lang\": \"pt\", \"tool\": \"brightness_down\"}"
+          }
+        ]
+      }
+    },
+    "fg_tool_emb.npy": {
+      "parser": "binary_inventory",
+      "bytes": 805295,
+      "sha256": "26271440cb63403fbc6eb2da36a1935d5793271d25bc9e6949d8625bd621825c",
+      "format": "npy",
+      "magic_hex": "934e554d5059010076007b2764657363",
+      "provenance": {
+        "source_id": "functiongemma",
+        "path": "fg_tool_emb.npy"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "npy"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 805294
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=934e554d5059010076007b2764657363 format=npy"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 805294,
+            "line": 0,
+            "text": "eof bytes=805295"
+          }
+        ]
+      }
+    },
+    "fg_tool_emb_ft.npy": {
+      "parser": "binary_inventory",
+      "bytes": 806806,
+      "sha256": "077153838ed6e19783c0c72099bebfcb71a1a8b1009763756f522922f7a9e19f",
+      "format": "npy",
+      "magic_hex": "934e554d5059010076007b2764657363",
+      "provenance": {
+        "source_id": "functiongemma",
+        "path": "fg_tool_emb_ft.npy"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "npy"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 806805
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=934e554d5059010076007b2764657363 format=npy"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 806805,
+            "line": 0,
+            "text": "eof bytes=806806"
+          }
+        ]
+      }
+    },
+    "fg_tools_adapted.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3681,
+      "sha256": "c7020405379f9f081ba5e3db8f1921063bb8a6f8754bcf638fc970b09711d7d4",
+      "rows": 16,
+      "schema": {
+        "root": "array",
+        "n": 16,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3680
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"get_ram\", \"description\": \"Muestra cuanta memoria RAM hay libre y usada. RAM, memoria, memory.\", \"parameters\": {\"type\": \"object\", \"properties\": {}}}}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3680,
+            "line": 16,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"open_app\", \"description\": \"Abre una aplicacion de Windows. Abrir, lanzar, open app.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\", \"description\": \"Nombre de la app: c…"
+          }
+        ]
+      }
+    },
+    "kva_build.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2176,
+      "sha256": "fd371eab96194366fcbf8adeeeabd31e595ef63917f2780303be85f1ce775578",
+      "rows": 35,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 13
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2124,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[traps de conocimiento generados: 1334]"
+          },
+          {
+            "offset": 41,
+            "line": 2,
+            "text": "[traps de accion (mensajeria/recordatorios) generados: 945]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2122,
+            "line": 34,
+            "text": ""
+          },
+          {
+            "offset": 2124,
+            "line": 35,
+            "text": "[artefacto -> kva_gate.json (384 dims, thr=0.87)]"
+          }
+        ]
+      }
+    },
+    "kva_curve.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1633,
+      "sha256": "6d2d12fbb9c827ec7e7624304865154768689be1058c11c1115ecfaab22c8014",
+      "rows": 21,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1519,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.7.0+cu126)."
+          },
+          {
+            "offset": 125,
+            "line": 2,
+            "text": "W0617 12:39:11.689000 27376 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1446,
+            "line": 20,
+            "text": "(ACCION: % que termina en tool, no en no_tool — NO bloquear acciones."
+          },
+          {
+            "offset": 1519,
+            "line": 21,
+            "text": "CONOC: % que termina en no_tool. frescas=trampas con entidades nuevas; holdout=set no_tool real, algo ruidoso.)"
+          }
+        ]
+      }
+    },
+    "kva_e2e.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2486,
+      "sha256": "dfdbae93c2e6ba1d30944c32b1f08fa2f639b8f531f2cfa54ace6442973f9066",
+      "rows": 35,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2452,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.7.0+cu126)."
+          },
+          {
+            "offset": 125,
+            "line": 2,
+            "text": "W0617 12:34:36.331000 43940 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2402,
+            "line": 34,
+            "text": "CONOCIMIENTO->no_tool (trampas frescas): 90.0%"
+          },
+          {
+            "offset": 2452,
+            "line": 35,
+            "text": "ACCION->tool preservada: 98.8%"
+          }
+        ]
+      }
+    },
+    "kva_gate.json.bak_pre_mling_2026-06-19": {
+      "parser": "binary_inventory",
+      "bytes": 8231,
+      "sha256": "18c79f525a9be08053917ecf7c9862a698abc27911b9bdf3eec085a72d4edf04",
+      "format": "bak_pre_mling_2026-06-19",
+      "magic_hex": "7b226d6f64656c223a20226b76615f67",
+      "provenance": {
+        "source_id": "functiongemma",
+        "path": "kva_gate.json.bak_pre_mling_2026-06-19"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "historical gate/eval beside this file, if any",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "bak_pre_mling_2026-06-19"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8230
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=7b226d6f64656c223a20226b76615f67 format=bak_pre_mling_2026-06-19"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8230,
+            "line": 0,
+            "text": "eof bytes=8231"
+          }
+        ]
+      }
+    },
+    "kva_gate.json.bak_pre_retrain_2026-06-18": {
+      "parser": "binary_inventory",
+      "bytes": 8725,
+      "sha256": "1536b4184e0527956d7e795340b5ca258f2157b2aa3374cce8f55758db6fd3c8",
+      "format": "bak_pre_retrain_2026-06-18",
+      "magic_hex": "7b226d6f64656c223a20226b76615f67",
+      "provenance": {
+        "source_id": "functiongemma",
+        "path": "kva_gate.json.bak_pre_retrain_2026-06-18"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "historical gate/eval beside this file, if any",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "bak_pre_retrain_2026-06-18"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8724
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=7b226d6f64656c223a20226b76615f67 format=bak_pre_retrain_2026-06-18"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8724,
+            "line": 0,
+            "text": "eof bytes=8725"
+          }
+        ]
+      }
+    },
+    "kva_rebuild.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2030,
+      "sha256": "04c0e0b222dbb0f4ba563790d3f49e418e493e1cff2733ffcf780ef502c5d329",
+      "rows": 33,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 13
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1978,
+        "min_line_bytes": 2,
+        "max_line_bytes": 428
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[traps de conocimiento generados: 1334]"
+          },
+          {
+            "offset": 41,
+            "line": 2,
+            "text": "[traps de accion (mensajeria/recordatorios) generados: 945]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1976,
+            "line": 32,
+            "text": ""
+          },
+          {
+            "offset": 1978,
+            "line": 33,
+            "text": "[artefacto -> kva_gate.json (384 dims, thr=0.89)]"
+          }
+        ]
+      }
+    },
+    "kva_rebuild_mling.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2096,
+      "sha256": "f386d8937e9bf46d6a8e07ec4c52a70260649455b520baf9298146710703358d",
+      "rows": 34,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 13
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2044,
+        "min_line_bytes": 2,
+        "max_line_bytes": 428
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[traps de conocimiento generados: 1334]"
+          },
+          {
+            "offset": 41,
+            "line": 2,
+            "text": "[traps de accion (mensajeria/recordatorios) generados: 945]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2042,
+            "line": 33,
+            "text": ""
+          },
+          {
+            "offset": 2044,
+            "line": 34,
+            "text": "[artefacto -> kva_gate.json (384 dims, thr=0.89)]"
+          }
+        ]
+      }
+    },
+    "llama_server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1365759,
+      "sha256": "2db7331317a2de6725cbec5377d428e881e14ae76135232f08afb47aeab1403a",
+      "rows": 13766,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 247,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1365685,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1365646,
+            "line": 13765,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 1365685,
+            "line": 13766,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "llama_server_fast.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 497181,
+      "sha256": "1e0c85e34d7d684e1e3ae4bd8dfa1b7f85ad4ec179c934a5b521ab02a431500f",
+      "rows": 5265,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 41,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 497107,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 497068,
+            "line": 5264,
+            "text": "srv update_slots: all slots are idle"
+          },
+          {
+            "offset": 497107,
+            "line": 5265,
+            "text": "srv log_server_r: done request: POST /v1/chat/completions 127.0.0.1 200"
+          }
+        ]
+      }
+    },
+    "tool_schemas_decomposed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 517363,
+      "sha256": "1ba3edab01704a654e802aa973cbf07f42190b0945198afd15073cfdd1b0a432",
+      "rows": 525,
+      "schema": {
+        "root": "array",
+        "n": 525,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 517362
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"time\", \"description\": \"time [Windows system tool]\", \"parameters\": {\"type\": \"object\", \"properties\": {\"level\": {\"type\": \"integer\"}, \"limit\": {\"type\": \"integer\"}, \"delay_sec\": {\"type\": \"integer\"}}}}}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 517362,
+            "line": 525,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"no_tool\", \"description\": \"Usar SOLO cuando la consulta NO requiere ninguna herramienta: charla, saludo, agradecimiento, conocimiento general, opinion o pregunta conversacional. Indica que hay que…"
+          }
+        ]
+      }
+    },
+    "tool_schemas_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 117319,
+      "sha256": "f23d53f91fd10bc427644468aa1665609b78fae5409c99dcf65e7738dafaccae",
+      "rows": 67,
+      "schema": {
+        "root": "array",
+        "n": 67,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 117318
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"system\", \"description\": \"Compound Windows system tool. Actions: time, processes, cpu_ram_gpu, disk, battery, brightness_get, brightness_set, shutdown, restart, sleep. cpu_ram_gpu = uso/estado de C…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 117318,
+            "line": 67,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"session\", \"description\": \"Meta-session control. Action cancel_turn: the user is asking to interrupt, cancel, abort, or stop the assistant's current turn. This does not perform a domain action, it…"
+          }
+        ]
+      }
+    },
+    "tool_schemas_lean.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 59193,
+      "sha256": "5098d03a4e9523e40b3df1bcbd4efba36b42bc1dab9c7a4db7a2d4c19687175a",
+      "rows": 31,
+      "schema": {
+        "root": "array",
+        "n": 31,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 59192
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"system\", \"description\": \"Compound Windows system tool. Actions: time, processes, cpu_ram_gpu, disk, battery, brightness_get, brightness_set, shutdown, restart, sleep. cpu_ram_gpu = uso/estado de C…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 59192,
+            "line": 31,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"session\", \"description\": \"Meta-session control. Action cancel_turn: the user is asking to interrupt, cancel, abort, or stop the assistant's current turn. This does not perform a domain action, it…"
+          }
+        ]
+      }
+    },
+    "tool_schemas_slim.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 230145,
+      "sha256": "a0213619ea4b0cb75cdb4f6f6bccc594bf08ca014e794f4c534afedba3602cfa",
+      "rows": 525,
+      "schema": {
+        "root": "array",
+        "n": 525,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 230144
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"time\", \"description\": \"time [Windows system tool]\", \"parameters\": {\"type\": \"object\", \"properties\": {}}}}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 230144,
+            "line": 525,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"no_tool\", \"description\": \"Usar SOLO cuando la consulta NO requiere ninguna herramienta: charla, saludo, agradecimiento, conocimiento general, opinion o pregunta conversacional. Indica que hay que…"
+          }
+        ]
+      }
+    }
+  }
+}

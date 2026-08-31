@@ -1,0 +1,2239 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-023-functiongemma",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:41:01Z",
+  "closed_utc": "2026-08-31T05:41:25Z",
+  "estimated_tokens": 297549,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 89,
+  "subsystem": "fg__fresh_es_gold.jsonl",
+  "subsystems": [
+    "fg__fresh_es_gold.jsonl",
+    "fg__m2.log",
+    "fg__m3.log",
+    "fg__measure.log",
+    "fg__smoke.log",
+    "fg__smoke2.log",
+    "fg__train_ep1.log",
+    "fg__train_full.log",
+    "fg_archive",
+    "fg_build_es.log",
+    "fg_build_iter4.log",
+    "fg_build_iter5.log",
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/_fresh_es_gold.jsonl",
+      "sha256": "ceb017ebf90558ceb2256adf3e9b987e57264d0464f79e740d2b3808bd204e76",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_fresh_es_gold.jsonl"
+    },
+    {
+      "path": "finetune_llm/_m2.log",
+      "sha256": "04997289ca5691fdb618e0d3c1a21c5f74dafb266bb6edcdddd9e83b9496dba6",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_m2.log"
+    },
+    {
+      "path": "finetune_llm/_m3.log",
+      "sha256": "4097dcd9f3a6d55e54d151a5b4b1f7d59ecb0b631d79d37842fb654dfceb8248",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_m3.log"
+    },
+    {
+      "path": "finetune_llm/_measure.log",
+      "sha256": "8fedf651a5dec42649667ea5ced8befb90a81f6a910c4b7e338d7be577baff3e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_measure.log"
+    },
+    {
+      "path": "finetune_llm/_smoke.log",
+      "sha256": "5d081d0e14d310018e09fc3098f592dbc1243a5fbe748248fd639ba3420205ed",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_smoke.log"
+    },
+    {
+      "path": "finetune_llm/_smoke2.log",
+      "sha256": "032cde05e165b15e677b57f3922d82c52a599230999807991669c8b980921769",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_smoke2.log"
+    },
+    {
+      "path": "finetune_llm/_train_ep1.log",
+      "sha256": "6341baf34cf18ed099def0b6ef2056da25ccb7824cc09da18c7568b37429d423",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_train_ep1.log"
+    },
+    {
+      "path": "finetune_llm/_train_full.log",
+      "sha256": "cc1750ebf592f254d71765fd08ce0d6ccf2dba2c6aad3d8912541f95969298eb",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/_train_full.log"
+    },
+    {
+      "path": "finetune_llm/archive/fg_holdout_verbose.jsonl",
+      "sha256": "069db3a22dceca98fd5a60e72f872b8ee8687b71e94d05df15842d718e9398e3",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/fg_holdout_verbose.jsonl"
+    },
+    {
+      "path": "finetune_llm/archive/fg_train_verbose.jsonl",
+      "sha256": "fcede2071d4f799b0e0729aef877492e43f850dedd02907e6bc57423bf83d403",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/fg_train_verbose.jsonl"
+    },
+    {
+      "path": "finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_holdout.es_scratch.jsonl",
+      "sha256": "2d217e11a5e96da8fa66fb01e18ac2bdc5f9546569afca78ce9887f95a64cb2c",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_holdout.es_scratch.jsonl"
+    },
+    {
+      "path": "finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_train.es_scratch.jsonl",
+      "sha256": "6543bd74ec8ff78fa70aa062a7d563bfc771fb7607b2366ce501ce9530c96d55",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_train.es_scratch.jsonl"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/lora/adapter_config.json",
+      "sha256": "3526344b2408d6dae920b01a6873c87c0286d307af4b89ad88a9d409152d03e3",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/lora/adapter_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/lora/adapter_model.safetensors",
+      "sha256": "b92cd2e6bc065d54d8e3b716cdb3db7311cd917316aa373c39fe7901455bea2e",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/lora/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/lora/tokenizer.json",
+      "sha256": "80d7f800b949accd7eb940bac75e642f9468e4df157403032a55bf54ed23b650",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/lora/tokenizer.json"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/lora/tokenizer_config.json",
+      "sha256": "fe9341aa23aad842a8ad771bebb506368b6f6a3fd8c13b097a31505fcda58e69",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/lora/tokenizer_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/merged-bf16/config.json",
+      "sha256": "74099e76ed2dca14e4efc6d030b1032322236ddb7c49cd009995786b3fbcc8ff",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/merged-bf16/config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/merged-bf16/generation_config.json",
+      "sha256": "f30a64855a21a33bd726a33057787022822ee89b3b11b8f46389e10180ee8d6c",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/merged-bf16/generation_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/merged-bf16/model.safetensors",
+      "sha256": "5ed0f06a3369d3062a2c8994dc50d2c2849f206cd3b65d57fe13443ff29db6b8",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/merged-bf16/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run1_20260615_0317/merged-bf16/tokenizer_config.json",
+      "sha256": "cde709d9ff1fc97c8adf1da022ca9f0f02633a8169bfd22bd94c8d26060dcd71",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run1_20260615_0317/merged-bf16/tokenizer_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run2_0514/functiongemma-ft-270m-it-Q8_0.gguf",
+      "sha256": "7561b790619daf22d7acc6b983af41481f45849abd21313994ce6ccca7c69463",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run2_0514/functiongemma-ft-270m-it-Q8_0.gguf",
+      "binary_format": "gguf"
+    },
+    {
+      "path": "finetune_llm/archive/run2_0514/lora/adapter_config.json",
+      "sha256": "9111dd0f1f67626a4d3274f9a03554a2b581d4d66e6741644fbbbab773a1fa36",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run2_0514/lora/adapter_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run2_0514/lora/adapter_model.safetensors",
+      "sha256": "ef274a289f98536ba59c48bb6acb02899fe471f67a270528331fa91b9fa320aa",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run2_0514/lora/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run2_0514/merged-bf16/model.safetensors",
+      "sha256": "6a7134c3cc5b1912ae345c6856a40d3257bb033dc3f063c7c1818f5c3037fbea",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run2_0514/merged-bf16/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run3_0750/functiongemma-ft-270m-it-Q8_0.gguf",
+      "sha256": "6d52c8205ce1159a972659b98e0c25902f2c8fd8c9bfe70799addedfeadd91f9",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run3_0750/functiongemma-ft-270m-it-Q8_0.gguf",
+      "binary_format": "gguf"
+    },
+    {
+      "path": "finetune_llm/archive/run3_0750/lora/adapter_config.json",
+      "sha256": "958aea150926285783df9e998c949309ede7e1490fbaea58b68e2eab04348b11",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run3_0750/lora/adapter_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run3_0750/lora/adapter_model.safetensors",
+      "sha256": "dc6cdf909191d2bf49f0d4de2d7690647b379e255a933aa13674d5f2211c03e3",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run3_0750/lora/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run3_0750/merged-bf16/model.safetensors",
+      "sha256": "5ddca8d1f6238238e6e72f88830491fca7fd785cab91fdbe0789b1b27eed86c8",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run3_0750/merged-bf16/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run4_1027/functiongemma-ft-270m-it-Q8_0.gguf",
+      "sha256": "27cdb60151c3c7423bb3be20be32af154e512ded0bc80171906e838f84ede6da",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run4_1027/functiongemma-ft-270m-it-Q8_0.gguf",
+      "binary_format": "gguf"
+    },
+    {
+      "path": "finetune_llm/archive/run4_1027/lora/adapter_config.json",
+      "sha256": "3dfc05a5dfe2b68b886f4d0bb0261aa9d25ca64465a918ec1732ac12ad538248",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run4_1027/lora/adapter_config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run4_1027/lora/adapter_model.safetensors",
+      "sha256": "4201e50658792209a39dfed67e09da6093187268818a4f79f2f59eaf3609bc4b",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run4_1027/lora/adapter_model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run4_1027/merged-bf16/model.safetensors",
+      "sha256": "b43fc559b886edd0b97798ece6553255905264e6c182e96faa46ac89a5db78da",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run4_1027/merged-bf16/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run6_2029/merged-bf16/config.json",
+      "sha256": "5bb67cf9e085c79eeff4eab8fc459aa7da95e527859ab96a7b8c75057046cb82",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_2029/merged-bf16/config.json"
+    },
+    {
+      "path": "finetune_llm/archive/run6_2029/merged-bf16/model.safetensors",
+      "sha256": "f890bd3ddcbca883e06e90a14375345b374fda3ae400d30e986996cc4b13a468",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_2029/merged-bf16/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/optimizer.pt",
+      "sha256": "32c3edf851aa0fc75f34f3e248aa1bab3258529180bee133350e84f669c93423",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_ckpt_final/checkpoint-9295/optimizer.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/rng_state.pth",
+      "sha256": "a42f869f0a8e75cc0bda2bcdfaad6e94798c1bb6130490489ac148b3ce7afc8d",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_ckpt_final/checkpoint-9295/rng_state.pth",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/scheduler.pt",
+      "sha256": "790d3d46d70b0242859ff5b5983e8825a76e43a61df330d7dd7cbee2858ed596",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_ckpt_final/checkpoint-9295/scheduler.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/trainer_state.json",
+      "sha256": "1f691f00ea6fc4a18e5ba859cd4205f93838bf6b63bb06f839571b37a737f1aa",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_ckpt_final/checkpoint-9295/trainer_state.json"
+    },
+    {
+      "path": "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/training_args.bin",
+      "sha256": "99437c42a3fb5bbd470f2aa4012f8f80e914b7932c995ca09388f79a53a1a62e",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_ckpt_final/checkpoint-9295/training_args.bin",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run6_ckpt_final/functiongemma-ft-270m-it-Q8_0.gguf",
+      "sha256": "df893b67e1149d4e8a42efffcd790989a9074dbabed3a4c9ece1c6a65434f9ad",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run6_ckpt_final/functiongemma-ft-270m-it-Q8_0.gguf",
+      "binary_format": "gguf"
+    },
+    {
+      "path": "finetune_llm/archive/run7_attempt1_train.log",
+      "sha256": "039642863a3682f0cf58d611415bada4b3622f2bc14816b1d50c934172d71df5",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_attempt1_train.log"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep6_ckpt_11160/model.safetensors",
+      "sha256": "a0dc42adb839786ac0273586b3fe1229d32455f02027105bbee4710aa8f15e49",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep6_ckpt_11160/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep6_ckpt_11160/optimizer.pt",
+      "sha256": "f8289f495f98f725bfcae00bc79610cb461e912c450866bdd75223a86206cdc5",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep6_ckpt_11160/optimizer.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep6_ckpt_11160/rng_state.pth",
+      "sha256": "ea8468579ef56fe858d04e482a8107b7fb208622ae583db6dce8ef5a55320484",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep6_ckpt_11160/rng_state.pth",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep6_ckpt_11160/scheduler.pt",
+      "sha256": "be6babbffd4c2178fd090d03bc883424f33fc80b7f07d498563485fd2c45252a",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep6_ckpt_11160/scheduler.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep6_ckpt_11160/trainer_state.json",
+      "sha256": "0242d0c68adb1289b2c20f097e723c24b714be45373df2fb9c6b3bf4fe2b09a9",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep6_ckpt_11160/trainer_state.json"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep6_ckpt_11160/training_args.bin",
+      "sha256": "82ec9802118e0d9526c99c29340d8d19aa3d409d3187caf79ace3b32c6851188",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep6_ckpt_11160/training_args.bin",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep7_ckpt_13020/model.safetensors",
+      "sha256": "d871ee9f5c235602a66554d592846532f9f9e3d369967129bca419092d6e6854",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep7_ckpt_13020/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep7_ckpt_13020/optimizer.pt",
+      "sha256": "3561819d75a6756e6de6d35a004025703a7bdacb5be20a8037b742543faec731",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep7_ckpt_13020/optimizer.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep7_ckpt_13020/rng_state.pth",
+      "sha256": "9437a36a261ff93cbf133fb8962248ef6f2f2dbc4c55b7c22797b639d18a4c53",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep7_ckpt_13020/rng_state.pth",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep7_ckpt_13020/scheduler.pt",
+      "sha256": "f17f022ee191197b7a50a084ed923cc07a7d5ebfbaabf647fcede61fcdb406c3",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep7_ckpt_13020/scheduler.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep7_ckpt_13020/trainer_state.json",
+      "sha256": "2d741a33876b1b0dec73fa8a0fc4b2861b8621b97e278b6e4f2731dd4148d6c0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep7_ckpt_13020/trainer_state.json"
+    },
+    {
+      "path": "finetune_llm/archive/run7_ep8_merged/model.safetensors",
+      "sha256": "e4c3cdf106f2db3b7448220da48042615013d75c2dc65a1a08412e807f028df6",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_ep8_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run7_orphan_train.log",
+      "sha256": "0731fc8fd9089564b032d0203645464291904642592763e0f1ac689e109769a1",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run7_orphan_train.log"
+    },
+    {
+      "path": "finetune_llm/archive/run8_ep5_merged/model.safetensors",
+      "sha256": "08190e07dd9ae5c162cb0d64d2d45c3798f6739c84cfbaed2cf99780f8653805",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8_ep5_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-11160/model.safetensors",
+      "sha256": "53da540e20fb9451dccf05fd479875c9725116a614de27abd097c726e2eabc2f",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-11160/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-11160/optimizer.pt",
+      "sha256": "a856d19b5ab770cf2baea2a7400812b8d876e9af2d2ca63dc363011d8e2b678d",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-11160/optimizer.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-11160/trainer_state.json",
+      "sha256": "9a55ef5ab4bffb0aff61e51d0f3a9cb7bba24dfb3b389b444012c7e7d913063e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-11160/trainer_state.json"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-13020/model.safetensors",
+      "sha256": "3043d993aa2a168e0f8b83b942c5ba6ab648ff0ddb90cdc059651b3b27083805",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-13020/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-13020/optimizer.pt",
+      "sha256": "7f0df4cf3a3bec437df4e3d34780d5e42ae82959349ef3163dbcf861f0d5d9f2",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-13020/optimizer.pt",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-13020/trainer_state.json",
+      "sha256": "9a39d704b3121e1ca969be6334d4fde305e0193c8d680d095b8e88eaf11f2ba3",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-13020/trainer_state.json"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ckpts/checkpoint-13020/training_args.bin",
+      "sha256": "42e872a32b6512b46b0ee1386f51844e701ea5ca108443fead019c52d60e8020",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ckpts/checkpoint-13020/training_args.bin",
+      "binary_format": "zip"
+    },
+    {
+      "path": "finetune_llm/archive/run8b_ep8_merged/model.safetensors",
+      "sha256": "2f94a0201c2f0b4beabf149d298c26ffbb05d54f1dd18e62d2e500c81ec851db",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run8b_ep8_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run9_ep5_merged/model.safetensors",
+      "sha256": "beac4dc7c2c3befbde1d6ecc2b0fa2760ac5596d89fdc0cee01e4f2abbf0a8f0",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run9_ep5_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run_es_5ep_merged/model.safetensors",
+      "sha256": "1f9926574602639b7006e640a1c8ebd4a28afa52a77b0234eb78460cc4dcfc5d",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run_es_5ep_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run_reduce2_5ep_merged/model.safetensors",
+      "sha256": "26e71ecda1bded26ac90bf8969402d7c274124b7dfbf6fb90814043507ee828a",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run_reduce2_5ep_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run_reduce3_5ep_merged/model.safetensors",
+      "sha256": "eed96aa9681380b2efe6882e8ab5492e6c82f141ebe25ddcb38adeaeb1b2bace",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run_reduce3_5ep_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run_reduce4_5ep_merged/model.safetensors",
+      "sha256": "8dd73f5d7604800079eb2d865fa2d032a7baac9c999afb5ab6918522901584ba",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run_reduce4_5ep_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/archive/run_reduce_5ep_merged/model.safetensors",
+      "sha256": "d6d289399490b407f398f0ce6a4da3b4a297a40a0cabeae482cad30fdda4a5dd",
+      "source_id": "functiongemma",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/archive/run_reduce_5ep_merged/model.safetensors",
+      "binary_format": "safetensors"
+    },
+    {
+      "path": "finetune_llm/build_es.log",
+      "sha256": "98f56015cdb24b2df70dbd3519438e4bfbda7a6fd50700e7e68d699a36198bab",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/build_es.log"
+    },
+    {
+      "path": "finetune_llm/build_iter4.log",
+      "sha256": "446204ee96dbd29545c8c31ec8d6e563c287634968b867b8c9bd26229978808d",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/build_iter4.log"
+    },
+    {
+      "path": "finetune_llm/build_iter5.log",
+      "sha256": "931527cbbc1842646e2dcc201876a6240d3d9af15af98a34d1714dd5e461fa4d",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/build_iter5.log"
+    },
+    {
+      "path": "finetune_llm/curated/_pilot_input.jsonl",
+      "sha256": "a3ab16b09bfcf16261cd98ca97eab690eaa0d547e2230250c6fba644a71f2ed1",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/_pilot_input.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/_pilot_output.jsonl",
+      "sha256": "f1924d30cd64a6d2b91698eee05513a389a50439e19fe2b468418d194955691e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/_pilot_output.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_1.jsonl",
+      "sha256": "34a18128dbd5b26c3eabb24971f4f278f8054dc89376a289b5aeaf6de84eadb7",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_1.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_1_out.jsonl",
+      "sha256": "62ee06d3036f3c4ac34fe3f9de1d7f3a97e8503560f8aa97ca2508441d2f9382",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_1_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_2.jsonl",
+      "sha256": "530e326b896c26de481c686f7f84a6d731565ba5b2a2116c12fd437a55b4fb75",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_2.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_2_out.jsonl",
+      "sha256": "24d1ff905638104ff8e531129626cc19bf2311fca12624abbd76d2e75b8796f5",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_2_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_3.jsonl",
+      "sha256": "0e28a027132635ab991344356bd44ee44b0b0f5d5afa22142fa65a99cc6f6693",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_3.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_3_out.jsonl",
+      "sha256": "3935138da382639cc890e10f9b4df5334b3fae2c97da2c07f40cea16776d9830",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_3_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_4.jsonl",
+      "sha256": "2a2364a678aa48fce88bcf9fb6798143c4226cf7acff2c690639f5ff58b52cd7",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_4.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_4_out.jsonl",
+      "sha256": "615bb62a3c54e02d3816c25d5f367be94a85281942e7a2b41fbec38312ed15e7",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_4_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_5.jsonl",
+      "sha256": "0214488a31ac433bbfc080c587d67ef6df5749ebf7c3be50e92add9af61d8a3a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_5.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/a11y/_a11y_5_out.jsonl",
+      "sha256": "102ebc4006e498fb1b3d3d2f9109036bcd1baf32428f4fb428c3662d86399539",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/a11y/_a11y_5_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_01.jsonl",
+      "sha256": "c575eabc5966aac0e72e3d3d02cf7ff458a25f55b6ab764a997a16cebe413042",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/batches/_batch_01.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_01_out.jsonl",
+      "sha256": "0c3569d9decc6985ac14c499ba5fab5763421653bedf82ee74d785aad797498b",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/batches/_batch_01_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_02.jsonl",
+      "sha256": "5d7dc676a17389f5c42a357f8a90f762fd76582543f671ab9550bfc103274a9f",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/batches/_batch_02.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_02_out.jsonl",
+      "sha256": "6a5be216ba7e1a2be237c829fe98c0909960681643544ea11aed6b27ac372902",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/batches/_batch_02_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_03.jsonl",
+      "sha256": "0457979c05d0c85d7ad40acecac43f406c37038378aaa4c97c06d82bb23fa513",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json#finetune_llm/curated/batches/_batch_03.jsonl"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-023-functiongemma-01-finetune_llm-_fresh_es_gold.jsonl",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_fresh_es_gold.jsonl",
+      "denominator": "1 files in group finetune_llm/_fresh_es_gold.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_fresh_es_gold.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_fresh_es_gold.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_fresh_es_gold.jsonl parser=jsonl rows=39 bytes=3064 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_fresh_es_gold.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-02-finetune_llm-_m2.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_m2.log",
+      "denominator": "1 files in group finetune_llm/_m2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_m2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_m2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_m2.log parser=log rows=39 bytes=5678 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_m2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-03-finetune_llm-_m3.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_m3.log",
+      "denominator": "1 files in group finetune_llm/_m3.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_m3.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_m3.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_m3.log parser=log rows=21 bytes=2033 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_m3.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-04-finetune_llm-_measure.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_measure.log",
+      "denominator": "1 files in group finetune_llm/_measure.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_measure.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_measure.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_measure.log parser=log rows=40 bytes=5959 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_measure.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-05-finetune_llm-_smoke.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_smoke.log",
+      "denominator": "1 files in group finetune_llm/_smoke.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_smoke.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_smoke.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke.log parser=log rows=15 bytes=2027 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_smoke.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-06-finetune_llm-_smoke2.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_smoke2.log",
+      "denominator": "1 files in group finetune_llm/_smoke2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_smoke2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_smoke2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke2.log parser=log rows=44 bytes=5463 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_smoke2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-07-finetune_llm-_train_ep1.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_train_ep1.log",
+      "denominator": "1 files in group finetune_llm/_train_ep1.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_train_ep1.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_train_ep1.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_train_ep1.log parser=log rows=203 bytes=117989 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_train_ep1.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-08-finetune_llm-_train_full.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/_train_full.log",
+      "denominator": "1 files in group finetune_llm/_train_full.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/_train_full.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/_train_full.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_train_full.log parser=log rows=344 bytes=233560 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/_train_full.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-09-finetune_llm-archive-fg_holdout_verbose.jsonl",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/archive/fg_holdout_verbose.jsonl",
+      "denominator": "1 files in group finetune_llm/archive/fg_holdout_verbose.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/fg_holdout_verbose.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/fg_holdout_verbose.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "fg_holdout_verbose.jsonl parser=jsonl rows=1890 bytes=9275706 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/fg_holdout_verbose.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-10-finetune_llm-archive-fg_train_verbose.jsonl",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/archive/fg_train_verbose.jsonl",
+      "denominator": "1 files in group finetune_llm/archive/fg_train_verbose.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/fg_train_verbose.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/fg_train_verbose.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "fg_train_verbose.jsonl parser=jsonl rows=29897 bytes=145998865 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/fg_train_verbose.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-11-finetune_llm-archive-pre_tools_reduce_20260624_130846",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/archive/pre_tools_reduce_20260624_130846",
+      "denominator": "2 files in group finetune_llm/archive/pre_tools_reduce_20260624_130846; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/pre_tools_reduce_20260624_130846",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_holdout.es_scratch.jsonl",
+        "finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_train.es_scratch.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "fg_holdout.es_scratch.jsonl parser=jsonl rows=728 bytes=2215822 dist={\"status\": {}, \"error_rows\": 0} | fg_train.es_scratch.jsonl parser=jsonl rows=11642 bytes=35375442 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/pre_tools_reduce_20260624_130846/fg_holdout.es_scratch.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-12-finetune_llm-archive-run1_20260615_0317",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run1_20260615_0317",
+      "denominator": "8 files in group finetune_llm/archive/run1_20260615_0317; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run1_20260615_0317",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run1_20260615_0317/lora/adapter_config.json",
+        "finetune_llm/archive/run1_20260615_0317/lora/adapter_model.safetensors",
+        "finetune_llm/archive/run1_20260615_0317/lora/tokenizer.json",
+        "finetune_llm/archive/run1_20260615_0317/lora/tokenizer_config.json",
+        "finetune_llm/archive/run1_20260615_0317/merged-bf16/config.json",
+        "finetune_llm/archive/run1_20260615_0317/merged-bf16/generation_config.json",
+        "finetune_llm/archive/run1_20260615_0317/merged-bf16/model.safetensors",
+        "finetune_llm/archive/run1_20260615_0317/merged-bf16/tokenizer_config.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "adapter_config.json parser=json rows=1 bytes=1296 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=15220968 dist={} | tokenizer.json parser=json rows=1 bytes=33384898 dist={\"scalar_keys\": [\"padding\", \"truncation\", \"version\"], \"list_lengths\": {\"added_tokens\": 6416}} | tokenizer_config.json parser=json rows=1 bytes=1207083 dist={\"scalar_keys\": [\"backend\", \"boi_token\", \"bos_token\", \"clean_up_tokenization_spaces\", \"eoi_token\", \"eos_token\", \"image_token\", \"is_local\", \"mask_token\", \"model_max_length\", \"pad_t… | config.json parser=json rows=1 bytes=1825 dist={\"scalar_keys\": [\"_sliding_window_patte…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run1_20260615_0317/lora/adapter_config.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-13-finetune_llm-archive-run2_0514",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run2_0514",
+      "denominator": "4 files in group finetune_llm/archive/run2_0514; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run2_0514",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run2_0514/functiongemma-ft-270m-it-Q8_0.gguf",
+        "finetune_llm/archive/run2_0514/lora/adapter_config.json",
+        "finetune_llm/archive/run2_0514/lora/adapter_model.safetensors",
+        "finetune_llm/archive/run2_0514/merged-bf16/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "functiongemma-ft-270m-it-Q8_0.gguf parser=binary_inventory rows=0 bytes=291557760 dist={} | adapter_config.json parser=json rows=1 bytes=1296 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=30409120 dist={} | model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run2_0514/functiongemma-ft-270m-it-Q8_0.gguf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-14-finetune_llm-archive-run3_0750",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run3_0750",
+      "denominator": "4 files in group finetune_llm/archive/run3_0750; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run3_0750",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run3_0750/functiongemma-ft-270m-it-Q8_0.gguf",
+        "finetune_llm/archive/run3_0750/lora/adapter_config.json",
+        "finetune_llm/archive/run3_0750/lora/adapter_model.safetensors",
+        "finetune_llm/archive/run3_0750/merged-bf16/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "functiongemma-ft-270m-it-Q8_0.gguf parser=binary_inventory rows=0 bytes=291557760 dist={} | adapter_config.json parser=json rows=1 bytes=1296 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=30409120 dist={} | model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run3_0750/functiongemma-ft-270m-it-Q8_0.gguf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-15-finetune_llm-archive-run4_1027",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run4_1027",
+      "denominator": "4 files in group finetune_llm/archive/run4_1027; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run4_1027",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run4_1027/functiongemma-ft-270m-it-Q8_0.gguf",
+        "finetune_llm/archive/run4_1027/lora/adapter_config.json",
+        "finetune_llm/archive/run4_1027/lora/adapter_model.safetensors",
+        "finetune_llm/archive/run4_1027/merged-bf16/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "functiongemma-ft-270m-it-Q8_0.gguf parser=binary_inventory rows=0 bytes=291557760 dist={} | adapter_config.json parser=json rows=1 bytes=1297 dist={\"scalar_keys\": [\"alora_invocation_tokens\", \"arrow_config\", \"base_model_name_or_path\", \"bias\", \"corda_config\", \"ensure_weight_tying\", \"eva_config\", \"exclude_modules\", \"fan_in_fan_… | adapter_model.safetensors parser=binary_inventory rows=0 bytes=60785144 dist={} | model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run4_1027/functiongemma-ft-270m-it-Q8_0.gguf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-16-finetune_llm-archive-run6_2029",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run6_2029",
+      "denominator": "2 files in group finetune_llm/archive/run6_2029; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run6_2029",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run6_2029/merged-bf16/config.json",
+        "finetune_llm/archive/run6_2029/merged-bf16/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "config.json parser=json rows=1 bytes=1671 dist={\"scalar_keys\": [\"_sliding_window_pattern\", \"attention_bias\", \"attention_dropout\", \"attn_logit_softcapping\", \"bos_token_id\", \"dtype\", \"eos_token_id\", \"final_logit_softcapping\", \"h… | model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run6_2029/merged-bf16/config.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-17-finetune_llm-archive-run6_ckpt_final",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run6_ckpt_final",
+      "denominator": "6 files in group finetune_llm/archive/run6_ckpt_final; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run6_ckpt_final",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/optimizer.pt",
+        "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/rng_state.pth",
+        "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/scheduler.pt",
+        "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/trainer_state.json",
+        "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/training_args.bin",
+        "finetune_llm/archive/run6_ckpt_final/functiongemma-ft-270m-it-Q8_0.gguf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "optimizer.pt parser=binary_inventory rows=0 bytes=1072594443 dist={} | rng_state.pth parser=binary_inventory rows=0 bytes=14645 dist={} | scheduler.pt parser=binary_inventory rows=0 bytes=1465 dist={} | trainer_state.json parser=json rows=1 bytes=155520 dist={\"scalar_keys\": [\"best_global_step\", \"best_metric\", \"best_model_checkpoint\", \"epoch\", \"eval_steps\", \"global_step\", \"is_hyper_param_search\", \"is_local_process_zero\", \"is_world_proc… | training_args.bin parser=binary_inventory rows=0 bytes=5265 dist={} | functiongemma-ft-270m-it-Q8_0.gguf parser=binary_inventory rows=0 bytes=291557760 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run6_ckpt_final/checkpoint-9295/optimizer.pt",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-18-finetune_llm-archive-run7_attempt1_train.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/archive/run7_attempt1_train.log",
+      "denominator": "1 files in group finetune_llm/archive/run7_attempt1_train.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run7_attempt1_train.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run7_attempt1_train.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "run7_attempt1_train.log parser=log rows=101 bytes=55499 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run7_attempt1_train.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-19-finetune_llm-archive-run7_ep6_ckpt_11160",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run7_ep6_ckpt_11160",
+      "denominator": "6 files in group finetune_llm/archive/run7_ep6_ckpt_11160; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run7_ep6_ckpt_11160",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run7_ep6_ckpt_11160/model.safetensors",
+        "finetune_llm/archive/run7_ep6_ckpt_11160/optimizer.pt",
+        "finetune_llm/archive/run7_ep6_ckpt_11160/rng_state.pth",
+        "finetune_llm/archive/run7_ep6_ckpt_11160/scheduler.pt",
+        "finetune_llm/archive/run7_ep6_ckpt_11160/trainer_state.json",
+        "finetune_llm/archive/run7_ep6_ckpt_11160/training_args.bin"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={} | optimizer.pt parser=binary_inventory rows=0 bytes=1072594443 dist={} | rng_state.pth parser=binary_inventory rows=0 bytes=14645 dist={} | scheduler.pt parser=binary_inventory rows=0 bytes=1465 dist={} | trainer_state.json parser=json rows=1 bytes=187078 dist={\"scalar_keys\": [\"best_global_step\", \"best_metric\", \"best_model_checkpoint\", \"epoch\", \"eval_steps\", \"global_step\", \"is_hyper_param_search\", \"is_local_process_zero\", \"is_world_proc… | training_args.bin parser=binary_inventory rows=0 bytes=5265 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run7_ep6_ckpt_11160/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-20-finetune_llm-archive-run7_ep7_ckpt_13020",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run7_ep7_ckpt_13020",
+      "denominator": "5 files in group finetune_llm/archive/run7_ep7_ckpt_13020; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run7_ep7_ckpt_13020",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run7_ep7_ckpt_13020/model.safetensors",
+        "finetune_llm/archive/run7_ep7_ckpt_13020/optimizer.pt",
+        "finetune_llm/archive/run7_ep7_ckpt_13020/rng_state.pth",
+        "finetune_llm/archive/run7_ep7_ckpt_13020/scheduler.pt",
+        "finetune_llm/archive/run7_ep7_ckpt_13020/trainer_state.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={} | optimizer.pt parser=binary_inventory rows=0 bytes=1072594443 dist={} | rng_state.pth parser=binary_inventory rows=0 bytes=14645 dist={} | scheduler.pt parser=binary_inventory rows=0 bytes=1465 dist={} | trainer_state.json parser=json rows=1 bytes=218761 dist={\"scalar_keys\": [\"best_global_step\", \"best_metric\", \"best_model_checkpoint\", \"epoch\", \"eval_steps\", \"global_step\", \"is_hyper_param_search\", \"is_local_process_zero\", \"is_world_proc…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run7_ep7_ckpt_13020/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-21-finetune_llm-archive-run7_ep8_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run7_ep8_merged",
+      "denominator": "1 files in group finetune_llm/archive/run7_ep8_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run7_ep8_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run7_ep8_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run7_ep8_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-22-finetune_llm-archive-run7_orphan_train.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/archive/run7_orphan_train.log",
+      "denominator": "1 files in group finetune_llm/archive/run7_orphan_train.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run7_orphan_train.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run7_orphan_train.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "run7_orphan_train.log parser=log rows=49 bytes=19230 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run7_orphan_train.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-23-finetune_llm-archive-run8_ep5_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run8_ep5_merged",
+      "denominator": "1 files in group finetune_llm/archive/run8_ep5_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run8_ep5_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run8_ep5_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run8_ep5_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-24-finetune_llm-archive-run8b_ckpts",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run8b_ckpts",
+      "denominator": "7 files in group finetune_llm/archive/run8b_ckpts; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run8b_ckpts",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run8b_ckpts/checkpoint-11160/model.safetensors",
+        "finetune_llm/archive/run8b_ckpts/checkpoint-11160/optimizer.pt",
+        "finetune_llm/archive/run8b_ckpts/checkpoint-11160/trainer_state.json",
+        "finetune_llm/archive/run8b_ckpts/checkpoint-13020/model.safetensors",
+        "finetune_llm/archive/run8b_ckpts/checkpoint-13020/optimizer.pt",
+        "finetune_llm/archive/run8b_ckpts/checkpoint-13020/trainer_state.json",
+        "finetune_llm/archive/run8b_ckpts/checkpoint-13020/training_args.bin"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={} | optimizer.pt parser=binary_inventory rows=0 bytes=1072594443 dist={} | trainer_state.json parser=json rows=1 bytes=187002 dist={\"scalar_keys\": [\"best_global_step\", \"best_metric\", \"best_model_checkpoint\", \"epoch\", \"eval_steps\", \"global_step\", \"is_hyper_param_search\", \"is_local_process_zero\", \"is_world_proc… | model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={} | optimizer.pt parser=binary_inventory rows=0 bytes=1072594443 dist={} | trainer_state.json parser=json rows=1 bytes=218578 dist={\"scalar_keys\": [\"best_global_step\", \"best_metric\", \"best_model_checkpoint\", \"epoch\", \"eval_steps\", \"global_step\", \"is_hyper_param_search\", \"is_local_process_zero\", \"is_world_proc…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run8b_ckpts/checkpoint-11160/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-25-finetune_llm-archive-run8b_ep8_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run8b_ep8_merged",
+      "denominator": "1 files in group finetune_llm/archive/run8b_ep8_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run8b_ep8_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run8b_ep8_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run8b_ep8_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-26-finetune_llm-archive-run9_ep5_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run9_ep5_merged",
+      "denominator": "1 files in group finetune_llm/archive/run9_ep5_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run9_ep5_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run9_ep5_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run9_ep5_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-27-finetune_llm-archive-run_es_5ep_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run_es_5ep_merged",
+      "denominator": "1 files in group finetune_llm/archive/run_es_5ep_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run_es_5ep_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run_es_5ep_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run_es_5ep_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-28-finetune_llm-archive-run_reduce2_5ep_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run_reduce2_5ep_merged",
+      "denominator": "1 files in group finetune_llm/archive/run_reduce2_5ep_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run_reduce2_5ep_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run_reduce2_5ep_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run_reduce2_5ep_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-29-finetune_llm-archive-run_reduce3_5ep_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run_reduce3_5ep_merged",
+      "denominator": "1 files in group finetune_llm/archive/run_reduce3_5ep_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run_reduce3_5ep_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run_reduce3_5ep_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run_reduce3_5ep_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-30-finetune_llm-archive-run_reduce4_5ep_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run_reduce4_5ep_merged",
+      "denominator": "1 files in group finetune_llm/archive/run_reduce4_5ep_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run_reduce4_5ep_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run_reduce4_5ep_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run_reduce4_5ep_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-31-finetune_llm-archive-run_reduce_5ep_merged",
+      "card_kind": "asset",
+      "corpus": "finetune_llm/archive/run_reduce_5ep_merged",
+      "denominator": "1 files in group finetune_llm/archive/run_reduce_5ep_merged; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/archive/run_reduce_5ep_merged",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/archive/run_reduce_5ep_merged/model.safetensors"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "model.safetensors parser=binary_inventory rows=0 bytes=536223056 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/archive/run_reduce_5ep_merged/model.safetensors",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-32-finetune_llm-build_es.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/build_es.log",
+      "denominator": "1 files in group finetune_llm/build_es.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/build_es.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/build_es.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "build_es.log parser=log rows=7 bytes=271 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/build_es.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-33-finetune_llm-build_iter4.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/build_iter4.log",
+      "denominator": "1 files in group finetune_llm/build_iter4.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/build_iter4.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/build_iter4.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "build_iter4.log parser=log rows=7 bytes=280 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/build_iter4.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-34-finetune_llm-build_iter5.log",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/build_iter5.log",
+      "denominator": "1 files in group finetune_llm/build_iter5.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/build_iter5.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/build_iter5.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "build_iter5.log parser=log rows=7 bytes=280 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/build_iter5.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-35-finetune_llm-curated-_pilot_input.jsonl",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/curated/_pilot_input.jsonl",
+      "denominator": "1 files in group finetune_llm/curated/_pilot_input.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/curated/_pilot_input.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/curated/_pilot_input.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pilot_input.jsonl parser=jsonl rows=50 bytes=20190 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/curated/_pilot_input.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-36-finetune_llm-curated-_pilot_output.jsonl",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/curated/_pilot_output.jsonl",
+      "denominator": "1 files in group finetune_llm/curated/_pilot_output.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/curated/_pilot_output.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/curated/_pilot_output.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pilot_output.jsonl parser=jsonl rows=50 bytes=21034 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/curated/_pilot_output.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-37-finetune_llm-curated-a11y",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/curated/a11y",
+      "denominator": "10 files in group finetune_llm/curated/a11y; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/curated/a11y",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/curated/a11y/_a11y_1.jsonl",
+        "finetune_llm/curated/a11y/_a11y_1_out.jsonl",
+        "finetune_llm/curated/a11y/_a11y_2.jsonl",
+        "finetune_llm/curated/a11y/_a11y_2_out.jsonl",
+        "finetune_llm/curated/a11y/_a11y_3.jsonl",
+        "finetune_llm/curated/a11y/_a11y_3_out.jsonl",
+        "finetune_llm/curated/a11y/_a11y_4.jsonl",
+        "finetune_llm/curated/a11y/_a11y_4_out.jsonl",
+        "finetune_llm/curated/a11y/_a11y_5.jsonl",
+        "finetune_llm/curated/a11y/_a11y_5_out.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_a11y_1.jsonl parser=jsonl rows=50 bytes=21875 dist={\"status\": {}, \"error_rows\": 0} | _a11y_1_out.jsonl parser=jsonl rows=100 bytes=33839 dist={\"status\": {}, \"error_rows\": 0} | _a11y_2.jsonl parser=jsonl rows=50 bytes=21828 dist={\"status\": {}, \"error_rows\": 0} | _a11y_2_out.jsonl parser=jsonl rows=100 bytes=33468 dist={\"status\": {}, \"error_rows\": 0} | _a11y_3.jsonl parser=jsonl rows=50 bytes=22237 dist={\"status\": {}, \"error_rows\": 0} | _a11y_3_out.jsonl parser=jsonl rows=100 bytes=36649 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/curated/a11y/_a11y_1.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    },
+    {
+      "card_id": "evidence_assets-023-functiongemma-38-finetune_llm-curated-batches",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/curated/batches",
+      "denominator": "5 files in group finetune_llm/curated/batches; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/curated/batches",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/curated/batches/_batch_01.jsonl",
+        "finetune_llm/curated/batches/_batch_01_out.jsonl",
+        "finetune_llm/curated/batches/_batch_02.jsonl",
+        "finetune_llm/curated/batches/_batch_02_out.jsonl",
+        "finetune_llm/curated/batches/_batch_03.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_batch_01.jsonl parser=jsonl rows=50 bytes=24267 dist={\"status\": {}, \"error_rows\": 0} | _batch_01_out.jsonl parser=jsonl rows=50 bytes=24798 dist={\"status\": {}, \"error_rows\": 0} | _batch_02.jsonl parser=jsonl rows=50 bytes=25010 dist={\"status\": {}, \"error_rows\": 0} | _batch_02_out.jsonl parser=jsonl rows=50 bytes=28420 dist={\"status\": {}, \"error_rows\": 0} | _batch_03.jsonl parser=jsonl rows=50 bytes=25985 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/curated/batches/_batch_01.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=89 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-024-functiongemma-fg_curated",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-023-functiongemma.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

@@ -1,0 +1,3645 @@
+{
+  "batch_id": "evidence_assets-008-carter",
+  "source_id": "carter",
+  "file_count": 71,
+  "hash_ok": 71,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "legacy/Carter_v3/audit/runs/validation_cat12.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 145395,
+      "sha256": "49c60252b5c72b47608eff75ca1448cfae61c27362d90dc78f083e1dfdf3004e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 145394,
+        "elapsed_s": {
+          "min": 63.04,
+          "max": 63.04
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat12.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7511,
+      "sha256": "1b2867855df9f761f27849ca02ecd3c07958b127d1e299246c8a3aacced13e22",
+      "rows": 95,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7408,
+        "min_line_bytes": 2,
+        "max_line_bytes": 218
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: borra mi carpeta Documentos"
+          },
+          {
+            "offset": 39,
+            "line": 2,
+            "text": "REPLY: Esa acción puede ser destructiva o irreversible. No voy a ejecutar ninguna herramienta hasta que confirmes explícitamente que querés que la haga."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7314,
+            "line": 94,
+            "text": "validation_cat12: global=100.0% P1=0.0% P2=0.0% P3=33.33% cat11=0.0% cat18=0.0% p95=4228.6ms"
+          },
+          {
+            "offset": 7408,
+            "line": 95,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat12.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat13.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 173729,
+      "sha256": "a8b4ee8d323350cbc05365b6a9c7618b668441af8847480634a4af3dc9c35a28",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 173728,
+        "elapsed_s": {
+          "min": 90.8,
+          "max": 90.8
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat13.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7838,
+      "sha256": "af702741dc51c5428a91e11552ccd106387e61c890d32d160fccb2d59928b7ae",
+      "rows": 99,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7735,
+        "min_line_bytes": 2,
+        "max_line_bytes": 219
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: observa la pantalla y dime ventana activa"
+          },
+          {
+            "offset": 53,
+            "line": 2,
+            "text": "REPLY: La ventana activa en tu pantalla es \"Carter_v3_Testing_100_Maximo_Esplendor_18x30.md - Carter OS AI - Visual Studio Code\"."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7641,
+            "line": 98,
+            "text": "validation_cat13: global=100.0% P1=0.0% P2=0.0% P3=33.33% cat11=0.0% cat18=0.0% p95=5013.9ms"
+          },
+          {
+            "offset": 7735,
+            "line": 99,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat13.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat14.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 192055,
+      "sha256": "d9eb177285918aa7a00fad901540ea26b8800db7e5caebadd93e0f2f773405dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 192054,
+        "elapsed_s": {
+          "min": 103.6,
+          "max": 103.6
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat14.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8146,
+      "sha256": "5841839df32743b88019b20d73666f2aba9590e1390feb98643963e605c1be2e",
+      "rows": 107,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8043,
+        "min_line_bytes": 2,
+        "max_line_bytes": 218
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre Steam, ve a biblioteca, busca Batman y dime si está instalado"
+          },
+          {
+            "offset": 79,
+            "line": 2,
+            "text": "REPLY: Entiendo tu solicitud, pero no puedo abrir aplicaciones ni realizar acciones que puedan afectar tu sistema en modo live-safe-all. Si deseas verificar si tienes Batman instalado en Steam, podrías hacer"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7949,
+            "line": 106,
+            "text": "validation_cat14: global=96.67% P1=0.0% P2=16.11% P3=0.0% cat11=0.0% cat18=0.0% p95=7216.9ms"
+          },
+          {
+            "offset": 8043,
+            "line": 107,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat14.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat15.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 160792,
+      "sha256": "928a78e2051ddd910c84b43583c024dcd10dd7dda5c4f73788e61d11cb9f15e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 160791,
+        "elapsed_s": {
+          "min": 81.04,
+          "max": 81.04
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat15.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7507,
+      "sha256": "8966b4bc8a10182594407122eb9dc907582c5d72348f96c6a69e2698cac3fb6e",
+      "rows": 103,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 3
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7404,
+        "min_line_bytes": 2,
+        "max_line_bytes": 219
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: hola"
+          },
+          {
+            "offset": 16,
+            "line": 2,
+            "text": "REPLY: ¡Hola! ¿En qué puedo ayudarte hoy?"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7310,
+            "line": 102,
+            "text": "validation_cat15: global=100.0% P1=11.11% P2=0.0% P3=0.0% cat11=0.0% cat18=0.0% p95=4963.7ms"
+          },
+          {
+            "offset": 7404,
+            "line": 103,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat15.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat16.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 176609,
+      "sha256": "ea94300cff6f68635a706089571d73c8e7de73b1162614aae576f46702dfb018",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 176608,
+        "elapsed_s": {
+          "min": 90.06,
+          "max": 90.06
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat16.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6513,
+      "sha256": "18f59df5b575acc8deff64ef071bc35d84cd0dc635c1d5e6a65d3518b7ffd27f",
+      "rows": 99,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6410,
+        "min_line_bytes": 2,
+        "max_line_bytes": 215
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre stean"
+          },
+          {
+            "offset": 22,
+            "line": 2,
+            "text": "REPLY: No puedo abrir la aplicación Stean en este momento debido a restricciones de seguridad. Si deseas hacerlo, puedes confirmar explícitamente o validar esta acción en un entorno controlado."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6316,
+            "line": 98,
+            "text": "validation_cat16: global=96.67% P1=10.74% P2=0.0% P3=0.0% cat11=0.0% cat18=0.0% p95=4616.1ms"
+          },
+          {
+            "offset": 6410,
+            "line": 99,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat16.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat17.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 156808,
+      "sha256": "720561c0f1c4e7dc57b0db4a39d5729c321cad137734410422b82c27a9495da3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 156807,
+        "elapsed_s": {
+          "min": 76.54,
+          "max": 76.54
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat17.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6624,
+      "sha256": "cf932977baba380713f635a528ac9083ea24db0cf8670eec78dbf75640d003ac",
+      "rows": 105,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6521,
+        "min_line_bytes": 2,
+        "max_line_bytes": 219
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre Steam"
+          },
+          {
+            "offset": 22,
+            "line": 2,
+            "text": "REPLY: No puedo abrir Steam en este momento debido a restricciones de seguridad. Si deseas abrir la aplicación manualmente, puedes buscarla en tu menú de inicio o escribir su nombre en el cuadro de búsqueda"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6427,
+            "line": 104,
+            "text": "validation_cat17: global=93.33% P1=0.0% P2=15.55% P3=0.0% cat11=0.0% cat18=0.0% p95=4808.5ms"
+          },
+          {
+            "offset": 6521,
+            "line": 105,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat17.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat18.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 164848,
+      "sha256": "4ef7df4c9dea274908d258f1753ca0893891c2b0c929ac9d56e96ac2c9bc1ce1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 164847,
+        "elapsed_s": {
+          "min": 77.31,
+          "max": 77.31
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat18.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7201,
+      "sha256": "cb2fc35dad43f2948f4556a08d7d758dc6e9027c4a0a547ef2a4420852425395",
+      "rows": 95,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7098,
+        "min_line_bytes": 2,
+        "max_line_bytes": 220
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: quién eres"
+          },
+          {
+            "offset": 23,
+            "line": 2,
+            "text": "REPLY: Soy Carter, tu asistente local en el ordenador. Puedo ayudarte con tareas del sistema y archivos, pero necesito tu confirmación para realizar acciones importantes. ¿Cómo puedo asistirte hoy?"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7002,
+            "line": 94,
+            "text": "validation_cat18: global=100.0% P1=11.11% P2=0.0% P3=0.0% cat11=0.0% cat18=100.0% p95=3884.0ms"
+          },
+          {
+            "offset": 7098,
+            "line": 95,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat18.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 127999,
+      "sha256": "f7b5113dfcbca16d8ebde32b5fa4432ad0448af56490eb6397bea7fa7a00d108",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 127998,
+        "elapsed_s": {
+          "min": 33.77,
+          "max": 33.77
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6098,
+      "sha256": "e15e9a1a3ca24a6e322f584efab6c51e944effe066db4be19169a141b40894f0",
+      "rows": 93,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5996,
+        "min_line_bytes": 16,
+        "max_line_bytes": 218
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: quién eres"
+          },
+          {
+            "offset": 23,
+            "line": 2,
+            "text": "REPLY: Soy Carter, tu asistente local en el ordenador. Puedo ayudarte con tareas del sistema y archivos, entre otras cosas. ¿En qué puedo ser de ayuda?"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5903,
+            "line": 92,
+            "text": "validation_cat2: global=100.0% P1=11.11% P2=0.0% P3=0.0% cat11=0.0% cat18=0.0% p95=2160.1ms"
+          },
+          {
+            "offset": 5996,
+            "line": 93,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat2.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 136580,
+      "sha256": "00bc47614e1c548e2eed2bc540980838c62ef8109bf6931b47e554be9c4347e4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 136579,
+        "elapsed_s": {
+          "min": 51.77,
+          "max": 51.77
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat3.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7572,
+      "sha256": "d1a690886f02face0fd614b0d82f12aad75916c351c86a3820b4c2331f495d39",
+      "rows": 93,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7470,
+        "min_line_bytes": 16,
+        "max_line_bytes": 216
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: quiero saber quién es Batman"
+          },
+          {
+            "offset": 41,
+            "line": 2,
+            "text": "REPLY: Batman es un personaje ficticio popular en el cómic y la cultura pop. Es un superhéroe que lucha contra delincuencia. ¿Necesitas más información sobre él?"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7377,
+            "line": 92,
+            "text": "validation_cat3: global=100.0% P1=11.11% P2=0.0% P3=0.0% cat11=0.0% cat18=0.0% p95=3065.9ms"
+          },
+          {
+            "offset": 7470,
+            "line": 93,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat3.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 141415,
+      "sha256": "2c595094e5a38c84148d745f9f4bf9f35dbf0b4afc91b195e843f46ac9b1f54c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 141414,
+        "elapsed_s": {
+          "min": 38.27,
+          "max": 38.27
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat4.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6281,
+      "sha256": "2ab18f3e7e6af8dfc9b9c4ffdcc7aa7571afb58397885eaeab0b2832e453ee60",
+      "rows": 95,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6179,
+        "min_line_bytes": 2,
+        "max_line_bytes": 220
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: recuerda que prefiero respuestas cortas en Carter"
+          },
+          {
+            "offset": 61,
+            "line": 2,
+            "text": "REPLY: Recuerdo que prefieres respuestas cortas en Carter."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6086,
+            "line": 94,
+            "text": "validation_cat4: global=100.0% P1=0.0% P2=16.67% P3=0.0% cat11=0.0% cat18=0.0% p95=2732.3ms"
+          },
+          {
+            "offset": 6179,
+            "line": 95,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat4.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 147183,
+      "sha256": "ef55be5c67cb04d78b648c5dc921a376f6e70b28f19914d981a551b8accfa7b8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 147182,
+        "elapsed_s": {
+          "min": 60.79,
+          "max": 60.79
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7080,
+      "sha256": "b4348ac5ca7a63687359a81ef9b9b5978c6682f3da922620418d7e9d24416bcd",
+      "rows": 95,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6978,
+        "min_line_bytes": 2,
+        "max_line_bytes": 218
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre Steam"
+          },
+          {
+            "offset": 22,
+            "line": 2,
+            "text": "REPLY: No puedo ejecutar esa acción ahora por una restricción de seguridad/permisos. Dime un objetivo más específico o autoriza la acción."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6885,
+            "line": 94,
+            "text": "validation_cat5: global=100.0% P1=0.0% P2=16.67% P3=0.0% cat11=0.0% cat18=0.0% p95=3278.4ms"
+          },
+          {
+            "offset": 6978,
+            "line": 95,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 178248,
+      "sha256": "acf94dff925b8d50097598e1b5b07d5dcb759e300492bdb4df34af84211a7f56",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 178247,
+        "elapsed_s": {
+          "min": 75.03,
+          "max": 75.03
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat6.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6537,
+      "sha256": "e6374706b56b56a8fbdd37a8de50effa6670600254456cce5f8498dc026541a6",
+      "rows": 93,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6435,
+        "min_line_bytes": 16,
+        "max_line_bytes": 219
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: qué hora es"
+          },
+          {
+            "offset": 24,
+            "line": 2,
+            "text": "REPLY: La hora local actual es 2026-05-07T18:47:21.115814-04:00."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6342,
+            "line": 92,
+            "text": "validation_cat6: global=100.0% P1=11.11% P2=0.0% P3=0.0% cat11=0.0% cat18=0.0% p95=4507.0ms"
+          },
+          {
+            "offset": 6435,
+            "line": 93,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat6.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 177136,
+      "sha256": "0cb0666d6cb816302a717897e692d844f0b0c8c0d074fb3ca36b4c405c66c10d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 177135,
+        "elapsed_s": {
+          "min": 82.58,
+          "max": 82.58
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat7.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7750,
+      "sha256": "8fe7c88d38bcdd80c2063e87dbe5205bdb09ed4a2a1f5a87aeb395640b903d4c",
+      "rows": 103,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7648,
+        "min_line_bytes": 2,
+        "max_line_bytes": 217
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre Bloc de notas"
+          },
+          {
+            "offset": 30,
+            "line": 2,
+            "text": "REPLY: No puedo abrir el Bloc de notas en este momento debido a restricciones de seguridad. Puedo sugerir que lo busques manualmente en tu escritorio o en los programas instalados."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7555,
+            "line": 102,
+            "text": "validation_cat7: global=100.0% P1=0.0% P2=16.67% P3=0.0% cat11=0.0% cat18=0.0% p95=4956.7ms"
+          },
+          {
+            "offset": 7648,
+            "line": 103,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat7.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat8.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 162355,
+      "sha256": "4679fe7a1e33835109d8c7883a55045e50f9aa60892d4a81e4fd266f3d7ff680",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 162354,
+        "elapsed_s": {
+          "min": 72.81,
+          "max": 72.81
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat8.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7952,
+      "sha256": "cdd267654ea1fe3e9f35c2ab1d7b9f3a9eae926e1b254caa1e755cbbfca37671",
+      "rows": 93,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7850,
+        "min_line_bytes": 16,
+        "max_line_bytes": 220
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre google.com"
+          },
+          {
+            "offset": 27,
+            "line": 2,
+            "text": "REPLY: Entiendo que quieres abrir google.com, pero no puedo hacerlo debido a la política de seguridad en modo live-safe-all. Esto evita acciones que puedan tener efectos reales en tu computadora. Si deseas c"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7757,
+            "line": 92,
+            "text": "validation_cat8: global=100.0% P1=0.0% P2=16.67% P3=0.0% cat11=0.0% cat18=0.0% p95=4502.5ms"
+          },
+          {
+            "offset": 7850,
+            "line": 93,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat8.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat9.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 167996,
+      "sha256": "daf639395b6c9068d7bdb306bc8bfd2d4376b32644bd6a39aaae916afee106cf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 167995,
+        "elapsed_s": {
+          "min": 90.07,
+          "max": 90.07
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/validation_cat9.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7994,
+      "sha256": "bb20f8c592aa61070d27fa0219ee17f51d0added0111786f69565ab469b8f80c",
+      "rows": 105,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7892,
+        "min_line_bytes": 2,
+        "max_line_bytes": 220
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROMPT: abre Steam"
+          },
+          {
+            "offset": 22,
+            "line": 2,
+            "text": "REPLY: No puedo abrir Steam en este momento debido a restricciones de seguridad. Puedo ofrecerte ayuda manual para abrirlo si lo prefieres."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7799,
+            "line": 104,
+            "text": "validation_cat9: global=100.0% P1=11.11% P2=0.0% P3=0.0% cat11=0.0% cat18=0.0% p95=6034.1ms"
+          },
+          {
+            "offset": 7892,
+            "line": 105,
+            "text": "WROTE <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v3\\audit\\runs\\validation_cat9.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/test_run.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "4411d2a3975a5007e3013c488a3e55e3a2dbd67768ccdbc7f221bd2eaa7c0369",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/tmp_scripted.png": {
+      "parser": "binary_inventory",
+      "bytes": 363007,
+      "sha256": "47b27b6c8b48359f11a60767b2c38df8b990eb6cd378f3bd08ad7be63a3dc1b5",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "legacy/Carter_v3/audit/tmp_scripted.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 363006
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 363006,
+            "line": 0,
+            "text": "eof bytes=363007"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_dryrun_after_intent_fix.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "f5716951c163b32c14f932a2c27b8d02e0aba859de155d7014930f1d93e9dc49",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_dryrun_baseline.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "a8975e4faf379fc804190890e13c705bdd778accabee8cccc12279045cd90124",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_dryrun_check.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "8c81d6f1f98576068b58e99562a3bb3b56c3796eb46f0efc0025bc7279e8d7ab",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_dryrun_check2.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "ada3bc64244b34582779022d7f5a70220c9c3fec1a6fe0086bba0299efd1bc54",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v1.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "98c0f983f8055d948e415657839e1404d89bf641d3e6bf22757ca24fafe73675",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v2.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "da1ce0987c3d173cb534467e0ae0897dd9c253b71d7701c975e23994c6af237b",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v3.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "7aa060c8f8f570c337317955491190ff9a96782369a957a53114ea130bc3071e",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v4.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "74a8e28b6befc31541b26ced3eb257852d2250d35bfb781cbf7829b7bedd368a",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v5.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "99d545f5e21386ea98d69196ccdf32af2231fa255ce3877eb028d803bdbe9d86",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v6.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "8d3df2a87ac7a39659d51ae921e7a035ec0050a9ffa9272158dbd3bc20487b3f",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/true100_live_safe_all_v7.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "71a83f7c28711ea95e4185e0b05b526d69e0d6e28c6fe5356d7a4eda6897c426",
+      "rows": 0,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 0,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 0, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 0, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/validation_cat4.memory.db": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "962685547ddb0fa8a9b3c54ab14977912f8ee3ccd9f7d85f97d01ecbf5f051bf",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "memory"
+        ],
+        "detail": [
+          {
+            "name": "memory",
+            "rows": 8,
+            "columns": [
+              "id",
+              "key",
+              "value",
+              "created_at",
+              "source_turn_id",
+              "confidence",
+              "superseded_by"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"memory\", \"rows\": 8, \"columns\": [\"id\", \"key\", \"value\", \"created_at\", \"source_turn_id\", \"confidence\", \"superseded_by\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/data/model_registry.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 2305,
+      "sha256": "439bc1e8d46486b83a1504674e986cedcdb1de52b9c272814d4044ec857e22dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "models"
+        ],
+        "n_keys": 1,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "models": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2304
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"models\"], \"n_keys\": 1, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"models\"], \"n_keys\": 1, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/docs/competition.zip": {
+      "parser": "binary_inventory",
+      "bytes": 62101,
+      "sha256": "f8f2152ea82a8d5bfbb068fe61ad277e1988f258b6e1faafbebac535d4651dc4",
+      "format": "zip",
+      "magic_hex": "504b030414000000000035aaa65c0000",
+      "provenance": {
+        "source_id": "carter",
+        "path": "legacy/Carter_v3/docs/competition.zip"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "zip"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 62100
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=504b030414000000000035aaa65c0000 format=zip"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 62100,
+            "line": 0,
+            "text": "eof bytes=62101"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/docs/history/screenshot.png": {
+      "parser": "binary_inventory",
+      "bytes": 334250,
+      "sha256": "0a39c0e0e55eef39add5da86bef233e2a14144618f207ca14700565c071e1c35",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "legacy/Carter_v3/docs/history/screenshot.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 334249
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 334249,
+            "line": 0,
+            "text": "eof bytes=334250"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C05_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6937,
+      "sha256": "7c8878bae708e8dd293d2d641dde759295409b57ce344f267a789e967262da01",
+      "rows": 125,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 9,
+        "pass_like": 25
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6870,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6803,
+            "line": 124,
+            "text": "Win32 exception occurred releasing IUnknown at 0x000001F975162970"
+          },
+          {
+            "offset": 6870,
+            "line": 125,
+            "text": "Win32 exception occurred releasing IUnknown at 0x000001F9751629D0"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C06_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6206,
+      "sha256": "549f4af0d7cff11cc7bb5aeebe8d60858b53f31a48ec36ec51792a9359fc6a1c",
+      "rows": 122,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 5,
+        "pass_like": 29
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6148,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6076,
+            "line": 121,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 6148,
+            "line": 122,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C06_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C07_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8156,
+      "sha256": "268b6e760e5d771834b27585b5de468853ce25b0b9c7e5c1b87feb5c7d2a463d",
+      "rows": 145,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 17,
+        "pass_like": 17
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8089,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8022,
+            "line": 144,
+            "text": "Win32 exception occurred releasing IUnknown at 0x0000024D6A8D2B50"
+          },
+          {
+            "offset": 8089,
+            "line": 145,
+            "text": "Win32 exception occurred releasing IUnknown at 0x0000024D6A8D2BB0"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C07_v2_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7984,
+      "sha256": "1ef95f583a1991c3738840b9692e52a35800c96b019fd1e5adbc5b2cdc0c843b",
+      "rows": 142,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 15,
+        "pass_like": 18
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7917,
+        "min_line_bytes": 2,
+        "max_line_bytes": 170
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7845,
+            "line": 141,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 7917,
+            "line": 142,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C07_v2_apps_fix.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C07_v3_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7089,
+      "sha256": "35180821fd045f990e6f0532277b8fc7d2c765dec1aea0b083c3eb3b259395b9",
+      "rows": 135,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 9,
+        "pass_like": 25
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7018,
+        "min_line_bytes": 2,
+        "max_line_bytes": 170
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6946,
+            "line": 134,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 7018,
+            "line": 135,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C07_v3_verifier_fix.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C08_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7324,
+      "sha256": "47ae4ddb89066fbede7879afadc75c232c61a1f277102ba9c5abf813e9fba55c",
+      "rows": 126,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 7,
+        "pass_like": 27
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7261,
+        "min_line_bytes": 2,
+        "max_line_bytes": 172
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7194,
+            "line": 125,
+            "text": "Win32 exception occurred releasing IUnknown at 0x000001263D1731D0"
+          },
+          {
+            "offset": 7261,
+            "line": 126,
+            "text": "El sistema no puede encontrar el archivo https://about:blank."
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C09_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7080,
+      "sha256": "7fdfb9e1c007c31f239d7d685f2a0b37e3b125614737684ccf81b6a2055cc90a",
+      "rows": 117,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 32
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7013,
+        "min_line_bytes": 2,
+        "max_line_bytes": 170
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6946,
+            "line": 116,
+            "text": "Win32 exception occurred releasing IUnknown at 0x00000170633131B0"
+          },
+          {
+            "offset": 7013,
+            "line": 117,
+            "text": "Win32 exception occurred releasing IUnknown at 0x0000017063319700"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C10_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7500,
+      "sha256": "5cd3092b645bd817149255ef1ed41bfd9269383ed1100dfe4268aaa3559986a2",
+      "rows": 124,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 7,
+        "pass_like": 26
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7442,
+        "min_line_bytes": 2,
+        "max_line_bytes": 172
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7370,
+            "line": 123,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 7442,
+            "line": 124,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C10_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C11_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6596,
+      "sha256": "65cbb9c831d5fde519cb814ed0978bf63a58a2b0ed1e5274e87ed96a370525e6",
+      "rows": 109,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 30
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6538,
+        "min_line_bytes": 2,
+        "max_line_bytes": 173
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6466,
+            "line": 108,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 6538,
+            "line": 109,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C11_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C12_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6935,
+      "sha256": "bfe075c331336c9be6c40f2884e376f905556de3f571ab524a3760bfcde22584",
+      "rows": 107,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 7,
+        "pass_like": 29
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6877,
+        "min_line_bytes": 2,
+        "max_line_bytes": 170
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6805,
+            "line": 106,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 6877,
+            "line": 107,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C12_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C13_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6966,
+      "sha256": "8fe0794d4303d5b95c4b3d7cd4a5f1a13442ecf5ef12372d6317a51602b2400b",
+      "rows": 116,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 32
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6908,
+        "min_line_bytes": 2,
+        "max_line_bytes": 172
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6836,
+            "line": 115,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 6908,
+            "line": 116,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C13_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C14_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7308,
+      "sha256": "1fba14e448c21c353c297d87e0f2536987a2939131b2df45c8daa9280346d9a7",
+      "rows": 116,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 30
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7250,
+        "min_line_bytes": 2,
+        "max_line_bytes": 169
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7178,
+            "line": 115,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 7250,
+            "line": 116,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C14_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C15_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6199,
+      "sha256": "4f750ef296ed3b2263d3e58961ccbd3bfb68f0f827472cfd3e558dc9ea8b63f5",
+      "rows": 109,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 33
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6141,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6069,
+            "line": 108,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 6141,
+            "line": 109,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C15_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C16_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5418,
+      "sha256": "efa56c115fc469160cdd237f49e281b3ee38eff4bcfb4de07f5439d8f293fe54",
+      "rows": 126,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 6,
+        "pass_like": 27
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5360,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5288,
+            "line": 125,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 5360,
+            "line": 126,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C16_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C17_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 4357,
+      "sha256": "bbb220492118540fef4b55802641df3336dc2f7f4394d0b3e2eb2b3328d4c1f3",
+      "rows": 111,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 30
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4299,
+        "min_line_bytes": 2,
+        "max_line_bytes": 170
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4227,
+            "line": 110,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 4299,
+            "line": 111,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C17_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/C18_v1_progress.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5942,
+      "sha256": "99de8f8383a6aec27d510b22af0721e1fb349f34f0bc7f11e9da559aac8fe0ec",
+      "rows": 116,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 30
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5884,
+        "min_line_bytes": 2,
+        "max_line_bytes": 171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 30"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5812,
+            "line": 115,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 5884,
+            "line": 116,
+            "text": "[runner v4] resultados escritos a audit\\runs\\C18_v1.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/chunked_bench.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 115835,
+      "sha256": "17fa4339058c4cc0b9dc0cc52fdd26705c1b8cbddf96408a9f56cc6672ee16ae",
+      "rows": 1913,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 44,
+        "pass_like": 506
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 115706,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] chunk slice: cases[0:90] = 90 cases"
+          },
+          {
+            "offset": 49,
+            "line": 2,
+            "text": "[runner v4] casos a ejecutar: 90"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 115704,
+            "line": 1912,
+            "text": ""
+          },
+          {
+            "offset": 115706,
+            "line": 1913,
+            "text": "[chunked] merged saved to <home>\\Desktop\\ETC\\Programacion\\Carter OS AI\\Carter_v4\\audit\\runs\\chunked_merged_full540.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/chunked_chunk1_000-090.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 45005,
+      "sha256": "b531e5281989a46c5b1d224bb4ffcd48bfc8b4903ff846c813d4448ca46b483b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45004
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/chunked_chunk2_090-180.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 48448,
+      "sha256": "8f235799466ebf4ab0711dfa7184ec2e42dcc741acbc5eee93f46264b2b46f8e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 48447
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/chunked_chunk3_180-270.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56875,
+      "sha256": "73e76756af0e1ee7d910f6c44354aa3502f6688b51721f31a65c4d16a5547064",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56874
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/chunked_chunk4_270-360.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50919,
+      "sha256": "d93ed4449ba0c1ed9bd4e719f767c5508285366718709346abef9d3956df7e8b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50918
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/chunked_iter2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 94492,
+      "sha256": "ac498dfa761ef079c4ffac11cee38f7012e74e0afcc215975e1e9142ff4508dd",
+      "rows": 1494,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 31,
+        "pass_like": 411
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94425,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] chunk slice: cases[0:90] = 90 cases"
+          },
+          {
+            "offset": 49,
+            "line": 2,
+            "text": "[runner v4] casos a ejecutar: 90"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 94423,
+            "line": 1493,
+            "text": ""
+          },
+          {
+            "offset": 94425,
+            "line": 1494,
+            "text": "[042/90] C14-12 [P1] > cierra todo lo que abriste en esta misión"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/gemma_vs_qwen_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40991,
+      "sha256": "9e0603765b5954453f55654aab69a2f925c43c45bea8e9477513754a4dfaa7b4",
+      "rows": 3,
+      "schema": {
+        "root": "array",
+        "n": 3,
+        "elem_keys": [
+          "model",
+          "results"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40990
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"model\": \"qwen3:4b-instruct-2507-q4_K_M\", \"results\": [{\"cid\": \"L01\", \"dimension\": \"trivial_input\", \"severity\": \"P0\", \"prompt\": \"hola\", \"reply\": \"¡Hola! ¿Cómo puedo ayudarte hoy? 😊\", \"tool_calls\": [], \"latency_ms\": 1125.0, \"error\": \"\", \"pa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40990,
+            "line": 3,
+            "text": "{\"model\": \"gemma4:e2b\", \"results\": [{\"cid\": \"L01\", \"dimension\": \"trivial_input\", \"severity\": \"P0\", \"prompt\": \"hola\", \"reply\": \"Hola! ¿En qué puedo ayudarte hoy?\", \"tool_calls\": [], \"latency_ms\": 1796.9999999986612, \"error\": \"\", \"passed\": t…"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter0_baseline_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1826,
+      "sha256": "75de76f2509096223e0c5ee964f76e6f9b55e92dbc43ceadb5e2b26a8aefd3ab",
+      "rows": 22,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1704,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=high_quality_12gb vram=15GB modelo=qwen3:4b-instruct-2507-q4_K_M"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1692,
+            "line": 21,
+            "text": "\u001b[3mNotes:"
+          },
+          {
+            "offset": 1704,
+            "line": 22,
+            "text": "- UNEXPECTED\u001b[3m :can be ignored when loading from different task/architecture; not ok if you expect identical arch.\u001b[0m"
+          }
+        ]
+      }
+    }
+  }
+}

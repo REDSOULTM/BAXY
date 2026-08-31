@@ -1,0 +1,580 @@
+{
+  "batch_id": "evidence_assets-115-baxy-baxy_exp_technology_tournament",
+  "source_id": "baxy",
+  "file_count": 38,
+  "hash_ok": 38,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf-95b750aad2d2c2b8.rlib": {
+      "parser": "exclude",
+      "bytes": 207994,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf-95b750aad2d2c2b8.rmeta": {
+      "parser": "exclude",
+      "bytes": 205179,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_codegen-060b901d3ebea1f9.rlib": {
+      "parser": "exclude",
+      "bytes": 55944,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_codegen-060b901d3ebea1f9.rmeta": {
+      "parser": "exclude",
+      "bytes": 54571,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_generator-ee3b53014376d00f.rlib": {
+      "parser": "exclude",
+      "bytes": 217758,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_generator-ee3b53014376d00f.rmeta": {
+      "parser": "exclude",
+      "bytes": 19033,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_shared-0d02d70afb738bf4.rlib": {
+      "parser": "exclude",
+      "bytes": 584434,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_shared-0d02d70afb738bf4.rmeta": {
+      "parser": "exclude",
+      "bytes": 563488,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_shared-591f1ab1705dcfb7.rlib": {
+      "parser": "exclude",
+      "bytes": 357922,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libphf_shared-591f1ab1705dcfb7.rmeta": {
+      "parser": "exclude",
+      "bytes": 309661,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpin_project_lite-7214cbff8ad6bfd5.rlib": {
+      "parser": "exclude",
+      "bytes": 97698,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpin_project_lite-7214cbff8ad6bfd5.rmeta": {
+      "parser": "exclude",
+      "bytes": 94809,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libplist-0f8e008d83d108d5.rlib": {
+      "parser": "exclude",
+      "bytes": 1732836,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libplist-0f8e008d83d108d5.rmeta": {
+      "parser": "exclude",
+      "bytes": 957476,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libplist-881267484ae89b46.rlib": {
+      "parser": "exclude",
+      "bytes": 1434152,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libplist-881267484ae89b46.rmeta": {
+      "parser": "exclude",
+      "bytes": 1274782,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpng-c96c5ad8ea43f0da.rlib": {
+      "parser": "exclude",
+      "bytes": 2065400,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpng-c96c5ad8ea43f0da.rmeta": {
+      "parser": "exclude",
+      "bytes": 895248,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpotential_utf-4c0070fe690d8672.rlib": {
+      "parser": "exclude",
+      "bytes": 69324,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpotential_utf-4c0070fe690d8672.rmeta": {
+      "parser": "exclude",
+      "bytes": 59459,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpotential_utf-ebaed0b910644bd3.rlib": {
+      "parser": "exclude",
+      "bytes": 82952,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpotential_utf-ebaed0b910644bd3.rmeta": {
+      "parser": "exclude",
+      "bytes": 44156,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpowerfmt-9ca63bf059e457d8.rlib": {
+      "parser": "exclude",
+      "bytes": 167884,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpowerfmt-9ca63bf059e457d8.rmeta": {
+      "parser": "exclude",
+      "bytes": 146184,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpowerfmt-a7066ac1a09a59b3.rlib": {
+      "parser": "exclude",
+      "bytes": 215622,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libpowerfmt-a7066ac1a09a59b3.rmeta": {
+      "parser": "exclude",
+      "bytes": 135964,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libprecomputed_hash-5f1bd893f00a971a.rlib": {
+      "parser": "exclude",
+      "bytes": 5166,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libprecomputed_hash-5f1bd893f00a971a.rmeta": {
+      "parser": "exclude",
+      "bytes": 4077,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libproc_macro2-53ccb56a12e06344.rlib": {
+      "parser": "exclude",
+      "bytes": 1747754,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libproc_macro2-53ccb56a12e06344.rmeta": {
+      "parser": "exclude",
+      "bytes": 392241,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libquick_xml-03b72d5499cb77eb.rlib": {
+      "parser": "exclude",
+      "bytes": 1690166,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libquick_xml-03b72d5499cb77eb.rmeta": {
+      "parser": "exclude",
+      "bytes": 1385582,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libquick_xml-5155ee60638e6402.rlib": {
+      "parser": "exclude",
+      "bytes": 2394642,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libquick_xml-5155ee60638e6402.rmeta": {
+      "parser": "exclude",
+      "bytes": 1158951,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libquote-287af7d61d0ceae1.rlib": {
+      "parser": "exclude",
+      "bytes": 565542,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libquote-287af7d61d0ceae1.rmeta": {
+      "parser": "exclude",
+      "bytes": 270170,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libraw_window_handle-16f17bf9aa0d858b.rlib": {
+      "parser": "exclude",
+      "bytes": 415072,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    },
+    "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libraw_window_handle-16f17bf9aa0d858b.rmeta": {
+      "parser": "exclude",
+      "bytes": 363832,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_build_artifact"
+    }
+  }
+}

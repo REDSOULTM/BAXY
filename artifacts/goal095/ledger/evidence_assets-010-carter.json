@@ -1,0 +1,2792 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-010-carter",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:38:34Z",
+  "closed_utc": "2026-08-31T05:38:37Z",
+  "estimated_tokens": 294829,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 176,
+  "subsystem": "carter_legacy_Carter_v4",
+  "subsystems": [
+    "carter_legacy_Carter_v4",
+    "carter_legacy_debug_chain.log",
+    "carter_legacy_debug_doom.log",
+    "carter_legacy_logs",
+    "carter_root_assets",
+    "carter_v1",
+    "carter_v2"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterC_retry_full540.log",
+      "sha256": "44ac036f2b56eb801cf89297a2a69fe7b5325ea803aa14900f131b4f9c3b1c9a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterC_retry_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterD_full540.json",
+      "sha256": "def054d66bb547967317cfa9d504e4b303ef879da585a75bb109f540455500ee",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterD_full540.json"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterD_full540.log",
+      "sha256": "1e338a3a18c4c9f1e930bd23dec99fdc274aed3eae503e04171818f7fa5eff72",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterD_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterE_full540.log",
+      "sha256": "66cfc2db584b66a4ba377b242a5b46ffc9482d1efd62ccf07b733341f8863833",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterE_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterF_full540.log",
+      "sha256": "0b150463e12b31279f3acb519553ab78898e63736f265ad8ca238117bdd616ce",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterF_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterG_full540.json",
+      "sha256": "6ac8c093036338e6e82d706d872a9c807a8b61f07b19ac7bd69864fa03318f3d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterG_full540.json"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterG_full540.log",
+      "sha256": "5b2378f5d942b18040a689bf04c5be62f14bd9a73c0799975e4cab955e71c336",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterG_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterH_full540.json",
+      "sha256": "c068d3327b8e77081d02273bbc5fbaaa86162d010e4567bf9a1de6c6d17e72bd",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterH_full540.json"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iterH_full540.log",
+      "sha256": "74874685ca9330ad7e0044a4d88dce926a6cba9c36eae846d55fd57636109a58",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iterH_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iter_full540.json",
+      "sha256": "95ba6512bc9dfebb9af748bd7c1495b0ebf2a792266eac76da6e4f9814ce8c6b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iter_full540.json"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/iter_full540.log",
+      "sha256": "28cc403ba44ac5716520bf4824131be6d94ccec8883736f0d0c5c5d182e1b78a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/iter_full540.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/llama_server.log",
+      "sha256": "4e24558ccd57dc04655a5484fd9f7c166afeb4b4fd29a21e347b8f856d11ce8c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/llama_server.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/llama_server_26B.log",
+      "sha256": "0220f9b8c0350277d27212fa02c6f55147e69b99b7657e7c32193a664eb04b5a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/llama_server_26B.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/llama_server_26B.log.err",
+      "sha256": "de111de2123ecdfbd23a78c246411807d43904a0d3d278ab5f7999ba44b38126",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/llama_server_26B.log.err"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/llama_server_T7.err.log",
+      "sha256": "381e699c23c2133148b834f5a164b7f62c8fab714fcaac43982cbd94442f04e5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/llama_server_T7.err.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.log",
+      "sha256": "c6195b784cf1eb9034df9dfb7d0b8903366900ab7bd7315bb130fe8d6e5b577c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v1.log",
+      "sha256": "3ddadf8e6d1d979a727822c64b6c3f7850256f14680ba5eed2a94378e107e12f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v1.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v10.log",
+      "sha256": "6eb37a2d32379a278cb138ef0fed951fc31ddceeab62ae84fa38dd5b8b1cce07",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v10.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.log",
+      "sha256": "de8ff67fe36fd6b747a3d1b07ab5a8995397ed9d85ec9d49fbac34ac0e7d6812",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.log",
+      "sha256": "d87eaeba13dcfcbeb7891f683729c0ffd2f7458de298255f6c442597cb48ffde",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v5.log",
+      "sha256": "600a61718addb4c32e6f312b6f44a60c05985e4f34fa605870860bd096fbc5a3",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v5.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v6.log",
+      "sha256": "ecf3723f088bf8b98f927218a348c1524d85a072e13aa282afe43bb02d131b3f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v6.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v7.log",
+      "sha256": "11fa3dea6aaa81b3049d955e2d7456ab88c5fc684cf58158133c4ce3e5e960d0",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v7.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v8.log",
+      "sha256": "02ae916b9407f02d2affb63264e9c2edcd928d3379d026863ba934a4842d4e10",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v8.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C01_v9.log",
+      "sha256": "0df6397bb859a2e7b396e15266b475ad259db21038629ce523ff72664a1831ae",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C01_v9.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v1.log",
+      "sha256": "f26a33e908b3f930a5b2001daf9de626ac71c010ea765b101ca0439e046195e2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C02_v1.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v2.log",
+      "sha256": "be9af72f1ddab2686db8de5d3ba0ade12dba65f9ba1acfd036f21f99d2614ef1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C02_v2.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C02_v3.log",
+      "sha256": "2a4886c091c8b3d6b21799cece88965d4c678dd1e736c8bf5bdcec399a0daca7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C02_v3.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_mistral24.log",
+      "sha256": "313716830c0ba4e17e9e23812ff2f366360102d4b583fc52127c4530011193d7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C03_mistral24.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v1.log",
+      "sha256": "93a8b00d74ec5d9f81ce8b5569094375253a58e7c0756ee9b585ace42aef4353",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C03_v1.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v2.log",
+      "sha256": "f8769023f3dd927b46008965a62f3806e9f7233ee793ffb5d30de85edec85168",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C03_v2.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v3.log",
+      "sha256": "042087fd3b77ce2848ead0974feb9b5d819abaf22d9c3b47a9c9141b2641eaf8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C03_v3.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C03_v4.log",
+      "sha256": "364130e9cd9b1a63b6780157143b31c7bb4a58badbf131f2a2325f7b94948a9e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C03_v4.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.log",
+      "sha256": "a5a1eec9932dcf08c7564efc683de0239ccf0ec52e91992d4804e179e4a1c3e6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v1.log",
+      "sha256": "02ae7a41f459f7b9691915d274ca3db21ab7f9eeb1e0e00d169cc38d5074d332",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C04_v1.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v2.log",
+      "sha256": "50fe7c918b0c25b1b77a0f6fa9c35ef3bec83eda3f549680b830216fb3662857",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C04_v2.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v3.log",
+      "sha256": "7e7e76ea2caae24221621eb8f638f64cc84537c1e9cf45e5fff1e378878d49cf",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C04_v3.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v4.log",
+      "sha256": "d36b66d27a66f3448650aa93cd87c9c688d0048dbda4a91298c4a5703a16fd69",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C04_v4.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C04_v5.log",
+      "sha256": "b8efb44f0165d8a44f86510c26c1b48e8ee8f5718bbb0c8431d546fe4623106f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C04_v5.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C05_v1.log",
+      "sha256": "a9cd8209413c336f6ebf4e1a963189fe628a2b760e7d747fdc263e2ab4182218",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C05_v1.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/matrix_C05_v2.log",
+      "sha256": "afadd3cef97ab0c4dcdfaee41d23c97c4ecbc938a503a38500afc30c1827fd5d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/matrix_C05_v2.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/post_gemma4_sanity18.log",
+      "sha256": "b22a9dc919d9ee21cfa837af5cfa6bdc382dec602adab74023f697dd88e70af5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/post_gemma4_sanity18.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run1.log",
+      "sha256": "113efa3e73fd0f4dbdc9c379fb9f622d5d783f584864e5bae57e97633ae936a3",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run1.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run2.log",
+      "sha256": "8b09d0c3088132a43af29b5839708ac05f263bbbe65b4bae93d987eb84a14d86",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run2.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run3_qwen25.log",
+      "sha256": "9b42563e97e95ce41721337010aad5e03ed0900a1be20ffb18a71af128f4b9e5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run3_qwen25.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run4_mistral24.log",
+      "sha256": "8698bac8717add04d1e6a2f7d5a0188a7458e4741c20d7dd65f559f2fabb4604",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run4_mistral24.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run5_qwen_promptv2.log",
+      "sha256": "2acfbf7e93d1aecc7f2b01399448c7c0bff5ae347bd49b263dfc9d2d26dc022f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run5_qwen_promptv2.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run6_watttool.log",
+      "sha256": "fc520839fdb65d590366e650e8917fc2ad132fac4689b6a19725be14c3ac6af4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run6_watttool.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run7_watttool_xml.log",
+      "sha256": "1fd47575fdac76fef9d46ae319019c102024270523678a8c87d404d9c3ed74ec",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run7_watttool_xml.log"
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/spotcheck_v4_run8_qwen3.log",
+      "sha256": "64da0d3d9c778b2dcf25e1da59217a127db59329fa6c59204be6b68957e3fad4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/audit/runs/spotcheck_v4_run8_qwen3.log"
+    },
+    {
+      "path": "legacy/Carter_v4/data/_smoke_v19_skills.db",
+      "sha256": "b6153defa093eee1f2d79fbef2f305935221b50c5cc22dee7cb586e3fe10068f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/data/_smoke_v19_skills.db"
+    },
+    {
+      "path": "legacy/Carter_v4/data/carter_v4_memory.db",
+      "sha256": "ff79e97e63d924712b3b96a7d2fa89bb973f0f60ddf69952aec58fe0d1f66eba",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/data/carter_v4_memory.db"
+    },
+    {
+      "path": "legacy/Carter_v4/data/carter_v4_skills.db",
+      "sha256": "eda9fa74b02a2cf81439e601b346fc776fa5dd989dc277c41a86ac5ad13a7ba8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/data/carter_v4_skills.db"
+    },
+    {
+      "path": "legacy/Carter_v4/data/matrix_run_memory.db",
+      "sha256": "129753c2d1b3ff5665a9de4cb452fd6027332d1494134e27e69b1967071ec078",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/data/matrix_run_memory.db"
+    },
+    {
+      "path": "legacy/Carter_v4/data/models.json",
+      "sha256": "368c3f474f45aacd770325ef390c1809c15ebad3b7272406a18ba6a1836e7c3a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/data/models.json"
+    },
+    {
+      "path": "legacy/Carter_v4/data/spotcheck_v4_memory.db",
+      "sha256": "a7f6544edfb6717879188b9f901af7fa1e90781d3b3d46580463780f41abb64b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/data/spotcheck_v4_memory.db"
+    },
+    {
+      "path": "legacy/Carter_v4/steam_search_results.png",
+      "sha256": "44a77001eed14a2e9a911e955dd3e3bfe04abd7dc3ebd8c0555ec4bb5cf68a22",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/steam_search_results.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v4/temp_screenshot.png",
+      "sha256": "3da5926ea81d12ca5111da475d42bcb009dcb9a61b48ffbac799b1ea627981b8",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/temp_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v4/temp_screenshot_2.png",
+      "sha256": "9db80598c87452561367d6e3d80b961a1ff360f3dcb14f4ed49c039861327a21",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/temp_screenshot_2.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v4/temp_screenshot_3.png",
+      "sha256": "29eec439be744ddce79ef635484cb64dd202e31ad94244b5b3ea1b7138e218ab",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/temp_screenshot_3.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v4/temp_screenshot_4.png",
+      "sha256": "105f59481beb475317c62c71da024081dbac96477edb317a2e93449ffdef6855",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/Carter_v4/temp_screenshot_4.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/debug_chain.log",
+      "sha256": "746cdd494f8793f0c1f43e2b65750ae616a7882bfb85fde238bd6f709c64f396",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/debug_chain.log"
+    },
+    {
+      "path": "legacy/debug_doom.log",
+      "sha256": "4d5cd16d63b409ecf9e39d52b11ccb5cc19b155709fc376057aad44cbbe52a67",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/debug_doom.log"
+    },
+    {
+      "path": "legacy/logs/ErroresTools.log",
+      "sha256": "92317c8b963b6769d42a2dc9e799c4186f7014738bf16b4280ffbb514386f865",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#legacy/logs/ErroresTools.log"
+    },
+    {
+      "path": "Cart.mp3",
+      "sha256": "909b95ec1fc9cd191695c248815aff905583f5f0c84672986016479276464173",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Cart.mp3",
+      "binary_format": "wav"
+    },
+    {
+      "path": "carter_session.log",
+      "sha256": "3010eff0e8ff9dbb21262c46bc29627efb08a62c15d98c649337a207fefde2f3",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#carter_session.log"
+    },
+    {
+      "path": "temp_screenshot.png",
+      "sha256": "4a5d6a74c786a9f1d1b5567c12c69d4f3288062b515116a461741a0af9f31150",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#temp_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v1/backend_compare_logs/llamacpp_server.err.log",
+      "sha256": "443f374397b3e94075eea972e20513d4c20e9924b6fc6d5f2e78809e94093170",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/backend_compare_logs/llamacpp_server.err.log"
+    },
+    {
+      "path": "Carter_v1/backend_compare_logs/tabby_stack2_stderr.log",
+      "sha256": "51b0c0e0e3e961f7fed0496fe8c078171f8cd5c9ddd82a4fab0c2ff4314f491f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/backend_compare_logs/tabby_stack2_stderr.log"
+    },
+    {
+      "path": "Carter_v1/backend_compare_logs/tabby_stack2_stdout.log",
+      "sha256": "4aab6c3bfbec3cf5fc549657a1f876533ea6ea695051a2183b5e8db3a5f5aa29",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/backend_compare_logs/tabby_stack2_stdout.log"
+    },
+    {
+      "path": "Carter_v1/carter_session.log",
+      "sha256": "f5cf01469093585bdfce0bf4c932617842ec21c6506f201bccff06f1303a9fc9",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/carter_session.log"
+    },
+    {
+      "path": "Carter_v1/data/carter_memory.db",
+      "sha256": "4ab768be191178707ee588007a24499bf6e877bf393800e9eb9973a1d385c913",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/data/carter_memory.db"
+    },
+    {
+      "path": "Carter_v1/phase6_brain_compare_results.json",
+      "sha256": "6a99c04e15be3a8759056d366610de29d8910694e67550df36c673fbc05b171c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/phase6_brain_compare_results.json"
+    },
+    {
+      "path": "Carter_v1/phase6_logs/qwen3-baseline.log",
+      "sha256": "60efcd919e215f6ed08d53ce02001b2a01a957140174ffa2843f0a3bdad1481a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/phase6_logs/qwen3-baseline.log"
+    },
+    {
+      "path": "Carter_v1/runs_log.jsonl",
+      "sha256": "7b4394d6ed991eb7c75ec82e86d53281fd833342b021d9d87a20114ed133da74",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v1/runs_log.jsonl"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_022721_step_1_click.png",
+      "sha256": "58fa6d3f0503f0ae9c42764dad3bb35b38b1c357ef48c2543f25b03533427500",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_022721_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_022913_step_1_click.png",
+      "sha256": "faeacb8b2c57e11b530b90538755e9897264cf2f02c6b9d3924c0ac3cf30ddf0",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_022913_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_022939_step_1_click.png",
+      "sha256": "db0ca4f4a6df07736f83dbebabf7bc27f041d4ec5486924a457b55098a827c36",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_022939_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_023025_step_1_click.png",
+      "sha256": "476d2372dae6b0ec81283a260c4d6ce4a5bf2a575061daffd3f575c23e9fd4ab",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_023025_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_023130_step_1_click.png",
+      "sha256": "4efe4a08fc121332520fe41c5d45e27a8566354e84969b80ba2a086e2b5a7b49",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_023130_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_023157_step_1_click.png",
+      "sha256": "3d5a08284cce851a7ba2b42d55c789d5c9a85aa7e20d76e3128c5a7917899b95",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_023157_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_085757_step_1_click.png",
+      "sha256": "154cabf3ae526cb6c0c69541f6f787d49f36fa1dfa04c1cf69d525fa0ff9f674",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_085757_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_085823_step_1_click.png",
+      "sha256": "38759b0d4eecf1ea5fec229870f012ef5a8cb8b3a8236d7e2871d63540244adb",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_085823_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_090000_step_1_click.png",
+      "sha256": "bf3daa82879e60cecd0fa58c1691e56e8bf97b338e6a291142101b72d8f953f3",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_090000_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_090035_step_1_click.png",
+      "sha256": "95726a80eefcb306f7fa83952008916232484fbe72a3c9574b74b437f6f43c76",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_090035_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_090714_step_1_click.png",
+      "sha256": "c013d7603041e484ba2ecbb0128ad172364687c2745d8c5800cc15270af6a880",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_090714_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_090901_step_1_click.png",
+      "sha256": "8bf42a5b89f9aa0b3168ee4ed3a58d13d6d6851aac9e15851a37e30edbbda24b",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_090901_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_091008_step_1_click.png",
+      "sha256": "fd81e07312e32a6a173c29e9b1dca742811e27a3c2a44e97f992c57d19e6dc9a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_091008_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_093832_step_1_click.png",
+      "sha256": "4d85f91c3837cf34308de31a84f80c202ffa093d9d9a6a93cbdf709199f7e768",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_093832_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_094138_step_1_click.png",
+      "sha256": "730e1a69f1235c1894949e4af5af8db9c0926acaa3e8a9b702b785f08e18bfde",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_094138_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_094400_step_1_click.png",
+      "sha256": "afb92f66031d4fad04259ec7a8c7d57b0f5e50e9b43a6ca258f2ecdb6f414743",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_094400_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_094718_step_1_click.png",
+      "sha256": "577ec9cddde750c027c9d23ca6c64fd32991010eb2d32b3f84a3b211c1874032",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_094718_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_094838_step_1_click.png",
+      "sha256": "b73d4bce26cf58544b707c7bf69f5c403206f1fb1ee565314a98b17a407182e4",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_094838_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_095035_step_1_click.png",
+      "sha256": "50f244b89cab7bd7f7b691821be86e7d1e8c508d70b24eba206e3b18fd0df493",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_095035_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_095141_step_1_click.png",
+      "sha256": "4574e9b946958267ea74c47ed16b5e0368b75888c4b19f880de90d60f1298be9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_095141_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_095419_step_1_click.png",
+      "sha256": "dbfe37c319aedbab13b803cac0b98c92c82c71eaed6b2f077f15cf9bf468dcee",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_095419_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_095835_step_1_click.png",
+      "sha256": "3ba1325be6dd95403ca10eadf9c10460b4cbfad1746899c597d4ba1cbd3a6ffa",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_095835_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_100010_step_1_click.png",
+      "sha256": "162aaf10189ceea7818dec4a0469c3e15097892bdb191b8a809bb67de7f33124",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_100010_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_100207_step_1_click.png",
+      "sha256": "e1ffb7c5ff704e7e936ccfc1639d7fd05a7e4d9582d47469066f0b2cac1c43bd",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_100207_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_100535_step_1_click.png",
+      "sha256": "26125181e6bc0c3222a33485ac38c4fa00e043dc1ab5e94d0e9643a942e2fd62",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_100535_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_110527_step_1_click.png",
+      "sha256": "d6bc5c3bba3eca435b7fec3d1a0c813e6fea4dd8902876a38e53e723e90d9f18",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_110527_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_110714_step_1_click.png",
+      "sha256": "64881ee8550bb2d06259fad0796af61d9b844167a33cbe6def75444ea2533a3e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_110714_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_110816_step_1_click.png",
+      "sha256": "a56e45f300a65f4b231a58cda6aa6d3fa63858ba20210f6a1ae9c199df88ef7a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_110816_step_1_click.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_140112_step_1_post.png",
+      "sha256": "f99c4b9e68e7313199f546f407e636f8d515e8844f5a3690fdebb8c2e9e00300",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_140112_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_140112_step_1_pre.png",
+      "sha256": "fe4a2f32a64e301594a2a7eecf0f8984dc678e44b2af86cd1360810dddf080f9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_140112_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_140134_vision_click_source.png",
+      "sha256": "2a42c6d42f6d2a5b4177ecbdf5715841e9da4aa8e1c34795ef9bb649ca8d47ab",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_140134_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_140238_step_1_post.png",
+      "sha256": "78075d8ed49d60b0298cc7e1416f4ec9461d4412cd110140c43605565d7d5440",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_140238_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_140310_vision_click_source.png",
+      "sha256": "4d4f502e8989672101035ea5422cca1d88cb323818beffc939d2ee2832691370",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_140310_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141344_step_1_post.png",
+      "sha256": "0eb44c817c0318b7a6a30b4f1c9ff600ddebef1948d1cf5ca97cfafcccdf9ef3",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141344_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141414_step_1_post.png",
+      "sha256": "bc6975133c9ab054ada8209ca55d3fa4a691b3b675c43f9d6155a9c11095cd9d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141414_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141456_step_1_post.png",
+      "sha256": "9dcd4ceebbcc483238d2ac53b78fd121bee41182f5a33f417f5c550e63a30ff9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141456_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141504_step_1_post.png",
+      "sha256": "8f56828f2fff5ed7d18888e0cb491c696bdb69e2fadf84d3a27858f51a187946",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141504_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141540_step_1_post.png",
+      "sha256": "998ae5642cc2bc0becf98b3b44cc29a41965dc596d6dc57fb84b9db8e4f7ea1e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141540_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141540_step_1_pre.png",
+      "sha256": "3c126510d2ec8e8d4004f964b6e55371806dd75f74f90c9614dfc4578e860de1",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141540_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141540_vision_click_source.png",
+      "sha256": "17c092ebbc1623307f2859249a518c0ab5ff7c1a8d35c167b67b87a05261411c",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141540_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141616_step_1_post.png",
+      "sha256": "d54cbb14b4e9e638ffaf906db4d62057790574c5170d2ba325027413c388f1b7",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141616_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141616_step_1_pre.png",
+      "sha256": "6bc041241cbb7da7f42ee0deed365c1564e7cc9460fe6489ce161b6a40f68cb9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141616_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141616_vision_click_source.png",
+      "sha256": "68964b1211d4fa6c65a1e6d6a87e4a7d2751131962133d085ea5f0456ddcb8ae",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141616_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141708_step_1_post.png",
+      "sha256": "726a5b4d79d327b8d520e01bbc79f9e499de7d26a4cc137f4bded5de5b17d223",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141708_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_141842_step_1_post.png",
+      "sha256": "1388e6cf66ea752a0647fa249a9421bfb508fbafff140253a29048b9a1708c12",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_141842_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_142227_step_1_post.png",
+      "sha256": "285b4223b9e869cbc076cbb9ce7986157ac1bec98f351b2c1738b97f3c027a94",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_142227_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_142304_step_1_post.png",
+      "sha256": "716730394dc38538e1c1b9a9ad22f5ebf84aac863538607f9a548fecd690a65d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_142304_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_142340_step_1_post.png",
+      "sha256": "53f29ca4823f954c09ef1fc5616f148df242cbac545cf4e3994c64ca9766516e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_142340_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_142401_step_1_post.png",
+      "sha256": "5c1241bf07335ea74160802715d35f67b2e7348749399b02081c25ad8984d48a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_142401_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_142432_step_1_post.png",
+      "sha256": "802b35b0381cce49efeee1b6ad0020bcf61e6f959a9c61dde373aa84f1b49298",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_142432_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_143001_step_1_post.png",
+      "sha256": "57374a22e5ad29fa32b7f3fa50839df102952b321efa7f323e96325722114ce1",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_143001_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_143537_step_1_post.png",
+      "sha256": "aeeee1a3ef1263d4219463576ed57927b770462991af20964a9dc41392b6bc0c",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_143537_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145010_step_1_post.png",
+      "sha256": "27f70c8e40e4ac7a799423e78e1e2f38528c9885465fe517e89d19206db6d2f4",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145010_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145131_step_1_post.png",
+      "sha256": "7df8cb6029779132c89be7c31920485f5080e622c40ebdb54d4d7c72ad8bade5",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145131_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145231_step_1_post.png",
+      "sha256": "2bb74360faac2502c79e2ff6bfefd909184dfc22b9bf9f1fdd28ab3ad09fc34a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145231_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145343_step_1_pre.png",
+      "sha256": "b44653cb33bb3bbd0ec26736de8a4024ea9d6faaa8e742735d87c311b4b5371b",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145343_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145419_step_1_pre.png",
+      "sha256": "b1ae1b1e56401397898afb67d18e10f517526d83d5225b1ce2cd8da76941e125",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145419_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145515_step_1_pre.png",
+      "sha256": "9f0995f98039bb6813e9fda8bc90da001ff53a922439f6af8259ea378236cf17",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145515_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_145539_step_1_post.png",
+      "sha256": "2bae98d973a4f88bb089f3a1b5e91870a7dec59e759210336e608f5a5dad258d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_145539_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_150024_step_1_post.png",
+      "sha256": "726bda90ec97fbdad3ad2c5f5e52d425a693bfc6879f8d67b1fca843bdc67464",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_150024_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_160418_step_1_pre.png",
+      "sha256": "8590d5592a78fb5f1cc30e86dcc0288a5b6882c67c380592e34098763637ec6e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_160418_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_160435_step_1_post.png",
+      "sha256": "379bd2e4443ba820580612939f6ae8d77546380ec4d8ef7f1a73225d984359e3",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_160435_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_160633_step_1_pre.png",
+      "sha256": "62895e83169f9326dd417846fe619c30fb685e240a5b8f1903b8f72249197044",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_160633_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_160935_step_1_post.png",
+      "sha256": "405b38b08a20c337ad5e4551040f65988cdfff2fe185e60807d1301a423344d4",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_160935_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161213_step_1_post.png",
+      "sha256": "af254c7230180ef8682bd618fabdfa51f9d0e813106a00bc5d79b7af16d3b6de",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161213_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161547_step_1_post.png",
+      "sha256": "2b6bd1dbc45f06578b1761da801cb34d4d60ab3f8839ccf777fa51584c1a5237",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161547_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161547_step_1_pre.png",
+      "sha256": "957ec4230d6706ebee602fc6bdfb2680aad63ff46cb276b4a439d35d92f1f92b",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161547_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161621_step_1_pre.png",
+      "sha256": "f54dac548c2815ba45532afc9572e1b8457a7c53095affb1eb899578e39b9ef9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161621_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161621_vision_click_source.png",
+      "sha256": "1a5b833d734994bd854062ea6c65367bccb1f0000198389f87a8f3e40eb43043",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161621_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161622_step_1_post.png",
+      "sha256": "9005112a21c6e90b1504aa9d3e5231fcecce32eeb77943a736ee12a9a2f0c0c1",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161622_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_161752_step_1_post.png",
+      "sha256": "35f3c92c717f9a0e7b61162dc1ba7f7279d0030c423ba3d47430d9ff041c244c",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_161752_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_162018_step_1_post.png",
+      "sha256": "9d323ebb0ab7720800b1e63d3696e90909437417d5315560ca80b6f5e079bb86",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_162018_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_162018_step_1_pre.png",
+      "sha256": "7fd4f7bf17b64c57f14858abb9f1c7b898ec77cf94d36423cb6cd08db5a37e9d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_162018_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_162056_step_1_post.png",
+      "sha256": "dfd6a067e3815c0c296c53347d2dd99a52905b9d2b070daad3f6bf585fbaa49d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_162056_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_165312_step_1_post.png",
+      "sha256": "75f2887b583af6a2d4a97081524a71fc2f42b25c981e8efc80798ecc432a6c6d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_165312_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_165334_step_1_post.png",
+      "sha256": "0b6f65b4170257baa00daf5e802d11c0f0a106e466ffb8a134c94578cf886368",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_165334_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_170552_step_1_post.png",
+      "sha256": "720b3e97890175d4928ce68f7142273950f95993657a2a479c0dff97b320103f",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_170552_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_171005_step_1_post.png",
+      "sha256": "4b6da01e4e5ceb0578b6a6cc3ee206c0db723779d28371e6635a201f9a959563",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_171005_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_171345_step_1_post.png",
+      "sha256": "3cc615f2a1350103ac4632f4f33360a310871c2dab3a47dcaa9ffaeabacda6fb",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_171345_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_171536_step_1_post.png",
+      "sha256": "083262d6df5a924febeb705019456f3683a93d6af0a68907d2bf62c971cb583e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_171536_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_172106_step_1_post.png",
+      "sha256": "63bbb3d06b9f7b528c6b0cdf9c178b0d477be872e7755ccc9b97082d87100ee8",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_172106_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_172106_step_1_pre.png",
+      "sha256": "b0e5bd99acc26bfc0f847d6949d1d9127ec9f10e91719cf4837515ea3734aad9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_172106_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_174728_step_1_post.png",
+      "sha256": "5eb0e71a2c6083066e0da260fcce4e4ba36447dc0e613d189d14d1ffbe5088ca",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_174728_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_175114_step_1_pre.png",
+      "sha256": "e5acd6009f405766b4fcef88a6fadd8316a4463c88af17f515a57ab16d0d97b4",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_175114_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_175114_vision_click_source.png",
+      "sha256": "12dd3f5768e9fb466457c6d8d84bfa6829fb5dff27c13e31d465ea5c3699ce10",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_175114_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_175115_step_1_post.png",
+      "sha256": "87036820020108fa9c506ac804c4d0048cc5748d237a35fb0fc1d812fc957d96",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_175115_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_175416_step_1_pre.png",
+      "sha256": "ae9f3975846c54faa0d1374759e0702b2682afbdc04de64265181307017142d8",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_175416_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_181319_step_1_post.png",
+      "sha256": "896bf4b3d5e13f47a8a58e8f15947d671dd15886bdaadddb3f6d6d22f78d0698",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_181319_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_181319_step_1_pre.png",
+      "sha256": "189dcc662b82b5a9762ae808f66062715ac7a01122bd973510dbcaf70f6e93b2",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_181319_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_181319_vision_click_source.png",
+      "sha256": "14ef13f85b701e79bd2a19268b6d9e65110fc937e722148c54ae18ce10812f3f",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_181319_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_181433_step_1_post.png",
+      "sha256": "ad7e70937f4e6e6f33cd274eef59c3f2e7f2cbdffd1552ca9829ffdd4958b285",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_181433_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_185340_step_1_pre.png",
+      "sha256": "55b156f6f5cdccf8c5fda0bf0c823ab33c770a23994e3a2cd2c17a7ced316b12",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_185340_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_185341_step_1_post.png",
+      "sha256": "8aad34f579a8fb9d2f4dd0b5759e27bd6b14b3cb218e983a83b59549214136fa",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_185341_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_185341_vision_click_source.png",
+      "sha256": "b9232e2d8a077455d9dd1622793f2f8a72595ab1171f471d97930f4247731bcf",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_185341_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_194408_step_1_pre.png",
+      "sha256": "0d0ff089967abe94bf0f484af725929d824910f1b3991cdd158bd592543f2b28",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_194408_step_1_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_194408_vision_click_source.png",
+      "sha256": "3ac6c9420bb6ca94722bdee0cb070de62797538298bbd85dff4202718ec2f328",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_194408_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_194409_step_1_post.png",
+      "sha256": "d3bd741d90535b61a015631843334950f4ec580817cd00aa0d4d176cf2d1caf7",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_194409_step_1_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_194409_step_2_pre.png",
+      "sha256": "ddc54eb5500dc12cc668ff4c97e200c297e32f0f5864baac3a60c8476024263a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_194409_step_2_pre.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_194410_vision_click_source.png",
+      "sha256": "dbd58f2aff5cb1b33fecb73f93fb1f9091989ffd5502329d5fdc3b1f9e4a3410",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_194410_vision_click_source.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/gui_debug/20260425_194411_step_2_post.png",
+      "sha256": "871d16b0971f61211ebc0da1ae9eff9e8c4fc51ea8d5450d11d894fef16e884b",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/gui_debug/20260425_194411_step_2_post.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/artifacts/live_smoke_acceptance.json",
+      "sha256": "0248264e308276f3ccd136be0ddf781d11aa063af52f5a40ef7523fd3c17017d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json#Carter_v2/artifacts/live_smoke_acceptance.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-010-carter-01-Cart.mp3",
+      "card_kind": "asset",
+      "corpus": "Cart.mp3",
+      "denominator": "1 files in group Cart.mp3; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Cart.mp3",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Cart.mp3"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Cart.mp3 parser=binary_inventory rows=0 bytes=45224 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Cart.mp3",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-02-Carter_v1-backend_compare_logs-llamacpp_server.err.log",
+      "card_kind": "metric",
+      "corpus": "Carter_v1/backend_compare_logs/llamacpp_server.err.log",
+      "denominator": "1 files in group Carter_v1/backend_compare_logs/llamacpp_server.err.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/backend_compare_logs/llamacpp_server.err.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/backend_compare_logs/llamacpp_server.err.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llamacpp_server.err.log parser=log rows=35 bytes=2396 dist={\"fail_like\": 1, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/backend_compare_logs/llamacpp_server.err.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-03-Carter_v1-backend_compare_logs-tabby_stack2_stderr.log",
+      "card_kind": "metric",
+      "corpus": "Carter_v1/backend_compare_logs/tabby_stack2_stderr.log",
+      "denominator": "1 files in group Carter_v1/backend_compare_logs/tabby_stack2_stderr.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/backend_compare_logs/tabby_stack2_stderr.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/backend_compare_logs/tabby_stack2_stderr.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "tabby_stack2_stderr.log parser=log rows=6 bytes=531 dist={\"fail_like\": 1, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/backend_compare_logs/tabby_stack2_stderr.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-04-Carter_v1-backend_compare_logs-tabby_stack2_stdout.log",
+      "card_kind": "metric",
+      "corpus": "Carter_v1/backend_compare_logs/tabby_stack2_stdout.log",
+      "denominator": "1 files in group Carter_v1/backend_compare_logs/tabby_stack2_stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/backend_compare_logs/tabby_stack2_stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/backend_compare_logs/tabby_stack2_stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "tabby_stack2_stdout.log parser=log rows=122 bytes=6610 dist={\"fail_like\": 2, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/backend_compare_logs/tabby_stack2_stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-05-Carter_v1-carter_session.log",
+      "card_kind": "metric",
+      "corpus": "Carter_v1/carter_session.log",
+      "denominator": "1 files in group Carter_v1/carter_session.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/carter_session.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/carter_session.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "carter_session.log parser=log rows=40814 bytes=2315325 dist={\"fail_like\": 1773, \"pass_like\": 2715}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/carter_session.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-06-Carter_v1-data-carter_memory.db",
+      "card_kind": "run",
+      "corpus": "Carter_v1/data/carter_memory.db",
+      "denominator": "1 files in group Carter_v1/data/carter_memory.db; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/data/carter_memory.db",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/data/carter_memory.db"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "carter_memory.db parser=sqlite rows=1219 bytes=389120 dist={\"table_count\": 2, \"rows_total\": 1219}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "Carter_v1/data/carter_memory.db",
+        "ranges": [
+          "sqlite:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-07-Carter_v1-phase6_brain_compare_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v1/phase6_brain_compare_results.json",
+      "denominator": "1 files in group Carter_v1/phase6_brain_compare_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/phase6_brain_compare_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/phase6_brain_compare_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "phase6_brain_compare_results.json parser=json rows=6 bytes=45776 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/phase6_brain_compare_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-08-Carter_v1-phase6_logs-qwen3-baseline.log",
+      "card_kind": "metric",
+      "corpus": "Carter_v1/phase6_logs/qwen3-baseline.log",
+      "denominator": "1 files in group Carter_v1/phase6_logs/qwen3-baseline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/phase6_logs/qwen3-baseline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/phase6_logs/qwen3-baseline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "qwen3-baseline.log parser=log rows=951 bytes=52386 dist={\"fail_like\": 131, \"pass_like\": 22}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/phase6_logs/qwen3-baseline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-09-Carter_v1-runs_log.jsonl",
+      "card_kind": "metric",
+      "corpus": "Carter_v1/runs_log.jsonl",
+      "denominator": "1 files in group Carter_v1/runs_log.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v1/runs_log.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v1/runs_log.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "runs_log.jsonl parser=jsonl rows=105 bytes=171363 dist={\"status\": {\"ok=21\": 14, \"ok=20\": 11, \"ok=19\": 4, \"ok=18\": 2}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v1/runs_log.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-10-Carter_v2-artifacts-gui_debug",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/artifacts/gui_debug",
+      "denominator": "100 files in group Carter_v2/artifacts/gui_debug; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/artifacts/gui_debug",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/artifacts/gui_debug/20260425_022721_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_022913_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_022939_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_023025_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_023130_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_023157_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_085757_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_085823_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_090000_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_090035_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_090714_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_090901_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_091008_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_093832_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_094138_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_094400_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_094718_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_094838_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_095035_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_095141_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_095419_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_095835_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_100010_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_100207_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_100535_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_110527_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_110714_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_110816_step_1_click.png",
+        "Carter_v2/artifacts/gui_debug/20260425_140112_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_140112_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_140134_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_140238_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_140310_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141344_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141414_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141456_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141504_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141540_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141540_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141540_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141616_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141616_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141616_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141708_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_141842_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_142227_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_142304_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_142340_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_142401_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_142432_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_143001_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_143537_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145010_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145131_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145231_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145343_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145419_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145515_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_145539_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_150024_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_160418_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_160435_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_160633_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_160935_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161213_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161547_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161547_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161621_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161621_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161622_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_161752_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_162018_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_162018_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_162056_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_165312_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_165334_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_170552_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_171005_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_171345_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_171536_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_172106_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_172106_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_174728_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_175114_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_175114_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_175115_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_175416_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_181319_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_181319_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_181319_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_181433_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_185340_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_185341_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_185341_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_194408_step_1_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_194408_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_194409_step_1_post.png",
+        "Carter_v2/artifacts/gui_debug/20260425_194409_step_2_pre.png",
+        "Carter_v2/artifacts/gui_debug/20260425_194410_vision_click_source.png",
+        "Carter_v2/artifacts/gui_debug/20260425_194411_step_2_post.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "20260425_022721_step_1_click.png parser=binary_inventory rows=0 bytes=1268036 dist={} | 20260425_022913_step_1_click.png parser=binary_inventory rows=0 bytes=862229 dist={} | 20260425_022939_step_1_click.png parser=binary_inventory rows=0 bytes=578621 dist={} | 20260425_023025_step_1_click.png parser=binary_inventory rows=0 bytes=590815 dist={} | 20260425_023130_step_1_click.png parser=binary_inventory rows=0 bytes=589254 dist={} | 20260425_023157_step_1_click.png parser=binary_inventory rows=0 bytes=268373 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/artifacts/gui_debug/20260425_022721_step_1_click.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-11-Carter_v2-artifacts-live_smoke_acceptance.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/artifacts/live_smoke_acceptance.json",
+      "denominator": "1 files in group Carter_v2/artifacts/live_smoke_acceptance.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/artifacts/live_smoke_acceptance.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/artifacts/live_smoke_acceptance.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "live_smoke_acceptance.json parser=json rows=1 bytes=26462 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 11}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/artifacts/live_smoke_acceptance.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-12-carter_session.log",
+      "card_kind": "metric",
+      "corpus": "carter_session.log",
+      "denominator": "1 files in group carter_session.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:carter_session.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "carter_session.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "carter_session.log parser=log rows=3448 bytes=248149 dist={\"fail_like\": 190, \"pass_like\": 417}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "carter_session.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-13-legacy-Carter_v4-audit",
+      "card_kind": "metric",
+      "corpus": "legacy/Carter_v4/audit",
+      "denominator": "50 files in group legacy/Carter_v4/audit; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/audit",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/audit/runs/iterC_retry_full540.log",
+        "legacy/Carter_v4/audit/runs/iterD_full540.json",
+        "legacy/Carter_v4/audit/runs/iterD_full540.log",
+        "legacy/Carter_v4/audit/runs/iterE_full540.log",
+        "legacy/Carter_v4/audit/runs/iterF_full540.log",
+        "legacy/Carter_v4/audit/runs/iterG_full540.json",
+        "legacy/Carter_v4/audit/runs/iterG_full540.log",
+        "legacy/Carter_v4/audit/runs/iterH_full540.json",
+        "legacy/Carter_v4/audit/runs/iterH_full540.log",
+        "legacy/Carter_v4/audit/runs/iter_full540.json",
+        "legacy/Carter_v4/audit/runs/iter_full540.log",
+        "legacy/Carter_v4/audit/runs/llama_server.log",
+        "legacy/Carter_v4/audit/runs/llama_server_26B.log",
+        "legacy/Carter_v4/audit/runs/llama_server_26B.log.err",
+        "legacy/Carter_v4/audit/runs/llama_server_T7.err.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_qwen3_8b.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v1.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v10.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v3_strict.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v4_promptv5.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v5.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v6.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v7.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v8.log",
+        "legacy/Carter_v4/audit/runs/matrix_C01_v9.log",
+        "legacy/Carter_v4/audit/runs/matrix_C02_v1.log",
+        "legacy/Carter_v4/audit/runs/matrix_C02_v2.log",
+        "legacy/Carter_v4/audit/runs/matrix_C02_v3.log",
+        "legacy/Carter_v4/audit/runs/matrix_C03_mistral24.log",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v1.log",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v2.log",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v3.log",
+        "legacy/Carter_v4/audit/runs/matrix_C03_v4.log",
+        "legacy/Carter_v4/audit/runs/matrix_C04_qwen3_8b.log",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v1.log",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v2.log",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v3.log",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v4.log",
+        "legacy/Carter_v4/audit/runs/matrix_C04_v5.log",
+        "legacy/Carter_v4/audit/runs/matrix_C05_v1.log",
+        "legacy/Carter_v4/audit/runs/matrix_C05_v2.log",
+        "legacy/Carter_v4/audit/runs/post_gemma4_sanity18.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run1.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run2.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run3_qwen25.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run4_mistral24.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run5_qwen_promptv2.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run6_watttool.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run7_watttool_xml.log",
+        "legacy/Carter_v4/audit/runs/spotcheck_v4_run8_qwen3.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "iterC_retry_full540.log parser=log rows=837 bytes=49646 dist={\"fail_like\": 13, \"pass_like\": 235} | iterD_full540.json parser=json rows=1 bytes=52313 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 100}} | iterD_full540.log parser=log rows=472 bytes=29332 dist={\"fail_like\": 10, \"pass_like\": 125} | iterE_full540.log parser=log rows=275 bytes=16066 dist={\"fail_like\": 1, \"pass_like\": 82} | iterF_full540.log parser=log rows=295 bytes=16650 dist={\"fail_like\": 4, \"pass_like\": 85} | iterG_full540.json parser=json rows=1 bytes=47764 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 100}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/audit/runs/iterC_retry_full540.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-14-legacy-Carter_v4-data",
+      "card_kind": "run",
+      "corpus": "legacy/Carter_v4/data",
+      "denominator": "6 files in group legacy/Carter_v4/data; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/data",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/data/_smoke_v19_skills.db",
+        "legacy/Carter_v4/data/carter_v4_memory.db",
+        "legacy/Carter_v4/data/carter_v4_skills.db",
+        "legacy/Carter_v4/data/matrix_run_memory.db",
+        "legacy/Carter_v4/data/models.json",
+        "legacy/Carter_v4/data/spotcheck_v4_memory.db"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_smoke_v19_skills.db parser=sqlite rows=3 bytes=32768 dist={\"table_count\": 8, \"rows_total\": 3} | carter_v4_memory.db parser=sqlite rows=0 bytes=12288 dist={\"table_count\": 2, \"rows_total\": 0} | carter_v4_skills.db parser=sqlite rows=4281 bytes=495616 dist={\"table_count\": 8, \"rows_total\": 4281} | matrix_run_memory.db parser=sqlite rows=2 bytes=12288 dist={\"table_count\": 2, \"rows_total\": 2} | models.json parser=json rows=1 bytes=5766 dist={\"scalar_keys\": [\"_doc\", \"version\"], \"list_lengths\": {\"profiles\": 7}} | spotcheck_v4_memory.db parser=sqlite rows=0 bytes=12288 dist={\"table_count\": 2, \"rows_total\": 0}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/data/_smoke_v19_skills.db",
+        "ranges": [
+          "sqlite:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-15-legacy-Carter_v4-steam_search_results.png",
+      "card_kind": "asset",
+      "corpus": "legacy/Carter_v4/steam_search_results.png",
+      "denominator": "1 files in group legacy/Carter_v4/steam_search_results.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/steam_search_results.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/steam_search_results.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "steam_search_results.png parser=binary_inventory rows=0 bytes=2692791 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/steam_search_results.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-16-legacy-Carter_v4-temp_screenshot.png",
+      "card_kind": "asset",
+      "corpus": "legacy/Carter_v4/temp_screenshot.png",
+      "denominator": "1 files in group legacy/Carter_v4/temp_screenshot.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/temp_screenshot.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/temp_screenshot.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "temp_screenshot.png parser=binary_inventory rows=0 bytes=3471498 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/temp_screenshot.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-17-legacy-Carter_v4-temp_screenshot_2.png",
+      "card_kind": "asset",
+      "corpus": "legacy/Carter_v4/temp_screenshot_2.png",
+      "denominator": "1 files in group legacy/Carter_v4/temp_screenshot_2.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/temp_screenshot_2.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/temp_screenshot_2.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "temp_screenshot_2.png parser=binary_inventory rows=0 bytes=3477210 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/temp_screenshot_2.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-18-legacy-Carter_v4-temp_screenshot_3.png",
+      "card_kind": "asset",
+      "corpus": "legacy/Carter_v4/temp_screenshot_3.png",
+      "denominator": "1 files in group legacy/Carter_v4/temp_screenshot_3.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/temp_screenshot_3.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/temp_screenshot_3.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "temp_screenshot_3.png parser=binary_inventory rows=0 bytes=3478741 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/temp_screenshot_3.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-19-legacy-Carter_v4-temp_screenshot_4.png",
+      "card_kind": "asset",
+      "corpus": "legacy/Carter_v4/temp_screenshot_4.png",
+      "denominator": "1 files in group legacy/Carter_v4/temp_screenshot_4.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v4/temp_screenshot_4.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v4/temp_screenshot_4.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "temp_screenshot_4.png parser=binary_inventory rows=0 bytes=3479563 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v4/temp_screenshot_4.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-20-legacy-debug_chain.log",
+      "card_kind": "metric",
+      "corpus": "legacy/debug_chain.log",
+      "denominator": "1 files in group legacy/debug_chain.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/debug_chain.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/debug_chain.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "debug_chain.log parser=log rows=18 bytes=1980 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/debug_chain.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-21-legacy-debug_doom.log",
+      "card_kind": "metric",
+      "corpus": "legacy/debug_doom.log",
+      "denominator": "1 files in group legacy/debug_doom.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/debug_doom.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/debug_doom.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "debug_doom.log parser=log rows=59 bytes=6630 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/debug_doom.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-22-legacy-logs-ErroresTools.log",
+      "card_kind": "metric",
+      "corpus": "legacy/logs/ErroresTools.log",
+      "denominator": "1 files in group legacy/logs/ErroresTools.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/logs/ErroresTools.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/logs/ErroresTools.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "ErroresTools.log parser=log rows=5 bytes=419 dist={\"fail_like\": 2, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "legacy/logs/ErroresTools.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-010-carter-23-temp_screenshot.png",
+      "card_kind": "asset",
+      "corpus": "temp_screenshot.png",
+      "denominator": "1 files in group temp_screenshot.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:temp_screenshot.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "temp_screenshot.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "temp_screenshot.png parser=binary_inventory rows=0 bytes=3220429 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "temp_screenshot.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=176 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-011-carter",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-010-carter.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

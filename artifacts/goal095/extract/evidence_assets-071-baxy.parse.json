@@ -1,0 +1,4437 @@
+{
+  "batch_id": "evidence_assets-071-baxy",
+  "source_id": "baxy",
+  "file_count": 56,
+  "hash_ok": 56,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/turn_policy_v4_open_development_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 162595,
+      "sha256": "3f7a765708bc3a5e04e2fb9b39bead783d1934dc99bf6c5a2d744a04d888909c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "cases",
+          "cleanliness",
+          "complete",
+          "fingerprint",
+          "inputs",
+          "measured_at",
+          "raw_audit",
+          "schema",
+          "scope",
+          "selection",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "fingerprint",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 162594
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"cases\", \"cleanliness\", \"complete\", \"fingerprint\", \"inputs\", \"measured_at\", \"raw_audit\", \"schema\", \"scope\", \"selection\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"cases\", \"cleanliness\", \"complete\", \"fingerprint\", \"inputs\", \"measured_at\", \"raw_audit\", \"schema\", \"scope\", \"selection\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_policy_v4_open_development_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 78314,
+      "sha256": "39c22e671693a1ce956ebf9f87cd6d4c5e0c6824a2967d225d63d678ed6382ca",
+      "rows": 69,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 69,
+          "phase": 69,
+          "raw_decision": 69,
+          "request_id": 69,
+          "schema": 69,
+          "stages": 69,
+          "final": 33,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76601,
+        "min_line_bytes": 226,
+        "max_line_bytes": 2246,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 76079,
+            "line": 68,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"note.create\",\"note.list\",\"note.read\",\"note.restore\",\"note.search\",\"note.trash\",\"note.update\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one…"
+          },
+          {
+            "offset": 76601,
+            "line": 69,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"note.create\",\"note.list\",\"note.read\",\"note.restore\",\"note.search\",\"note.trash\",\"note.update\"],\"final\":{\"effect_operations\":[\"note.list\"],\"intent_operations\":[\"note.list\"],\"ki…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_policy_v4_open_development_r2.journal.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17482,
+      "sha256": "5effa081f0b26bc54e023312a3ff8b5c1e1898a919b7dfca2b5009e2bc6091f5",
+      "rows": 32,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "arm",
+          "case_id",
+          "fingerprint",
+          "measured_at",
+          "result",
+          "schema"
+        ],
+        "key_freq": {
+          "arm": 32,
+          "case_id": 32,
+          "fingerprint": 32,
+          "measured_at": 32,
+          "result": 32,
+          "schema": 32
+        }
+      },
+      "distribution": {
+        "status": {
+          "result={'audit_request_id': 'gate-evidence-5c594723e6e979ce56371ec2', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 0.1963, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': '¡Hola! ¿En qué puedo ayudarte hoy?', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-438587b83f0ad776c27b47f4', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 1.7863, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Porque se agotó el tiempo.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-f6b284d702a0a44db623495a', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.1972, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'No entiendo qué necesitas. Por favor, proporciona más detalles o explica lo que deseas saber o hacer.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-c412d2d6a1ccb23646be5651', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 4.6918, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'El cielo se ve azul debido a la dispersión de la luz solar por las moléculas de aire en la atmósfera. La luz azul tiene una longitud de onda más corta y se dispersa más fácilmente, lo que hace que el cielo aparezca azul durante el día. Esto se conoce como efecto Rayleigh.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-e73892a511911bec342a719c', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 0.0102, 'operation': 'app.open', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-41be20bf0965330cec16621b', 'error': '', 'failure_code': '', 'kind': 'plan', 'latency_seconds': 0.0084, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-f1adb8d9764b05ee35d84235', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.1175, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'No puedo abrir eso tal como fue pedido.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-e5a61d7ca7dd0a48b4d53b41', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 3.3333, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Mencionas que necesitas un taxi para que venga a tu casa.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-f7d7dc01fdef3bba8dffa529', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.8737, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': \"I understand you're asking about the sexiest food to cook on a date.\", 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-fc9de5ea6c537aa5d7b1ebbc', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 1.6926, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Mencionas que reproducir el audio recientemente pausado.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-6ec080ddbc0b2570f53c4cf0', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 3.4373, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Entiendo que te sientes empapado después de estar bajo la lluvia.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-655d9bc468b9ba64b6bfb1be', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 0.2716, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Te menciono que estás jugando conmigo al ajedrez.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-3948ef8279daf914ed38a1e8', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 1.0657, 'operation': 'system.time', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-5eedd1d73fb2860afd3bea0d', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 0.005, 'operation': 'note.list', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-aba873cdd0c79dc8ea11aeaa', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 0.4184, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'No puedo abrir Spothero y buscar garajes en Parla tal como fue pedido.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-1f4930d5d0bf271264f904a4', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.3565, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': \"Let's play tic tac toe.\", 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-475d57d36d39d15f79e8199b', 'error': '', 'failure_code': 'turn_runtime_failure', 'kind': 'clarify', 'latency_seconds': 4.4444, 'operation': None, 'question': '¿Puedes explicarme cómo iniciar el juego The Last of Us 2 en un ordenador o consola?', 'recovery_attempts': 1, 'reply': '', 'turn_attempts': 2, 'turn_recovery': 'semantic_clarification'}": 1,
+          "result={'audit_request_id': 'gate-evidence-5b45ca29e986296feb1f72f7', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 0.0045, 'operation': 'media.play.query', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-15aa3572f89c4851280663e3', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 1.7252, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'I cannot provide the current time in Orlando, Florida as requested.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-5b10cf43404952e51d5ee6d2', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 1.7485, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'No puedo silenciar las configuraciones tal como fue pedido.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-26840509bbebc8eb74637c7f', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 0.0051, 'operation': 'reminder.create', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-19fbf082e8d987b98abe61ac', 'error': '', 'failure_code': '', 'kind': 'clarify', 'latency_seconds': 2.3278, 'operation': None, 'question': 'When is that meeting with my boss next week?', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-87d1715ee5a4a0c882aaf1e9', 'error': '', 'failure_code': 'turn_runtime_failure', 'kind': 'clarify', 'latency_seconds': 7.034, 'operation': None, 'question': '¿Puedes aclarar qué es lo que te preocupa o qué necesitas que te ayude a resolver?', 'recovery_attempts': 1, 'reply': '', 'turn_attempts': 2, 'turn_recovery': 'semantic_clarification'}": 1,
+          "result={'audit_request_id': 'gate-evidence-db25a0f67ce2354201799c5c', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 1.5363, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Quiero abrir MyFitnessPal por favor.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-4d59e063f3828a3299828c86', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.0983, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'I cannot stop the audio as requested.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-a39c5b416de9edeeca6f2c24', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.0536, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': \"I notice you'd like to get some socks now.\", 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-f0b81875532ab723f599cc4b', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 2.0123, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'You mention that the 5 PM alarm needs to be removed.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-fdb3be13d212b9146dab647e', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 0.261, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'Mencionas que abres Twitter en tu iPhone, no en tu tablet.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-9220f4b540729acbff5cfb92', 'error': '', 'failure_code': '', 'kind': 'conversation', 'latency_seconds': 1.4114, 'operation': None, 'question': '', 'recovery_attempts': 0, 'reply': 'I cannot open Halo on the living room TV as requested.', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-8e5d6eb079e628c09fc89969', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 0.0044, 'operation': 'notification.schedule', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-c35cfdc4b60b5407bcda808d', 'error': '', 'failure_code': '', 'kind': 'clarify', 'latency_seconds': 2.3142, 'operation': None, 'question': 'cuál es el titular de diario sur?', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1,
+          "result={'audit_request_id': 'gate-evidence-914e2cfbad2db910d40a1dfc', 'error': '', 'failure_code': '', 'kind': 'action', 'latency_seconds': 0.7377, 'operation': 'note.list', 'question': '', 'recovery_attempts': 0, 'reply': '', 'turn_attempts': 1, 'turn_recovery': ''}": 1
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16941,
+        "min_line_bytes": 469,
+        "max_line_bytes": 752,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"arm\":\"evidence\",\"case_id\":\"critical:greeting_es\",\"fingerprint\":\"f6a2f91cd5207c80c9606360041fbc547c064960270465ec9f07206b8bda2230\",\"measured_at\":\"2026-08-02T08:44:46.345785+00:00\",\"result\":{\"audit_request_id\":\"gate-evidence-5c594723e6e979…"
+          },
+          {
+            "offset": 509,
+            "line": 2,
+            "text": "{\"arm\":\"evidence\",\"case_id\":\"critical:why_after_failure\",\"fingerprint\":\"f6a2f91cd5207c80c9606360041fbc547c064960270465ec9f07206b8bda2230\",\"measured_at\":\"2026-08-02T08:44:48.134712+00:00\",\"result\":{\"audit_request_id\":\"gate-evidence-438587b8…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16429,
+            "line": 31,
+            "text": "{\"arm\":\"evidence\",\"case_id\":\"holdout:massive-v1.1:es-ES:3868\",\"fingerprint\":\"f6a2f91cd5207c80c9606360041fbc547c064960270465ec9f07206b8bda2230\",\"measured_at\":\"2026-08-02T08:45:47.022115+00:00\",\"result\":{\"audit_request_id\":\"gate-evidence-c35…"
+          },
+          {
+            "offset": 16941,
+            "line": 32,
+            "text": "{\"arm\":\"evidence\",\"case_id\":\"holdout:presto-v1:es-ES:1bab00d150a8cb3186f3d6b2a713393c3dc7859747b9e88c1ad24b3741d039fb\",\"fingerprint\":\"f6a2f91cd5207c80c9606360041fbc547c064960270465ec9f07206b8bda2230\",\"measured_at\":\"2026-08-02T08:45:47.7701…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_policy_v4_open_development_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 169562,
+      "sha256": "995a27654f3a51582fbcd92655a327ff54bb44339830904ce6d350f29eb426f8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "cases",
+          "cleanliness",
+          "complete",
+          "fingerprint",
+          "inputs",
+          "measured_at",
+          "raw_audit",
+          "schema",
+          "scope",
+          "selection",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "fingerprint",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 169561
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"cases\", \"cleanliness\", \"complete\", \"fingerprint\", \"inputs\", \"measured_at\", \"raw_audit\", \"schema\", \"scope\", \"selection\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"cases\", \"cleanliness\", \"complete\", \"fingerprint\", \"inputs\", \"measured_at\", \"raw_audit\", \"schema\", \"scope\", \"selection\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_policy_v4_open_development_r2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 75726,
+      "sha256": "67e6046ef4474c1fc4771b1e7ed006f6e224fb3ce99f4ff2f2f9e157f4b5cc5b",
+      "rows": 72,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 72,
+          "phase": 72,
+          "raw_decision": 72,
+          "request_id": 72,
+          "schema": 72,
+          "stages": 72,
+          "final": 33,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 74013,
+        "min_line_bytes": 226,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 73491,
+            "line": 71,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"note.create\",\"note.list\",\"note.read\",\"note.restore\",\"note.search\",\"note.trash\",\"note.update\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one…"
+          },
+          {
+            "offset": 74013,
+            "line": 72,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\",\"note.create\",\"note.list\",\"note.read\",\"note.restore\",\"note.search\",\"note.trash\",\"note.update\"],\"final\":{\"effect_operations\":[\"note.list\"],\"intent_operations\":[\"note.list\"],\"ki…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_decomposition_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14445,
+      "sha256": "8576083cc3c89b0a42b2e5a19271f609f9f0a5943ee9ee495e4263c60cd56649",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "trace_rows"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14444,
+        "trace_rows": {
+          "min": 17,
+          "max": 17
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_decomposition_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5099,
+      "sha256": "3665acd16cd9a942959b3f1136e37307ea2f210951c69b62d696362c7bf6f8d9",
+      "rows": 17,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 17,
+          "unix_start": 17,
+          "elapsed_seconds": 17,
+          "max_tokens": 17,
+          "temperature": 17,
+          "seed": 17,
+          "error": 17,
+          "prompt_n": 17,
+          "prompt_ms": 17,
+          "predicted_n": 17,
+          "predicted_ms": 17,
+          "cache_n": 17,
+          "finish_reason": 17,
+          "content_chars": 17
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4793,
+        "min_line_bytes": 287,
+        "max_line_bytes": 313,
+        "numeric": {
+          "unix_start": {
+            "min": 1785430629.1123555,
+            "max": 1785430640.3884609
+          },
+          "elapsed_seconds": {
+            "min": 0.148,
+            "max": 3.842
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 5.0,
+            "max": 1356.0
+          },
+          "prompt_ms": {
+            "min": 42.237,
+            "max": 984.876
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 101.0
+          },
+          "predicted_ms": {
+            "min": 96.769,
+            "max": 2868.186
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 293.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785430629.1133564, \"elapsed_seconds\": 1.2409, \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 232, \"prompt_ms\": 984.876, \"predicted_n\": 6, \"predicted_ms\": 198.761, \"cach…"
+          },
+          {
+            "offset": 295,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785430629.1123555, \"elapsed_seconds\": 1.8118, \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 172, \"prompt_ms\": 645.472, \"predicted_n\": 19, \"predicted_ms\": 1108.625, \"ca…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4501,
+            "line": 16,
+            "text": "{\"label\": \"chat\", \"unix_start\": 1785430640.3884609, \"elapsed_seconds\": 1.0784, \"max_tokens\": 144, \"temperature\": 0.0, \"seed\": null, \"error\": null, \"prompt_n\": 200, \"prompt_ms\": 186.526, \"predicted_n\": 30, \"predicted_ms\": 786.784, \"cache_n\"…"
+          },
+          {
+            "offset": 4793,
+            "line": 17,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785430639.1919925, \"elapsed_seconds\": 2.7175, \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 699, \"prompt_ms\": 548.219, \"predicted_n\": 75, \"predicted_ms\": 2145.37…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_decomposition_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 89147,
+      "sha256": "e4e151b32882ad3f80d5e97a92964d13647f7cd87fd648c76df9891b9b74a428",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "trace_rows"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 89146,
+        "trace_rows": {
+          "min": 154,
+          "max": 154
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_decomposition_full_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 45852,
+      "sha256": "b3b8917c259a531046d58c29d2d5c2e6e42535cf054d4f6f1296c54c26be1a08",
+      "rows": 154,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 154,
+          "unix_start": 154,
+          "elapsed_seconds": 154,
+          "max_tokens": 154,
+          "temperature": 154,
+          "seed": 154,
+          "error": 154,
+          "prompt_n": 150,
+          "prompt_ms": 150,
+          "predicted_n": 150,
+          "predicted_ms": 150,
+          "cache_n": 150,
+          "finish_reason": 150,
+          "content_chars": 150
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45562,
+        "min_line_bytes": 172,
+        "max_line_bytes": 316,
+        "numeric": {
+          "unix_start": {
+            "min": 1785430756.3617587,
+            "max": 1785430954.3166604
+          },
+          "elapsed_seconds": {
+            "min": 0.4023,
+            "max": 6.9464
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.1
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 1010.0
+          },
+          "prompt_n": {
+            "min": 1.0,
+            "max": 1356.0
+          },
+          "prompt_ms": {
+            "min": 99.894,
+            "max": 1526.749
+          },
+          "predicted_n": {
+            "min": 4.0,
+            "max": 160.0
+          },
+          "predicted_ms": {
+            "min": 154.693,
+            "max": 6063.531
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1214.0
+          },
+          "content_chars": {
+            "min": 0.0,
+            "max": 293.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785430756.362765, \"elapsed_seconds\": 1.9867, \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 232, \"prompt_ms\": 1225.613, \"predicted_n\": 6, \"predicted_ms\": 272.487, \"cach…"
+          },
+          {
+            "offset": 295,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785430756.362765, \"elapsed_seconds\": 2.5221, \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 172, \"prompt_ms\": 915.751, \"predicted_n\": 19, \"predicted_ms\": 1599.333, \"cac…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 45251,
+            "line": 153,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785430953.409074, \"elapsed_seconds\": 0.9072, \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 105, \"prompt_ms\": 162.276, \"predicted_n\": 18, \"predicted_ms\":…"
+          },
+          {
+            "offset": 45562,
+            "line": 154,
+            "text": "{\"label\": \"chat\", \"unix_start\": 1785430954.3166604, \"elapsed_seconds\": 0.4148, \"max_tokens\": 144, \"temperature\": 0.0, \"seed\": null, \"error\": null, \"prompt_n\": 222, \"prompt_ms\": 224.802, \"predicted_n\": 9, \"predicted_ms\": 172.876, \"cache_n\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_decomposition_full_b_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 99617,
+      "sha256": "ed09f08d41868dda0d2c895903abdd106655eb671eb00dff0509c72e55056a72",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "trace_rows"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 30
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 99616,
+        "trace_rows": {
+          "min": 154,
+          "max": 154
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_decomposition_full_b_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 55202,
+      "sha256": "9fe5bf0dce83f12ffd6326ef9a9d93ea8c2a6c4e2ebbfc5d8f9d83982c56f879",
+      "rows": 154,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 154,
+          "unix_start": 154,
+          "elapsed_seconds": 154,
+          "messages_chars": 154,
+          "messages_sha256": 154,
+          "max_tokens": 154,
+          "temperature": 154,
+          "seed": 154,
+          "error": 154,
+          "prompt_n": 148,
+          "prompt_ms": 148,
+          "predicted_n": 148,
+          "predicted_ms": 148,
+          "cache_n": 148,
+          "finish_reason": 148,
+          "content_chars": 148
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54849,
+        "min_line_bytes": 234,
+        "max_line_bytes": 378,
+        "numeric": {
+          "unix_start": {
+            "min": 1785431290.3148124,
+            "max": 1785431500.7153218
+          },
+          "elapsed_seconds": {
+            "min": 0.4144,
+            "max": 9.4896
+          },
+          "messages_chars": {
+            "min": 406.0,
+            "max": 6447.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.1
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 1010.0
+          },
+          "prompt_n": {
+            "min": 1.0,
+            "max": 1356.0
+          },
+          "prompt_ms": {
+            "min": 91.084,
+            "max": 1649.846
+          },
+          "predicted_n": {
+            "min": 4.0,
+            "max": 160.0
+          },
+          "predicted_ms": {
+            "min": 156.341,
+            "max": 8367.168
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1214.0
+          },
+          "content_chars": {
+            "min": 0.0,
+            "max": 322.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785431290.3163137, \"elapsed_seconds\": 1.9499, \"messages_chars\": 1205, \"messages_sha256\": \"a8633d2f7a9f805e\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 232, \"prompt…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785431290.3158069, \"elapsed_seconds\": 2.5123, \"messages_chars\": 858, \"messages_sha256\": \"4601ffe19b27724d\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 172, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 54479,
+            "line": 153,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785431499.819579, \"elapsed_seconds\": 0.8946, \"messages_chars\": 763, \"messages_sha256\": \"01370240e202a87b\", \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\":…"
+          },
+          {
+            "offset": 54849,
+            "line": 154,
+            "text": "{\"label\": \"chat\", \"unix_start\": 1785431500.7153218, \"elapsed_seconds\": 0.4202, \"messages_chars\": 1111, \"messages_sha256\": \"d0091488fcb76de6\", \"max_tokens\": 144, \"temperature\": 0.0, \"seed\": null, \"error\": null, \"prompt_n\": 222, \"prompt_ms\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_expanded_final_attempt_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9841,
+      "sha256": "b802b0473169f7d7cbf90f5304c03de675d35cca8e7f81a6d28f5106f74fd232",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "trace_rows"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9840,
+        "trace_rows": {
+          "min": 15,
+          "max": 15
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_expanded_final_attempt_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5201,
+      "sha256": "f14109eb3f7c54f003872356664355e92cec4863fc3a1ca01da339c51f5d2656",
+      "rows": 15,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 15,
+          "unix_start": 15,
+          "elapsed_seconds": 15,
+          "messages_chars": 15,
+          "messages_sha256": 15,
+          "max_tokens": 15,
+          "temperature": 15,
+          "seed": 15,
+          "error": 15,
+          "prompt_n": 13,
+          "prompt_ms": 13,
+          "predicted_n": 13,
+          "predicted_ms": 13,
+          "cache_n": 13,
+          "finish_reason": 13,
+          "content_chars": 13
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4958,
+        "min_line_bytes": 233,
+        "max_line_bytes": 374,
+        "numeric": {
+          "unix_start": {
+            "min": 1785431971.5998533,
+            "max": 1785431997.5563118
+          },
+          "elapsed_seconds": {
+            "min": 0.6617,
+            "max": 6.643
+          },
+          "messages_chars": {
+            "min": 417.0,
+            "max": 5778.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 320.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.1
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 1009.0
+          },
+          "prompt_n": {
+            "min": 1.0,
+            "max": 1215.0
+          },
+          "prompt_ms": {
+            "min": 105.008,
+            "max": 1785.046
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 160.0
+          },
+          "predicted_ms": {
+            "min": 287.638,
+            "max": 5075.332
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1123.0
+          },
+          "content_chars": {
+            "min": 0.0,
+            "max": 273.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785431971.600357, \"elapsed_seconds\": 2.2421, \"messages_chars\": 1180, \"messages_sha256\": \"f718016c89c9cdd9\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 227, \"prompt_…"
+          },
+          {
+            "offset": 358,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785431971.600357, \"elapsed_seconds\": 2.8064, \"messages_chars\": 833, \"messages_sha256\": \"5ce4d31784257768\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 167, \"prompt_m…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4725,
+            "line": 14,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785431990.912776, \"elapsed_seconds\": 6.643, \"messages_chars\": 5347, \"messages_sha256\": \"e18ff2be03cb1959\", \"max_tokens\": 320, \"temperature\": 0.1, \"seed\": 1009, \"error\": \"TimeoutError\"}"
+          },
+          {
+            "offset": 4958,
+            "line": 15,
+            "text": "{\"label\": \"baxy_turn_failure_clarification\", \"unix_start\": 1785431997.5563118, \"elapsed_seconds\": 2.5021, \"messages_chars\": 576, \"messages_sha256\": \"9485861b0aeb1c92\", \"max_tokens\": 96, \"temperature\": 0.0, \"seed\": 0, \"error\": \"TimeoutError…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_probe4_a_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16120,
+      "sha256": "47be2a5f1cdd67cbb31169f1a8546eafbb7910e670bfff6b045657cc39c62030",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "trace_rows"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16119,
+        "trace_rows": {
+          "min": 16,
+          "max": 16
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_probe4_a_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5822,
+      "sha256": "3951fd0e3ace60f95c8a431f05ae1d8cd80dbaa9812c43b235b1f8d3a9f8105b",
+      "rows": 16,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 16,
+          "unix_start": 16,
+          "elapsed_seconds": 16,
+          "messages_chars": 16,
+          "messages_sha256": 16,
+          "max_tokens": 16,
+          "temperature": 16,
+          "seed": 16,
+          "error": 16,
+          "prompt_n": 16,
+          "prompt_ms": 16,
+          "predicted_n": 16,
+          "predicted_ms": 16,
+          "cache_n": 16,
+          "finish_reason": 16,
+          "content_chars": 16
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5454,
+        "min_line_bytes": 353,
+        "max_line_bytes": 375,
+        "numeric": {
+          "unix_start": {
+            "min": 1785431199.0592444,
+            "max": 1785431215.4707427
+          },
+          "elapsed_seconds": {
+            "min": 0.4064,
+            "max": 5.916
+          },
+          "messages_chars": {
+            "min": 417.0,
+            "max": 6447.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 16.0,
+            "max": 1356.0
+          },
+          "prompt_ms": {
+            "min": 107.629,
+            "max": 1479.785
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 101.0
+          },
+          "predicted_ms": {
+            "min": 153.414,
+            "max": 4466.697
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 293.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785431199.0607488, \"elapsed_seconds\": 1.7883, \"messages_chars\": 1205, \"messages_sha256\": \"a8633d2f7a9f805e\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 232, \"prompt…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785431199.0607488, \"elapsed_seconds\": 2.3542, \"messages_chars\": 858, \"messages_sha256\": \"4601ffe19b27724d\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 172, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5098,
+            "line": 15,
+            "text": "{\"label\": \"chat\", \"unix_start\": 1785431215.4707427, \"elapsed_seconds\": 1.6122, \"messages_chars\": 1031, \"messages_sha256\": \"6b14455e4cf7f232\", \"max_tokens\": 144, \"temperature\": 0.0, \"seed\": null, \"error\": null, \"prompt_n\": 200, \"prompt_ms\":…"
+          },
+          {
+            "offset": 5454,
+            "line": 16,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785431213.342333, \"elapsed_seconds\": 4.6034, \"messages_chars\": 5805, \"messages_sha256\": \"10700527944054bc\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 699, \"p…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_probe4_b_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16106,
+      "sha256": "e1dbdb21693e54b1bba5ef0e3182bd5c6844e13bc61e3f6bfe0ffd2dfa22aabe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "trace_rows"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16105,
+        "trace_rows": {
+          "min": 16,
+          "max": 16
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"trace_rows\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_probe4_b_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5809,
+      "sha256": "710c57fe2b575842c5b7c3b177c486bc29e2f4be6d0be56ca042469748749a4d",
+      "rows": 16,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 16,
+          "unix_start": 16,
+          "elapsed_seconds": 16,
+          "messages_chars": 16,
+          "messages_sha256": 16,
+          "max_tokens": 16,
+          "temperature": 16,
+          "seed": 16,
+          "error": 16,
+          "prompt_n": 16,
+          "prompt_ms": 16,
+          "predicted_n": 16,
+          "predicted_ms": 16,
+          "cache_n": 16,
+          "finish_reason": 16,
+          "content_chars": 16
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5440,
+        "min_line_bytes": 353,
+        "max_line_bytes": 375,
+        "numeric": {
+          "unix_start": {
+            "min": 1785431230.4360726,
+            "max": 1785431246.4705117
+          },
+          "elapsed_seconds": {
+            "min": 0.3886,
+            "max": 5.6904
+          },
+          "messages_chars": {
+            "min": 417.0,
+            "max": 6447.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 16.0,
+            "max": 1356.0
+          },
+          "prompt_ms": {
+            "min": 102.195,
+            "max": 1492.302
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 101.0
+          },
+          "predicted_ms": {
+            "min": 147.732,
+            "max": 4238.2
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 293.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785431230.4370806, \"elapsed_seconds\": 1.7818, \"messages_chars\": 1205, \"messages_sha256\": \"a8633d2f7a9f805e\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 232, \"prompt…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785431230.4370806, \"elapsed_seconds\": 2.3452, \"messages_chars\": 858, \"messages_sha256\": \"4601ffe19b27724d\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 172, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5084,
+            "line": 15,
+            "text": "{\"label\": \"chat\", \"unix_start\": 1785431246.4705117, \"elapsed_seconds\": 1.7573, \"messages_chars\": 1031, \"messages_sha256\": \"6b14455e4cf7f232\", \"max_tokens\": 144, \"temperature\": 0.0, \"seed\": null, \"error\": null, \"prompt_n\": 200, \"prompt_ms\":…"
+          },
+          {
+            "offset": 5440,
+            "line": 16,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785431244.4000888, \"elapsed_seconds\": 4.8825, \"messages_chars\": 5805, \"messages_sha256\": \"10700527944054bc\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 699, \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/turn_retry_root_cause_verdict_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5214,
+      "sha256": "8c9c97d817bcf1ba8482d776121055f4a1144033dc941cdf1dfe8f00c3e8c065",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture_note",
+          "correction_candidates",
+          "decomposition_of_19_5s_turn23",
+          "effect_free",
+          "frequency_corpus",
+          "measured_at_utc",
+          "root_cause",
+          "schema",
+          "status",
+          "subject",
+          "verdict"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture_note",
+          "effect_free",
+          "measured_at_utc",
+          "schema",
+          "status",
+          "subject",
+          "verdict"
+        ],
+        "list_lengths": {
+          "correction_candidates": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5213
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture_note\", \"correction_candidates\", \"decomposition_of_19_5s_turn23\", \"effect_free\", \"frequency_corpus\", \"measured_at_utc\", \"root_cause\", \"schema\", \"status\", \"subject\", \"verdict\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture_note\", \"correction_candidates\", \"decomposition_of_19_5s_turn23\", \"effect_free\", \"frequency_corpus\", \"measured_at_utc\", \"root_cause\", \"schema\", \"status\", \"subject\", \"verdict\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/unsupported_taxi_trace_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3707,
+      "sha256": "ed903c1652c9b81a23e4034e63fcb9f2a29151390d08eae576a409f753956112",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2329,
+        "min_line_bytes": 343,
+        "max_line_bytes": 1576,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"vision.describe\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"vision.describe\"],\"effect_verification\":\"grounding_required\",\"intent_operations\":[\"vision.d…"
+          },
+          {
+            "offset": 410,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"vision.describe\"],\"final\":{\"effect_operations\":[\"vision.describe\"],\"intent_operations\":[\"vision.describe\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operati…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1986,
+            "line": 3,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",…"
+          },
+          {
+            "offset": 2329,
+            "line": 4,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"final\":{\"effect_operations\":[\"app.open\"],\"intent_operations\":[\"app.open\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/unsupported_taxi_trace_r2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4997,
+      "sha256": "c9b785eeb874e8a19998ab07d45f5ed146d9d677d20e20b5ae10870012a7982e",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3622,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2238,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          },
+          {
+            "offset": 1044,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3282,
+            "line": 3,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",…"
+          },
+          {
+            "offset": 3622,
+            "line": 4,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"final\":{\"effect_operations\":[\"app.open\"],\"intent_operations\":[\"app.open\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/unsupported_taxi_trace_r3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9047,
+      "sha256": "1148538e2096b5e968b179a69c6043be7313465dac064a2d1699591b27f4a414",
+      "rows": 8,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 8,
+          "phase": 8,
+          "raw_decision": 8,
+          "request_id": 8,
+          "schema": 8,
+          "stages": 8,
+          "final": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7672,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2128,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          },
+          {
+            "offset": 1044,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7332,
+            "line": 7,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",…"
+          },
+          {
+            "offset": 7672,
+            "line": 8,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"final\":{\"effect_operations\":[\"app.open\"],\"intent_operations\":[\"app.open\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/unsupported_taxi_trace_r4.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9029,
+      "sha256": "c60572239b9dd860088efb211d94c76e681ee9894429c2aa261102d4edc87474",
+      "rows": 8,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 8,
+          "phase": 8,
+          "raw_decision": 8,
+          "request_id": 8,
+          "schema": 8,
+          "stages": 8,
+          "final": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7654,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2110,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          },
+          {
+            "offset": 1044,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7314,
+            "line": 7,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",…"
+          },
+          {
+            "offset": 7654,
+            "line": 8,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"final\":{\"effect_operations\":[\"app.open\"],\"intent_operations\":[\"app.open\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/unsupported_taxi_trace_r5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4869,
+      "sha256": "31d15141ebe6f3bb663a807d6d151a94e38620994dfc263ad96336b205493e26",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3494,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2110,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          },
+          {
+            "offset": 1044,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"notification.list.due\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.schedule\",\"streaming.play.named\",\"streaming.navigate\",\"input.visible.click\",\"input.text.type\",\"input…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3154,
+            "line": 3,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"app.open\",\"question\":\"\",…"
+          },
+          {
+            "offset": 3494,
+            "line": 4,
+            "text": "{\"candidate_operations\":[\"app.open\"],\"final\":{\"effect_operations\":[\"app.open\"],\"intent_operations\":[\"app.open\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_classifier_reuse_ab_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11163,
+      "sha256": "29520177c313452645bf9e29d023fa7bfba97aca30ad3bcabd11314321dc5371",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11162,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_classifier_reuse_ab_order2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11165,
+      "sha256": "ba64b00a99d895f48a2279336d06e61991637c03a08140eddb677c7263d0f105",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11164,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_ab_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11169,
+      "sha256": "9dd6698a8cf3dedc77135680a682e22b57fca4da57e08de9f0c0be29da3dac95",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11168,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_ab_order2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11170,
+      "sha256": "afe220df569d2a7a7412d747454d2a73ae872cec5256edf01103a00a272caa45",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11169,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_modes_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14225,
+      "sha256": "eea79fdcec79f600930d6d3979bf8d372ab98be8e8bfd1417c750a220bb587f3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14224,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_modes_order2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14228,
+      "sha256": "442389f33709ce3e90d832fa45c5b35c02015859173615614beee0c41f8d4297",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14227,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_turn18_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6459,
+      "sha256": "fdce0a2b59658e1baefd57283de2810bd13af19203f867100cee7c9bc117f030",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6458,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_turn18_order2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6456,
+      "sha256": "cf3aec3a6d06fe04f84457db5a2959d6550e722f66e98490ae345c94c5e81c22",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "cases",
+          "comparison",
+          "control",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "repetitions",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2,
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6455,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        },
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"cases\", \"comparison\", \"control\", \"core_operations_dispatched\", \"effect_free\", \"measured_at_utc\", \"repetitions\", \"runtime\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/validated_inference_reuse_verdict_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4842,
+      "sha256": "d7ceecdea0b759a9fc1938bab55a36859c95e3b43e3226ccd5b051122fa41791",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "core_operations_dispatched",
+          "effect_free",
+          "implementation_invariants",
+          "measured_at_utc",
+          "physical_ab",
+          "runtime",
+          "schema",
+          "status",
+          "unit_and_source_gates",
+          "verdict"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate",
+          "core_operations_dispatched",
+          "effect_free",
+          "measured_at_utc",
+          "schema",
+          "status",
+          "verdict"
+        ],
+        "list_lengths": {
+          "physical_ab": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4841,
+        "core_operations_dispatched": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"core_operations_dispatched\", \"effect_free\", \"implementation_invariants\", \"measured_at_utc\", \"physical_ab\", \"runtime\", \"schema\", \"status\", \"unit_and_source_gates\", \"verdict\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"core_operations_dispatched\", \"effect_free\", \"implementation_invariants\", \"measured_at_utc\", \"physical_ab\", \"runtime\", \"schema\", \"status\", \"unit_and_source_gates\", \"verdict\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/voice_endpointing_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 174606,
+      "sha256": "5765e69c97fc6617161fe8f3733b4671092ace4aa3149941f70776b561def413",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "case_pcm",
+          "contract",
+          "limitations",
+          "measured_at",
+          "observations",
+          "profiles",
+          "runtime",
+          "schema",
+          "source",
+          "summary",
+          "synthesized_at"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "synthesized_at"
+        ],
+        "list_lengths": {
+          "profiles": 5,
+          "case_pcm": 6,
+          "observations": 120,
+          "limitations": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 174605
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"case_pcm\", \"contract\", \"limitations\", \"measured_at\", \"observations\", \"profiles\", \"runtime\", \"schema\", \"source\", \"summary\", \"synthesized_at\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"case_pcm\", \"contract\", \"limitations\", \"measured_at\", \"observations\", \"profiles\", \"runtime\", \"schema\", \"source\", \"summary\", \"synthesized_at\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/voice_endpointing_private_replay_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27930,
+      "sha256": "d702c9590706680250ea918d3ced8aede141fac74d9ac6e87e821198b4f70c9e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "clip",
+          "limitations",
+          "measured_at",
+          "observations",
+          "privacy",
+          "schema",
+          "summary"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema"
+        ],
+        "list_lengths": {
+          "summary": 5,
+          "observations": 20,
+          "limitations": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27929
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"clip\", \"limitations\", \"measured_at\", \"observations\", \"privacy\", \"schema\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"clip\", \"limitations\", \"measured_at\", \"observations\", \"privacy\", \"schema\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/all_executable_cases.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 114406825,
+      "sha256": "561f67ce527fba5544eafbca79dec2aacc2be8f8a248ffca145cacf9f7f4a6d6",
+      "rows": 67719,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "class",
+          "denied_operations",
+          "occurrence_count",
+          "occurrence_ids",
+          "operations",
+          "provenance_classes",
+          "risk",
+          "source_versions",
+          "text_literal",
+          "text_sha256"
+        ],
+        "key_freq": {
+          "case_id": 67719,
+          "class": 67719,
+          "denied_operations": 67719,
+          "occurrence_count": 67719,
+          "occurrence_ids": 67719,
+          "operations": 67719,
+          "provenance_classes": 67719,
+          "risk": 67719,
+          "source_versions": 67719,
+          "text_literal": 67719,
+          "text_sha256": 67719
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 114406053,
+        "min_line_bytes": 525,
+        "max_line_bytes": 1497212,
+        "numeric": {
+          "occurrence_count": {
+            "min": 1.0,
+            "max": 16823.0
+          }
+        }
+      },
+      "errors": [
+        {
+          "line": 6974,
+          "offset": 11165329,
+          "error": "line_too_long"
+        }
+      ],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"case_000164b1ec2010a69911ec91\", \"class\": \"engineering_instruction\", \"denied_operations\": [], \"occurrence_count\": 1, \"occurrence_ids\": [\"occ_538ef653eac87de65a45151a\"], \"operations\": [], \"provenance_classes\": [\"development_obse…"
+          },
+          {
+            "offset": 1421,
+            "line": 2,
+            "text": "{\"case_id\": \"case_00071c9e96c34074f252101d\", \"class\": \"conversation_question\", \"denied_operations\": [], \"occurrence_count\": 7, \"occurrence_ids\": [\"occ_a6422a7c5135fb29c7a7fe2e\", \"occ_fe27c68474cb25d65a7429fa\", \"occ_78e5418ccafa21045d510279…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 114405095,
+            "line": 67719,
+            "text": "{\"case_id\": \"case_fffe8e6e3c924c0c0fc35092\", \"class\": \"conversation_question\", \"denied_operations\": [], \"occurrence_count\": 1, \"occurrence_ids\": [\"occ_73acd7782ad6e3da28760f2b\"], \"operations\": [], \"provenance_classes\": [\"development_observ…"
+          },
+          {
+            "offset": 114406053,
+            "line": 67720,
+            "text": "{\"case_id\": \"case_ffff72f58a98895a9670ea13\", \"class\": \"conversation_question\", \"denied_operations\": [], \"occurrence_count\": 1, \"occurrence_ids\": [\"occ_01dd313ae250b9e840f46d45\"], \"operations\": [], \"provenance_classes\": [\"development_observ…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/all_message_occurrences.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1145563158,
+      "sha256": "7ecc44648570a01f06a4c480e9ca56d2e737868dcc25364aee5167e8a7690701",
+      "rows": 710077,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "class",
+          "denied_operations",
+          "existing_contract_match",
+          "existing_message_id",
+          "normalized_sha256",
+          "occurrence_id",
+          "operations",
+          "provenance_class",
+          "redacted",
+          "requirement_tags",
+          "risk",
+          "source_document_sha256",
+          "source_family",
+          "source_kind",
+          "source_locator",
+          "source_path",
+          "source_revision",
+          "source_version",
+          "text_literal",
+          "text_sha256"
+        ],
+        "key_freq": {
+          "class": 710077,
+          "denied_operations": 710077,
+          "existing_contract_match": 710077,
+          "existing_message_id": 710077,
+          "normalized_sha256": 710077,
+          "occurrence_id": 710077,
+          "operations": 710077,
+          "provenance_class": 710077,
+          "redacted": 710077,
+          "requirement_tags": 710077,
+          "risk": 710077,
+          "source_document_sha256": 710077,
+          "source_family": 710077,
+          "source_kind": 710077,
+          "source_locator": 710077,
+          "source_path": 710077,
+          "source_revision": 710077,
+          "source_version": 710077,
+          "text_literal": 710077,
+          "text_sha256": 710077
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1145562104,
+        "min_line_bytes": 951,
+        "max_line_bytes": 110383,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"class\": \"conversation_question\", \"denied_operations\": [], \"existing_contract_match\": \"unmatched\", \"existing_message_id\": null, \"normalized_sha256\": \"56b9ff66b8eca6caabf7570ba176cdcb1610c7f776223514cff556823bad07ef\", \"occurrence_id\": \"occ…"
+          },
+          {
+            "offset": 1048,
+            "line": 2,
+            "text": "{\"class\": \"conversation_question\", \"denied_operations\": [], \"existing_contract_match\": \"normalized_unique\", \"existing_message_id\": \"msg_eb5bb28ede3c9491a2a8\", \"normalized_sha256\": \"29541baa2df034aada92edad4f6d0adbd92858d0bde50ce7980c6dea67…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1145561032,
+            "line": 710076,
+            "text": "{\"class\": \"conversation_question\", \"denied_operations\": [], \"existing_contract_match\": \"normalized_unique\", \"existing_message_id\": \"msg_eeede7cfdb0f205a91aa\", \"normalized_sha256\": \"052cb9ecc38343220e1b71135791f9ce57f8a8ccbd2313a5020ebc407c…"
+          },
+          {
+            "offset": 1145562104,
+            "line": 710077,
+            "text": "{\"class\": \"conversation_question\", \"denied_operations\": [], \"existing_contract_match\": \"unmatched\", \"existing_message_id\": null, \"normalized_sha256\": \"4adcf1e21bbc792356b9c13da497bfea5674411af70cf96ce146e3ea70e01c4e\", \"occurrence_id\": \"occ…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_app_route_gate.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4148643,
+      "sha256": "ac00b01df3b8fe5fa259b49f1f50eb1ac6ed18682ecf7aaab452ae9625c510d5",
+      "rows": 14845,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "CaseId",
+          "TextSha256",
+          "ExpectedEffect",
+          "ExpectedFamilies",
+          "Decision",
+          "Operation",
+          "Status",
+          "RuntimeOccurrenceCount"
+        ],
+        "key_freq": {
+          "CaseId": 14845,
+          "TextSha256": 14845,
+          "ExpectedEffect": 14845,
+          "ExpectedFamilies": 14845,
+          "Decision": 14845,
+          "Operation": 14845,
+          "Status": 14845,
+          "RuntimeOccurrenceCount": 14845
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4148362,
+        "min_line_bytes": 270,
+        "max_line_bytes": 335,
+        "numeric": {
+          "RuntimeOccurrenceCount": {
+            "min": 1.0,
+            "max": 1696.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"CaseId\":\"case_00071c9e96c34074f252101d\",\"TextSha256\":\"00071c9e96c34074f252101de225d49d2e804ed1be7acbfaadd813e4d32d9384\",\"ExpectedEffect\":\"operation\",\"ExpectedFamilies\":[\"filesystem\"],\"Decision\":\"mind_required\",\"Operation\":null,\"Status\":\"…"
+          },
+          {
+            "offset": 283,
+            "line": 2,
+            "text": "{\"CaseId\":\"case_0008ccd115b443681fe5d736\",\"TextSha256\":\"0008ccd115b443681fe5d736961f65f686902467fabde271b91b15087d912acb\",\"ExpectedEffect\":\"operation\",\"ExpectedFamilies\":[\"peripheral\"],\"Decision\":\"mind_required\",\"Operation\":null,\"Status\":\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4148086,
+            "line": 14844,
+            "text": "{\"CaseId\":\"case_fff7e06a1772365ba6e75425\",\"TextSha256\":\"fff7e06a1772365ba6e75425f2001fb1c67a4834ebe806c4aa96dea840e120ce\",\"ExpectedEffect\":\"none\",\"ExpectedFamilies\":[],\"Decision\":\"mind_required\",\"Operation\":null,\"Status\":\"pass_no_direct_ef…"
+          },
+          {
+            "offset": 4148362,
+            "line": 14845,
+            "text": "{\"CaseId\":\"case_fffa6b7d33b602366ab4ea75\",\"TextSha256\":\"fffa6b7d33b602366ab4ea756ee0e16732515523d111c9906dd153246f674374\",\"ExpectedEffect\":\"unsupported\",\"ExpectedFamilies\":[],\"Decision\":\"mind_required\",\"Operation\":null,\"Status\":\"pass_no_di…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_app_route_gate_summary.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 603,
+      "sha256": "dd03133ca1af8da609580d80909dde9667fdf6a8ac0156cd42fceeb6fc21e5ce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "allCasesAccounted",
+          "directFailures",
+          "failureCases",
+          "schemaVersion",
+          "scope",
+          "sourceCaseSha256",
+          "sourceOracleSha256",
+          "statusCounts",
+          "toolsExecuted",
+          "uniqueRuntimeCases"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "allCasesAccounted",
+          "directFailures",
+          "schemaVersion",
+          "scope",
+          "sourceCaseSha256",
+          "sourceOracleSha256",
+          "toolsExecuted",
+          "uniqueRuntimeCases"
+        ],
+        "list_lengths": {
+          "failureCases": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 602,
+        "schemaVersion": {
+          "min": 1,
+          "max": 1
+        },
+        "uniqueRuntimeCases": {
+          "min": 14845,
+          "max": 14845
+        },
+        "directFailures": {
+          "min": 0,
+          "max": 0
+        },
+        "toolsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"allCasesAccounted\", \"directFailures\", \"failureCases\", \"schemaVersion\", \"scope\", \"sourceCaseSha256\", \"sourceOracleSha256\", \"statusCounts\", \"toolsExecuted\", \"uniqueRuntimeCases\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"allCasesAccounted\", \"directFailures\", \"failureCases\", \"schemaVersion\", \"scope\", \"sourceCaseSha256\", \"sourceOracleSha256\", \"statusCounts\", \"toolsExecuted\", \"uniqueRuntimeCases\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_fast_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7778896,
+      "sha256": "1b46085d238cf36b877160630d5bc644a36722fee49dbec774c3d10a50446f63",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "all_occurrences_accounted",
+          "cases",
+          "catalog_operations",
+          "clarification_review_cases",
+          "development_occurrences_accounted_not_replayed",
+          "fast_failures",
+          "generated_at_utc",
+          "model_gate_remaining",
+          "oracle_review_cases",
+          "out_of_scope_language_cases",
+          "runtime_occurrences",
+          "schema_version",
+          "scope",
+          "source_case_sha256",
+          "source_language_scope_sha256",
+          "source_occurrence_sha256",
+          "source_oracle_sha256",
+          "status",
+          "status_counts",
+          "target_language_cases",
+          "tools_executed",
+          "total_occurrences",
+          "unique_runtime_cases"
+        ],
+        "n_keys": 23,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_occurrences_accounted",
+          "catalog_operations",
+          "clarification_review_cases",
+          "development_occurrences_accounted_not_replayed",
+          "fast_failures",
+          "generated_at_utc",
+          "model_gate_remaining",
+          "oracle_review_cases",
+          "out_of_scope_language_cases",
+          "runtime_occurrences",
+          "schema_version",
+          "scope",
+          "source_case_sha256",
+          "source_language_scope_sha256",
+          "source_occurrence_sha256",
+          "source_oracle_sha256",
+          "status",
+          "target_language_cases",
+          "tools_executed",
+          "total_occurrences",
+          "unique_runtime_cases"
+        ],
+        "list_lengths": {
+          "cases": 14845
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7778895,
+        "catalog_operations": {
+          "min": 120,
+          "max": 120
+        },
+        "clarification_review_cases": {
+          "min": 299,
+          "max": 299
+        },
+        "development_occurrences_accounted_not_replayed": {
+          "min": 378830,
+          "max": 378830
+        },
+        "fast_failures": {
+          "min": 0,
+          "max": 0
+        },
+        "model_gate_remaining": {
+          "min": 8468,
+          "max": 8468
+        },
+        "oracle_review_cases": {
+          "min": 180,
+          "max": 180
+        },
+        "out_of_scope_language_cases": {
+          "min": 3318,
+          "max": 3318
+        },
+        "runtime_occurrences": {
+          "min": 331247,
+          "max": 331247
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "target_language_cases": {
+          "min": 11527,
+          "max": 11527
+        },
+        "tools_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "total_occurrences": {
+          "min": 710077,
+          "max": 710077
+        },
+        "unique_runtime_cases": {
+          "min": 14845,
+          "max": 14845
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_occurrences_accounted\", \"cases\", \"catalog_operations\", \"clarification_review_cases\", \"development_occurrences_accounted_not_replayed\", \"fast_failures\", \"generated_at_utc\", \"model_gate_remaining\", \"oracle_review_cases\", \"out_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_occurrences_accounted\", \"cases\", \"catalog_operations\", \"clarification_review_cases\", \"development_occurrences_accounted_not_replayed\", \"fast_failures\", \"generated_at_utc\", \"model_gate_remaining\", \"oracle_review_cases\", \"out_…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_fast_gate_summary.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1433,
+      "sha256": "867c31c7330a7c75c147861a3a85b8654e6bf5a7d08cf2fba63037c3058519c9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "all_occurrences_accounted",
+          "catalog_operations",
+          "clarification_review_cases",
+          "development_occurrences_accounted_not_replayed",
+          "fast_failure_cases",
+          "fast_failures",
+          "generated_at_utc",
+          "model_gate_remaining",
+          "occurrence_basis",
+          "oracle_review_cases",
+          "out_of_scope_language_cases",
+          "runtime_occurrences",
+          "schema_version",
+          "scope",
+          "source_case_sha256",
+          "source_language_scope_sha256",
+          "source_occurrence_sha256",
+          "source_oracle_sha256",
+          "status",
+          "status_counts",
+          "target_language_cases",
+          "tools_executed",
+          "total_occurrences",
+          "unique_runtime_cases"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_occurrences_accounted",
+          "catalog_operations",
+          "clarification_review_cases",
+          "development_occurrences_accounted_not_replayed",
+          "fast_failures",
+          "generated_at_utc",
+          "model_gate_remaining",
+          "occurrence_basis",
+          "oracle_review_cases",
+          "out_of_scope_language_cases",
+          "runtime_occurrences",
+          "schema_version",
+          "scope",
+          "source_case_sha256",
+          "source_language_scope_sha256",
+          "source_occurrence_sha256",
+          "source_oracle_sha256",
+          "status",
+          "target_language_cases",
+          "tools_executed",
+          "total_occurrences",
+          "unique_runtime_cases"
+        ],
+        "list_lengths": {
+          "fast_failure_cases": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1432,
+        "catalog_operations": {
+          "min": 166,
+          "max": 166
+        },
+        "clarification_review_cases": {
+          "min": 51,
+          "max": 51
+        },
+        "development_occurrences_accounted_not_replayed": {
+          "min": 378819,
+          "max": 378819
+        },
+        "fast_failures": {
+          "min": 0,
+          "max": 0
+        },
+        "model_gate_remaining": {
+          "min": 8082,
+          "max": 8082
+        },
+        "oracle_review_cases": {
+          "min": 172,
+          "max": 172
+        },
+        "out_of_scope_language_cases": {
+          "min": 3318,
+          "max": 3318
+        },
+        "runtime_occurrences": {
+          "min": 331258,
+          "max": 331258
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "target_language_cases": {
+          "min": 11527,
+          "max": 11527
+        },
+        "tools_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "total_occurrences": {
+          "min": 710077,
+          "max": 710077
+        },
+        "unique_runtime_cases": {
+          "min": 14845,
+          "max": 14845
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_occurrences_accounted\", \"catalog_operations\", \"clarification_review_cases\", \"development_occurrences_accounted_not_replayed\", \"fast_failure_cases\", \"fast_failures\", \"generated_at_utc\", \"model_gate_remaining\", \"occurrence_bas…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_occurrences_accounted\", \"catalog_operations\", \"clarification_review_cases\", \"development_occurrences_accounted_not_replayed\", \"fast_failure_cases\", \"fast_failures\", \"generated_at_utc\", \"model_gate_remaining\", \"occurrence_bas…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_language_scope.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3567712,
+      "sha256": "28b683054fe6eaaec3ba98a35e96366a52b5e8b7f6d09a03939fe500292a760c",
+      "rows": 14845,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "basis",
+          "case_id",
+          "runtime_occurrence_count",
+          "scope",
+          "text_sha256"
+        ],
+        "key_freq": {
+          "basis": 14845,
+          "case_id": 14845,
+          "runtime_occurrence_count": 14845,
+          "scope": 14845,
+          "text_sha256": 14845
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3567474,
+        "min_line_bytes": 238,
+        "max_line_bytes": 251,
+        "numeric": {
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 1696.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"basis\": \"high_confidence_non_target_language_audit\", \"case_id\": \"case_00071c9e96c34074f252101d\", \"runtime_occurrence_count\": 7, \"scope\": \"out_of_scope_language\", \"text_sha256\": \"00071c9e96c34074f252101de225d49d2e804ed1be7acbfaadd813e4d32…"
+          },
+          {
+            "offset": 247,
+            "line": 2,
+            "text": "{\"basis\": \"conservative_target_unless_confidently_excluded\", \"case_id\": \"case_0008ccd115b443681fe5d736\", \"runtime_occurrence_count\": 1, \"scope\": \"target\", \"text_sha256\": \"0008ccd115b443681fe5d736961f65f686902467fabde271b91b15087d912acb\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3567234,
+            "line": 14844,
+            "text": "{\"basis\": \"conservative_target_unless_confidently_excluded\", \"case_id\": \"case_fff7e06a1772365ba6e75425\", \"runtime_occurrence_count\": 181, \"scope\": \"target\", \"text_sha256\": \"fff7e06a1772365ba6e75425f2001fb1c67a4834ebe806c4aa96dea840e120ce\"}"
+          },
+          {
+            "offset": 3567474,
+            "line": 14845,
+            "text": "{\"basis\": \"conservative_target_unless_confidently_excluded\", \"case_id\": \"case_fffa6b7d33b602366ab4ea75\", \"runtime_occurrence_count\": 7, \"scope\": \"target\", \"text_sha256\": \"fffa6b7d33b602366ab4ea756ee0e16732515523d111c9906dd153246f674374\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_language_scope_summary.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 657,
+      "sha256": "333a28ab1613d195263145d4009dc57fda6393a9e2c9655ba23612a8836a1ff4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "all_cases_accounted",
+          "basis_counts",
+          "policy",
+          "runtime_occurrence_counts",
+          "schema_version",
+          "scope_counts",
+          "unique_runtime_cases"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_cases_accounted",
+          "policy",
+          "schema_version",
+          "unique_runtime_cases"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 656,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "unique_runtime_cases": {
+          "min": 14845,
+          "max": 14845
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_cases_accounted\", \"basis_counts\", \"policy\", \"runtime_occurrence_counts\", \"schema_version\", \"scope_counts\", \"unique_runtime_cases\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_cases_accounted\", \"basis_counts\", \"policy\", \"runtime_occurrence_counts\", \"schema_version\", \"scope_counts\", \"unique_runtime_cases\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.certified.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 99616,
+      "sha256": "2d60b210ff2b79f28973d75e61c6c6acefd91826e75e44b3609e30d726fe2cbc",
+      "rows": 147,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "actual_families",
+          "case_id",
+          "chat_seconds",
+          "completed",
+          "decision_kind",
+          "error_code",
+          "error_message",
+          "operations",
+          "oracle_effect",
+          "oracle_families",
+          "plan_seconds",
+          "question",
+          "reply",
+          "runtime_fingerprint",
+          "runtime_occurrence_count",
+          "status",
+          "text_literal",
+          "text_sha256",
+          "tools_executed",
+          "total_seconds"
+        ],
+        "key_freq": {
+          "actual_families": 147,
+          "case_id": 147,
+          "chat_seconds": 147,
+          "completed": 147,
+          "decision_kind": 147,
+          "error_code": 147,
+          "error_message": 147,
+          "operations": 147,
+          "oracle_effect": 147,
+          "oracle_families": 147,
+          "plan_seconds": 147,
+          "question": 147,
+          "reply": 147,
+          "runtime_fingerprint": 147,
+          "runtime_occurrence_count": 147,
+          "status": 147,
+          "text_literal": 147,
+          "text_sha256": 147,
+          "tools_executed": 147,
+          "total_seconds": 147
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=out_of_scope_language": 58,
+          "status=pass_no_effect": 44,
+          "status=pass_operation_family": 36,
+          "status=pass_safe_clarification": 9
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 98939,
+        "min_line_bytes": 630,
+        "max_line_bytes": 1663,
+        "numeric": {
+          "chat_seconds": {
+            "min": 0.0,
+            "max": 2.015
+          },
+          "plan_seconds": {
+            "min": 0.0,
+            "max": 10.703
+          },
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 216.0
+          },
+          "tools_executed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "total_seconds": {
+            "min": 0.0,
+            "max": 10.703
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_100b35d313dcd649cfec6a8b\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"out_of_scope_language\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"operation\", \"o…"
+          },
+          {
+            "offset": 651,
+            "line": 2,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_22410ee4699843ff05416bd0\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"out_of_scope_language\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"operation\", \"o…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 98227,
+            "line": 146,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_fc5fc9dfc22679ac8a7e8724\", \"chat_seconds\": 0.188, \"completed\": true, \"decision_kind\": \"conversation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"none\", \"oracle_famili…"
+          },
+          {
+            "offset": 98939,
+            "line": 147,
+            "text": "{\"actual_families\": [\"vision\"], \"case_id\": \"case_feecb4a553d5124c1e2ea158\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"plan\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"capture.screenshot\", \"vision.describe\"], \"o…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.certified_summary.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1421,
+      "sha256": "289edaed8e7b23b2cfc22df00f79d26ee7de621b8239cdbed115533f3cf21386",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "base_exhaustive_evidence",
+          "certified_result",
+          "generated_at_utc",
+          "schema_version",
+          "scope",
+          "targeted_revalidation"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at_utc",
+          "schema_version",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1420,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"base_exhaustive_evidence\", \"certified_result\", \"generated_at_utc\", \"schema_version\", \"scope\", \"targeted_revalidation\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"base_exhaustive_evidence\", \"certified_result\", \"generated_at_utc\", \"schema_version\", \"scope\", \"targeted_revalidation\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.launch.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 420,
+      "sha256": "edef318306acb02148ebc783edd892e4200409912ca40bf29f1af114502ce3a7",
+      "rows": 6,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351,
+        "min_line_bytes": 25,
+        "max_line_bytes": 132
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Traceback (most recent call last):"
+          },
+          {
+            "offset": 36,
+            "line": 2,
+            "text": "File \"<home>\\Desktop\\ETC\\Programacion\\BAXY\\scripts\\run_exhaustive_runtime_model_gate_parallel.py\", line 245, in <module>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 326,
+            "line": 5,
+            "text": "raise RuntimeError("
+          },
+          {
+            "offset": 351,
+            "line": 6,
+            "text": "RuntimeError: shared llama-server exited during replay (3221226505)"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.launch.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 37982,
+      "sha256": "cb83a1d98b95d10bd7be32b77b7916480faaa50f77dc0350f64751b116b907c3",
+      "rows": 465,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37900,
+        "min_line_bytes": 55,
+        "max_line_bytes": 82
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"server_ready\": \"http://127.0.0.1:6580\", \"slots\": 8}"
+          },
+          {
+            "offset": 55,
+            "line": 2,
+            "text": "{\"completed_rows\": 0, \"shard_rows\": [0, 0, 0, 0, 0, 0, 0, 0]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 37818,
+            "line": 464,
+            "text": "{\"completed_rows\": 7014, \"shard_rows\": [868, 833, 881, 864, 914, 853, 873, 928]}"
+          },
+          {
+            "offset": 37900,
+            "line": 465,
+            "text": "{\"completed_rows\": 7026, \"shard_rows\": [868, 833, 881, 870, 914, 853, 877, 930]}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard0.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1402931,
+      "sha256": "ae61cac8af018f09b825c3b7a06877803f35de49faf31edc59918598a5541938",
+      "rows": 2110,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "actual_families",
+          "case_id",
+          "chat_seconds",
+          "completed",
+          "decision_kind",
+          "error_code",
+          "error_message",
+          "operations",
+          "oracle_effect",
+          "oracle_families",
+          "plan_seconds",
+          "question",
+          "reply",
+          "runtime_fingerprint",
+          "runtime_occurrence_count",
+          "status",
+          "text_literal",
+          "text_sha256",
+          "tools_executed",
+          "total_seconds"
+        ],
+        "key_freq": {
+          "actual_families": 2110,
+          "case_id": 2110,
+          "chat_seconds": 2110,
+          "completed": 2110,
+          "decision_kind": 2110,
+          "error_code": 2110,
+          "error_message": 2110,
+          "operations": 2110,
+          "oracle_effect": 2110,
+          "oracle_families": 2110,
+          "plan_seconds": 2110,
+          "question": 2110,
+          "reply": 2110,
+          "runtime_fingerprint": 2110,
+          "runtime_occurrence_count": 2110,
+          "status": 2110,
+          "text_literal": 2110,
+          "text_sha256": 2110,
+          "tools_executed": 2110,
+          "total_seconds": 2110
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=out_of_scope_language": 1566,
+          "status=pass_app_direct_operation_family": 278,
+          "status=pass_operation_family": 94,
+          "status=pass_no_effect": 72,
+          "status=review_clarification": 52,
+          "status=pass_safe_clarification": 36,
+          "status=review_unresolved_oracle": 12
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1402266,
+        "min_line_bytes": 620,
+        "max_line_bytes": 1644,
+        "numeric": {
+          "chat_seconds": {
+            "min": 0.0,
+            "max": 3.25
+          },
+          "plan_seconds": {
+            "min": 0.0,
+            "max": 10.172
+          },
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 608.0
+          },
+          "tools_executed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "total_seconds": {
+            "min": 0.0,
+            "max": 10.172
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_00071c9e96c34074f252101d\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"out_of_scope_language\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"operation\", \"o…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_004555654d12c4ff641a357c\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"out_of_scope_language\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"operation\", \"o…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1401573,
+            "line": 2109,
+            "text": "{\"actual_families\": [\"message\"], \"case_id\": \"case_0bb8c935ddcb6b0f4bc222ed\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"plan\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"message.recipient.resolve\", \"message.send\"…"
+          },
+          {
+            "offset": 1402266,
+            "line": 2110,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_0bcb85505c45720ecc76e1f7\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"clarify\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"operation\", \"oracle_families…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard0.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1084,
+      "sha256": "7b49a9e4310774e7e1099fb82f1e8b1b6c5704da684a371573964b7c167c367f",
+      "rows": 9,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 961,
+        "min_line_bytes": 114,
+        "max_line_bytes": 125
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 5532, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 55.2}"
+          },
+          {
+            "offset": 114,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 5507, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 81.5}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 839,
+            "line": 8,
+            "text": "{\"completed_this_run\": 200, \"pending_this_run\": 5357, \"latest_status\": \"review_clarification\", \"elapsed_seconds\": 330.8}"
+          },
+          {
+            "offset": 961,
+            "line": 9,
+            "text": "{\"completed_this_run\": 225, \"pending_this_run\": 5332, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 370.3}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1460484,
+      "sha256": "3a74444dbba34bf47225659a5ad64385d706d4bf44827ea79867e911882e42f2",
+      "rows": 2193,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "actual_families",
+          "case_id",
+          "chat_seconds",
+          "completed",
+          "decision_kind",
+          "error_code",
+          "error_message",
+          "operations",
+          "oracle_effect",
+          "oracle_families",
+          "plan_seconds",
+          "question",
+          "reply",
+          "runtime_fingerprint",
+          "runtime_occurrence_count",
+          "status",
+          "text_literal",
+          "text_sha256",
+          "tools_executed",
+          "total_seconds"
+        ],
+        "key_freq": {
+          "actual_families": 2193,
+          "case_id": 2193,
+          "chat_seconds": 2193,
+          "completed": 2193,
+          "decision_kind": 2193,
+          "error_code": 2193,
+          "error_message": 2193,
+          "operations": 2193,
+          "oracle_effect": 2193,
+          "oracle_families": 2193,
+          "plan_seconds": 2193,
+          "question": 2193,
+          "reply": 2193,
+          "runtime_fingerprint": 2193,
+          "runtime_occurrence_count": 2193,
+          "status": 2193,
+          "text_literal": 2193,
+          "text_sha256": 2193,
+          "tools_executed": 2193,
+          "total_seconds": 2193
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=out_of_scope_language": 1636,
+          "status=pass_app_direct_operation_family": 268,
+          "status=pass_operation_family": 101,
+          "status=pass_no_effect": 90,
+          "status=review_clarification": 53,
+          "status=pass_safe_clarification": 35,
+          "status=review_unresolved_oracle": 9,
+          "status=missed_operation": 1
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1459753,
+        "min_line_bytes": 621,
+        "max_line_bytes": 1523,
+        "numeric": {
+          "chat_seconds": {
+            "min": 0.0,
+            "max": 2.015
+          },
+          "plan_seconds": {
+            "min": 0.0,
+            "max": 10.422
+          },
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 1554.0
+          },
+          "tools_executed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "total_seconds": {
+            "min": 0.0,
+            "max": 10.422
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_001193577c9266a6a695ce9d\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"out_of_scope_language\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"none\", \"oracle…"
+          },
+          {
+            "offset": 662,
+            "line": 2,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_003741bdc26389147c597ccf\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"out_of_scope_language\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"operation\", \"o…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1459089,
+            "line": 2192,
+            "text": "{\"actual_families\": [\"note_task\"], \"case_id\": \"case_0d02f0d9fd8c60b8a05bbb54\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"plan\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"note.search\"], \"oracle_effect\": \"review_…"
+          },
+          {
+            "offset": 1459753,
+            "line": 2193,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_0d1553b0454ecd62956c3811\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"clarify\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"review_required\", \"oracle_fa…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1215,
+      "sha256": "f9672a8ad07490d75e0731a5ba9231de6779648c602b23ca755084dbb4b30d97",
+      "rows": 10,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1092,
+        "min_line_bytes": 114,
+        "max_line_bytes": 125
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 5467, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 38.2}"
+          },
+          {
+            "offset": 121,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 5442, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 71.2}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 969,
+            "line": 9,
+            "text": "{\"completed_this_run\": 225, \"pending_this_run\": 5267, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 310.0}"
+          },
+          {
+            "offset": 1092,
+            "line": 10,
+            "text": "{\"completed_this_run\": 250, \"pending_this_run\": 5242, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 348.3}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 160056,
+      "sha256": "d9612a0811b8d77ba0e581f3370326942efde7e0f9e53ee2e285e01bf3439366",
+      "rows": 233,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "actual_families",
+          "case_id",
+          "chat_seconds",
+          "completed",
+          "decision_kind",
+          "error_code",
+          "error_message",
+          "operations",
+          "oracle_effect",
+          "oracle_families",
+          "plan_seconds",
+          "question",
+          "reply",
+          "runtime_fingerprint",
+          "runtime_occurrence_count",
+          "status",
+          "text_literal",
+          "text_sha256",
+          "tools_executed",
+          "total_seconds"
+        ],
+        "key_freq": {
+          "actual_families": 233,
+          "case_id": 233,
+          "chat_seconds": 233,
+          "completed": 233,
+          "decision_kind": 233,
+          "error_code": 233,
+          "error_message": 233,
+          "operations": 233,
+          "oracle_effect": 233,
+          "oracle_families": 233,
+          "plan_seconds": 233,
+          "question": 233,
+          "reply": 233,
+          "runtime_fingerprint": 233,
+          "runtime_occurrence_count": 233,
+          "status": 233,
+          "text_literal": 233,
+          "text_sha256": 233,
+          "tools_executed": 233,
+          "total_seconds": 233
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=pass_app_direct_operation_family": 142,
+          "status=pass_operation_family": 21,
+          "status=out_of_scope_language": 19,
+          "status=pass_no_effect": 18,
+          "status=review_clarification": 16,
+          "status=pass_safe_clarification": 11,
+          "status=review_unresolved_oracle": 6
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 159376,
+        "min_line_bytes": 629,
+        "max_line_bytes": 1654,
+        "numeric": {
+          "chat_seconds": {
+            "min": 0.0,
+            "max": 5.047
+          },
+          "plan_seconds": {
+            "min": 0.0,
+            "max": 16.25
+          },
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 344.0
+          },
+          "tools_executed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "total_seconds": {
+            "min": 0.0,
+            "max": 16.25
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"actual_families\": [\"memory\"], \"case_id\": \"case_00a12da119f558d61cbd74b6\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"direct_private_composition\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"memory.recall\"], \"ora…"
+          },
+          {
+            "offset": 719,
+            "line": 2,
+            "text": "{\"actual_families\": [\"app\"], \"case_id\": \"case_03e2151cdca4d889f3a83ae8\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"direct_operation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"app.open\"], \"oracle_effect\": \"oper…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 158646,
+            "line": 232,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_04a7b9784f486c3f616207c2\", \"chat_seconds\": 0.563, \"completed\": true, \"decision_kind\": \"conversation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"none\", \"oracle_famili…"
+          },
+          {
+            "offset": 159376,
+            "line": 233,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_04b397d2431d59c4dd407452\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"clarify\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"review_required\", \"oracle_fa…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard2.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 235,
+      "sha256": "491131d82fff60666c488587bfd1f7ea0a96e41df157fce7bf927522038031ff",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 114,
+        "min_line_bytes": 114,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 3516, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 94.4}"
+          },
+          {
+            "offset": 114,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 3491, \"latest_status\": \"review_clarification\", \"elapsed_seconds\": 150.1}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 3516, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 94.4}"
+          },
+          {
+            "offset": 114,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 3491, \"latest_status\": \"review_clarification\", \"elapsed_seconds\": 150.1}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 153127,
+      "sha256": "4de108686e79173178109ac981c005a4e48acee4f8328c86181e11b745a19d37",
+      "rows": 220,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "actual_families",
+          "case_id",
+          "chat_seconds",
+          "completed",
+          "decision_kind",
+          "error_code",
+          "error_message",
+          "operations",
+          "oracle_effect",
+          "oracle_families",
+          "plan_seconds",
+          "question",
+          "reply",
+          "runtime_fingerprint",
+          "runtime_occurrence_count",
+          "status",
+          "text_literal",
+          "text_sha256",
+          "tools_executed",
+          "total_seconds"
+        ],
+        "key_freq": {
+          "actual_families": 220,
+          "case_id": 220,
+          "chat_seconds": 220,
+          "completed": 220,
+          "decision_kind": 220,
+          "error_code": 220,
+          "error_message": 220,
+          "operations": 220,
+          "oracle_effect": 220,
+          "oracle_families": 220,
+          "plan_seconds": 220,
+          "question": 220,
+          "reply": 220,
+          "runtime_fingerprint": 220,
+          "runtime_occurrence_count": 220,
+          "status": 220,
+          "text_literal": 220,
+          "text_sha256": 220,
+          "tools_executed": 220,
+          "total_seconds": 220
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=pass_app_direct_operation_family": 141,
+          "status=pass_no_effect": 28,
+          "status=pass_operation_family": 17,
+          "status=review_clarification": 13,
+          "status=out_of_scope_language": 10,
+          "status=pass_safe_clarification": 8,
+          "status=review_unresolved_oracle": 3
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 152375,
+        "min_line_bytes": 630,
+        "max_line_bytes": 1724,
+        "numeric": {
+          "chat_seconds": {
+            "min": 0.0,
+            "max": 12.156
+          },
+          "plan_seconds": {
+            "min": 0.0,
+            "max": 15.797
+          },
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 794.0
+          },
+          "tools_executed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "total_seconds": {
+            "min": 0.0,
+            "max": 15.797
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"actual_families\": [\"app\"], \"case_id\": \"case_00ab40dca3c908b91f2e0ca8\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"direct_operation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"app.open\"], \"oracle_effect\": \"oper…"
+          },
+          {
+            "offset": 673,
+            "line": 2,
+            "text": "{\"actual_families\": [\"audio\"], \"case_id\": \"case_012ac3437cc81046ad117d1f\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"direct_operation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"audio.volume\"], \"oracle_effect\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 151692,
+            "line": 219,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_0451ba18cb679abff8774105\", \"chat_seconds\": 0.344, \"completed\": true, \"decision_kind\": \"conversation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"none\", \"oracle_famili…"
+          },
+          {
+            "offset": 152375,
+            "line": 220,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_046169357d81e2fb885a26b7\", \"chat_seconds\": 1.015, \"completed\": true, \"decision_kind\": \"conversation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"none\", \"oracle_famili…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard3.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 230,
+      "sha256": "c4db88e0f33474d95578ecc434fb350a54344aa8cb831144d3329b09634e9e6a",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 115,
+        "min_line_bytes": 115,
+        "max_line_bytes": 115
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 3522, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 102.8}"
+          },
+          {
+            "offset": 115,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 3497, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 202.1}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 3522, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 102.8}"
+          },
+          {
+            "offset": 115,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 3497, \"latest_status\": \"pass_no_effect\", \"elapsed_seconds\": 202.1}"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard4.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 674239,
+      "sha256": "2f57ab0a12cd71b2c782dd8d32957baec23b2fa216da8d4fe66c2962ef7e0937",
+      "rows": 919,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "actual_families",
+          "case_id",
+          "chat_seconds",
+          "completed",
+          "decision_kind",
+          "error_code",
+          "error_message",
+          "operations",
+          "oracle_effect",
+          "oracle_families",
+          "plan_seconds",
+          "question",
+          "reply",
+          "runtime_fingerprint",
+          "runtime_occurrence_count",
+          "status",
+          "text_literal",
+          "text_sha256",
+          "tools_executed",
+          "total_seconds"
+        ],
+        "key_freq": {
+          "actual_families": 919,
+          "case_id": 919,
+          "chat_seconds": 919,
+          "completed": 919,
+          "decision_kind": 919,
+          "error_code": 919,
+          "error_message": 919,
+          "operations": 919,
+          "oracle_effect": 919,
+          "oracle_families": 919,
+          "plan_seconds": 919,
+          "question": 919,
+          "reply": 919,
+          "runtime_fingerprint": 919,
+          "runtime_occurrence_count": 919,
+          "status": 919,
+          "text_literal": 919,
+          "text_sha256": 919,
+          "tools_executed": 919,
+          "total_seconds": 919
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=pass_no_effect": 345,
+          "status=pass_operation_family": 217,
+          "status=review_clarification": 153,
+          "status=pass_app_direct_operation_family": 84,
+          "status=pass_safe_clarification": 73,
+          "status=review_unresolved_oracle": 43,
+          "status=missed_operation": 4
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 673459,
+        "min_line_bytes": 619,
+        "max_line_bytes": 1707,
+        "numeric": {
+          "chat_seconds": {
+            "min": 0.0,
+            "max": 16.985
+          },
+          "plan_seconds": {
+            "min": 0.0,
+            "max": 55.0
+          },
+          "runtime_occurrence_count": {
+            "min": 1.0,
+            "max": 699.0
+          },
+          "tools_executed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "total_seconds": {
+            "min": 0.0,
+            "max": 55.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"actual_families\": [\"system\"], \"case_id\": \"case_015c38d3679aa71e85dcb4f8\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"direct_operation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"system.status\"], \"oracle_effect…"
+          },
+          {
+            "offset": 671,
+            "line": 2,
+            "text": "{\"actual_families\": [\"memory\"], \"case_id\": \"case_0244c1fd6254feb8fa4b958b\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"direct_operation\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"memory.save\"], \"oracle_effect\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 672809,
+            "line": 918,
+            "text": "{\"actual_families\": [\"web\"], \"case_id\": \"case_77d412b5f610ddfa2317a394\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"plan\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [\"web.search\"], \"oracle_effect\": \"operation\", \"o…"
+          },
+          {
+            "offset": 673459,
+            "line": 919,
+            "text": "{\"actual_families\": [], \"case_id\": \"case_781bb961307f3295c3be20ad\", \"chat_seconds\": 0.0, \"completed\": true, \"decision_kind\": \"clarify\", \"error_code\": \"\", \"error_message\": \"\", \"operations\": [], \"oracle_effect\": \"review_required\", \"oracle_fa…"
+          }
+        ]
+      }
+    },
+    "artifacts/historical_exhaustive/runtime_model_gate.final.shard4.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3984,
+      "sha256": "f38079eeac2597cdd858aa1168302ef4e0151ded897173d44d9fe7a27fce9877",
+      "rows": 33,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3861,
+        "min_line_bytes": 116,
+        "max_line_bytes": 127
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"completed_this_run\": 25, \"pending_this_run\": 1743, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 110.8}"
+          },
+          {
+            "offset": 122,
+            "line": 2,
+            "text": "{\"completed_this_run\": 50, \"pending_this_run\": 1718, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 211.9}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3739,
+            "line": 32,
+            "text": "{\"completed_this_run\": 800, \"pending_this_run\": 968, \"latest_status\": \"review_clarification\", \"elapsed_seconds\": 4407.2}"
+          },
+          {
+            "offset": 3861,
+            "line": 33,
+            "text": "{\"completed_this_run\": 825, \"pending_this_run\": 943, \"latest_status\": \"pass_operation_family\", \"elapsed_seconds\": 4643.4}"
+          }
+        ]
+      }
+    }
+  }
+}

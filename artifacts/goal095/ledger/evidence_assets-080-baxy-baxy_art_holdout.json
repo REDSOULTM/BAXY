@@ -1,0 +1,1752 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-080-baxy-baxy_art_holdout",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:44:22Z",
+  "closed_utc": "2026-08-31T05:44:24Z",
+  "estimated_tokens": 299090,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 41,
+  "subsystem": "baxy_art_holdout",
+  "subsystems": [
+    "baxy_art_holdout"
+  ],
+  "files": [
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r22.jsonl",
+      "sha256": "5cc1a676ec2f3b51269db37cbec7e10602792bd735103822d1c59336bb7331c4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r22.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r22.preregistration.json",
+      "sha256": "7d4c174f66bceb2369dbb6b87e9eae146cac1bc7ce2861c0824610cac1a62d4f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r22.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r22_mind.json",
+      "sha256": "714c53ea476815aef44ac5b288f0306e5412acc0a290b9c4cb66cecddd4a382a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r22_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl",
+      "sha256": "5d2f55420e15d35379b50292e8c54af8d60b69951bf1ac9fe1ee0480e46b3111",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r23.jsonl",
+      "sha256": "c0ddde62fd995bc5430792a71c3b92ad7795ac50afa86dbfd601f33b649ebfdf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r23.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r23.preregistration.json",
+      "sha256": "a53db82a143f80fc1a441b9d714ebd76aed48e61b3904ec72af7159a35f56964",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r23.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r23_mind.json",
+      "sha256": "4a2c99458a1b53be261abfd270a55540bf1e1add9b0d366c2d1a992e63976d6a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r23_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl",
+      "sha256": "b1f6b324159ee2bf73b47e1722771142056352a648bfd1250546f53c0610c7ee",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r24.jsonl",
+      "sha256": "6709a25adfd330d2f43d17cc85008c6b77ffc296e60f2c49d7cf131672d9db99",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r24.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r24.preregistration.json",
+      "sha256": "1fa02d9c9d46503c99003f6e3fd7cafe44e00069c48aebee5977fc21a5a470f9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r24.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r25.jsonl",
+      "sha256": "5232ea516acb222994149038e6f5ac0976222cdc5fd2334822b459f98820bfab",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r25.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r25.preregistration.json",
+      "sha256": "4446840a6c14206829836380e8bb15136530677e794aba591823df08dd93d126",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r25.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r25_memory.trx",
+      "sha256": "cbb818b7fbb291c76f001c68a2f07292c7133759c7539bb03e1fbb69c3849c72",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r25_memory.trx"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r25_mind.json",
+      "sha256": "e49f56b7a79b350408fb571544973f06c6bafa53e6ab8e99ec2fc11b0a7cf4cb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r25_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl",
+      "sha256": "ca4368d4ee2d486db3a5297665b103857cfd34129b10f168b6b03b201e0fa2f4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r25_product.json",
+      "sha256": "8a9b770b523d6b418dc4e796ccd6982ce54c9ef20fa662408aae2b53f842fdd6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r25_product.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r26.jsonl",
+      "sha256": "d29de1ee27d20791e62223b9e4875211dd0c1c04a6118b1ac6789e571f512213",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r26.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r26.preregistration.json",
+      "sha256": "7fc055c987bc456bf5885e6422bd6f7c814db394adeea201320d48253f56d330",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r26.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r26_mind.json",
+      "sha256": "947a7a3cb496765909b8c8f7e00b5186970bea685b8bf407576d91ed1dfdb2ed",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r26_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl",
+      "sha256": "eaeca843ed298733a6dacc00d5f916eb014d77b46eaddc01551203722af924e5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r27.jsonl",
+      "sha256": "2b0874826fdbc3c1447a4aca4ace09a0d17391d9a0a5572707c48ad8debbe92b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r27.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r27.preregistration.json",
+      "sha256": "dd420b40d78ad094d6ab168db93a74e89879eadea6e98b27005c1e418f566c9f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r27.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r27_memory.trx",
+      "sha256": "90b418fe743cad7cfa0e9b009ce80c185dafc56041f4f309c3fb2f3fc3ab5c24",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r27_memory.trx"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r27_mind.json",
+      "sha256": "97e60dc17b15defdf0bd5b71d3036feaa3d23f16518737ad63102a2cf02650b9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r27_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl",
+      "sha256": "f03ef453afbf0bd952ea294aee0cc8d3bcc4fa76e29f30a7cec48ca0b83b2ab7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r27_product.json",
+      "sha256": "52ae9ed2119392d0692830cb2449c6e51a77a1c79a2ead92c78f505f8625208e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r27_product.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r28.jsonl",
+      "sha256": "3bceaca8b209f9423b870200014520c678e8b07064241e6f1ec9989f9fcbdd12",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r28.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r28.preregistration.json",
+      "sha256": "77e8fad63f9b2fbfcc889f64939837c6f8732c4fa4588f2d6b26efde6e928a9a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r28.preregistration.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r28_memory.trx",
+      "sha256": "6c3926c65f61de60a3fa6c463bb91f93abb482c7e0aaf93f8e71a017519f396c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r28_memory.trx"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r28_mind.json",
+      "sha256": "9170284bde9f1e14034207b6c54ebeb4cd30411b5c2f6fa5e444809a41519cf0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r28_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl",
+      "sha256": "c0e6dc9dbcc92631cced3b751592735062e53e94c6366d9114ce25a26cb99e8f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_current_tree_r28_product.json",
+      "sha256": "82fccfa9cb63b4c3c67857e984483e2195ff70544dd37851395dac703578b7e1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_current_tree_r28_product.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r10_memory.trx",
+      "sha256": "54e20bf1c43f4741a43ea666742f212dd3e866da2da4f18716f820d35d4129ff",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r10_memory.trx"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r10_mind.json",
+      "sha256": "5f5a70eebc0afd5ef888ee4e3eeeee1a154a7ff3977a1f84a4b97414393646b0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r10_mind.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl",
+      "sha256": "426aebb2edb32ad0753333fa4bdfbe01b22459180913f4624218e84a8fb8a9c1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r10_product.json",
+      "sha256": "9bccb77e99e1d721c54222c61ed1ef83b43e1b2e3197163d6283cde1fdc4a576",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r10_product.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r11_memory.trx",
+      "sha256": "ab1b8d70371146758ac40090587eba79accda8d6b18c0a355d4d4f9a7adda1c8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r11_memory.trx"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl",
+      "sha256": "595d2e4c840371f12a53b331eb74ac54e0deb390e07c569a543a9d87ac835f89",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r11_technical_failure.json",
+      "sha256": "253a395c5c693c792791ad5b22406aeed265b26879e77fc5dc11df6ef644b951",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r11_technical_failure.json"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r12_memory.trx",
+      "sha256": "209fdcc85d382522ec812664de986da29940bd0d11a81574c33fe9cd6c7c4124",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r12_memory.trx"
+    },
+    {
+      "path": "artifacts/holdout/generalization_product_holdout_r12_mind.json",
+      "sha256": "1ec09d390a452d99e8884bf84523246f972bfef1c5f5549895407f1dd7bdca7e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json#artifacts/holdout/generalization_product_holdout_r12_mind.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-01-artifacts-holdout-generalization_product_current_tree_r22.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r22.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r22.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r22.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r22.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r22.jsonl parser=jsonl rows=700 bytes=450346 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r22.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-02-artifacts-holdout-generalization_product_current_tree_r22.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r22.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r22.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r22.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r22.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r22.preregistration.json parser=json rows=1 bytes=10399 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r22.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-03-artifacts-holdout-generalization_product_current_tree_r22_mi",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r22_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r22_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r22_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r22_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r22_mind.json parser=json rows=1 bytes=825113 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r22_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-04-artifacts-holdout-generalization_product_current_tree_r22_mi",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r22_mind.raw.jsonl parser=jsonl rows=1535 bytes=1725439 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r22_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-05-artifacts-holdout-generalization_product_current_tree_r23.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r23.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r23.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r23.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r23.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r23.jsonl parser=jsonl rows=700 bytes=457796 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r23.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-06-artifacts-holdout-generalization_product_current_tree_r23.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r23.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r23.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r23.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r23.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r23.preregistration.json parser=json rows=1 bytes=10573 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r23.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-07-artifacts-holdout-generalization_product_current_tree_r23_mi",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r23_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r23_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r23_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r23_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r23_mind.json parser=json rows=1 bytes=873715 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r23_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-08-artifacts-holdout-generalization_product_current_tree_r23_mi",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r23_mind.raw.jsonl parser=jsonl rows=1393 bytes=1792985 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r23_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-09-artifacts-holdout-generalization_product_current_tree_r24.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r24.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r24.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r24.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r24.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r24.jsonl parser=jsonl rows=700 bytes=438165 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r24.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-10-artifacts-holdout-generalization_product_current_tree_r24.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r24.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r24.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r24.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r24.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r24.preregistration.json parser=json rows=1 bytes=11047 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r24.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-11-artifacts-holdout-generalization_product_current_tree_r25.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r25.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r25.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r25.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r25.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r25.jsonl parser=jsonl rows=700 bytes=438165 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r25.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-12-artifacts-holdout-generalization_product_current_tree_r25.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r25.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r25.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r25.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r25.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r25.preregistration.json parser=json rows=1 bytes=11088 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r25.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-13-artifacts-holdout-generalization_product_current_tree_r25_me",
+      "card_kind": "corpus",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r25_memory.trx",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r25_memory.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r25_memory.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r25_memory.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r25_memory.trx parser=xml rows=74 bytes=18881 dist={\"tags\": {\"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r25_memory.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-14-artifacts-holdout-generalization_product_current_tree_r25_mi",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r25_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r25_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r25_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r25_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r25_mind.json parser=json rows=1 bytes=817400 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r25_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-15-artifacts-holdout-generalization_product_current_tree_r25_mi",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r25_mind.raw.jsonl parser=jsonl rows=1371 bytes=1758712 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r25_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-16-artifacts-holdout-generalization_product_current_tree_r25_pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r25_product.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r25_product.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r25_product.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r25_product.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r25_product.json parser=json rows=1 bytes=11921 dist={\"scalar_keys\": [\"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"ownership_aware\", \"schema\", \"scope\"], \"list_lengths\": {\"memory_rows\": 12}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r25_product.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-17-artifacts-holdout-generalization_product_current_tree_r26.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r26.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r26.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r26.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r26.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r26.jsonl parser=jsonl rows=700 bytes=440503 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r26.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-18-artifacts-holdout-generalization_product_current_tree_r26.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r26.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r26.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r26.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r26.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r26.preregistration.json parser=json rows=1 bytes=11355 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r26.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-19-artifacts-holdout-generalization_product_current_tree_r26_mi",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r26_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r26_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r26_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r26_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r26_mind.json parser=json rows=1 bytes=794873 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r26_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-20-artifacts-holdout-generalization_product_current_tree_r26_mi",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r26_mind.raw.jsonl parser=jsonl rows=1376 bytes=1720512 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r26_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-21-artifacts-holdout-generalization_product_current_tree_r27.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r27.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r27.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r27.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r27.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r27.jsonl parser=jsonl rows=700 bytes=440175 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r27.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-22-artifacts-holdout-generalization_product_current_tree_r27.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r27.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r27.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r27.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r27.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r27.preregistration.json parser=json rows=1 bytes=11663 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r27.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-23-artifacts-holdout-generalization_product_current_tree_r27_me",
+      "card_kind": "corpus",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r27_memory.trx",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r27_memory.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r27_memory.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r27_memory.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r27_memory.trx parser=xml rows=74 bytes=18881 dist={\"tags\": {\"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r27_memory.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-24-artifacts-holdout-generalization_product_current_tree_r27_mi",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r27_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r27_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r27_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r27_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r27_mind.json parser=json rows=1 bytes=795258 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r27_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-25-artifacts-holdout-generalization_product_current_tree_r27_mi",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r27_mind.raw.jsonl parser=jsonl rows=1364 bytes=1725299 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r27_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-26-artifacts-holdout-generalization_product_current_tree_r27_pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r27_product.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r27_product.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r27_product.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r27_product.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r27_product.json parser=json rows=1 bytes=10633 dist={\"scalar_keys\": [\"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"ownership_aware\", \"schema\", \"scope\"], \"list_lengths\": {\"memory_rows\": 12}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r27_product.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-27-artifacts-holdout-generalization_product_current_tree_r28.js",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r28.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r28.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r28.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r28.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r28.jsonl parser=jsonl rows=700 bytes=441743 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r28.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-28-artifacts-holdout-generalization_product_current_tree_r28.pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r28.preregistration.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r28.preregistration.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r28.preregistration.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r28.preregistration.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r28.preregistration.json parser=json rows=1 bytes=11962 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"measurement_status\", \"preregistered_before_measurement\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r28.preregistration.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-29-artifacts-holdout-generalization_product_current_tree_r28_me",
+      "card_kind": "corpus",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r28_memory.trx",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r28_memory.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r28_memory.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r28_memory.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r28_memory.trx parser=xml rows=74 bytes=18881 dist={\"tags\": {\"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r28_memory.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-30-artifacts-holdout-generalization_product_current_tree_r28_mi",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r28_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r28_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r28_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r28_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r28_mind.json parser=json rows=1 bytes=794727 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r28_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-31-artifacts-holdout-generalization_product_current_tree_r28_mi",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r28_mind.raw.jsonl parser=jsonl rows=1359 bytes=1727166 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r28_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-32-artifacts-holdout-generalization_product_current_tree_r28_pr",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_current_tree_r28_product.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_current_tree_r28_product.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_current_tree_r28_product.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_current_tree_r28_product.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_current_tree_r28_product.json parser=json rows=1 bytes=9945 dist={\"scalar_keys\": [\"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"ownership_aware\", \"schema\", \"scope\"], \"list_lengths\": {\"memory_rows\": 12}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_current_tree_r28_product.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-33-artifacts-holdout-generalization_product_holdout_r10_memory.",
+      "card_kind": "corpus",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r10_memory.trx",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r10_memory.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r10_memory.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r10_memory.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r10_memory.trx parser=xml rows=82 bytes=23305 dist={\"tags\": {\"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"Output\": 3, \"Message\": 2, \"StackTrace\": 2, \"ErrorInfo\": 2, \"TestList\": 2, \"Tim…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r10_memory.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-34-artifacts-holdout-generalization_product_holdout_r10_mind.js",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r10_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r10_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r10_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r10_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r10_mind.json parser=json rows=1 bytes=792215 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r10_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-35-artifacts-holdout-generalization_product_holdout_r10_mind.ra",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r10_mind.raw.jsonl parser=jsonl rows=1358 bytes=1706313 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r10_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-36-artifacts-holdout-generalization_product_holdout_r10_product",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r10_product.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r10_product.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r10_product.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r10_product.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r10_product.json parser=json rows=1 bytes=10370 dist={\"scalar_keys\": [\"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"ownership_aware\", \"schema\", \"scope\"], \"list_lengths\": {\"memory_rows\": 12}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r10_product.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-37-artifacts-holdout-generalization_product_holdout_r11_memory.",
+      "card_kind": "corpus",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r11_memory.trx",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r11_memory.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r11_memory.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r11_memory.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r11_memory.trx parser=xml rows=122 bytes=51755 dist={\"tags\": {\"Output\": 13, \"Message\": 12, \"StackTrace\": 12, \"ErrorInfo\": 12, \"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"TestList\": 2,…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r11_memory.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-38-artifacts-holdout-generalization_product_holdout_r11_mind.ra",
+      "card_kind": "metric",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r11_mind.raw.jsonl parser=jsonl rows=1524 bytes=1776196 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r11_mind.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-39-artifacts-holdout-generalization_product_holdout_r11_technic",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r11_technical_failure.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r11_technical_failure.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r11_technical_failure.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r11_technical_failure.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r11_technical_failure.json parser=json rows=1 bytes=2097 dist={\"scalar_keys\": [\"blind_holdout\", \"campaign\", \"effects_executed\", \"reason\", \"recorded_at_utc\", \"schema\", \"status\", \"timeout_seconds\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r11_technical_failure.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-40-artifacts-holdout-generalization_product_holdout_r12_memory.",
+      "card_kind": "corpus",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r12_memory.trx",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r12_memory.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r12_memory.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r12_memory.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r12_memory.trx parser=xml rows=74 bytes=17534 dist={\"tags\": {\"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r12_memory.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-080-baxy-baxy_art_holdout-41-artifacts-holdout-generalization_product_holdout_r12_mind.js",
+      "card_kind": "run",
+      "corpus": "artifacts/holdout/generalization_product_holdout_r12_mind.json",
+      "denominator": "1 files in group artifacts/holdout/generalization_product_holdout_r12_mind.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/holdout/generalization_product_holdout_r12_mind.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/holdout/generalization_product_holdout_r12_mind.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_holdout_r12_mind.json parser=json rows=1 bytes=776804 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"effects_executed\", \"measured_at_utc\", \"owner\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows\": 688}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/holdout/generalization_product_holdout_r12_mind.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=41 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-081-baxy-baxy_art_holdout",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-080-baxy-baxy_art_holdout.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

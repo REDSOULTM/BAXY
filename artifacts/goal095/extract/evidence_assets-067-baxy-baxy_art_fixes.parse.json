@@ -1,0 +1,2254 @@
+{
+  "batch_id": "evidence_assets-067-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 36,
+  "hash_ok": 36,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/mtop_product_validation_development_r18_consensus_projection_v3_smoke.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 64596,
+      "sha256": "7d2962f42c7c23ec0a1f2b82995a29bb0781c69465063b61586c76c169a2ad17",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 6,
+          "samples": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 64595
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r19_consensus_projection_v3_smoke.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 72234,
+      "sha256": "bc9b3ce1234d3c781501fefe9221ee2a2a53f572b5a1039ab0e10eb779b88b80",
+      "rows": 65,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 65,
+          "phase": 65,
+          "raw_decision": 65,
+          "request_id": 65,
+          "schema": 65,
+          "stages": 65,
+          "final": 33
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70179,
+        "min_line_bytes": 360,
+        "max_line_bytes": 2117,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 69606,
+            "line": 64,
+            "text": "{\"candidate_operations\":[\"notification.cancel.at\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.list.due\",\"notification.schedule\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"ef…"
+          },
+          {
+            "offset": 70179,
+            "line": 65,
+            "text": "{\"candidate_operations\":[\"notification.cancel.at\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.list.due\",\"notification.schedule\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"int…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r19_consensus_projection_v3_smoke.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58492,
+      "sha256": "80c38a3e7448f0ea77650a84a557fc2f620bb01d73d9d3c62b4d8d512c848268",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 2,
+          "samples": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58491
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r20_consensus_projection_v3_smoke.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 72588,
+      "sha256": "2204c124538de831bd60458df35b407240a1b52ded2737d6666abcc9722555e4",
+      "rows": 65,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 65,
+          "phase": 65,
+          "raw_decision": 65,
+          "request_id": 65,
+          "schema": 65,
+          "stages": 65,
+          "final": 33
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70533,
+        "min_line_bytes": 362,
+        "max_line_bytes": 2117,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 69960,
+            "line": 64,
+            "text": "{\"candidate_operations\":[\"notification.cancel.at\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.list.due\",\"notification.schedule\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"ef…"
+          },
+          {
+            "offset": 70533,
+            "line": 65,
+            "text": "{\"candidate_operations\":[\"notification.cancel.at\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.list.due\",\"notification.schedule\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"int…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r20_consensus_projection_v3_smoke.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56852,
+      "sha256": "6108be5c0f40465f06dfc229890624469a6803fe29146fadee8611d056030934",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "samples": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56851
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r21_consensus_projection_v3_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 439828,
+      "sha256": "b3c8c714bc10a034e0da686c80ab42920209ef89465a081fab56be56c07efaa7",
+      "rows": 388,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 388,
+          "phase": 388,
+          "raw_decision": 388,
+          "request_id": 388,
+          "schema": 388,
+          "stages": 388,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 438131,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2281,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 437758,
+            "line": 387,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 438131,
+            "line": 388,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r21_consensus_projection_v3_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 389042,
+      "sha256": "644e4077171946ee4f00300a45badb823e0883451bfeb00dab2100a6282f8998",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 43,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 389041
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r22_consensus_projection_v4_smoke.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 72766,
+      "sha256": "b595fb35d30b592932fd83107608dc7f1ded8bed31d0ca5b7cca254cbd3f1001",
+      "rows": 65,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 65,
+          "phase": 65,
+          "raw_decision": 65,
+          "request_id": 65,
+          "schema": 65,
+          "stages": 65,
+          "final": 33
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70622,
+        "min_line_bytes": 362,
+        "max_line_bytes": 2144,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 69960,
+            "line": 64,
+            "text": "{\"candidate_operations\":[\"notification.cancel.at\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.list.due\",\"notification.schedule\",\"audio.microphone.mute\",\"audio.mute\",\"audio.status\",\"audio.volume…"
+          },
+          {
+            "offset": 70622,
+            "line": 65,
+            "text": "{\"candidate_operations\":[\"notification.cancel.at\",\"notification.cancel.latest\",\"notification.diagnose\",\"notification.dismiss\",\"notification.list.due\",\"notification.schedule\",\"audio.microphone.mute\",\"audio.mute\",\"audio.status\",\"audio.volume…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r22_consensus_projection_v4_smoke.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56856,
+      "sha256": "c8c4b1337f4c2e3bd210210e4fcb86057a483009a533d05dee3ec32f1643dd9f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "samples": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56855
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r23_consensus_projection_v4_smoke_memory.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56970,
+      "sha256": "2e0803b087d6bf9c01363c6ad38f05282af8fca804f0d28401d0e1228641cf46",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "samples": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56969
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r24_consensus_projection_v5_smoke_memory.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56960,
+      "sha256": "167a3840bcb8e7fea6e9b8a6a3648889d11cc2d59dcc592b36c612eb64271206",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "samples": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56959
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r25_consensus_projection_v5_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 439170,
+      "sha256": "8623822bcfd14c77a52bd4894e6887cf6af0e452baf304d2a03ba63858e380c1",
+      "rows": 388,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 388,
+          "phase": 388,
+          "raw_decision": 388,
+          "request_id": 388,
+          "schema": 388,
+          "stages": 388,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 437473,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2281,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 437100,
+            "line": 387,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 437473,
+            "line": 388,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r25_consensus_projection_v5_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 392076,
+      "sha256": "263d91d3dc2eb82adc79f60e80d7d0a65ecdfc9dd0d8800403f7999bffb0833f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 45,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 392075
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r26_consensus_projection_v5_grounding_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 439846,
+      "sha256": "767e8fbbac07fd50b0d934432f62e1cf58f03f6ce13d7e987294b53a70b51d48",
+      "rows": 388,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 388,
+          "phase": 388,
+          "raw_decision": 388,
+          "request_id": 388,
+          "schema": 388,
+          "stages": 388,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 438149,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2305,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 437776,
+            "line": 387,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 438149,
+            "line": 388,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r26_consensus_projection_v5_grounding_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 381544,
+      "sha256": "b8ba94ad99ef39151cc6aa62f9842e9bc4b8ae20716700bf6e945627f3366e93",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 38,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 381543
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r27_consensus_projection_v5_grounding_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 435839,
+      "sha256": "80571142f78603baae77e1f16158b8d4178391aa6157aa5d9c7a93e29983d1cf",
+      "rows": 388,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 388,
+          "phase": 388,
+          "raw_decision": 388,
+          "request_id": 388,
+          "schema": 388,
+          "stages": 388,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 434142,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2225,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 433769,
+            "line": 387,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 434142,
+            "line": 388,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r27_consensus_projection_v5_grounding_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 373950,
+      "sha256": "8703e0b408e244031a54843b01ad8fe14428c9310c39709cf5171448fcf6d5b5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 33,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 373949
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r28_consensus_projection_v5_grounding_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 436808,
+      "sha256": "5e395703f7aebf28368da0e5694dded25606404d3f57ad5a648effdb2c2cb492",
+      "rows": 388,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 388,
+          "phase": 388,
+          "raw_decision": 388,
+          "request_id": 388,
+          "schema": 388,
+          "stages": 388,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 435111,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2225,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 434738,
+            "line": 387,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 435111,
+            "line": 388,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r28_consensus_projection_v5_grounding_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 372663,
+      "sha256": "4d92b53ed54c88afee254fd3119597ce02b75f501462daa13cac293b258c9e8b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 32,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 372662
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r29_consensus_projection_v5_first_refusal_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 369402,
+      "sha256": "8d80d81af05266dd840d0759570152a86f428055f55ec2c77754593979aa8065",
+      "rows": 354,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 354,
+          "phase": 354,
+          "raw_decision": 354,
+          "request_id": 354,
+          "schema": 354,
+          "stages": 354,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 367705,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2145,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 367332,
+            "line": 353,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 367705,
+            "line": 354,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r29_consensus_projection_v5_first_refusal_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 382069,
+      "sha256": "46b50d62b7f23909a9854389ae73f68c041aa0dd1f53f8fcdfbc1d7342066e6e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 38,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 382068
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r2_shortlist_pulse.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 170796,
+      "sha256": "b8e62f7a428b494c47c02c93ce6ca1b38654512cfbbecbed1bf7fc32c8ae31d7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 45,
+          "samples": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 170795
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r30_consensus_projection_v5_first_refusal_temporal_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 366146,
+      "sha256": "9cc2e055106bc2bc3973e2a25dea54282bbffc185ebccfe7e305c41707d76174",
+      "rows": 356,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 356,
+          "phase": 356,
+          "raw_decision": 356,
+          "request_id": 356,
+          "schema": 356,
+          "stages": 356,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 364449,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2136,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 364076,
+            "line": 355,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 364449,
+            "line": 356,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r30_consensus_projection_v5_first_refusal_temporal_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 382307,
+      "sha256": "d7a8f462586a534cbf8e60ddb97c4978d166a5a790a47d9cc6df3a4a4b7f95cc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 38,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 382306
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r31_consensus_projection_v5_safe_temporal_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 367952,
+      "sha256": "adc57f8f77c00f7c9828681a517f8d7abdf2f54797a610342df4bf40eca5f11b",
+      "rows": 354,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 354,
+          "phase": 354,
+          "raw_decision": 354,
+          "request_id": 354,
+          "schema": 354,
+          "stages": 354,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 366255,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2145,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 365882,
+            "line": 353,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 366255,
+            "line": 354,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r31_consensus_projection_v5_safe_temporal_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 378959,
+      "sha256": "40a588a4ae2b3655f6caf3117fdaafc5eecc9fd9168e01815900727a763dd329",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 36,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 378958
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r32_consensus_projection_v5_family_precedence_full.audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 363203,
+      "sha256": "e6ff6509a973a700ed860ea7036aea42db4172e5e004fb9c9df1bd11bcbd70c0",
+      "rows": 351,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 351,
+          "phase": 351,
+          "raw_decision": 351,
+          "request_id": 351,
+          "schema": 351,
+          "stages": 351,
+          "final": 199
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 361506,
+        "min_line_bytes": 341,
+        "max_line_bytes": 2145,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 361133,
+            "line": 350,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 361506,
+            "line": 351,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r32_consensus_projection_v5_family_precedence_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 382216,
+      "sha256": "fd0d1e685e887ffdc7aa2f09c6cfbb2c419d7eb025e8906ea1157bd416d44be0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "process_tree_rss_mib",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 38,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 382215
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"process_tree_rss_mib\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r3_conservative_shortlist_pulse.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 172772,
+      "sha256": "4af1b29097cfb6b4b1d4e8eb109a2dcefbbb91356a1df88b1bcfc75c3b6a08a6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 46,
+          "samples": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 172771
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r4_current.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 498298,
+      "sha256": "ce94daa12acc9310031bc49a04bf98d7ee5e3a4777f2ae2d1ef54f37773ded31",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 125,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 498297
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r5_specialist_pulse.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 485277,
+      "sha256": "0ce86d87e926d5186c8c94f1a9c1cd2140b41291f383b80aaf8a7a0ed2b88a41",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 103,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 485276
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r6_specialist_audit.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 485300,
+      "sha256": "819cff2c3760e7c68c32b381e7e251e987df15d1c088e22352a924f3f954c7a1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 103,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 485299
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r6_specialist_audit.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 443032,
+      "sha256": "96c514baf58b884db2976d9c825883afe4f546fcdbbf4a90a4e7acf23b588458",
+      "rows": 398,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 398,
+          "phase": 398,
+          "raw_decision": 398,
+          "request_id": 398,
+          "schema": 398,
+          "stages": 398,
+          "final": 199,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 441335,
+        "min_line_bytes": 207,
+        "max_line_bytes": 2297,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 440962,
+            "line": 397,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 441335,
+            "line": 398,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r7_verified_specialist_pulse.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 537752,
+      "sha256": "4e758c4b1aa496bbe0dc1b13a9acfc5747de0df62bb38a69a3b4ac3c0c7d9afb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 142,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 537751
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r7_verified_specialist_pulse.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 430798,
+      "sha256": "6eb7f79e952694526881ccf7392eeb001026131ce961d28f3d20802418ccedaa",
+      "rows": 404,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 404,
+          "phase": 404,
+          "raw_decision": 404,
+          "request_id": 404,
+          "schema": 404,
+          "stages": 404,
+          "final": 199,
+          "error_type": 12,
+          "failure_kind": 12,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 429101,
+        "min_line_bytes": 207,
+        "max_line_bytes": 2229,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 428728,
+            "line": 403,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 429101,
+            "line": 404,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r8_consensus_unverified_pulse.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 526832,
+      "sha256": "116eeace3f026741ef39575e5c43cda0aaad9afd0063ea93024e3410ce80fae5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 135,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 526831
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

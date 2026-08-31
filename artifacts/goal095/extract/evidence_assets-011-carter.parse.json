@@ -1,0 +1,3599 @@
+{
+  "batch_id": "evidence_assets-011-carter",
+  "source_id": "carter",
+  "file_count": 61,
+  "hash_ok": 61,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "Carter_v2/artifacts/live_smoke_observed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 35095,
+      "sha256": "83abf99f9bab2c8181224cd3132861f50f83dad60236e5274f52b1736b92176d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "metadata",
+          "results"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35094
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/artifacts/live_smoke_synthetic.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 22445,
+      "sha256": "009a9c97c3a15d007c0209d111ef652e30c9b4bc853a3d7df3ec4972672506a3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "metadata",
+          "results"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22444
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/artifacts/live_smoke_universal.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69681,
+      "sha256": "10a82d7d8746e50ec074a76e48f3de3b23aab7c7b7ec04166c17d663262087df",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "metadata",
+          "results"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 31
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69680
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/investigaciones/comparadas/Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md": {
+      "parser": "binary_inventory",
+      "bytes": 40951,
+      "sha256": "e6f1409cf77ce8e0b52894903b699e3bb429760ec1d995a3b32bf1ca9da9971e",
+      "format": ",md",
+      "magic_hex": "496e666f726d6520646520496e766573",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/documentacion/investigaciones/comparadas/Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": ",md"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40950
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=496e666f726d6520646520496e766573 format=,md"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40950,
+            "line": 0,
+            "text": "eof bytes=40951"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_all_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 22095,
+      "sha256": "0db3972f39330db5d4542a2c7e6ba2f72fe76df56e6ce11aeccf7060c962a253",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 66
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22094
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_environment_readiness.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 32038,
+      "sha256": "d390ef8aa376943dfe48b0c9ec9dfcbb287067177a9a8425842675d9d6c9ac28",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "audio_input",
+          "binaries",
+          "external_mutations_enabled",
+          "git",
+          "guards",
+          "office",
+          "outlook",
+          "profile",
+          "python_modules",
+          "safe_mutation_mode",
+          "session_actions_enabled",
+          "tests",
+          "timestamp"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "external_mutations_enabled",
+          "profile",
+          "safe_mutation_mode",
+          "session_actions_enabled",
+          "timestamp"
+        ],
+        "list_lengths": {
+          "tests": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32037
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"audio_input\", \"binaries\", \"external_mutations_enabled\", \"git\", \"guards\", \"office\", \"outlook\", \"profile\", \"python_modules\", \"safe_mutation_mode\", \"session_actions_enabled\", \"tests\", \"timestamp\"], \"n_keys\": 14, \"root\": \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"audio_input\", \"binaries\", \"external_mutations_enabled\", \"git\", \"guards\", \"office\", \"outlook\", \"profile\", \"python_modules\", \"safe_mutation_mode\", \"session_actions_enabled\", \"tests\", \"timestamp\"], \"n_keys\": 14, \"root\": \"…"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10662,
+      "sha256": "a9a47e82aae0552bff1fe7f7bb426c78004aa079fc6ef8c355317d63846da6f4",
+      "rows": 20,
+      "schema": {
+        "root": "array",
+        "n": 20,
+        "elem_keys": [
+          "cat",
+          "desc",
+          "elapsed",
+          "expect_fail",
+          "expected_tool",
+          "id",
+          "input",
+          "reply",
+          "status",
+          "tool_ok",
+          "tools_called"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10661
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"T01\", \"cat\": \"Sistema/Hora\", \"input\": \"¿Qué hora es?\", \"reply\": \"14:04:52 Hora est. Sudamérica Pacífico\", \"tools_called\": [\"system_get_time\"], \"elapsed\": 32.904184341430664, \"expected_tool\": \"system_get_time\", \"tool_ok\": true, \"exp…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10661,
+            "line": 20,
+            "text": "{\"id\": \"T20\", \"cat\": \"Sistema/Observ\", \"input\": \"¿Cuánto espacio libre tengo en el disco C?\", \"reply\": \"C:: 39.0 GB free / 1861.6 GB total (98% used)\", \"tools_called\": [\"system_get_disk_info\"], \"elapsed\": 2.69161057472229, \"expected_tool\":…"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session10_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 59961,
+      "sha256": "3058024907679b84014f480f5b6b06d4e95ee1bea8aeb9252e65fd251cf1c1eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "results",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 7,
+          "results": 137
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 59960,
+        "total": {
+          "min": 137,
+          "max": 137
+        },
+        "passed": {
+          "min": 120,
+          "max": 120
+        },
+        "failed": {
+          "min": 7,
+          "max": 7
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 10,
+          "max": 10
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"results\", \"skipped\", \"timestamp\", \"total\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"results\", \"skipped\", \"timestamp\", \"total\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session10_stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 33869,
+      "sha256": "014efc5f4a017088ae1851d093bc11a91260eaf4a50b22db8552c6d710999294",
+      "rows": 679,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 10,
+        "pass_like": 120
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33867,
+        "min_line_bytes": 2,
+        "max_line_bytes": 185
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 2,
+            "line": 2,
+            "text": "\u001b[1m\u001b[96m======================================================"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33837,
+            "line": 678,
+            "text": "\u001b[1mScore: 94% (120/127)\u001b[0m"
+          },
+          {
+            "offset": 33867,
+            "line": 679,
+            "text": ""
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session11_failed_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 690,
+      "sha256": "50ebb74c11f2d787934874b7c4e4dc9965a68500439b60443a679e03c1a98244",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "results",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "results": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 689,
+        "total": {
+          "min": 1,
+          "max": 1
+        },
+        "passed": {
+          "min": 1,
+          "max": 1
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"results\", \"skipped\", \"timestamp\", \"total\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"results\", \"skipped\", \"timestamp\", \"total\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session11_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54773,
+      "sha256": "a8857a18a3c667a139193cc79dbd32a3c1a8cd48ece5ff4fde72f26083fd8d3a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "results",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "results": 137
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54772,
+        "total": {
+          "min": 137,
+          "max": 137
+        },
+        "passed": {
+          "min": 127,
+          "max": 127
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 10,
+          "max": 10
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"results\", \"skipped\", \"timestamp\", \"total\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"results\", \"skipped\", \"timestamp\", \"total\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session12_extended_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58226,
+      "sha256": "9fcb6d0c9c210ef492e0dcb9947b4ccad25f07fd3b2f82df389c404108f65df5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 2,
+          "results": 137
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58225,
+        "total": {
+          "min": 137,
+          "max": 137
+        },
+        "passed": {
+          "min": 135,
+          "max": 135
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session12_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58407,
+      "sha256": "2ed5b7889db8d55a57bf1e2e8dd5001860433ec94fdfbde351c197ced799dc62",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 2,
+          "results": 137
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58406,
+        "total": {
+          "min": 137,
+          "max": 137
+        },
+        "passed": {
+          "min": 135,
+          "max": 135
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session15_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3047,
+      "sha256": "7c4275013e27ace430d8c5a6d01c08ab864b2d83649a82adac61c784b4e66fe1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 0,
+          "results": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3046,
+        "total": {
+          "min": 5,
+          "max": 5
+        },
+        "passed": {
+          "min": 5,
+          "max": 5
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session16_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2070,
+      "sha256": "2dfeba2e66c811bdaf5448bb8c21d455fe8ede245cf04bc7940543abe080916d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 0,
+          "results": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2069,
+        "total": {
+          "min": 4,
+          "max": 4
+        },
+        "passed": {
+          "min": 4,
+          "max": 4
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session21_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1572,
+      "sha256": "d2481ebac6be473ef8252b43399c145eceb3bd6d99acf213174ea0bb3c1f3483",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 0,
+          "results": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1571,
+        "total": {
+          "min": 2,
+          "max": 2
+        },
+        "passed": {
+          "min": 2,
+          "max": 2
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session22b_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2883,
+      "sha256": "e5abd19e5340f09687343c42c6c40aad47b0196cb74d1e3563b0d07e94843275",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 0,
+          "results": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2882,
+        "total": {
+          "min": 6,
+          "max": 6
+        },
+        "passed": {
+          "min": 6,
+          "max": 6
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session25_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4864,
+      "sha256": "aea59cb7b89ad63042bfbf89e57a6aad1a49bac50fd1772e15d4c8ac05b2950e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 0,
+          "results": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4863,
+        "total": {
+          "min": 10,
+          "max": 10
+        },
+        "passed": {
+          "min": 10,
+          "max": 10
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_session7_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14043,
+      "sha256": "7dbdffba142e07842987ce8b6ec4ac5c0202e511dd57c93bfd949a8f41f768d2",
+      "rows": 28,
+      "schema": {
+        "root": "array",
+        "n": 28,
+        "elem_keys": [
+          "cat",
+          "check_ok",
+          "desc",
+          "elapsed",
+          "expect_tools",
+          "id",
+          "input",
+          "passed",
+          "reply",
+          "task",
+          "tool_ok",
+          "tools_called"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14042
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"T1-A\", \"task\": \"T1\", \"cat\": \"Resolver/Idioma\", \"input\": \"¿Qué hora es?\", \"reply\": \"02:08:18 (02:08:18 AM) Hora est. Sudamérica Pacífico\", \"tools_called\": [\"system_get_time\"], \"elapsed\": 25.712730169296265, \"expect_tools\": [\"system_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14042,
+            "line": 28,
+            "text": "{\"id\": \"T8-E\", \"task\": \"T8\", \"cat\": \"E2E/Multilang\", \"input\": \"Öffne den Taschenrechner\", \"reply\": \"Intenté ejecutarlo pero falló: No pude abrir 'Calculator'. ¿Quisiste decir: Occupancy Calculator, Microsoft.WindowsCalculator?\", \"tools_cal…"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/probes/probe_universal_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1677,
+      "sha256": "12a8e8720a5991ec8aa75ca3b2040ddc98ecb5d7c4361e00cf70844688a11a2a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 0,
+          "results": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1676,
+        "total": {
+          "min": 3,
+          "max": 3
+        },
+        "passed": {
+          "min": 3,
+          "max": 3
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/documentacion/sessions/audit_session13_findings.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16434,
+      "sha256": "81fd701566fd4c1e47a8b6eec1ab324b4413f40f59c5fa846c5b1ea11ac06e69",
+      "rows": 25,
+      "schema": {
+        "root": "array",
+        "n": 25,
+        "elem_keys": [
+          "category",
+          "evidence",
+          "file",
+          "fix_class",
+          "fix_now",
+          "id",
+          "recommendation",
+          "severity",
+          "summary",
+          "symbol"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16433
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"AUD-001\", \"file\": \"src/carter_v2/capabilities/registry.py\", \"symbol\": \"CapabilityRegistry.execute\", \"category\": \"BUG_REAL\", \"severity\": \"HIGH\", \"summary\": \"Capability exceptions can escape the registry contract.\", \"evidence\": \"Capa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16433,
+            "line": 25,
+            "text": "{\"id\": \"AUD-025\", \"file\": \"tests/\", \"symbol\": \"test suite\", \"category\": \"GOOD_AS_IS\", \"severity\": \"LOW\", \"summary\": \"The unit/integration test base is unusually broad for this stage.\", \"evidence\": \"The project has 85 pytest files and about…"
+          }
+        ]
+      }
+    },
+    "Carter_v2/live_smoke_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 270686,
+      "sha256": "1d4e66ed434132ae784f6ebbe5cafca9ea0eed99dd4b27a56c8201743c912e74",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "metadata",
+          "results"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 83
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 270685
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"metadata\", \"results\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/merged.pdf": {
+      "parser": "binary_inventory",
+      "bytes": 1047,
+      "sha256": "3438a3efd0a9caf4983f4e596a1c3dbdad6a82365bde6dcb25ff36d9c34ed0f8",
+      "format": "pdf",
+      "magic_hex": "255044462d312e340a25e2e3cfd30a31",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/merged.pdf"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pdf"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1046
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=255044462d312e340a25e2e3cfd30a31 format=pdf"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1046,
+            "line": 0,
+            "text": "eof bytes=1047"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/merged_sample.pdf": {
+      "parser": "binary_inventory",
+      "bytes": 1045,
+      "sha256": "ed083da6bd1ba236a7a95f53d89ca783dc3985915872da8dbff67f50ad072fe6",
+      "format": "pdf",
+      "magic_hex": "255044462d312e340a25e2e3cfd30a31",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/merged_sample.pdf"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pdf"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1044
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=255044462d312e340a25e2e3cfd30a31 format=pdf"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1044,
+            "line": 0,
+            "text": "eof bytes=1045"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/png_output/sample_1.png": {
+      "parser": "binary_inventory",
+      "bytes": 48759,
+      "sha256": "2314dc03d4244bf25e0e6e6d87d8cc34ea5aa2ecd832939501c4fcd878dea29f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/png_output/sample_1.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 2550,
+        "height": 3300
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 48758
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 48758,
+            "line": 0,
+            "text": "eof bytes=48759"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/resized_sample.png": {
+      "parser": "binary_inventory",
+      "bytes": 2787,
+      "sha256": "f34bd453947b77be02bdbbb1033426aa7b8ac9655516df8b91a4eb9cdf76abdc",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/resized_sample.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 800,
+        "height": 600
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2786
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2786,
+            "line": 0,
+            "text": "eof bytes=2787"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample.csv": {
+      "parser": "csv",
+      "encoding": "utf-8",
+      "bytes": 25,
+      "sha256": "5ed43747f8d8dcd37b26ffd54e79617a23aa3abe8992211ce387c739e998adb9",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "id",
+          "name"
+        ],
+        "delimiter": ","
+      },
+      "distribution": {
+        "header_cols": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "id,name"
+          },
+          {
+            "offset": 8,
+            "line": 2,
+            "text": "1,Ada"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8,
+            "line": 2,
+            "text": "1,Ada"
+          },
+          {
+            "offset": 14,
+            "line": 3,
+            "text": "2,Linus"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample.docx": {
+      "parser": "binary_inventory",
+      "bytes": 897,
+      "sha256": "8dd0bbd35edbf4f39c12c44118b9f5a57d8a1be2e334e8300f2a64aa48814d6a",
+      "format": "zip",
+      "magic_hex": "504b03041400000008002f019b5ccc54",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample.docx"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "zip"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 896
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=504b03041400000008002f019b5ccc54 format=zip"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 896,
+            "line": 0,
+            "text": "eof bytes=897"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 69,
+      "sha256": "2e4fcdefb157f5837094712118a14bdc23818cb10f2df2a6acec63a66dafd187",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1,
+        "height": 1
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 68
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 68,
+            "line": 0,
+            "text": "eof bytes=69"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample.mp4": {
+      "parser": "binary_inventory",
+      "bytes": 12741,
+      "sha256": "6c2e2ccacecc5eb6069820d578b1aeded4fdbd81b13262db1b13ca173c70f204",
+      "format": "mp4",
+      "magic_hex": "000000206674797069736f6d00000200",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample.mp4"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "mp4"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12740
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=000000206674797069736f6d00000200 format=mp4"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12740,
+            "line": 0,
+            "text": "eof bytes=12741"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample.pdf": {
+      "parser": "binary_inventory",
+      "bytes": 596,
+      "sha256": "167016f91a1b2ab534e1262e3e2ebc668d7032ccd632441b4100040a0114c4b9",
+      "format": "pdf",
+      "magic_hex": "255044462d312e340a312030206f626a",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample.pdf"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pdf"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 595
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=255044462d312e340a312030206f626a format=pdf"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 595,
+            "line": 0,
+            "text": "eof bytes=596"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample.wav": {
+      "parser": "binary_inventory",
+      "bytes": 4044,
+      "sha256": "82dbf13bb79438aaf1c26f3adff7dd98c5905390632e3cc3b9914a2be84563db",
+      "format": "wav",
+      "magic_hex": "52494646c40f000057415645666d7420",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 8000,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4043
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=52494646c40f000057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4043,
+            "line": 0,
+            "text": "eof bytes=4044"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample_b.pdf": {
+      "parser": "binary_inventory",
+      "bytes": 598,
+      "sha256": "5270c85c9e7933759b9f42d28c9a588c81a8d551027ecc94aaa85fadc5d100f9",
+      "format": "pdf",
+      "magic_hex": "255044462d312e340a312030206f626a",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample_b.pdf"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pdf"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 597
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=255044462d312e340a312030206f626a format=pdf"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 597,
+            "line": 0,
+            "text": "eof bytes=598"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/sample_converted.png": {
+      "parser": "binary_inventory",
+      "bytes": 69,
+      "sha256": "e878950f8091ec010cf5cc723bdea027a8539cf7147cfea199c2f666232dcd4e",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/sample_converted.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1,
+        "height": 1
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 68
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 68,
+            "line": 0,
+            "text": "eof bytes=69"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/split_files/sample_1_1.pdf": {
+      "parser": "binary_inventory",
+      "bytes": 677,
+      "sha256": "f94f81368926440356885c807b95d8b74fbef23cd88a6daccbdaa3470a467b2a",
+      "format": "pdf",
+      "magic_hex": "255044462d312e340a25e2e3cfd30a31",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/split_files/sample_1_1.pdf"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pdf"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 676
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=255044462d312e340a25e2e3cfd30a31 format=pdf"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 676,
+            "line": 0,
+            "text": "eof bytes=677"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets/trimmed_sample.mp4": {
+      "parser": "binary_inventory",
+      "bytes": 9731,
+      "sha256": "ffdf55b3c5de0489a2f89d92a662656d6ad16ef65219387c8326123aee4d1caf",
+      "format": "mp4",
+      "magic_hex": "000000206674797069736f6d00000200",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets/trimmed_sample.mp4"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "mp4"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9730
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=000000206674797069736f6d00000200 format=mp4"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9730,
+            "line": 0,
+            "text": "eof bytes=9731"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/audio.mp3": {
+      "parser": "binary_inventory",
+      "bytes": 8897,
+      "sha256": "6f271555987f76006aa377788ebe2947cd618c38212f07b4f5418dca0b3174f3",
+      "format": "mp3",
+      "magic_hex": "49443304000000000109545858580000",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/audio.mp3"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "mp3"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8896
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=49443304000000000109545858580000 format=mp3"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8896,
+            "line": 0,
+            "text": "eof bytes=8897"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/data.xlsx": {
+      "parser": "binary_inventory",
+      "bytes": 5440,
+      "sha256": "9f67f09718fc52f848b9fba35330ea64c70ad0c10236e34747f9f668795b11f9",
+      "format": "zip",
+      "magic_hex": "504b030414000000080000003f00f84a",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/data.xlsx"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "zip"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5439
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=504b030414000000080000003f00f84a format=zip"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5439,
+            "line": 0,
+            "text": "eof bytes=5440"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/image.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 631,
+      "sha256": "9dacf9b93ef343cb1b10d45dcd84959c4448a68d0859d818cc3decfb7dbf619f",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101000001",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/image.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 630
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101000001 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 630,
+            "line": 0,
+            "text": "eof bytes=631"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/probe.db": {
+      "parser": "sqlite",
+      "bytes": 48,
+      "sha256": "2fcca3189412bc4a27ded545be7c32dcc8ceffa00829b0c04f7ef14618e92cd8",
+      "rows": 0,
+      "schema": {
+        "tables": [],
+        "detail": []
+      },
+      "distribution": {
+        "table_count": 0,
+        "rows_total": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 47
+      },
+      "errors": [
+        {
+          "error": "file is not a database"
+        }
+      ],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 47,
+            "line": 1,
+            "text": "[]"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/record.wav": {
+      "parser": "binary_inventory",
+      "bytes": 88244,
+      "sha256": "842a3c15b72245e0084f4d3467bc8a2dd2f4abc6f3ebe19f3ed2729ab9ccdb3d",
+      "format": "wav",
+      "magic_hex": "52494646ac58010057415645666d7420",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/record.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 44100,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 88243
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=52494646ac58010057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 88243,
+            "line": 0,
+            "text": "eof bytes=88244"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/s15_data/input.csv": {
+      "parser": "csv",
+      "encoding": "utf-8",
+      "bytes": 29,
+      "sha256": "5cc38b6cdb76a2c366a0974de9775bc7ae46d1afdca52781d2ac56d6cde8d251",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "name",
+          "score"
+        ],
+        "delimiter": ","
+      },
+      "distribution": {
+        "header_cols": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "name,score"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "Ada,10"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "Ada,10"
+          },
+          {
+            "offset": 18,
+            "line": 3,
+            "text": "Linus,7"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/s16_universal_memory.db": {
+      "parser": "sqlite",
+      "bytes": 28672,
+      "sha256": "886e46a42ecd153c018c3814b01d8879403f7bbaedbca610730b335a13cb207b",
+      "rows": 8,
+      "schema": {
+        "tables": [
+          "sqlite_sequence",
+          "universal_memory",
+          "universal_rejections",
+          "universal_skills"
+        ],
+        "detail": [
+          {
+            "name": "sqlite_sequence",
+            "rows": 3,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "universal_memory",
+            "rows": 1,
+            "columns": [
+              "id",
+              "created_at",
+              "updated_at",
+              "source_run_id",
+              "source_task_summary",
+              "key",
+              "value",
+              "kind",
+              "evidence_summary",
+              "verification_status",
+              "decision",
+              "reason"
+            ]
+          },
+          {
+            "name": "universal_rejections",
+            "rows": 3,
+            "columns": [
+              "id",
+              "created_at",
+              "source_run_id",
+              "source_task_summary",
+              "kind",
+              "decision",
+              "reason",
+              "payload_json"
+            ]
+          },
+          {
+            "name": "universal_skills",
+            "rows": 1,
+            "columns": [
+              "id",
+              "created_at",
+              "updated_at",
+              "source_run_id",
+              "source_task_summary",
+              "pattern",
+              "tool_sequence_json",
+              "preconditions_json",
+              "success_criteria_json",
+              "expected_artifacts_json",
+              "notes",
+              "verification_status",
+              "decision",
+              "reason",
+              "use_count",
+              "last_used"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 4,
+        "rows_total": 8
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28671
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"sqlite_sequence\", \"rows\": 3, \"columns\": [\"name\", \"seq\"]}, {\"name\": \"universal_memory\", \"rows\": 1, \"columns\": [\"id\", \"created_at\", \"updated_at\", \"source_run_id\", \"source_task_summary\", \"key\", \"value\", \"kind\", \"evidence_summary\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28671,
+            "line": 1,
+            "text": "[{\"name\": \"universal_skills\", \"rows\": 1, \"columns\": [\"id\", \"created_at\", \"updated_at\", \"source_run_id\", \"source_task_summary\", \"pattern\", \"tool_sequence_json\", \"preconditions_json\", \"success_criteria_json\", \"expected_artifacts_json\", \"note…"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/sample_from_docx.pdf": {
+      "parser": "binary_inventory",
+      "bytes": 14686,
+      "sha256": "1868ea0e6cd8d086461af0883117ef09afd5f6255b390a70114258c2e9f55285",
+      "format": "pdf",
+      "magic_hex": "255044462d312e370d0a25b5b5b5b50d",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/sample_from_docx.pdf"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pdf"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14685
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=255044462d312e370d0a25b5b5b5b50d format=pdf"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14685,
+            "line": 0,
+            "text": "eof bytes=14686"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/test_out.mp4": {
+      "parser": "binary_inventory",
+      "bytes": 12895,
+      "sha256": "83114ef58d9233fb7f40473f35190b3f92cda97768eed78973620df7343faa06",
+      "format": "mp4",
+      "magic_hex": "000000206674797069736f6d00000200",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/test_out.mp4"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "mp4"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12894
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=000000206674797069736f6d00000200 format=mp4"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12894,
+            "line": 0,
+            "text": "eof bytes=12895"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_assets_runtime/window.png": {
+      "parser": "binary_inventory",
+      "bytes": 201725,
+      "sha256": "777fb72182f4038f228bd1d7ee6a41908455ad07d89348612c779c8273170b9a",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "carter",
+        "path": "Carter_v2/probe_assets_runtime/window.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1382,
+        "height": 748
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 201724
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 201724,
+            "line": 0,
+            "text": "eof bytes=201725"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_fixed_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 97902,
+      "sha256": "a586326232b286c71ea40f253d49769cce6987d5cc1ff6eb652a1860dfcef04f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 23,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 97901,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 142,
+          "max": 142
+        },
+        "failed": {
+          "min": 23,
+          "max": 23
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_run10_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77164,
+      "sha256": "7442794a87e170a6ae1610993466e6589ac98e92fff0359de1e1ad0df8aefe59",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77163,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 162,
+          "max": 162
+        },
+        "failed": {
+          "min": 3,
+          "max": 3
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_run11_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76030,
+      "sha256": "b6a9f53a5d3419051e92807dd962e444b65342d7ae13b7674edd79a7b9a527c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76029,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 164,
+          "max": 164
+        },
+        "failed": {
+          "min": 1,
+          "max": 1
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_run12_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75631,
+      "sha256": "7032c170ed7aa426b13bf66ed308f7606a4358755528994e9a905407e551cd91",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75630,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 165,
+          "max": 165
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_run7_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77508,
+      "sha256": "bc8ec7a6a3c9668e08ec6e087fa4eda711e2822fd51f921cfd489212680ef890",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77507,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 161,
+          "max": 161
+        },
+        "failed": {
+          "min": 4,
+          "max": 4
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_run8_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77948,
+      "sha256": "383de738fb6d4d8afe47a64822e8f2ebbad5ef3fcccbfb540c02f85bbe2e3893",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77947,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 161,
+          "max": 161
+        },
+        "failed": {
+          "min": 4,
+          "max": 4
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_run9_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77603,
+      "sha256": "bf03f520fc429d99353e43bf565d6041a2815a6c4bf26607cc79d352abeac29e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77602,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 161,
+          "max": 161
+        },
+        "failed": {
+          "min": 4,
+          "max": 4
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_text_baseline_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75400,
+      "sha256": "2ce6f6c29d3a8e7663c6494cfc32c2efb801a864367a3ff56642a2ee6af0300f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75399,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 165,
+          "max": 165
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "Carter_v2/probe_vision_stack_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 126804,
+      "sha256": "1461c19632fd638cc39e47043846227843c083a38b815f25431e77e74118e3b2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "errors",
+          "failed",
+          "failures",
+          "passed",
+          "profile",
+          "readiness_file",
+          "results",
+          "skip_by_type",
+          "skipped",
+          "skips",
+          "timestamp",
+          "total"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "errors",
+          "failed",
+          "passed",
+          "profile",
+          "readiness_file",
+          "skipped",
+          "timestamp",
+          "total"
+        ],
+        "list_lengths": {
+          "failures": 50,
+          "skips": 2,
+          "results": 167
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 126803,
+        "total": {
+          "min": 167,
+          "max": 167
+        },
+        "passed": {
+          "min": 115,
+          "max": 115
+        },
+        "failed": {
+          "min": 50,
+          "max": 50
+        },
+        "errors": {
+          "min": 0,
+          "max": 0
+        },
+        "skipped": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"errors\", \"failed\", \"failures\", \"passed\", \"profile\", \"readiness_file\", \"results\", \"skip_by_type\", \"skipped\", \"skips\", \"timestamp\", \"total\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "carter_v5/audit/runs/bench_540_tier_10gb_20260511_171920_stubs.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 253165,
+      "sha256": "4b1810d7559e32f94d70f94927aa3e833e4599ea48f68d2e688bb3ff0e4955fb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 450
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 253164
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "carter_v5/audit/runs/bench_540_tier_16gb_20260511_170121_stubs.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 84123,
+      "sha256": "a250102dba18090c6e3d5c6ef179ce3d182f31845e9ea6e10ea2889555586ced",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 150
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 84122
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "carter_v5/audit/runs/bench_540_tier_16gb_20260511_183805_stubs.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39176,
+      "sha256": "8c3f7b237022c6d2c67c8ebaa8f20b9fc9bb46527ba422eee9506db08e7043ea",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39175
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "carter_v5/audit/runs/bench_540_tier_16gb_20260511_184332_stubs.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58011,
+      "sha256": "f00d125174707ded7bf0f1a88be75c368b11ea853ad1ec4bbaef838dd3e444c5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58010
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "carter_v5/audit/runs/bench_memory.db": {
+      "parser": "sqlite",
+      "bytes": 12288,
+      "sha256": "d54bf8db4f307d40f4a74a776d5dddf627e6cdc7969693b4ed1b28641669e772",
+      "rows": 0,
+      "schema": {
+        "tables": [
+          "facts",
+          "sqlite_sequence"
+        ],
+        "detail": [
+          {
+            "name": "facts",
+            "rows": 0,
+            "columns": [
+              "rowid",
+              "content",
+              "created_at",
+              "embedding"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 0,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"facts\", \"rows\": 0, \"columns\": [\"rowid\", \"content\", \"created_at\", \"embedding\"]}, {\"name\": \"sqlite_sequence\", \"rows\": 0, \"columns\": [\"name\", \"seq\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12287,
+            "line": 1,
+            "text": "[{\"name\": \"sqlite_sequence\", \"rows\": 0, \"columns\": [\"name\", \"seq\"]}]"
+          }
+        ]
+      }
+    },
+    "carter_v5/tools/schemas_individual.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33410,
+      "sha256": "d722f8fd23e40e0402537d7b02e1345c649fb308a0d331c2511536ca23043ef8",
+      "rows": 60,
+      "schema": {
+        "root": "array",
+        "n": 60,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33409
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"system_set_volume\", \"description\": \"Ajusta el volumen master del sistema. level es 0..100.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"level\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33409,
+            "line": 60,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"vision_locate_target\", \"description\": \"Verifica si un elemento (boton, link, tarjeta) esta visible en pantalla ANTES de intentar clickear. Devuelve {visible, x, y, confidence}. Util para gating: s…"
+          }
+        ]
+      }
+    }
+  }
+}

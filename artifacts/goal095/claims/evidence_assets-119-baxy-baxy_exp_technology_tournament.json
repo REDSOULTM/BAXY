@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-119-baxy-baxy_exp_technology_tournament",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:47:57Z",
+  "lease_expires_utc": "2026-08-31T11:47:57Z",
+  "estimated_tokens": 294912,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 36,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/evidence_assets-119-baxy-baxy_exp_technology_tournament.json",
+  "closed_utc": "2026-08-31T05:47:57Z"
+}

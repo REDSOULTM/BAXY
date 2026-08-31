@@ -1,0 +1,37 @@
+{
+  "schema": "baxy.goal095.09510-requirements.v1",
+  "note": "Sparse omissions from 09.5.0/09.5.1. Individual hashes and paths are not invented. Physical test only if 09.5.9 chooses reuse; 09.5.10 then pauses in FALLO_DE_AMBIENTE for the exact asset.",
+  "smoke": "skipped; results recovered; existence is not works",
+  "requirements": [
+    {
+      "id": "pg4-gguf-models",
+      "asset_type": "gguf_models",
+      "logical_prefix": "Programacion/Probando Gemma 4/models",
+      "historical_size": "~17 GiB GGUF",
+      "consumer": "runtime LLM (llama-server / gemma4_agent)",
+      "present_in_snapshot": "empty directory, 0 files",
+      "individual_hashes": "not invented",
+      "action_if_09_5_9_reuses": "09.5.10 FALLO_DE_AMBIENTE: provide the exact GGUF file(s) chosen; do not ask the owner to paste 09.5.4"
+    },
+    {
+      "id": "pg4-training-datasets",
+      "asset_type": "training_datasets",
+      "logical_prefix": "Programacion/Probando Gemma 4/data",
+      "historical_size": "~39 GiB",
+      "consumer": "wake/STT training and eval (wake_universal_eval, livekit, nemotron, voxcpm)",
+      "present_in_snapshot": "1354 files, 247259115 bytes remain",
+      "individual_hashes": "not invented",
+      "action_if_09_5_9_reuses": "09.5.10 FALLO_DE_AMBIENTE: provide the missing training/eval blobs named by 09.5.9; do not invent hashes"
+    },
+    {
+      "id": "pg4-training-checkpoints",
+      "asset_type": "training_checkpoints",
+      "logical_prefix": "Programacion/Probando Gemma 4/checkpoints/model",
+      "historical_size": "Goal 01 already found checkpoints/ empty",
+      "consumer": "fine-tune / resume scripts of gemma4_agent",
+      "present_in_snapshot": "empty directory",
+      "individual_hashes": "not invented",
+      "action_if_09_5_9_reuses": "09.5.10 FALLO_DE_AMBIENTE: provide the checkpoint file 09.5.9 names; empty dir is not a model"
+    }
+  ]
+}

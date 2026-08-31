@@ -1,0 +1,6196 @@
+{
+  "batch_id": "evidence_assets-128-baxy-baxy_legacy_data",
+  "source_id": "baxy",
+  "file_count": 83,
+  "hash_ok": 83,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 193724,
+      "sha256": "601805cdf9c12fb917be1fb3f313e05a6aa925c679c98207cdeef20bd017331f",
+      "rows": 1605,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 193623,
+        "min_line_bytes": 1,
+        "max_line_bytes": 834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783940934.7460718, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 193538,
+            "line": 1604,
+            "text": "30.09.509.647 I slot print_timing: id 0 | task 231 | graphs reused = 177"
+          },
+          {
+            "offset": 193623,
+            "line": 1605,
+            "text": "30.09.509.676 I slot release: id 0 | task 231 | stop processing: n_tokens = 25, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2976,
+      "sha256": "de9053e99f64c23961ce436a2b94aa02be583284264c9473c2a6283b613c0f7e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2975,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-final-smoke-v4/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4210,
+      "sha256": "1e284cc928a1246be2282feef3e2f9797da3d71d3894e0cf6560b1a67971415c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4209,
+        "continuous_elapsed_s": {
+          "min": 12.0,
+          "max": 12.0
+        },
+        "max_sample_gap_s": {
+          "min": 3.984,
+          "max": 3.984
+        },
+        "max_workload_gap_s": {
+          "min": 7.234,
+          "max": 7.234
+        },
+        "samples": {
+          "min": 6,
+          "max": 6
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "terminal_workload_gap_s": {
+          "min": 4.766,
+          "max": 4.766
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-final-smoke-v4/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 18070,
+      "sha256": "78d69463901101617eb64d27bfcc89e1dd2120c5bfcaada45d1137fee4d98548",
+      "rows": 13,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "controller",
+          "fingerprint",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 13,
+          "kind": 13,
+          "monotonic_s": 13,
+          "index": 10,
+          "resources": 9,
+          "server": 9,
+          "gap_s": 6,
+          "image_count_before": 2,
+          "chat": 2,
+          "success": 2,
+          "vision": 2,
+          "controller": 1,
+          "fingerprint": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16993,
+        "min_line_bytes": 134,
+        "max_line_bytes": 2495,
+        "numeric": {
+          "monotonic_s": {
+            "min": 87140.406,
+            "max": 87160.656
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 6.0
+          },
+          "gap_s": {
+            "min": 1.0,
+            "max": 3.984
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T14:31:20.366115+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"12\", \"--workload-interval-seconds\", \"4…"
+          },
+          {
+            "offset": 698,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T14:31:27.755973+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15347,
+            "line": 12,
+            "text": "{\"at\": \"2026-07-11T14:31:39.140463+00:00\", \"gap_s\": 1.016, \"index\": 6, \"kind\": \"sample\", \"monotonic_s\": 87159.187, \"resources\": {\"gpu_error\": null, \"gpu_used_mib_by_device\": [2939.0], \"gpu_used_mib_total\": 2939.0, \"memory_error\": null, \"mo…"
+          },
+          {
+            "offset": 16993,
+            "line": 13,
+            "text": "{\"at\": \"2026-07-11T14:31:40.611423+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-final-smoke-v4/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9258,
+      "sha256": "ba24e029e6b03c751fc12c0c97e8cb117866ab2413f44d2acc74c7c463b379c8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "restart_events": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9257,
+        "continuous_elapsed_s": {
+          "min": 12.0,
+          "max": 12.0
+        },
+        "max_sample_gap_s": {
+          "min": 3.984,
+          "max": 3.984
+        },
+        "max_workload_gap_s": {
+          "min": 7.234,
+          "max": 7.234
+        },
+        "samples": {
+          "min": 6,
+          "max": 6
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 7.337615,
+          "max": 7.337615
+        },
+        "terminal_workload_gap_s": {
+          "min": 4.766,
+          "max": 4.766
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-final-smoke-v4/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 189,
+      "sha256": "ffb35a2d86282bb9a3b593d6e02817fb2e211392adc2d01a5590ca4ff14e67d2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 188,
+        "controller_pid": {
+          "min": 43296,
+          "max": 43296
+        },
+        "monotonic_s": {
+          "min": 87160.656,
+          "max": 87160.656
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-final-smoke-v4/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2346,
+      "sha256": "f3debe12515ec22b5064f1fed9bbb3f3879a0f3623909371c8ab608edfa681e8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2345,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-monitor-recycle-fix-v1/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4873,
+      "sha256": "aa6ed029bbece1ad222c879b52b2062455145cb696aa4aff0007fcdb1036e72f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4872,
+        "continuous_elapsed_s": {
+          "min": 58.125,
+          "max": 58.125
+        },
+        "max_sample_gap_s": {
+          "min": 13.125,
+          "max": 13.125
+        },
+        "max_workload_gap_s": {
+          "min": 13.156,
+          "max": 13.156
+        },
+        "samples": {
+          "min": 7,
+          "max": 7
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "terminal_workload_gap_s": {
+          "min": 11.235,
+          "max": 11.235
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-monitor-recycle-fix-v1/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 30274,
+      "sha256": "936e284e1cc280b88b83189fc47d31a5d5cbf92fdb17cf11816325d33089bdd6",
+      "rows": 27,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "gap_s",
+          "expected",
+          "new_pid",
+          "old_pid",
+          "controller",
+          "fingerprint",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 27,
+          "kind": 27,
+          "monotonic_s": 27,
+          "index": 24,
+          "resources": 15,
+          "server": 15,
+          "image_count_before": 7,
+          "chat": 7,
+          "success": 7,
+          "vision": 7,
+          "gap_s": 7,
+          "expected": 3,
+          "new_pid": 3,
+          "old_pid": 3,
+          "controller": 1,
+          "fingerprint": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29196,
+        "min_line_bytes": 135,
+        "max_line_bytes": 2496,
+        "numeric": {
+          "monotonic_s": {
+            "min": 208936.703,
+            "max": 209003.781
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 2.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "gap_s": {
+            "min": 3.296,
+            "max": 13.125
+          },
+          "new_pid": {
+            "min": 43280.0,
+            "max": 46856.0
+          },
+          "old_pid": {
+            "min": 45880.0,
+            "max": 46856.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-13T00:21:21.973955+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"55\", \"--workload-interval-seconds\", \"2…"
+          },
+          {
+            "offset": 911,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-13T00:21:30.109740+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 27548,
+            "line": 26,
+            "text": "{\"at\": \"2026-07-13T00:22:28.217410+00:00\", \"gap_s\": 13.031, \"index\": 7, \"kind\": \"sample\", \"monotonic_s\": 209002.937, \"resources\": {\"gpu_error\": null, \"gpu_used_mib_by_device\": [3103.0], \"gpu_used_mib_total\": 3103.0, \"memory_error\": null, \"…"
+          },
+          {
+            "offset": 29196,
+            "line": 27,
+            "text": "{\"at\": \"2026-07-13T00:22:29.059528+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-monitor-recycle-fix-v1/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10296,
+      "sha256": "c90eefef2fb53bd1ffbc1181c89ff6e42d1836b2d722608470a5b280c2c8a67b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "restart_events": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10295,
+        "continuous_elapsed_s": {
+          "min": 58.125,
+          "max": 58.125
+        },
+        "max_sample_gap_s": {
+          "min": 13.125,
+          "max": 13.125
+        },
+        "max_workload_gap_s": {
+          "min": 13.156,
+          "max": 13.156
+        },
+        "samples": {
+          "min": 7,
+          "max": 7
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 8.085493,
+          "max": 8.085493
+        },
+        "terminal_workload_gap_s": {
+          "min": 11.235,
+          "max": 11.235
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-monitor-recycle-fix-v1/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 198,
+      "sha256": "99c5daca2cb80476bad2c13e58e61847e1baa6bcfb8cfeea2947a9a5685e6338",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 197,
+        "controller_pid": {
+          "min": 52860,
+          "max": 52860
+        },
+        "monotonic_s": {
+          "min": 209003.796,
+          "max": 209003.796
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-monitor-recycle-fix-v1/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2697,
+      "sha256": "e8bd1f1002656d9df15a5094fd57c3391f44d25248b83e074d1d67d2b2c9e0e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2696,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-independent-monitor-v3/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4133,
+      "sha256": "b3e9c45b9cd6d9c0ba9e158f73a7f654ba7a8832312b01cc364a4c98b2d9c0d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "terminal_workload_gap_s",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4132,
+        "continuous_elapsed_s": {
+          "min": 30.0,
+          "max": 30.0
+        },
+        "max_sample_gap_s": {
+          "min": 5.187,
+          "max": 5.187
+        },
+        "max_workload_gap_s": {
+          "min": 13.187,
+          "max": 13.187
+        },
+        "samples": {
+          "min": 11,
+          "max": 11
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "terminal_workload_gap_s": {
+          "min": 3.672,
+          "max": 3.672
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"te…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-independent-monitor-v3/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28263,
+      "sha256": "c5259f65ac375a1041c799c3484518607633ffa8812fe8c52574b514f6c3a630",
+      "rows": 20,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "controller",
+          "fingerprint",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 20,
+          "kind": 20,
+          "monotonic_s": 20,
+          "index": 17,
+          "resources": 15,
+          "server": 15,
+          "gap_s": 11,
+          "image_count_before": 3,
+          "chat": 3,
+          "success": 3,
+          "vision": 3,
+          "controller": 1,
+          "fingerprint": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27186,
+        "min_line_bytes": 134,
+        "max_line_bytes": 2495,
+        "numeric": {
+          "monotonic_s": {
+            "min": 86224.625,
+            "max": 86262.781
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 2.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 11.0
+          },
+          "gap_s": {
+            "min": 2.0,
+            "max": 5.187
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T14:16:04.579410+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"30\", \"--workload-interval-seconds\", \"1…"
+          },
+          {
+            "offset": 714,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T14:16:11.938724+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25543,
+            "line": 19,
+            "text": "{\"at\": \"2026-07-11T14:16:41.458396+00:00\", \"gap_s\": 5.032, \"index\": 11, \"kind\": \"sample\", \"monotonic_s\": 86261.5, \"resources\": {\"gpu_error\": null, \"gpu_used_mib_by_device\": [2767.0], \"gpu_used_mib_total\": 2767.0, \"memory_error\": null, \"mon…"
+          },
+          {
+            "offset": 27186,
+            "line": 20,
+            "text": "{\"at\": \"2026-07-11T14:16:42.747427+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-independent-monitor-v3/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9211,
+      "sha256": "934b9f713ed1b782120e24206d9bc1301f92d7ac346241c64184e0c471957c69",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "metrics",
+          "operations",
+          "resource_monitor",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "max_workload_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "terminal_workload_gap_s",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "restart_events": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9210,
+        "continuous_elapsed_s": {
+          "min": 30.0,
+          "max": 30.0
+        },
+        "max_sample_gap_s": {
+          "min": 5.187,
+          "max": 5.187
+        },
+        "max_workload_gap_s": {
+          "min": 13.187,
+          "max": 13.187
+        },
+        "samples": {
+          "min": 11,
+          "max": 11
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 7.308104,
+          "max": 7.308104
+        },
+        "terminal_workload_gap_s": {
+          "min": 3.672,
+          "max": 3.672
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"max_workload_gap_s\", \"metrics\", \"operations\", \"resource_monitor\",…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-independent-monitor-v3/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 203,
+      "sha256": "96498da261eb485a14724f3de4e80c6ea14cf79bbe582ac0e035c239ad659fed",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 202,
+        "controller_pid": {
+          "min": 23500,
+          "max": 23500
+        },
+        "monotonic_s": {
+          "min": 86262.796,
+          "max": 86262.796
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-independent-monitor-v3/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2392,
+      "sha256": "0e9cac9aecd6e05c4407e09e72938c7cb92e70220488e7bca7282e59cbc7140b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2391,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-job-v1/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3108,
+      "sha256": "39b78d733249ef21435dd0dbb9d8a63ddf60bb3cfbefa871bd167d59898882ce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "metrics",
+          "operations",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "updated_at"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3107,
+        "continuous_elapsed_s": {
+          "min": 60.0,
+          "max": 60.0
+        },
+        "samples": {
+          "min": 26,
+          "max": 26
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"metrics\", \"operations\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"updated_at\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"metrics\", \"operations\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"updated_at\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-job-v1/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 54740,
+      "sha256": "eaccc10229261591ae2f8e5c0baf0db68b29affd338c847b2fba00f380214ced",
+      "rows": 37,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "controller",
+          "fingerprint",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 37,
+          "kind": 37,
+          "monotonic_s": 37,
+          "index": 34,
+          "resources": 31,
+          "server": 31,
+          "gap_s": 26,
+          "image_count_before": 4,
+          "chat": 4,
+          "success": 4,
+          "vision": 4,
+          "controller": 1,
+          "fingerprint": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 53664,
+        "min_line_bytes": 134,
+        "max_line_bytes": 2494,
+        "numeric": {
+          "monotonic_s": {
+            "min": 82046.875,
+            "max": 82115.89
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 3.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 26.0
+          },
+          "gap_s": {
+            "min": 2.0,
+            "max": 4.172
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T13:06:26.828953+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"60\", \"--workload-interval-seconds\", \"1…"
+          },
+          {
+            "offset": 563,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T13:06:35.074602+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 52019,
+            "line": 36,
+            "text": "{\"at\": \"2026-07-11T13:07:34.738807+00:00\", \"gap_s\": 2.0, \"index\": 26, \"kind\": \"sample\", \"monotonic_s\": 82114.781, \"resources\": {\"gpu_error\": null, \"gpu_used_mib_by_device\": [3244.0], \"gpu_used_mib_total\": 3244.0, \"memory_error\": null, \"mon…"
+          },
+          {
+            "offset": 53664,
+            "line": 37,
+            "text": "{\"at\": \"2026-07-11T13:07:35.850863+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-job-v1/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8013,
+      "sha256": "9deed40b3b5d887465500231fa687a1a14878846d2ebd9c42f27d4385a34cb98",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "metrics",
+          "operations",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 26,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "restart_events": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8012,
+        "continuous_elapsed_s": {
+          "min": 60.0,
+          "max": 60.0
+        },
+        "max_sample_gap_s": {
+          "min": 4.172,
+          "max": 4.172
+        },
+        "samples": {
+          "min": 26,
+          "max": 26
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 8.040538,
+          "max": 8.040538
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"metrics\", \"operations\", \"restart_events\", \"run_dir\", \"run_id\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"metrics\", \"operations\", \"restart_events\", \"run_dir\", \"run_id\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-job-v1/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 186,
+      "sha256": "a357506800ae88f9ae4d269e465304c3449c126b0a5497af64f29bdd0827854b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185,
+        "controller_pid": {
+          "min": 18672,
+          "max": 18672
+        },
+        "monotonic_s": {
+          "min": 82115.89,
+          "max": 82115.89
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-job-v1/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1991,
+      "sha256": "0bb70bda9e4fb20be985cad64d4e4379da59cf5169bcfcd7027ec580b26b85c9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1990,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-redacted-throttled-v2/checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3124,
+      "sha256": "e6822ddfa6e95f91d3934d150e6b0b4e32df9e553a1d066a1e051adff29e14fe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "continuous_elapsed_s",
+          "failures",
+          "last_resources",
+          "last_server",
+          "metrics",
+          "operations",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "updated_at"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "run_id",
+          "samples",
+          "schema_version",
+          "state",
+          "stopped_by_request",
+          "updated_at"
+        ],
+        "list_lengths": {
+          "failures": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3123,
+        "continuous_elapsed_s": {
+          "min": 30.0,
+          "max": 30.0
+        },
+        "samples": {
+          "min": 11,
+          "max": 11
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"metrics\", \"operations\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"updated_at\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"continuous_elapsed_s\", \"failures\", \"last_resources\", \"last_server\", \"metrics\", \"operations\", \"run_id\", \"samples\", \"schema_version\", \"state\", \"stopped_by_request\", \"updated_at\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-redacted-throttled-v2/events.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28181,
+      "sha256": "011f6a76bee32603358260435861e465686acc0e225e7af5a8918a24779be375",
+      "rows": 20,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "at",
+          "kind",
+          "monotonic_s",
+          "index",
+          "resources",
+          "server",
+          "gap_s",
+          "image_count_before",
+          "chat",
+          "success",
+          "vision",
+          "controller",
+          "fingerprint",
+          "cleanup"
+        ],
+        "key_freq": {
+          "at": 20,
+          "kind": 20,
+          "monotonic_s": 20,
+          "index": 17,
+          "resources": 15,
+          "server": 15,
+          "gap_s": 11,
+          "image_count_before": 3,
+          "chat": 3,
+          "success": 3,
+          "vision": 3,
+          "controller": 1,
+          "fingerprint": 1,
+          "cleanup": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27104,
+        "min_line_bytes": 133,
+        "max_line_bytes": 2493,
+        "numeric": {
+          "monotonic_s": {
+            "min": 85017.593,
+            "max": 85056.203
+          },
+          "image_count_before": {
+            "min": 0.0,
+            "max": 2.0
+          },
+          "index": {
+            "min": 1.0,
+            "max": 11.0
+          },
+          "gap_s": {
+            "min": 2.0,
+            "max": 5.032
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"at\": \"2026-07-11T13:55:57.562213+00:00\", \"controller\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python310\\\\python.exe\", \"scripts/gemma4_long_soak.py\", \"--duration-seconds\", \"30\", \"--workload-interval-seconds\", \"1…"
+          },
+          {
+            "offset": 635,
+            "line": 2,
+            "text": "{\"at\": \"2026-07-11T13:56:05.353647+00:00\", \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\model…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25457,
+            "line": 19,
+            "text": "{\"at\": \"2026-07-11T13:56:34.635130+00:00\", \"gap_s\": 5.032, \"index\": 11, \"kind\": \"sample\", \"monotonic_s\": 85054.671, \"resources\": {\"gpu_error\": null, \"gpu_used_mib_by_device\": [2623.0], \"gpu_used_mib_total\": 2623.0, \"memory_error\": null, \"m…"
+          },
+          {
+            "offset": 27104,
+            "line": 20,
+            "text": "{\"at\": \"2026-07-11T13:56:36.161824+00:00\", \"cleanup\": {\"error\": null, \"fingerprint\": {\"cmdline\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9959\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-redacted-throttled-v2/final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8120,
+      "sha256": "568b4cec1e51d36712bef1e6dbdd46082b37bf3581cf61a45dea2cda1df2af5a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "cleanup",
+          "continuous_elapsed_s",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "inputs",
+          "last_resources",
+          "last_server",
+          "max_sample_gap_s",
+          "metrics",
+          "operations",
+          "restart_events",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "server_fingerprint_initial",
+          "server_initial",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "thresholds_mib",
+          "unexpected_restart_count"
+        ],
+        "n_keys": 26,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "continuous_elapsed_s",
+          "fatal_error",
+          "finished_at",
+          "max_sample_gap_s",
+          "run_dir",
+          "run_id",
+          "samples",
+          "schema_version",
+          "started_at",
+          "startup_latency_s",
+          "state",
+          "stopped_by_request",
+          "success",
+          "unexpected_restart_count"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "restart_events": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8119,
+        "continuous_elapsed_s": {
+          "min": 30.0,
+          "max": 30.0
+        },
+        "max_sample_gap_s": {
+          "min": 5.032,
+          "max": 5.032
+        },
+        "samples": {
+          "min": 11,
+          "max": 11
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "startup_latency_s": {
+          "min": 7.649659,
+          "max": 7.649659
+        },
+        "unexpected_restart_count": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"metrics\", \"operations\", \"restart_events\", \"run_dir\", \"run_id\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"cleanup\", \"continuous_elapsed_s\", \"failures\", \"fatal_error\", \"finished_at\", \"inputs\", \"last_resources\", \"last_server\", \"max_sample_gap_s\", \"metrics\", \"operations\", \"restart_events\", \"run_dir\", \"run_id\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-redacted-throttled-v2/heartbeat.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 202,
+      "sha256": "1863db252cbae6eee15b8fc8eb01c626ec16a268a03b48ab8d241c9a2458be08",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "at",
+          "controller_pid",
+          "monotonic_s",
+          "run_id",
+          "schema_version",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 201,
+        "controller_pid": {
+          "min": 44736,
+          "max": 44736
+        },
+        "monotonic_s": {
+          "min": 85056.203,
+          "max": 85056.203
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"at\", \"controller_pid\", \"monotonic_s\", \"run_id\", \"schema_version\", \"state\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/long-soak-smoke-redacted-throttled-v2/run.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2178,
+      "sha256": "8e14aebcf3710ca24817db30252df3653080d33832b7079429270987a0e5e610",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "artifacts",
+          "controller",
+          "created_at",
+          "inputs",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version",
+          "thresholds_mib"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "created_at",
+          "llama_cpp_commit",
+          "run_id",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2177,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"artifacts\", \"controller\", \"created_at\", \"inputs\", \"llama_cpp_commit\", \"run_id\", \"schema_version\", \"thresholds_mib\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/phase3-routing-29-20260714.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40317,
+      "sha256": "fedb82e6d048a7e0b3eb3238bd7e8ea37e63f934002387153608fab6b50ce118",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "configuration",
+          "generated_at",
+          "host",
+          "kind",
+          "model_server_after",
+          "model_server_before",
+          "rows",
+          "schema_version",
+          "setup_error",
+          "summary"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version",
+          "setup_error"
+        ],
+        "list_lengths": {
+          "rows": 29
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40316,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"configuration\", \"generated_at\", \"host\", \"kind\", \"model_server_after\", \"model_server_before\", \"rows\", \"schema_version\", \"setup_error\", \"summary\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-status-closed-20260713-062542/tooling-v2/invocations.sqlite": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "b5451474419066eb935874f99451afd8ae150e4ea3790d98fd8a7754afe0c70e",
+      "rows": 3,
+      "schema": {
+        "tables": [
+          "invocations",
+          "ledger_metadata"
+        ],
+        "detail": [
+          {
+            "name": "invocations",
+            "rows": 1,
+            "columns": [
+              "key_blind",
+              "digest_blind",
+              "identity_ciphertext",
+              "state",
+              "report_ciphertext",
+              "recovery_ciphertext",
+              "reserved_at",
+              "completed_at",
+              "revision"
+            ]
+          },
+          {
+            "name": "ledger_metadata",
+            "rows": 2,
+            "columns": [
+              "name",
+              "ciphertext"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 3
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"invocations\", \"rows\": 1, \"columns\": [\"key_blind\", \"digest_blind\", \"identity_ciphertext\", \"state\", \"report_ciphertext\", \"recovery_ciphertext\", \"reserved_at\", \"completed_at\", \"revision\"]}, {\"name\": \"ledger_metadata\", \"rows\": 2, \"c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"ledger_metadata\", \"rows\": 2, \"columns\": [\"name\", \"ciphertext\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-status-closed-20260713-062542/tooling-v2/missions.sqlite": {
+      "parser": "sqlite",
+      "bytes": 200704,
+      "sha256": "f727a2ab7cacdf382f9451c8e438d00e8cb6fc03d484e1f8857a06379a2531e2",
+      "rows": 15,
+      "schema": {
+        "tables": [
+          "confirmation_replays",
+          "effect_claims",
+          "events",
+          "handles",
+          "mission_leases",
+          "missions",
+          "private_deliveries",
+          "sqlite_sequence",
+          "steps"
+        ],
+        "detail": [
+          {
+            "name": "confirmation_replays",
+            "rows": 1,
+            "columns": [
+              "nonce_sha256",
+              "expires_at"
+            ]
+          },
+          {
+            "name": "effect_claims",
+            "rows": 0,
+            "columns": [
+              "claim_id",
+              "mission_id",
+              "step_id",
+              "predecessor_claim_id",
+              "direction",
+              "operation",
+              "attempt",
+              "state",
+              "revision",
+              "lease_generation",
+              "writer_generation",
+              "mission_revision",
+              "step_revision",
+              "event_head_sequence",
+              "event_head_id",
+              "plan_digest",
+              "tool_contract_digest",
+              "action_digest",
+              "claim_digest",
+              "binding_digest",
+              "idempotency_key_sha256",
+              "reservation_state",
+              "ledger_instance_id",
+              "invocation_id",
+              "report_digest",
+              "completion_mode",
+              "claim_ciphertext",
+              "reservation_ciphertext",
+              "finish_ciphertext",
+              "recovery_ciphertext",
+              "postcondition_ciphertext",
+              "claim_event_sequence",
+              "reservation_event_sequence",
+              "finish_event_sequence",
+              "recovery_event_sequence",
+              "postcondition_event_sequence",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "events",
+            "rows": 10,
+            "columns": [
+              "sequence",
+              "event_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "payload_json",
+              "created_at"
+            ]
+          },
+          {
+            "name": "handles",
+            "rows": 0,
+            "columns": [
+              "handle_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "external_id",
+              "state",
+              "metadata_json",
+              "revision",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "mission_leases",
+            "rows": 1,
+            "columns": [
+              "mission_id",
+              "token_sha256",
+              "generation",
+              "expires_at_epoch_ms",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "missions",
+            "rows": 1,
+            "columns": [
+              "mission_id",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "metadata_json",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "private_deliveries",
+            "rows": 0,
+            "columns": [
+              "recovery_id",
+              "mission_id",
+              "principal_id",
+              "state",
+              "generation",
+              "revision",
+              "process_id",
+              "session_owner_id",
+              "delivery_id",
+              "presentation_request_id",
+              "result_id",
+              "lease_expires_at_epoch_ms",
+              "previous_generation",
+              "previous_process_id",
+              "previous_session_owner_id",
+              "previous_delivery_id",
+              "previous_presentation_request_id",
+              "previous_result_id",
+              "prepared_event_sequence",
+              "terminal_event_sequence",
+              "integrity_ciphertext",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "steps",
+            "rows": 1,
+            "columns": [
+              "step_id",
+              "mission_id",
+              "ordinal",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at",
+              "execution_class"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 9,
+        "rows_total": 15
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 200703
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"confirmation_replays\", \"rows\": 1, \"columns\": [\"nonce_sha256\", \"expires_at\"]}, {\"name\": \"effect_claims\", \"rows\": 0, \"columns\": [\"claim_id\", \"mission_id\", \"step_id\", \"predecessor_claim_id\", \"direction\", \"operation\", \"attempt\", \"st…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 200703,
+            "line": 1,
+            "text": "[{\"name\": \"steps\", \"rows\": 1, \"columns\": [\"step_id\", \"mission_id\", \"ordinal\", \"idempotency_key\", \"operation\", \"args_json\", \"args_sha256\", \"state\", \"revision\", \"result_json\", \"error_json\", \"created_at\", \"updated_at\", \"execution_class\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-status-closed-20260713-062542/tooling-v2/routines.sqlite": {
+      "parser": "sqlite",
+      "bytes": 16384,
+      "sha256": "0feb0837745e9c914f1151992021ea9bbbb6f40375ff317f85e6d18bd10f305e",
+      "rows": 2,
+      "schema": {
+        "tables": [
+          "routine_meta",
+          "routine_runs",
+          "routines"
+        ],
+        "detail": [
+          {
+            "name": "routine_meta",
+            "rows": 2,
+            "columns": [
+              "key",
+              "value"
+            ]
+          },
+          {
+            "name": "routine_runs",
+            "rows": 0,
+            "columns": [
+              "run_key",
+              "routine_id",
+              "routine_revision",
+              "mission_id",
+              "state",
+              "lease_owner",
+              "lease_until",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "routines",
+            "rows": 0,
+            "columns": [
+              "routine_id",
+              "revision",
+              "payload"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 3,
+        "rows_total": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16383
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"routine_meta\", \"rows\": 2, \"columns\": [\"key\", \"value\"]}, {\"name\": \"routine_runs\", \"rows\": 0, \"columns\": [\"run_key\", \"routine_id\", \"routine_revision\", \"mission_id\", \"state\", \"lease_owner\", \"lease_until\", \"created_at\", \"updated_at\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16383,
+            "line": 1,
+            "text": "[{\"name\": \"routines\", \"rows\": 0, \"columns\": [\"routine_id\", \"revision\", \"payload\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-status-complete-scan-20260713-064223/tooling-v2/invocations.sqlite": {
+      "parser": "sqlite",
+      "bytes": 20480,
+      "sha256": "9c67ab6d80129ae20a62e6217115eb13b3ed1c26b086fd398a346dfd9e919b98",
+      "rows": 3,
+      "schema": {
+        "tables": [
+          "invocations",
+          "ledger_metadata"
+        ],
+        "detail": [
+          {
+            "name": "invocations",
+            "rows": 1,
+            "columns": [
+              "key_blind",
+              "digest_blind",
+              "identity_ciphertext",
+              "state",
+              "report_ciphertext",
+              "recovery_ciphertext",
+              "reserved_at",
+              "completed_at",
+              "revision"
+            ]
+          },
+          {
+            "name": "ledger_metadata",
+            "rows": 2,
+            "columns": [
+              "name",
+              "ciphertext"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 3
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20479
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"invocations\", \"rows\": 1, \"columns\": [\"key_blind\", \"digest_blind\", \"identity_ciphertext\", \"state\", \"report_ciphertext\", \"recovery_ciphertext\", \"reserved_at\", \"completed_at\", \"revision\"]}, {\"name\": \"ledger_metadata\", \"rows\": 2, \"c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 1,
+            "text": "[{\"name\": \"ledger_metadata\", \"rows\": 2, \"columns\": [\"name\", \"ciphertext\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-status-complete-scan-20260713-064223/tooling-v2/missions.sqlite": {
+      "parser": "sqlite",
+      "bytes": 200704,
+      "sha256": "4e2da10f07c916f1040b42498f9de9e150d77598712dbd01691ee636de8c79be",
+      "rows": 15,
+      "schema": {
+        "tables": [
+          "confirmation_replays",
+          "effect_claims",
+          "events",
+          "handles",
+          "mission_leases",
+          "missions",
+          "private_deliveries",
+          "sqlite_sequence",
+          "steps"
+        ],
+        "detail": [
+          {
+            "name": "confirmation_replays",
+            "rows": 1,
+            "columns": [
+              "nonce_sha256",
+              "expires_at"
+            ]
+          },
+          {
+            "name": "effect_claims",
+            "rows": 0,
+            "columns": [
+              "claim_id",
+              "mission_id",
+              "step_id",
+              "predecessor_claim_id",
+              "direction",
+              "operation",
+              "attempt",
+              "state",
+              "revision",
+              "lease_generation",
+              "writer_generation",
+              "mission_revision",
+              "step_revision",
+              "event_head_sequence",
+              "event_head_id",
+              "plan_digest",
+              "tool_contract_digest",
+              "action_digest",
+              "claim_digest",
+              "binding_digest",
+              "idempotency_key_sha256",
+              "reservation_state",
+              "ledger_instance_id",
+              "invocation_id",
+              "report_digest",
+              "completion_mode",
+              "claim_ciphertext",
+              "reservation_ciphertext",
+              "finish_ciphertext",
+              "recovery_ciphertext",
+              "postcondition_ciphertext",
+              "claim_event_sequence",
+              "reservation_event_sequence",
+              "finish_event_sequence",
+              "recovery_event_sequence",
+              "postcondition_event_sequence",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "events",
+            "rows": 10,
+            "columns": [
+              "sequence",
+              "event_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "payload_json",
+              "created_at"
+            ]
+          },
+          {
+            "name": "handles",
+            "rows": 0,
+            "columns": [
+              "handle_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "external_id",
+              "state",
+              "metadata_json",
+              "revision",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "mission_leases",
+            "rows": 1,
+            "columns": [
+              "mission_id",
+              "token_sha256",
+              "generation",
+              "expires_at_epoch_ms",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "missions",
+            "rows": 1,
+            "columns": [
+              "mission_id",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "metadata_json",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "private_deliveries",
+            "rows": 0,
+            "columns": [
+              "recovery_id",
+              "mission_id",
+              "principal_id",
+              "state",
+              "generation",
+              "revision",
+              "process_id",
+              "session_owner_id",
+              "delivery_id",
+              "presentation_request_id",
+              "result_id",
+              "lease_expires_at_epoch_ms",
+              "previous_generation",
+              "previous_process_id",
+              "previous_session_owner_id",
+              "previous_delivery_id",
+              "previous_presentation_request_id",
+              "previous_result_id",
+              "prepared_event_sequence",
+              "terminal_event_sequence",
+              "integrity_ciphertext",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "steps",
+            "rows": 1,
+            "columns": [
+              "step_id",
+              "mission_id",
+              "ordinal",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at",
+              "execution_class"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 9,
+        "rows_total": 15
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 200703
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"confirmation_replays\", \"rows\": 1, \"columns\": [\"nonce_sha256\", \"expires_at\"]}, {\"name\": \"effect_claims\", \"rows\": 0, \"columns\": [\"claim_id\", \"mission_id\", \"step_id\", \"predecessor_claim_id\", \"direction\", \"operation\", \"attempt\", \"st…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 200703,
+            "line": 1,
+            "text": "[{\"name\": \"steps\", \"rows\": 1, \"columns\": [\"step_id\", \"mission_id\", \"ordinal\", \"idempotency_key\", \"operation\", \"args_json\", \"args_sha256\", \"state\", \"revision\", \"result_json\", \"error_json\", \"created_at\", \"updated_at\", \"execution_class\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-status-complete-scan-20260713-064223/tooling-v2/routines.sqlite": {
+      "parser": "sqlite",
+      "bytes": 16384,
+      "sha256": "eb8cb07ff02f10b7ddd96b8a108f58cfe8d54679c0fa1770a3633f5101df45e9",
+      "rows": 2,
+      "schema": {
+        "tables": [
+          "routine_meta",
+          "routine_runs",
+          "routines"
+        ],
+        "detail": [
+          {
+            "name": "routine_meta",
+            "rows": 2,
+            "columns": [
+              "key",
+              "value"
+            ]
+          },
+          {
+            "name": "routine_runs",
+            "rows": 0,
+            "columns": [
+              "run_key",
+              "routine_id",
+              "routine_revision",
+              "mission_id",
+              "state",
+              "lease_owner",
+              "lease_until",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "routines",
+            "rows": 0,
+            "columns": [
+              "routine_id",
+              "revision",
+              "payload"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 3,
+        "rows_total": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16383
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"routine_meta\", \"rows\": 2, \"columns\": [\"key\", \"value\"]}, {\"name\": \"routine_runs\", \"rows\": 0, \"columns\": [\"run_key\", \"routine_id\", \"routine_revision\", \"mission_id\", \"state\", \"lease_owner\", \"lease_until\", \"created_at\", \"updated_at\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16383,
+            "line": 1,
+            "text": "[{\"name\": \"routines\", \"rows\": 0, \"columns\": [\"routine_id\", \"revision\", \"payload\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-app-v2-20260713-054649/baxy.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 59,
+      "sha256": "b0969dd7575f51f819afff46cd16a9b557905e057cc1c7d11e598e044819f21f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 59,
+        "max_line_bytes": 59
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY GUI en http://127.0.0.1:8766/ — Ctrl+C para salir."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY GUI en http://127.0.0.1:8766/ — Ctrl+C para salir."
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-20260713-054956/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 17463,
+      "sha256": "cc8c24083696ff4170b69cbd21632f4d547105971f21656c8e201beb4d9f8e1d",
+      "rows": 139,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17362,
+        "min_line_bytes": 1,
+        "max_line_bytes": 834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783936206.2721376, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17278,
+            "line": 138,
+            "text": "0.19.642.668 I slot print_timing: id 0 | task 271 | graphs reused = 223"
+          },
+          {
+            "offset": 17362,
+            "line": 139,
+            "text": "0.19.642.724 I slot release: id 0 | task 271 | stop processing: n_tokens = 286, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-20260713-054956/session.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 13688,
+      "sha256": "665b52970ffb56685a2e511023b0c69c347da4171420e5cc3c27b24acb82b5a8",
+      "rows": 198,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13672,
+        "min_line_bytes": 6,
+        "max_line_bytes": 358
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿BAXY listo · 91 operaciones seguras registradas (v2 experimental). Ctrl+C o 'salir' para terminar."
+          },
+          {
+            "offset": 202,
+            "line": 2,
+            "text": "vos > baxy > Hola. ¿En qué te puedo ayudar? [chat · no_tool 0.0]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13666,
+            "line": 197,
+            "text": "}"
+          },
+          {
+            "offset": 13672,
+            "line": 198,
+            "text": "vos >"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-20260713-054956/tooling-v2/invocations.sqlite": {
+      "parser": "sqlite",
+      "bytes": 32768,
+      "sha256": "0cb11a716e6b3ea1f55b9d691d3952c4863b11fe1fb541ed91d71c421bbc2ec8",
+      "rows": 4,
+      "schema": {
+        "tables": [
+          "invocations",
+          "ledger_metadata"
+        ],
+        "detail": [
+          {
+            "name": "invocations",
+            "rows": 2,
+            "columns": [
+              "key_blind",
+              "digest_blind",
+              "identity_ciphertext",
+              "state",
+              "report_ciphertext",
+              "recovery_ciphertext",
+              "reserved_at",
+              "completed_at",
+              "revision"
+            ]
+          },
+          {
+            "name": "ledger_metadata",
+            "rows": 2,
+            "columns": [
+              "name",
+              "ciphertext"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 4
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32767
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"invocations\", \"rows\": 2, \"columns\": [\"key_blind\", \"digest_blind\", \"identity_ciphertext\", \"state\", \"report_ciphertext\", \"recovery_ciphertext\", \"reserved_at\", \"completed_at\", \"revision\"]}, {\"name\": \"ledger_metadata\", \"rows\": 2, \"c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 32767,
+            "line": 1,
+            "text": "[{\"name\": \"ledger_metadata\", \"rows\": 2, \"columns\": [\"name\", \"ciphertext\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-20260713-054956/tooling-v2/missions.sqlite": {
+      "parser": "sqlite",
+      "bytes": 282624,
+      "sha256": "dfb04a2301771b5c31b4799616bf2e3b795f18539c3ed50cdfa3b5bc9090dff5",
+      "rows": 139,
+      "schema": {
+        "tables": [
+          "confirmation_replays",
+          "effect_claims",
+          "events",
+          "handles",
+          "mission_leases",
+          "missions",
+          "private_deliveries",
+          "sqlite_sequence",
+          "steps"
+        ],
+        "detail": [
+          {
+            "name": "confirmation_replays",
+            "rows": 1,
+            "columns": [
+              "nonce_sha256",
+              "expires_at"
+            ]
+          },
+          {
+            "name": "effect_claims",
+            "rows": 0,
+            "columns": [
+              "claim_id",
+              "mission_id",
+              "step_id",
+              "predecessor_claim_id",
+              "direction",
+              "operation",
+              "attempt",
+              "state",
+              "revision",
+              "lease_generation",
+              "writer_generation",
+              "mission_revision",
+              "step_revision",
+              "event_head_sequence",
+              "event_head_id",
+              "plan_digest",
+              "tool_contract_digest",
+              "action_digest",
+              "claim_digest",
+              "binding_digest",
+              "idempotency_key_sha256",
+              "reservation_state",
+              "ledger_instance_id",
+              "invocation_id",
+              "report_digest",
+              "completion_mode",
+              "claim_ciphertext",
+              "reservation_ciphertext",
+              "finish_ciphertext",
+              "recovery_ciphertext",
+              "postcondition_ciphertext",
+              "claim_event_sequence",
+              "reservation_event_sequence",
+              "finish_event_sequence",
+              "recovery_event_sequence",
+              "postcondition_event_sequence",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "events",
+            "rows": 98,
+            "columns": [
+              "sequence",
+              "event_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "payload_json",
+              "created_at"
+            ]
+          },
+          {
+            "name": "handles",
+            "rows": 0,
+            "columns": [
+              "handle_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "external_id",
+              "state",
+              "metadata_json",
+              "revision",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "mission_leases",
+            "rows": 13,
+            "columns": [
+              "mission_id",
+              "token_sha256",
+              "generation",
+              "expires_at_epoch_ms",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "missions",
+            "rows": 13,
+            "columns": [
+              "mission_id",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "metadata_json",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "private_deliveries",
+            "rows": 0,
+            "columns": [
+              "recovery_id",
+              "mission_id",
+              "principal_id",
+              "state",
+              "generation",
+              "revision",
+              "process_id",
+              "session_owner_id",
+              "delivery_id",
+              "presentation_request_id",
+              "result_id",
+              "lease_expires_at_epoch_ms",
+              "previous_generation",
+              "previous_process_id",
+              "previous_session_owner_id",
+              "previous_delivery_id",
+              "previous_presentation_request_id",
+              "previous_result_id",
+              "prepared_event_sequence",
+              "terminal_event_sequence",
+              "integrity_ciphertext",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "steps",
+            "rows": 13,
+            "columns": [
+              "step_id",
+              "mission_id",
+              "ordinal",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at",
+              "execution_class"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 9,
+        "rows_total": 139
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 282623
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"confirmation_replays\", \"rows\": 1, \"columns\": [\"nonce_sha256\", \"expires_at\"]}, {\"name\": \"effect_claims\", \"rows\": 0, \"columns\": [\"claim_id\", \"mission_id\", \"step_id\", \"predecessor_claim_id\", \"direction\", \"operation\", \"attempt\", \"st…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 282623,
+            "line": 1,
+            "text": "[{\"name\": \"steps\", \"rows\": 13, \"columns\": [\"step_id\", \"mission_id\", \"ordinal\", \"idempotency_key\", \"operation\", \"args_json\", \"args_sha256\", \"state\", \"revision\", \"result_json\", \"error_json\", \"created_at\", \"updated_at\", \"execution_class\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-20260713-054956/tooling-v2/routines.sqlite": {
+      "parser": "sqlite",
+      "bytes": 16384,
+      "sha256": "a85b9859d8c5176ddf4667fc8f3c49263bcfe5b6fb69a7ccfd6b7aa92d0190e1",
+      "rows": 2,
+      "schema": {
+        "tables": [
+          "routine_meta",
+          "routine_runs",
+          "routines"
+        ],
+        "detail": [
+          {
+            "name": "routine_meta",
+            "rows": 2,
+            "columns": [
+              "key",
+              "value"
+            ]
+          },
+          {
+            "name": "routine_runs",
+            "rows": 0,
+            "columns": [
+              "run_key",
+              "routine_id",
+              "routine_revision",
+              "mission_id",
+              "state",
+              "lease_owner",
+              "lease_until",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "routines",
+            "rows": 0,
+            "columns": [
+              "routine_id",
+              "revision",
+              "payload"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 3,
+        "rows_total": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16383
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"routine_meta\", \"rows\": 2, \"columns\": [\"key\", \"value\"]}, {\"name\": \"routine_runs\", \"rows\": 0, \"columns\": [\"run_key\", \"routine_id\", \"routine_revision\", \"mission_id\", \"state\", \"lease_owner\", \"lease_until\", \"created_at\", \"updated_at\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16383,
+            "line": 1,
+            "text": "[{\"name\": \"routines\", \"rows\": 0, \"columns\": [\"routine_id\", \"revision\", \"payload\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/app-process-after.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 348,
+      "sha256": "1529064bbd341d81d2d7ffd712f0f8f78e852fc946946445843afd845fdfb44f",
+      "rows": 2,
+      "schema": {
+        "root": "array",
+        "n": 2,
+        "elem_keys": [
+          "Id",
+          "MainWindowTitle",
+          "ProcessName",
+          "StartTime"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 347
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"Id\": 18748, \"ProcessName\": \"CalculatorApp\", \"StartTime\": \"/Date(1783938105462)/\", \"MainWindowTitle\": \"\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 347,
+            "line": 2,
+            "text": "{\"Id\": 3904, \"ProcessName\": \"Notepad\", \"StartTime\": \"/Date(1783938115205)/\", \"MainWindowTitle\": \"Diva.txt: Bloc de notas\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/app-process-cleanup.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 140,
+      "sha256": "c1b79e89484b8f5f90dc4a9082c3b05daaec1c1b85107bd22df41f4f01672fbd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "Id",
+          "MainWindowTitle",
+          "ProcessName",
+          "StartTime"
+        ],
+        "n_keys": 4,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "Id",
+          "MainWindowTitle",
+          "ProcessName",
+          "StartTime"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 139,
+        "Id": {
+          "min": 18748,
+          "max": 18748
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"Id\", \"MainWindowTitle\", \"ProcessName\", \"StartTime\"], \"n_keys\": 4, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"Id\", \"MainWindowTitle\", \"ProcessName\", \"StartTime\"], \"n_keys\": 4, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/gpu-after.csv": {
+      "parser": "csv",
+      "encoding": "utf-8-sig",
+      "bytes": 82,
+      "sha256": "0bdb6b819352f9ce2137c4ebdd1fb7c6dbcba0ae3836c8bfc9887a597b9a5264",
+      "rows": 0,
+      "schema": {
+        "keys": [
+          "2026/07/13 06:22:00.136",
+          " NVIDIA GeForce RTX 4060 Ti",
+          " 1435 MiB",
+          " 16380 MiB",
+          " 0 %"
+        ],
+        "delimiter": ","
+      },
+      "distribution": {
+        "header_cols": 5
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 81
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "2026/07/13 06:22:00.136, NVIDIA GeForce RTX 4060 Ti, 1435 MiB, 16380 MiB, 0 %"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "2026/07/13 06:22:00.136, NVIDIA GeForce RTX 4060 Ti, 1435 MiB, 16380 MiB, 0 %"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/gpu-before.csv": {
+      "parser": "csv",
+      "encoding": "utf-8-sig",
+      "bytes": 82,
+      "sha256": "f114357b49eeeb9bb4cbefbd19b57528226500ef38b41b653f955d35f84e6d5d",
+      "rows": 0,
+      "schema": {
+        "keys": [
+          "2026/07/13 06:21:22.256",
+          " NVIDIA GeForce RTX 4060 Ti",
+          " 1360 MiB",
+          " 16380 MiB",
+          " 0 %"
+        ],
+        "delimiter": ","
+      },
+      "distribution": {
+        "header_cols": 5
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 81
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "2026/07/13 06:21:22.256, NVIDIA GeForce RTX 4060 Ti, 1360 MiB, 16380 MiB, 0 %"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "2026/07/13 06:21:22.256, NVIDIA GeForce RTX 4060 Ti, 1360 MiB, 16380 MiB, 0 %"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 17106,
+      "sha256": "264b45053d1324c2db4f4cb35cbc68854e18eb8a7b67997a34a4af1a249ce9e5",
+      "rows": 139,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17005,
+        "min_line_bytes": 1,
+        "max_line_bytes": 834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783938089.4879909, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16921,
+            "line": 138,
+            "text": "0.29.718.770 I slot print_timing: id 0 | task 559 | graphs reused = 518"
+          },
+          {
+            "offset": 17005,
+            "line": 139,
+            "text": "0.29.718.814 I slot release: id 0 | task 559 | stop processing: n_tokens = 286, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/notes.sqlite": {
+      "parser": "sqlite",
+      "bytes": 12288,
+      "sha256": "857ea521cf92d7384de5c55401f2c3ff613d78bdb916ca8b98f552f376ed08b8",
+      "rows": 3,
+      "schema": {
+        "tables": [
+          "note_meta",
+          "notes"
+        ],
+        "detail": [
+          {
+            "name": "note_meta",
+            "rows": 2,
+            "columns": [
+              "key",
+              "value"
+            ]
+          },
+          {
+            "name": "notes",
+            "rows": 1,
+            "columns": [
+              "note_id",
+              "version",
+              "payload"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 3
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"note_meta\", \"rows\": 2, \"columns\": [\"key\", \"value\"]}, {\"name\": \"notes\", \"rows\": 1, \"columns\": [\"note_id\", \"version\", \"payload\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12287,
+            "line": 1,
+            "text": "[{\"name\": \"notes\", \"rows\": 1, \"columns\": [\"note_id\", \"version\", \"payload\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/tooling-v2/invocations.sqlite": {
+      "parser": "sqlite",
+      "bytes": 69632,
+      "sha256": "09bc67c1a695d21e6bb7f22d12dae855b069cd58cebc0fa5ea2d0ca9f1ddb799",
+      "rows": 14,
+      "schema": {
+        "tables": [
+          "invocations",
+          "ledger_metadata"
+        ],
+        "detail": [
+          {
+            "name": "invocations",
+            "rows": 12,
+            "columns": [
+              "key_blind",
+              "digest_blind",
+              "identity_ciphertext",
+              "state",
+              "report_ciphertext",
+              "recovery_ciphertext",
+              "reserved_at",
+              "completed_at",
+              "revision"
+            ]
+          },
+          {
+            "name": "ledger_metadata",
+            "rows": 2,
+            "columns": [
+              "name",
+              "ciphertext"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 14
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69631
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"invocations\", \"rows\": 12, \"columns\": [\"key_blind\", \"digest_blind\", \"identity_ciphertext\", \"state\", \"report_ciphertext\", \"recovery_ciphertext\", \"reserved_at\", \"completed_at\", \"revision\"]}, {\"name\": \"ledger_metadata\", \"rows\": 2, \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 69631,
+            "line": 1,
+            "text": "[{\"name\": \"ledger_metadata\", \"rows\": 2, \"columns\": [\"name\", \"ciphertext\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/tooling-v2/missions.sqlite": {
+      "parser": "sqlite",
+      "bytes": 311296,
+      "sha256": "c717b704ac09457c769dc25890b5e57bb7705bf3f2a65fd1e639fa59c819ca50",
+      "rows": 181,
+      "schema": {
+        "tables": [
+          "confirmation_replays",
+          "effect_claims",
+          "events",
+          "handles",
+          "mission_leases",
+          "missions",
+          "private_deliveries",
+          "sqlite_sequence",
+          "steps"
+        ],
+        "detail": [
+          {
+            "name": "confirmation_replays",
+            "rows": 1,
+            "columns": [
+              "nonce_sha256",
+              "expires_at"
+            ]
+          },
+          {
+            "name": "effect_claims",
+            "rows": 0,
+            "columns": [
+              "claim_id",
+              "mission_id",
+              "step_id",
+              "predecessor_claim_id",
+              "direction",
+              "operation",
+              "attempt",
+              "state",
+              "revision",
+              "lease_generation",
+              "writer_generation",
+              "mission_revision",
+              "step_revision",
+              "event_head_sequence",
+              "event_head_id",
+              "plan_digest",
+              "tool_contract_digest",
+              "action_digest",
+              "claim_digest",
+              "binding_digest",
+              "idempotency_key_sha256",
+              "reservation_state",
+              "ledger_instance_id",
+              "invocation_id",
+              "report_digest",
+              "completion_mode",
+              "claim_ciphertext",
+              "reservation_ciphertext",
+              "finish_ciphertext",
+              "recovery_ciphertext",
+              "postcondition_ciphertext",
+              "claim_event_sequence",
+              "reservation_event_sequence",
+              "finish_event_sequence",
+              "recovery_event_sequence",
+              "postcondition_event_sequence",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "events",
+            "rows": 137,
+            "columns": [
+              "sequence",
+              "event_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "payload_json",
+              "created_at"
+            ]
+          },
+          {
+            "name": "handles",
+            "rows": 0,
+            "columns": [
+              "handle_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "external_id",
+              "state",
+              "metadata_json",
+              "revision",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "mission_leases",
+            "rows": 14,
+            "columns": [
+              "mission_id",
+              "token_sha256",
+              "generation",
+              "expires_at_epoch_ms",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "missions",
+            "rows": 14,
+            "columns": [
+              "mission_id",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "metadata_json",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "private_deliveries",
+            "rows": 0,
+            "columns": [
+              "recovery_id",
+              "mission_id",
+              "principal_id",
+              "state",
+              "generation",
+              "revision",
+              "process_id",
+              "session_owner_id",
+              "delivery_id",
+              "presentation_request_id",
+              "result_id",
+              "lease_expires_at_epoch_ms",
+              "previous_generation",
+              "previous_process_id",
+              "previous_session_owner_id",
+              "previous_delivery_id",
+              "previous_presentation_request_id",
+              "previous_result_id",
+              "prepared_event_sequence",
+              "terminal_event_sequence",
+              "integrity_ciphertext",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "steps",
+            "rows": 14,
+            "columns": [
+              "step_id",
+              "mission_id",
+              "ordinal",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at",
+              "execution_class"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 9,
+        "rows_total": 181
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 311295
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"confirmation_replays\", \"rows\": 1, \"columns\": [\"nonce_sha256\", \"expires_at\"]}, {\"name\": \"effect_claims\", \"rows\": 0, \"columns\": [\"claim_id\", \"mission_id\", \"step_id\", \"predecessor_claim_id\", \"direction\", \"operation\", \"attempt\", \"st…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 311295,
+            "line": 1,
+            "text": "[{\"name\": \"steps\", \"rows\": 14, \"columns\": [\"step_id\", \"mission_id\", \"ordinal\", \"idempotency_key\", \"operation\", \"args_json\", \"args_sha256\", \"state\", \"revision\", \"result_json\", \"error_json\", \"created_at\", \"updated_at\", \"execution_class\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/tooling-v2/routines.sqlite": {
+      "parser": "sqlite",
+      "bytes": 16384,
+      "sha256": "c2dcfda14079a7e1a1661398b21d49e37fe8d7189e4e53a9c2ab66bc1a464f71",
+      "rows": 2,
+      "schema": {
+        "tables": [
+          "routine_meta",
+          "routine_runs",
+          "routines"
+        ],
+        "detail": [
+          {
+            "name": "routine_meta",
+            "rows": 2,
+            "columns": [
+              "key",
+              "value"
+            ]
+          },
+          {
+            "name": "routine_runs",
+            "rows": 0,
+            "columns": [
+              "run_key",
+              "routine_id",
+              "routine_revision",
+              "mission_id",
+              "state",
+              "lease_owner",
+              "lease_until",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "routines",
+            "rows": 0,
+            "columns": [
+              "routine_id",
+              "revision",
+              "payload"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 3,
+        "rows_total": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16383
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"routine_meta\", \"rows\": 2, \"columns\": [\"key\", \"value\"]}, {\"name\": \"routine_runs\", \"rows\": 0, \"columns\": [\"run_key\", \"routine_id\", \"routine_revision\", \"mission_id\", \"state\", \"lease_owner\", \"lease_until\", \"created_at\", \"updated_at\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16383,
+            "line": 1,
+            "text": "[{\"name\": \"routines\", \"rows\": 0, \"columns\": [\"routine_id\", \"revision\", \"payload\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-utf8-20260713-055354/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 16633,
+      "sha256": "0d66b55993367e454f9695b06405889a676bf616f337011615d0374d342b0353",
+      "rows": 136,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16532,
+        "min_line_bytes": 1,
+        "max_line_bytes": 834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783936444.6887145, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16448,
+            "line": 135,
+            "text": "0.33.268.001 I slot print_timing: id 0 | task 446 | graphs reused = 406"
+          },
+          {
+            "offset": 16532,
+            "line": 136,
+            "text": "0.33.268.060 I slot release: id 0 | task 446 | stop processing: n_tokens = 286, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-utf8-20260713-055354/session.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 14726,
+      "sha256": "094caa4dbf8e11b35772d5b96d1c07179a9558dbdddb6f40d4f2726fe4062f30",
+      "rows": 229,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14710,
+        "min_line_bytes": 6,
+        "max_line_bytes": 416
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿BAXY listo · 91 operaciones seguras registradas (v2 experimental). Ctrl+C o 'salir' para terminar."
+          },
+          {
+            "offset": 202,
+            "line": 2,
+            "text": "vos > baxy > Hola. ¿En qué puedo ayudarte hoy? [chat · no_tool 0.0]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14704,
+            "line": 228,
+            "text": "}"
+          },
+          {
+            "offset": 14710,
+            "line": 229,
+            "text": "vos >"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-utf8-20260713-055354/tooling-v2/invocations.sqlite": {
+      "parser": "sqlite",
+      "bytes": 49152,
+      "sha256": "1a6c8f23584142bab84e0b259a63b15eee5484dd8410e70928e5282912378f60",
+      "rows": 9,
+      "schema": {
+        "tables": [
+          "invocations",
+          "ledger_metadata"
+        ],
+        "detail": [
+          {
+            "name": "invocations",
+            "rows": 7,
+            "columns": [
+              "key_blind",
+              "digest_blind",
+              "identity_ciphertext",
+              "state",
+              "report_ciphertext",
+              "recovery_ciphertext",
+              "reserved_at",
+              "completed_at",
+              "revision"
+            ]
+          },
+          {
+            "name": "ledger_metadata",
+            "rows": 2,
+            "columns": [
+              "name",
+              "ciphertext"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 2,
+        "rows_total": 9
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 49151
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"invocations\", \"rows\": 7, \"columns\": [\"key_blind\", \"digest_blind\", \"identity_ciphertext\", \"state\", \"report_ciphertext\", \"recovery_ciphertext\", \"reserved_at\", \"completed_at\", \"revision\"]}, {\"name\": \"ledger_metadata\", \"rows\": 2, \"c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 49151,
+            "line": 1,
+            "text": "[{\"name\": \"ledger_metadata\", \"rows\": 2, \"columns\": [\"name\", \"ciphertext\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-utf8-20260713-055354/tooling-v2/missions.sqlite": {
+      "parser": "sqlite",
+      "bytes": 294912,
+      "sha256": "a362fac0fad0442e526e8c54e398e2c7caf9795105503476b7bb3b018a205357",
+      "rows": 154,
+      "schema": {
+        "tables": [
+          "confirmation_replays",
+          "effect_claims",
+          "events",
+          "handles",
+          "mission_leases",
+          "missions",
+          "private_deliveries",
+          "sqlite_sequence",
+          "steps"
+        ],
+        "detail": [
+          {
+            "name": "confirmation_replays",
+            "rows": 1,
+            "columns": [
+              "nonce_sha256",
+              "expires_at"
+            ]
+          },
+          {
+            "name": "effect_claims",
+            "rows": 0,
+            "columns": [
+              "claim_id",
+              "mission_id",
+              "step_id",
+              "predecessor_claim_id",
+              "direction",
+              "operation",
+              "attempt",
+              "state",
+              "revision",
+              "lease_generation",
+              "writer_generation",
+              "mission_revision",
+              "step_revision",
+              "event_head_sequence",
+              "event_head_id",
+              "plan_digest",
+              "tool_contract_digest",
+              "action_digest",
+              "claim_digest",
+              "binding_digest",
+              "idempotency_key_sha256",
+              "reservation_state",
+              "ledger_instance_id",
+              "invocation_id",
+              "report_digest",
+              "completion_mode",
+              "claim_ciphertext",
+              "reservation_ciphertext",
+              "finish_ciphertext",
+              "recovery_ciphertext",
+              "postcondition_ciphertext",
+              "claim_event_sequence",
+              "reservation_event_sequence",
+              "finish_event_sequence",
+              "recovery_event_sequence",
+              "postcondition_event_sequence",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "events",
+            "rows": 113,
+            "columns": [
+              "sequence",
+              "event_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "payload_json",
+              "created_at"
+            ]
+          },
+          {
+            "name": "handles",
+            "rows": 0,
+            "columns": [
+              "handle_id",
+              "mission_id",
+              "step_id",
+              "kind",
+              "external_id",
+              "state",
+              "metadata_json",
+              "revision",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "mission_leases",
+            "rows": 13,
+            "columns": [
+              "mission_id",
+              "token_sha256",
+              "generation",
+              "expires_at_epoch_ms",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "missions",
+            "rows": 13,
+            "columns": [
+              "mission_id",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "metadata_json",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "private_deliveries",
+            "rows": 0,
+            "columns": [
+              "recovery_id",
+              "mission_id",
+              "principal_id",
+              "state",
+              "generation",
+              "revision",
+              "process_id",
+              "session_owner_id",
+              "delivery_id",
+              "presentation_request_id",
+              "result_id",
+              "lease_expires_at_epoch_ms",
+              "previous_generation",
+              "previous_process_id",
+              "previous_session_owner_id",
+              "previous_delivery_id",
+              "previous_presentation_request_id",
+              "previous_result_id",
+              "prepared_event_sequence",
+              "terminal_event_sequence",
+              "integrity_ciphertext",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "steps",
+            "rows": 13,
+            "columns": [
+              "step_id",
+              "mission_id",
+              "ordinal",
+              "idempotency_key",
+              "operation",
+              "args_json",
+              "args_sha256",
+              "state",
+              "revision",
+              "result_json",
+              "error_json",
+              "created_at",
+              "updated_at",
+              "execution_class"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 9,
+        "rows_total": 154
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294911
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"confirmation_replays\", \"rows\": 1, \"columns\": [\"nonce_sha256\", \"expires_at\"]}, {\"name\": \"effect_claims\", \"rows\": 0, \"columns\": [\"claim_id\", \"mission_id\", \"step_id\", \"predecessor_claim_id\", \"direction\", \"operation\", \"attempt\", \"st…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 294911,
+            "line": 1,
+            "text": "[{\"name\": \"steps\", \"rows\": 13, \"columns\": [\"step_id\", \"mission_id\", \"ordinal\", \"idempotency_key\", \"operation\", \"args_json\", \"args_sha256\", \"state\", \"revision\", \"result_json\", \"error_json\", \"created_at\", \"updated_at\", \"execution_class\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/real-cli-v2-utf8-20260713-055354/tooling-v2/routines.sqlite": {
+      "parser": "sqlite",
+      "bytes": 16384,
+      "sha256": "93cb7720f658e9e893eae834bd16ff8c6f63b71e6053555fb87363909dc5a2f4",
+      "rows": 2,
+      "schema": {
+        "tables": [
+          "routine_meta",
+          "routine_runs",
+          "routines"
+        ],
+        "detail": [
+          {
+            "name": "routine_meta",
+            "rows": 2,
+            "columns": [
+              "key",
+              "value"
+            ]
+          },
+          {
+            "name": "routine_runs",
+            "rows": 0,
+            "columns": [
+              "run_key",
+              "routine_id",
+              "routine_revision",
+              "mission_id",
+              "state",
+              "lease_owner",
+              "lease_until",
+              "created_at",
+              "updated_at"
+            ]
+          },
+          {
+            "name": "routines",
+            "rows": 0,
+            "columns": [
+              "routine_id",
+              "revision",
+              "payload"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 3,
+        "rows_total": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16383
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"routine_meta\", \"rows\": 2, \"columns\": [\"key\", \"value\"]}, {\"name\": \"routine_runs\", \"rows\": 0, \"columns\": [\"run_key\", \"routine_id\", \"routine_revision\", \"mission_id\", \"state\", \"lease_owner\", \"lease_until\", \"created_at\", \"updated_at\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16383,
+            "line": 1,
+            "text": "[{\"name\": \"routines\", \"rows\": 0, \"columns\": [\"routine_id\", \"revision\", \"payload\"]}]"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/route-diagnostic-20260713-055720/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2212,
+      "sha256": "8b12c9ec0361c3d260813572b31ab5eda394a4156ae7e0814ccbd021efc2f442",
+      "rows": 15,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2142,
+        "min_line_bytes": 1,
+        "max_line_bytes": 834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783936646.9732814, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2094,
+            "line": 14,
+            "text": "0.02.775.961 I srv llama_server: model loaded"
+          },
+          {
+            "offset": 2142,
+            "line": 15,
+            "text": "0.02.775.969 I srv llama_server: listening on http://127.0.0.1:8080"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/route-diagnostic-20260713-055752/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3111,
+      "sha256": "8ab96de7abb57b602c28db8b8178bb38392d724aa436746f9af2dab029f636c6",
+      "rows": 23,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3012,
+        "min_line_bytes": 1,
+        "max_line_bytes": 833
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783936678.896273, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\m…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2930,
+            "line": 22,
+            "text": "0.12.327.347 I slot print_timing: id 0 | task 0 | graphs reused = 36"
+          },
+          {
+            "offset": 3012,
+            "line": 23,
+            "text": "0.12.327.399 I slot release: id 0 | task 0 | stop processing: n_tokens = 283, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/route-diagnostic-20260713-055829/llama-server.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8056,
+      "sha256": "f40f8ab0ca0d2ac7eac0d760c1a263ee3ba97955fb280f771fd8ab4a1ff75770",
+      "rows": 64,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7955,
+        "min_line_bytes": 1,
+        "max_line_bytes": 834
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": ""
+          },
+          {
+            "offset": 1,
+            "line": 2,
+            "text": "[BAXY] {\"event\": \"baxy_server_start\", \"ts\": 1783936716.0278666, \"command\": [\"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\models\\\\artifacts\\\\llama-b9980\\\\llama-server.exe\", \"-m\", \"C:\\\\Users\\\\usuario\\\\Desktop\\\\ETC\\\\Programacion\\\\BAXY\\\\…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7871,
+            "line": 63,
+            "text": "0.24.035.813 I slot print_timing: id 0 | task 206 | graphs reused = 215"
+          },
+          {
+            "offset": 7955,
+            "line": 64,
+            "text": "0.24.035.870 I slot release: id 0 | task 206 | stop processing: n_tokens = 284, truncated = 0"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/router-prewarm-diagnostic-20260713-175308.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1148,
+      "sha256": "79732858bd3be9312ef7a65279ee8e7c373a149ef7ade5b2cc781c7c9cf5a52f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "cleanup",
+          "diagnosis",
+          "kind",
+          "real_post_warm",
+          "schema_version",
+          "server"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1147,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"cleanup\", \"diagnosis\", \"kind\", \"real_post_warm\", \"schema_version\", \"server\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"cleanup\", \"diagnosis\", \"kind\", \"real_post_warm\", \"schema_version\", \"server\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-b9980-q8-5vision-idle10-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31445,
+      "sha256": "d5c1216f6f953270c5982878f04c873cf654ce37640a3525e365cc55d6e4b8cf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 5,
+          "iterations": 5,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31444,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-b9980-q8-checkpoints0-cache0-5vision-idle10-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31422,
+      "sha256": "468129ea565bf0855f8b5309de348d47820c0000bbda281c53f956e0548ed0eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 5,
+          "iterations": 5,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31421,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-official-q8-b9959-40vision-idle120.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 149099,
+      "sha256": "eae651284a4f0d50760c397319e28574f1d5d4abc5472b3d359a64af53bb3d55",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 12,
+          "iterations": 40,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 149098,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-official-q8-recycle-3plus1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17869,
+      "sha256": "a8efe7b7c9edab5fce534e59f17ae8a72140ee2fbacaf6c0719f45892d63708e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 0,
+          "iterations": 4,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17868,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-privacy-redaction-smoke-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9097,
+      "sha256": "8f28abf9662b7966051664b746d21fb7b52f351a801cae8793a9847a41809f18",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 0,
+          "iterations": 1,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9096,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-q8-b9959-40vision-idle120.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 147855,
+      "sha256": "fc8154ceab67badf0324fc13997f8465a646baeed90257309166326021652622",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 12,
+          "iterations": 40,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 147854,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"startup\", \"success\", \"th…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"startup\", \"success\", \"th…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-q8-cache0-5vision.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20382,
+      "sha256": "bd964402a5f6a2b908fd9c7815c78c78cd38311095b4ea1958b54591f40a5a19",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 0,
+          "iterations": 5,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20381,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"startup\", \"success\", \"th…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"startup\", \"success\", \"th…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/soak-suspended-synthetic-private-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8940,
+      "sha256": "ac250be65089659b834b38ca6872ec2f2a97e1a800f375e66b6f8348f7c5c43e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "absolute_limits_mib",
+          "audio_setup",
+          "baseline_resources",
+          "cleanup",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "growth",
+          "idle_samples",
+          "inputs",
+          "iterations",
+          "pre_boot_resources",
+          "schema_version",
+          "server",
+          "started_at",
+          "startup",
+          "success",
+          "thresholds_mib",
+          "warnings"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_setup",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "idle_samples": 0,
+          "iterations": 1,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8939,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"absolute_limits_mib\", \"audio_setup\", \"baseline_resources\", \"cleanup\", \"failures\", \"fatal_error\", \"finished_at\", \"growth\", \"idle_samples\", \"inputs\", \"iterations\", \"pre_boot_resources\", \"schema_version\", \"server\", \"started_at\", \"s…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-84-official-q8-b9959.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 110612,
+      "sha256": "c936c2ec6e137d32e4fe0e1543b51336a0c26e1d302d05bf0eb572d574ee614e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 110611,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 84,
+          "max": 84
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-84-official-q8-b9980.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55797,
+      "sha256": "6c5f24d3f45bbb086bf1015cff3e55cd7dddf9f43c5c8ce6517f8f914259075e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55796,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 84,
+          "max": 84
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-real84-q8-pad500-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 99580,
+      "sha256": "bbd70eaab8ced7e5cb4fe706e22cb49bb347847470ef9a6fefabd9378a64d142",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 99579,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 84,
+          "max": 84
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-real84-q8-pad500-production-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 110200,
+      "sha256": "fd26575bc55e0da2a27e582f14f95e1d96a69a45347548a4559db2d243ea0d33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 110199,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 84,
+          "max": 84
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-real84-q8-pad500-vad-production-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 110205,
+      "sha256": "a1f6c55c74caab34f27e99ecddef7514849ede77852212d8b6cf95dc8ceaa0cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 110204,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 84,
+          "max": 84
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-audio/noise.wav": {
+      "parser": "binary_inventory",
+      "bytes": 64044,
+      "sha256": "be229741bcf3eb398d617a6a58c7d857e8569ba2d865d5ba071bce313fb75608",
+      "format": "wav",
+      "magic_hex": "5249464624fa000057415645666d7420",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "legacy/data/logs/gemma4-audit/stt-smoke-audio/noise.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "wake/STT training or eval",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 16000,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 64043
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=5249464624fa000057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 64043,
+            "line": 0,
+            "text": "eof bytes=64044"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-audio/sapi_en.wav": {
+      "parser": "binary_inventory",
+      "bytes": 237006,
+      "sha256": "2ab3a65a4114755cf0b439de1db3b22f76215a3002a01a797d6c300a21a96c71",
+      "format": "wav",
+      "magic_hex": "52494646c69d030057415645666d7420",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "legacy/data/logs/gemma4-audit/stt-smoke-audio/sapi_en.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "wake/STT training or eval",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 16000,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 237005
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=52494646c69d030057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 237005,
+            "line": 0,
+            "text": "eof bytes=237006"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-audio/sapi_es.wav": {
+      "parser": "binary_inventory",
+      "bytes": 135086,
+      "sha256": "7f88e1b531c58d349bcea5256506e188007eabe0b2328bdad32dd2af637bdd11",
+      "format": "wav",
+      "magic_hex": "52494646a60f020057415645666d7420",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "legacy/data/logs/gemma4-audit/stt-smoke-audio/sapi_es.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "wake/STT training or eval",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 16000,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 135085
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=52494646a60f020057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 135085,
+            "line": 0,
+            "text": "eof bytes=135086"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-audio/sapi_spanglish.wav": {
+      "parser": "binary_inventory",
+      "bytes": 134286,
+      "sha256": "46b0ab5dff457bfe10043bfd4920bbc2fff3235efc024f1248901ef054031bb9",
+      "format": "wav",
+      "magic_hex": "52494646860c020057415645666d7420",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "legacy/data/logs/gemma4-audit/stt-smoke-audio/sapi_spanglish.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "wake/STT training or eval",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 16000,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 134285
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=52494646860c020057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 134285,
+            "line": 0,
+            "text": "eof bytes=134286"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-audio/silence.wav": {
+      "parser": "binary_inventory",
+      "bytes": 64044,
+      "sha256": "20eaebffe1816e0ffa6f7f854f5ef4ea80d5349faaf0ce1fec1b713e7fde58fa",
+      "format": "wav",
+      "magic_hex": "5249464624fa000057415645666d7420",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "legacy/data/logs/gemma4-audit/stt-smoke-audio/silence.wav"
+      },
+      "recipe": "captured or corpus audio in sibling snapshot",
+      "consumers": "wake/STT training or eval",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "container": "riff",
+        "audio_format": 1,
+        "channels": 1,
+        "sample_rate": 16000,
+        "bits": 16
+      },
+      "rows": 0,
+      "schema": {
+        "format": "wav"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 64043
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=5249464624fa000057415645666d7420 format=wav"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 64043,
+            "line": 0,
+            "text": "eof bytes=64044"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-es-en-spanglish-silence-noise-vad-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11232,
+      "sha256": "ad40991ad3c1c8752a08bbf20d5a093cdacff0b955779e8a2b4d95903dbb5597",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11231,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 5,
+          "max": 5
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-es-en-spanglish-silence-noise.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11446,
+      "sha256": "b95e88dde0066af47ad1c36fdb897dfebb256f81edc247527716e18c6357ec40",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11445,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 5,
+          "max": 5
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-official-q8-b9959.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11633,
+      "sha256": "de644fc502acec556f3b994ce9921a6776cd3b430c0b04914a2a2749075906dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11632,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 5,
+          "max": 5
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt-smoke-official-q8-b9980.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6318,
+      "sha256": "7347116a829423bf5cae23e6ca8563e628ff7d393c37bb924ac4252688b03f23",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "configuration",
+          "engines",
+          "generated_at",
+          "host",
+          "kind",
+          "schema_version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6317,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "cases": {
+          "min": 5,
+          "max": 5
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"configuration\", \"engines\", \"generated_at\", \"host\", \"kind\", \"schema_version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt_red_b9959.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 29366,
+      "sha256": "55a61677536b6c9dd94352f1ea5202b84fceb6d0c181dfb611d2e27871494207",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "server",
+          "summaries"
+        ],
+        "n_keys": 3,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29365
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"server\", \"summaries\"], \"n_keys\": 3, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"server\", \"summaries\"], \"n_keys\": 3, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt_red_b9959_bf16.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17685,
+      "sha256": "ec263b60c0773b43509443ac9856d8e1ef6f99c49052c760c1ef07f59ce407fa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summaries"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17684
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt_red_b9959_bf16_lexicon.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17707,
+      "sha256": "9cd05b4cce93a6134f9a22ef7540d2d66235eaa67b7492c39c5860f373e3137c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summaries"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17706
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

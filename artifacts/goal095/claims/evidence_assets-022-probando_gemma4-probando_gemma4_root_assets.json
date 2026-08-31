@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-022-probando_gemma4-probando_gemma4_root_assets",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:41:01Z",
+  "lease_expires_utc": "2026-08-31T11:41:01Z",
+  "estimated_tokens": 24012,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 6,
+  "source_id": "probando_gemma4",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/evidence_assets-022-probando_gemma4-probando_gemma4_root_assets.json",
+  "closed_utc": "2026-08-31T05:41:01Z"
+}

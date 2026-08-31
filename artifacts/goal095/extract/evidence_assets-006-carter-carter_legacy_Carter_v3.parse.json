@@ -1,0 +1,2166 @@
+{
+  "batch_id": "evidence_assets-006-carter-carter_legacy_Carter_v3",
+  "source_id": "carter",
+  "file_count": 36,
+  "hash_ok": 36,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "legacy/Carter_v3/audit/runs/minimum_live_safe_now.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 108696,
+      "sha256": "0698622776e96d20c381c22252371352b413c42403fc6856d296b18ad0572285",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 108695,
+        "elapsed_s": {
+          "min": 36.02,
+          "max": 36.02
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/post_blockers_live_safe_all.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2338472,
+      "sha256": "967d5067086f3e8027ae9ebe32ea2f4e1b81aef295d3b196eac7a6d9035aef98",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2338471,
+        "elapsed_s": {
+          "min": 971.8,
+          "max": 971.8
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/post_blockers_live_safe_all_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2347338,
+      "sha256": "356da64352e25a94ff8936ff4b41cce6d58188620f43d0c4783cbca6d51f07c2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2347337,
+        "elapsed_s": {
+          "min": 961.28,
+          "max": 961.28
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/pre_final_validation.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2464135,
+      "sha256": "7e85ae0503c38ff87ff2308313bd1f18e55718dbe1882d64117676385c012e0c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2464134,
+        "elapsed_s": {
+          "min": 69.09,
+          "max": 69.09
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_10_tool_protocol_cat7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43822,
+      "sha256": "a734cfda91b095a5b34bb270dfbf027659af9d4f89800a2eba372837fe9bfce0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 33
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43821,
+        "elapsed_s": {
+          "min": 5.25,
+          "max": 5.25
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_10_tool_protocol_cat9.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 92106,
+      "sha256": "3c04db5c6568e784846a8f58631e092a8a3b90655ff6c6571907a5d0a2cc02f9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 38
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 92105,
+        "elapsed_s": {
+          "min": 33.01,
+          "max": 33.01
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_10_tool_protocol_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1487971,
+      "sha256": "872ff6f919c59f1291be2163e4b00e95692f1800c35a71551e08ad76bfd8ac06",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1487970,
+        "elapsed_s": {
+          "min": 452.47,
+          "max": 452.47
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_11_provenance_cat11.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 132368,
+      "sha256": "9d51fb27beca0b05491851002c23589076ab7cf101e7a63eaeace941c573b12b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 49
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 132367,
+        "elapsed_s": {
+          "min": 43.52,
+          "max": 43.52
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_11_provenance_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1477372,
+      "sha256": "5cf81334716323acd5bebe5f9277f7970072c6481b8193a5932476b374286ab6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1477371,
+        "elapsed_s": {
+          "min": 383.43,
+          "max": 383.43
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_11_validator_fix.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1484853,
+      "sha256": "be48fbfb88130eab75bd2fe2438d29cbeb32887ff63f68a8ac649f536a4c3d74",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1484852,
+        "elapsed_s": {
+          "min": 402.19,
+          "max": 402.19
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_11_validator_fix_cat7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43996,
+      "sha256": "af5095fac2992e605824f9d81b10a0036f232cb83f8588dd8daf70db45421a14",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 33
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43995,
+        "elapsed_s": {
+          "min": 5.25,
+          "max": 5.25
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_11_validator_fix_cat9.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 91907,
+      "sha256": "9a0586eba58dd0c276c85f8c0869cc64e3ea179ec1d84fd91cebcb6d9fe24bd1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 38
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 91906,
+        "elapsed_s": {
+          "min": 34.52,
+          "max": 34.52
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_12_consolidacion_cross.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1510391,
+      "sha256": "2b264116f427d8b2b985d9d527ba486a15fed3c85cc75fe1916052cd5250b277",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1510390,
+        "elapsed_s": {
+          "min": 748.1,
+          "max": 748.1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_12_consolidacion_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1479856,
+      "sha256": "002cd123d874d0a085b49f2eaa8dd41d84bf972104c977a0e46c2e7c596a4f52",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1479855,
+        "elapsed_s": {
+          "min": 393.18,
+          "max": 393.18
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_12_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1478917,
+      "sha256": "995f254f2a0e70474781feeaaa1e1ae2fab40ce51f1403997fdac695a571943f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1478916,
+        "elapsed_s": {
+          "min": 394.73,
+          "max": 394.73
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_12_native_push.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1483082,
+      "sha256": "16883a3fbe1493cb00207e5489ed12eec8d6eb6a3f4164f1f301d19212a9e312",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1483081,
+        "elapsed_s": {
+          "min": 411.2,
+          "max": 411.2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_12_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1480257,
+      "sha256": "eb70a2d8e3f8b7e185b47e8e89f360dbb0fd5a84665ca11ad23e3257c9903349",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1480256,
+        "elapsed_s": {
+          "min": 420.19,
+          "max": 420.19
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_12_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1473388,
+      "sha256": "5f0cae501ccf409a9217a9ae3bdb9959dbf57d9d3ea4b95fa5289fc449e510a6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1473387,
+        "elapsed_s": {
+          "min": 391.7,
+          "max": 391.7
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13a_bugfixes.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1487964,
+      "sha256": "f3b09174f279091c1bc1c968e3167457a9853d22cc046ad708fee8d70a3c5a92",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1487963,
+        "elapsed_s": {
+          "min": 923.6,
+          "max": 923.6
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13a_bugfixes_cross.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1538109,
+      "sha256": "9f9d246999b835737a37c95e79b43773e1d521b16f3e52a2c3a98d65895a6706",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1538108,
+        "elapsed_s": {
+          "min": 1247.0,
+          "max": 1247.0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13a_probe_cat17.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 85551,
+      "sha256": "26470c8f807b1e1e816f431afc99a5f9634322765fd89b278b62e3d43294ac5a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 31
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 85550,
+        "elapsed_s": {
+          "min": 22.51,
+          "max": 22.51
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13b_techdebt.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1479317,
+      "sha256": "4ee172a37f8ade9e56052cf3613fc2e9ad0d4a9bc2b2339b166b5fae6d4f4cfc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1479316,
+        "elapsed_s": {
+          "min": 384.93,
+          "max": 384.93
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13b_techdebt_cross.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1511538,
+      "sha256": "36b0155cbd7f106eb18e4c1ed41d2fe4d02f3206461ecd25009492c90aff3e58",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1511537,
+        "elapsed_s": {
+          "min": 759.3,
+          "max": 759.3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13c_techdebt_core.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1481012,
+      "sha256": "791b2d6fa60e923f0182c013f1ddaf193f660fe558a148c663203627aa360ea3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1481011,
+        "elapsed_s": {
+          "min": 387.16,
+          "max": 387.16
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_13c_techdebt_core_cross.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1520444,
+      "sha256": "f05463b67f5628424d40bc0de6e23500f79986de1d1cab5712d72b09748bcf54",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1520443,
+        "elapsed_s": {
+          "min": 793.12,
+          "max": 793.12
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 122185,
+      "sha256": "9312cb9ed8e704bffab9cbdbe742f8e17211818a5bfb5ad357c61a33e766ccdd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 122184,
+        "elapsed_s": {
+          "min": 51.03,
+          "max": 51.03
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 125402,
+      "sha256": "13eabb2206a671e3e110a1d5c43d8bbeba4cac12a4a6e09adb6b4d9d50e1c0c3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125401,
+        "elapsed_s": {
+          "min": 72.04,
+          "max": 72.04
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening_release.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 126411,
+      "sha256": "0d45089fef7e925560f732eb61755d41c8f95dac3cf26da45281b056239887f2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 126410,
+        "elapsed_s": {
+          "min": 67.55,
+          "max": 67.55
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 122678,
+      "sha256": "d650d80ddc6ae87bbf532c45a27fae5f49c8cb6be43ac729e2fc90f70c3d0fd3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 122677,
+        "elapsed_s": {
+          "min": 60.04,
+          "max": 60.04
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 125456,
+      "sha256": "f168a127d28806c02b6334d33ed5b99434d64746867aa5abb605793ebcb93e61",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125455,
+        "elapsed_s": {
+          "min": 73.54,
+          "max": 73.54
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening_v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 125601,
+      "sha256": "a4b44b2664bb8c4b508696d5b611c0120a1b517aa5eb04c8e94c1d42605f6bb7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125600,
+        "elapsed_s": {
+          "min": 66.79,
+          "max": 66.79
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_15_repl_launch_hardening_v5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 123170,
+      "sha256": "8f3281f5fddd2a2f3fe26f4d1f3ae6497faf152376af60481e84ffabb2233143",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "smoke_ids",
+          "subset",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "subset",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 36,
+          "smoke_ids": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 123169,
+        "elapsed_s": {
+          "min": 59.28,
+          "max": 59.28
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"smoke_ids\", \"subset\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_1_1_doc_sync_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1472805,
+      "sha256": "3f728005900df3d422c85b56767c451ea4bd9c8d9f5f80ec7ad390c3e8fc4b3b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1472804,
+        "elapsed_s": {
+          "min": 303.2,
+          "max": 303.2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_8_c14_fix_cat11.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 132662,
+      "sha256": "36b4cc7dd95b25a1469bb87b436499ce194fbaafbc7663992ad98bb224bb0359",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 49
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 132661,
+        "elapsed_s": {
+          "min": 39.01,
+          "max": 39.01
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_8_c14_fix_cat14.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 130803,
+      "sha256": "c9900ab412c4ac61894915cc7dca0fa71edfd81ea04506c90db1a7bea1e13c6c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 46
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130802,
+        "elapsed_s": {
+          "min": 114.8,
+          "max": 114.8
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v3/audit/runs/round_8_c14_fix_full.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1477428,
+      "sha256": "ff9beb081946a40b201450a50b39f006f01acb6545d7bbac94545d8ebde87d0b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "metrics",
+          "mode",
+          "model",
+          "results",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "elapsed_s",
+          "label",
+          "live_evidence",
+          "mode",
+          "model",
+          "verdict"
+        ],
+        "list_lengths": {
+          "results": 654
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1477427,
+        "elapsed_s": {
+          "min": 322.63,
+          "max": 322.63
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"metrics\", \"mode\", \"model\", \"results\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,3257 @@
+{
+  "batch_id": "evidence_assets-068-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 41,
+  "hash_ok": 41,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/mtop_product_validation_development_r8_consensus_unverified_pulse.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 422467,
+      "sha256": "b96d207e23bc74c3ee1f3277ae73e25fb089db984e30311ad2911ca579c0f3f2",
+      "rows": 636,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 636,
+          "phase": 636,
+          "raw_decision": 636,
+          "request_id": 636,
+          "schema": 636,
+          "stages": 636,
+          "final": 199,
+          "error_type": 167,
+          "failure_kind": 167,
+          "recovery": 83
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 420770,
+        "min_line_bytes": 207,
+        "max_line_bytes": 2219,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 420397,
+            "line": 635,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"media.play.query\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"media.pl…"
+          },
+          {
+            "offset": 420770,
+            "line": 636,
+            "text": "{\"candidate_operations\":[\"media.play.query\"],\"final\":{\"effect_operations\":[\"media.play.query\"],\"intent_operations\":[\"media.play.query\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r9_consensus_preempt_unverified_pulse.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 584633,
+      "sha256": "ef1bc1cf9f15f873dc55cce300471335fd25bbb9624cf7c59a4ef0b8f351f211",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_disposition",
+          "by_locale",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 175,
+          "samples": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 584632
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_disposition\", \"by_locale\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtop_product_validation_development_r9_consensus_preempt_unverified_pulse.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 438644,
+      "sha256": "ee10331132ea2ea57c2a73fc8cb8b2ec9104e852c5c386aceac87bb85890b4de",
+      "rows": 795,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "error_type",
+          "failure_kind",
+          "final",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 795,
+          "phase": 795,
+          "raw_decision": 795,
+          "request_id": 795,
+          "schema": 795,
+          "stages": 795,
+          "error_type": 266,
+          "failure_kind": 266,
+          "final": 199,
+          "recovery": 133
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 438163,
+        "min_line_bytes": 207,
+        "max_line_bytes": 2307,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          },
+          {
+            "offset": 854,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"email.latest.reply\",\"email.latest.read\",\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 437944,
+            "line": 794,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"PlannerContractError\",\"failure_kind\":\"contract\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"mtop-validation-197\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 438163,
+            "line": 795,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_contract_failure\",\"failure_kinds\":[\"contract\",\"contract\"],\"kind\":\"p…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mtp_q4_abba_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31735,
+      "sha256": "4e149af15755572f146844c2bc47e172bfe4c1c4552d8919559d67280b835870",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "corrects",
+          "delta_p50_s",
+          "design",
+          "divergence_examples",
+          "draft",
+          "drafter",
+          "effects_executed",
+          "measured_at_utc",
+          "output_equivalence",
+          "outputs_all_identical",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "corrects",
+          "delta_p50_s",
+          "design",
+          "effects_executed",
+          "measured_at_utc",
+          "outputs_all_identical",
+          "question",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {
+          "samples": 40
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31734,
+        "delta_p50_s": {
+          "min": 0.7792,
+          "max": 0.7792
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"corrects\", \"delta_p50_s\", \"design\", \"divergence_examples\", \"draft\", \"drafter\", \"effects_executed\", \"measured_at_utc\", \"output_equivalence\", \"outputs_all_identical\", \"question\", \"runtime\", \"samples\", \"schema\", \"verdic…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"corrects\", \"delta_p50_s\", \"design\", \"divergence_examples\", \"draft\", \"drafter\", \"effects_executed\", \"measured_at_utc\", \"output_equivalence\", \"outputs_all_identical\", \"question\", \"runtime\", \"samples\", \"schema\", \"verdic…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/mute_everything_explicit_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8225,
+      "sha256": "eb51557f4950b0cfedd9e4af20d9ed2bfa2c8259fac3b79d95a5fbdf42be4929",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 3,
+          "retry_cases": 0,
+          "slowest": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8224,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 16.766,
+          "max": 16.766
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 3,
+          "max": 3
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 10.1444,
+          "max": 10.1444
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_balanced_qwen3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 408274,
+      "sha256": "1b2167c835974314864395a6f430787597e659e8d7d2a7c38c8934cdb4af0739",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 408273,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_balanced_qwen3_diagnostic_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4983,
+      "sha256": "2d9bd3020087261eca87b6597b9bb549ea38caf08e7c82eb1a7201ecc0b680ee",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 1,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4982,
+        "cases": {
+          "min": 1,
+          "max": 1
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_balanced_qwen3_diagnostic_v2_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4983,
+      "sha256": "6d8ef8b68efc9f54be667ae3314472f33810846e5298d8363c330e98af67f0cc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 1,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4982,
+        "cases": {
+          "min": 1,
+          "max": 1
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_balanced_qwen3_diagnostic_v3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4944,
+      "sha256": "473f065e707f77e7565853efd0300c8ea8105f9633bedf624ff5bbbbd9a3dfe4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 1,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4943,
+        "cases": {
+          "min": 1,
+          "max": 1
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_balanced_qwen3_smoke_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67594,
+      "sha256": "042e4b52abca21c766d009a3564aca685aa7936bedd91d4c42de9617db681845",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 24,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67593,
+        "cases": {
+          "min": 24,
+          "max": 24
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_balanced_qwen3_smoke_v3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 72632,
+      "sha256": "3c79f3e524256ee7a10cea8147c38b5ee9832d4fd416fad1b98cedfc17ba3a70",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 24,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 72631,
+        "cases": {
+          "min": 24,
+          "max": 24
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_described_qwen3_smoke_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 72604,
+      "sha256": "88c85953f9778fc1db8e2828e62cee0366b6b50de06f4c54b625bd1cdb1f6e8b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 24,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 72603,
+        "cases": {
+          "min": 24,
+          "max": 24
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_hierarchical_qwen3_smoke_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 119093,
+      "sha256": "e63afe3026cc8bcca57c95135e4c37e56cb2f0714c85d3d0b1926e1626872292",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 24,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 119092,
+        "cases": {
+          "min": 24,
+          "max": 24
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_lexical_family_qwen3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 327761,
+      "sha256": "6cb3d216b382e3ee4a5eb1c51873b8bd05841ac38b0d8a4f3d14946091c19f49",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "family_prediction_field",
+          "family_prediction_source",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "family_prediction_field",
+          "family_prediction_source",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 327760,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"family_prediction_field\", \"family_prediction_source\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"sho…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"family_prediction_field\", \"family_prediction_source\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"sho…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_oracle_family_qwen3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 315925,
+      "sha256": "3e06a0cb3c906d70f33f426c76070f4fe1d6dfa81b96306a34b0244a6dd678e7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 315924,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_predicted_family_qwen3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 628879,
+      "sha256": "806a26b55d35c309f5086228505893c3fedb5d5b79f95c7297ae35e63ee04ef6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "family_prediction_source",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "family_prediction_source",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 628878,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"family_prediction_source\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"family_prediction_source\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_tool_contract_ceiling_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1121548,
+      "sha256": "72d09c685ffb75df4069776f77b150e69049047a497940c5e2c8f820a2ec59a8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1121547,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_tool_contract_ceiling_qwen3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 746982,
+      "sha256": "2439c48dbd6943a77ecef3a64e137add435d65008c9da0016cbab2262c222ca2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 746981,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_tool_contract_ceiling_qwen3_8b_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 762893,
+      "sha256": "3f7eeb420ad6177efaa297fe3434ef47ef3ef150311e8ee383d4da3ce808f363",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 762892,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_tool_contract_ceiling_qwen3_8b_smoke_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 34788,
+      "sha256": "e0b5370b3350de2af853b8b705b31d446016cf32da170740a2e55c841b07796a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 6,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34787,
+        "cases": {
+          "min": 6,
+          "max": 6
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_tool_contract_ceiling_qwen3_smoke_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 65980,
+      "sha256": "42ea445abc32174ef7301edf1b23db8133a100ea18dd61384979a2f31022ea21",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema",
+          "shortlist_source"
+        ],
+        "list_lengths": {
+          "frozen_sample": 12,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65979,
+        "cases": {
+          "min": 12,
+          "max": 12
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"shortlist_source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/native_tool_contract_ceiling_smoke_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 48913,
+      "sha256": "fa68017e5dc2dfe413fb9f6df66caefad9b272c41149e07513008738140dd04c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "frozen_sample",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "models",
+          "question",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "question",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {
+          "frozen_sample": 6,
+          "models": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 48912,
+        "cases": {
+          "min": 6,
+          "max": 6
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"frozen_sample\", \"installation_touched\", \"measured_at_utc\", \"method\", \"models\", \"question\", \"runtime\", \"runtime_manifest_changed\", \"schema\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_catalog_prefix_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 59246,
+      "sha256": "dcfc19d46bb4bf433004e5ae65fd97c552db50d1b590d1d3d95ec5f55e44322d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "catalog_prefix",
+          "delta_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "method",
+          "no_new_decisions",
+          "nondeterministic_cases",
+          "per_case",
+          "policy_baseline",
+          "policy_calls",
+          "policy_catalog_prefix",
+          "policy_delta",
+          "policy_note",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "delta_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "method",
+          "no_new_decisions",
+          "policy_note",
+          "question",
+          "schema"
+        ],
+        "list_lengths": {
+          "nondeterministic_cases": 3,
+          "policy_calls": 97,
+          "samples": 96
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 59245,
+        "delta_p50_s": {
+          "min": 0.0432,
+          "max": 0.0432
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"catalog_prefix\", \"delta_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"method\", \"no_new_decisions\", \"nondeterministic_cases\", \"per_case\", \"policy_baseline\", \"policy_calls\", \"policy_catalog_prefix\", \"policy_d…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"catalog_prefix\", \"delta_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"method\", \"no_new_decisions\", \"nondeterministic_cases\", \"per_case\", \"policy_baseline\", \"policy_calls\", \"policy_catalog_prefix\", \"policy_d…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_catalog_prefix_telemetry_20260731.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 12356,
+      "sha256": "754537e5421d82b9f202eff9a846f1d7315162597d8e4ff391718bec3de1f83b",
+      "rows": 97,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "variant",
+          "prompt_n",
+          "cache_n",
+          "predicted_n",
+          "prompt_ms",
+          "predicted_ms"
+        ],
+        "key_freq": {
+          "variant": 97,
+          "prompt_n": 97,
+          "cache_n": 97,
+          "predicted_n": 97,
+          "prompt_ms": 97,
+          "predicted_ms": 97
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12232,
+        "min_line_bytes": 123,
+        "max_line_bytes": 131,
+        "numeric": {
+          "prompt_n": {
+            "min": 1.0,
+            "max": 1389.0
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1285.0
+          },
+          "predicted_n": {
+            "min": 51.0,
+            "max": 160.0
+          },
+          "prompt_ms": {
+            "min": 67.91,
+            "max": 695.03
+          },
+          "predicted_ms": {
+            "min": 825.484,
+            "max": 3193.839
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 1213, \"cache_n\": 0, \"predicted_n\": 59, \"prompt_ms\": 623.648, \"predicted_ms\": 1283.442}"
+          },
+          {
+            "offset": 124,
+            "line": 2,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 681, \"cache_n\": 554, \"predicted_n\": 59, \"prompt_ms\": 394.999, \"predicted_ms\": 1284.819}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12109,
+            "line": 96,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 5, \"cache_n\": 1229, \"predicted_n\": 61, \"prompt_ms\": 165.604, \"predicted_ms\": 1334.77}"
+          },
+          {
+            "offset": 12232,
+            "line": 97,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 5, \"cache_n\": 1174, \"predicted_n\": 73, \"prompt_ms\": 113.842, \"predicted_ms\": 1073.383}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_clean_prompt_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 57944,
+      "sha256": "3c458c420345cf4b0b70d469741c790e4a119a25a87877d39cf254d273ddb072",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "clean_prompt",
+          "delta_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "method",
+          "no_new_decisions",
+          "nondeterministic_cases",
+          "per_case",
+          "policy_baseline",
+          "policy_calls",
+          "policy_clean_prompt",
+          "policy_delta",
+          "policy_note",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "delta_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "method",
+          "no_new_decisions",
+          "policy_note",
+          "question",
+          "schema"
+        ],
+        "list_lengths": {
+          "nondeterministic_cases": 2,
+          "policy_calls": 86,
+          "samples": 96
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 57943,
+        "delta_p50_s": {
+          "min": -0.0403,
+          "max": -0.0403
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"clean_prompt\", \"delta_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"method\", \"no_new_decisions\", \"nondeterministic_cases\", \"per_case\", \"policy_baseline\", \"policy_calls\", \"policy_clean_prompt\", \"policy_delta…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"clean_prompt\", \"delta_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"method\", \"no_new_decisions\", \"nondeterministic_cases\", \"per_case\", \"policy_baseline\", \"policy_calls\", \"policy_clean_prompt\", \"policy_delta…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_clean_prompt_telemetry_20260731.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10876,
+      "sha256": "1b9b5fdc05b2ecc517ff51ab416c10087f23ca5d4a3bf70853fc65ee104c5cdd",
+      "rows": 86,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "variant",
+          "prompt_n",
+          "cache_n",
+          "predicted_n",
+          "prompt_ms",
+          "predicted_ms"
+        ],
+        "key_freq": {
+          "variant": 86,
+          "prompt_n": 86,
+          "cache_n": 86,
+          "predicted_n": 86,
+          "prompt_ms": 86,
+          "predicted_ms": 86
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10752,
+        "min_line_bytes": 122,
+        "max_line_bytes": 130,
+        "numeric": {
+          "prompt_n": {
+            "min": 1.0,
+            "max": 1213.0
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1229.0
+          },
+          "predicted_n": {
+            "min": 52.0,
+            "max": 160.0
+          },
+          "prompt_ms": {
+            "min": 66.902,
+            "max": 662.224
+          },
+          "predicted_ms": {
+            "min": 599.246,
+            "max": 3372.906
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 1213, \"cache_n\": 0, \"predicted_n\": 59, \"prompt_ms\": 662.224, \"predicted_ms\": 1245.805}"
+          },
+          {
+            "offset": 124,
+            "line": 2,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 681, \"cache_n\": 554, \"predicted_n\": 59, \"prompt_ms\": 459.473, \"predicted_ms\": 1270.677}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10628,
+            "line": 85,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 5, \"cache_n\": 1229, \"predicted_n\": 61, \"prompt_ms\": 148.841, \"predicted_ms\": 1288.393}"
+          },
+          {
+            "offset": 10752,
+            "line": 86,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 5, \"cache_n\": 1174, \"predicted_n\": 73, \"prompt_ms\": 109.332, \"predicted_ms\": 1029.448}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_derived_fields_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56680,
+      "sha256": "a768a21023c220f6ab3b3c478e9703b1ded16e008f455937b6f04b2d39ba97da",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "delta_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "method",
+          "no_derived",
+          "no_new_decisions",
+          "nondeterministic_cases",
+          "per_case",
+          "policy_baseline",
+          "policy_calls",
+          "policy_delta",
+          "policy_no_derived",
+          "policy_note",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "delta_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "method",
+          "no_new_decisions",
+          "policy_note",
+          "question",
+          "schema"
+        ],
+        "list_lengths": {
+          "nondeterministic_cases": 1,
+          "policy_calls": 84,
+          "samples": 96
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56679,
+        "delta_p50_s": {
+          "min": -0.1342,
+          "max": -0.1342
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"delta_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"method\", \"no_derived\", \"no_new_decisions\", \"nondeterministic_cases\", \"per_case\", \"policy_baseline\", \"policy_calls\", \"policy_delta\", \"policy_no_derived\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"delta_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"method\", \"no_derived\", \"no_new_decisions\", \"nondeterministic_cases\", \"per_case\", \"policy_baseline\", \"policy_calls\", \"policy_delta\", \"policy_no_derived\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_derived_fields_telemetry_20260731.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10543,
+      "sha256": "5ff6e8430e13daf7f41912ff7d187ea13e80d6d01826299f1958d8fc2ce87f71",
+      "rows": 84,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "variant",
+          "prompt_n",
+          "cache_n",
+          "predicted_n",
+          "prompt_ms",
+          "predicted_ms"
+        ],
+        "key_freq": {
+          "variant": 84,
+          "prompt_n": 84,
+          "cache_n": 84,
+          "predicted_n": 84,
+          "prompt_ms": 84,
+          "predicted_ms": 84
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10419,
+        "min_line_bytes": 122,
+        "max_line_bytes": 127,
+        "numeric": {
+          "prompt_n": {
+            "min": 5.0,
+            "max": 1213.0
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1278.0
+          },
+          "predicted_n": {
+            "min": 54.0,
+            "max": 102.0
+          },
+          "prompt_ms": {
+            "min": 88.959,
+            "max": 646.83
+          },
+          "predicted_ms": {
+            "min": 953.39,
+            "max": 4097.939
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 1213, \"cache_n\": 0, \"predicted_n\": 79, \"prompt_ms\": 629.511, \"predicted_ms\": 1676.316}"
+          },
+          {
+            "offset": 124,
+            "line": 2,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 681, \"cache_n\": 554, \"predicted_n\": 89, \"prompt_ms\": 458.443, \"predicted_ms\": 1848.124}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10295,
+            "line": 83,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 5, \"cache_n\": 1229, \"predicted_n\": 85, \"prompt_ms\": 151.505, \"predicted_ms\": 1675.513}"
+          },
+          {
+            "offset": 10419,
+            "line": 84,
+            "text": "{\"variant\": \"baseline\", \"prompt_n\": 5, \"cache_n\": 1174, \"predicted_n\": 90, \"prompt_ms\": 112.075, \"predicted_ms\": 1304.901}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/p_payload_dump/p_payload.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8897,
+      "sha256": "dde0618e6dc4663e952f0759a9f231686ed9fe73c1e038342e3c777b53e0a537",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "chat_template_kwargs",
+          "max_tokens",
+          "messages",
+          "response_format",
+          "seed",
+          "temperature"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "max_tokens",
+          "seed",
+          "temperature"
+        ],
+        "list_lengths": {
+          "messages": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8896,
+        "temperature": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "max_tokens": {
+          "min": 160,
+          "max": 160
+        },
+        "seed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"chat_template_kwargs\", \"max_tokens\", \"messages\", \"response_format\", \"seed\", \"temperature\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"chat_template_kwargs\", \"max_tokens\", \"messages\", \"response_format\", \"seed\", \"temperature\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/paraphrase_tool_quality_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 422258,
+      "sha256": "ad7524e78715d578d3de8e74701f19fe21f9b01ce7b3c08dd1367a468fa1fadf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "cases",
+          "effects_executed",
+          "family_offered_share",
+          "frozen_sample",
+          "granularity",
+          "measured_at_utc",
+          "outcomes",
+          "question",
+          "right_family_given_offered",
+          "right_family_share",
+          "runtime",
+          "samples",
+          "schema",
+          "seconds_p50",
+          "turns",
+          "why_this_corpus"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "family_offered_share",
+          "granularity",
+          "measured_at_utc",
+          "question",
+          "right_family_given_offered",
+          "right_family_share",
+          "schema",
+          "seconds_p50",
+          "turns",
+          "why_this_corpus"
+        ],
+        "list_lengths": {
+          "frozen_sample": 147,
+          "samples": 294
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 422257,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "family_offered_share": {
+          "min": 0.4898,
+          "max": 0.4898
+        },
+        "right_family_given_offered": {
+          "min": 0.4028,
+          "max": 0.4028
+        },
+        "right_family_share": {
+          "min": 0.1973,
+          "max": 0.1973
+        },
+        "seconds_p50": {
+          "min": 2.62,
+          "max": 2.62
+        },
+        "turns": {
+          "min": 294,
+          "max": 294
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"cases\", \"effects_executed\", \"family_offered_share\", \"frozen_sample\", \"granularity\", \"measured_at_utc\", \"outcomes\", \"question\", \"right_family_given_offered\", \"right_family_share\", \"runtime\", \"samples\", \"schema\", \"sec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"cases\", \"effects_executed\", \"family_offered_share\", \"frozen_sample\", \"granularity\", \"measured_at_utc\", \"outcomes\", \"question\", \"right_family_given_offered\", \"right_family_share\", \"runtime\", \"samples\", \"schema\", \"sec…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/paraphrase_tool_quality_verdict_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8747,
+      "sha256": "d891a5d329d4fbf873310bb979c8afaf671459df570303cd1c959c4893f3f8c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "artifact",
+          "corpus",
+          "correction_of_an_earlier_claim",
+          "defect_1_compound_veto_fires_without_a_compound",
+          "defect_2_domain_grounding_rejects_a_named_domain",
+          "effects_executed",
+          "headline",
+          "installation_touched",
+          "instrumentation_notes",
+          "measured_at_utc",
+          "oracle_noise_named",
+          "probe",
+          "retrieval_reality_check",
+          "schema",
+          "state",
+          "what_the_next_change_must_do_and_why_it_is_not_made_here",
+          "where_the_effect_is_lost",
+          "which_gate",
+          "why_this_measurement_exists"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "artifact",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "probe",
+          "schema",
+          "state",
+          "why_this_measurement_exists"
+        ],
+        "list_lengths": {
+          "instrumentation_notes": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8746,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"artifact\", \"corpus\", \"correction_of_an_earlier_claim\", \"defect_1_compound_veto_fires_without_a_compound\", \"defect_2_domain_grounding_rejects_a_named_domain\", \"effects_executed\", \"headline\", \"installation_touched\", \"instrumentati…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"artifact\", \"corpus\", \"correction_of_an_earlier_claim\", \"defect_1_compound_veto_fires_without_a_compound\", \"defect_2_domain_grounding_rejects_a_named_domain\", \"effects_executed\", \"headline\", \"installation_touched\", \"instrumentati…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/pglvc_pipeline_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56999,
+      "sha256": "2a83ff9b0395f2cf4f619a4b097f3c761cc1700b64990385a479f40d4f033e40",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "RETRACTED",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "not_this",
+          "per_component",
+          "raw",
+          "runtime",
+          "schema",
+          "startup",
+          "what_this_is"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "not_this",
+          "raw",
+          "schema",
+          "what_this_is"
+        ],
+        "list_lengths": {
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56998,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"RETRACTED\", \"cases\", \"effects_executed\", \"measured_at_utc\", \"not_this\", \"per_component\", \"raw\", \"runtime\", \"schema\", \"startup\", \"what_this_is\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"RETRACTED\", \"cases\", \"effects_executed\", \"measured_at_utc\", \"not_this\", \"per_component\", \"raw\", \"runtime\", \"schema\", \"startup\", \"what_this_is\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/pglvc_pipeline_raw_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 45845,
+      "sha256": "3022034d02666f3277e9f7aedf5f33d3ff46d973380daeb403bc0a8c207835c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "startup",
+          "trace_rows"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45844,
+        "trace_rows": {
+          "min": 40,
+          "max": 40
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/pglvc_pipeline_raw_20260731.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 14465,
+      "sha256": "e0177383df653ecf6985ee3444380c412a95dd58e367778cf1e235cc4a1ad595",
+      "rows": 40,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 40,
+          "unix_start": 40,
+          "elapsed_seconds": 40,
+          "messages_chars": 40,
+          "messages_sha256": 40,
+          "max_tokens": 40,
+          "temperature": 40,
+          "seed": 40,
+          "error": 40,
+          "prompt_n": 40,
+          "prompt_ms": 40,
+          "predicted_n": 40,
+          "predicted_ms": 40,
+          "cache_n": 40,
+          "finish_reason": 40,
+          "content_chars": 40
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14093,
+        "min_line_bytes": 351,
+        "max_line_bytes": 377,
+        "numeric": {
+          "unix_start": {
+            "min": 1785471167.8810585,
+            "max": 1785471200.7840073
+          },
+          "elapsed_seconds": {
+            "min": 0.3273,
+            "max": 4.9369
+          },
+          "messages_chars": {
+            "min": 406.0,
+            "max": 6714.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "prompt_n": {
+            "min": 5.0,
+            "max": 1365.0
+          },
+          "prompt_ms": {
+            "min": 124.214,
+            "max": 1159.533
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 96.0
+          },
+          "predicted_ms": {
+            "min": 159.631,
+            "max": 4253.492
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 0.0,
+            "max": 297.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785471167.882066, \"elapsed_seconds\": 1.4417, \"messages_chars\": 1191, \"messages_sha256\": \"9e6a3fde5d00513a\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 227, \"prompt_…"
+          },
+          {
+            "offset": 358,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785471167.8810585, \"elapsed_seconds\": 1.8749, \"messages_chars\": 844, \"messages_sha256\": \"fd6c83ee534d4941\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 167, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13724,
+            "line": 39,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785471195.8464909, \"elapsed_seconds\": 4.9369, \"messages_chars\": 6313, \"messages_sha256\": \"a3235e8e372bf7fa\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 778, \"…"
+          },
+          {
+            "offset": 14093,
+            "line": 40,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785471200.7840073, \"elapsed_seconds\": 0.7092, \"messages_chars\": 682, \"messages_sha256\": \"bc784be01693a3b0\", \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_component_payloads_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18325,
+      "sha256": "fff9baa548e07c0ec1f1a379d0e3d4ad075606c6d43231225cc6ccac5ea94090",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baxy_effect_count_verification",
+          "baxy_operation_compatibility",
+          "baxy_turn_decision",
+          "chat",
+          "direct_grounded_arguments",
+          "language_grammar",
+          "semantic_effect_guard"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18324
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_effect_count_verification\", \"baxy_operation_compatibility\", \"baxy_turn_decision\", \"chat\", \"direct_grounded_arguments\", \"language_grammar\", \"semantic_effect_guard\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_effect_count_verification\", \"baxy_operation_compatibility\", \"baxy_turn_decision\", \"chat\", \"direct_grounded_arguments\", \"language_grammar\", \"semantic_effect_guard\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_direct_replay_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37092,
+      "sha256": "acd9e7be30981bb9cf60c0bc26831ee9c16300b08311ac46b460a091993516a4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "conclusion",
+          "effects_executed",
+          "endpoint",
+          "known_transport_difference",
+          "measured_at_utc",
+          "method",
+          "per_component",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "superseded_attempt"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "conclusion",
+          "effects_executed",
+          "endpoint",
+          "known_transport_difference",
+          "measured_at_utc",
+          "method",
+          "question",
+          "schema"
+        ],
+        "list_lengths": {
+          "samples": 112
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37091,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"conclusion\", \"effects_executed\", \"endpoint\", \"known_transport_difference\", \"measured_at_utc\", \"method\", \"per_component\", \"question\", \"runtime\", \"samples\", \"schema\", \"superseded_attempt\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"conclusion\", \"effects_executed\", \"endpoint\", \"known_transport_difference\", \"measured_at_utc\", \"method\", \"per_component\", \"question\", \"runtime\", \"samples\", \"schema\", \"superseded_attempt\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_pipeline_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14578,
+      "sha256": "e4710d3dd8e7d1ef6e0113fcee5307ec8b6a6f97842972c8d9e4f386f8bb21e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "background_or_orphan",
+          "correlation",
+          "effects_executed",
+          "measured_at_utc",
+          "per_component_consumed",
+          "runtime",
+          "schema",
+          "supersedes",
+          "totals",
+          "turns"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "correlation",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "supersedes"
+        ],
+        "list_lengths": {
+          "turns": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14577,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"background_or_orphan\", \"correlation\", \"effects_executed\", \"measured_at_utc\", \"per_component_consumed\", \"runtime\", \"schema\", \"supersedes\", \"totals\", \"turns\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"background_or_orphan\", \"correlation\", \"effects_executed\", \"measured_at_utc\", \"per_component_consumed\", \"runtime\", \"schema\", \"supersedes\", \"totals\", \"turns\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_pipeline_20260731.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 25101,
+      "sha256": "d6b409b684c8af0b19ad3d34a78e8e5719b3803bdbe747257e5433876a1462b2",
+      "rows": 52,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "request_identity",
+          "component",
+          "logical_attempt",
+          "payload_sha256",
+          "payload_chars",
+          "prompt_tokens",
+          "cached_tokens",
+          "predicted_tokens",
+          "prompt_ms",
+          "predicted_ms",
+          "wall_seconds",
+          "finish_reason",
+          "content_chars",
+          "temperature",
+          "seed",
+          "max_tokens",
+          "error",
+          "unix_start"
+        ],
+        "key_freq": {
+          "request_identity": 52,
+          "component": 52,
+          "logical_attempt": 52,
+          "payload_sha256": 52,
+          "payload_chars": 52,
+          "prompt_tokens": 52,
+          "cached_tokens": 52,
+          "predicted_tokens": 52,
+          "prompt_ms": 52,
+          "predicted_ms": 52,
+          "wall_seconds": 52,
+          "finish_reason": 52,
+          "content_chars": 52,
+          "temperature": 52,
+          "seed": 52,
+          "max_tokens": 52,
+          "error": 52,
+          "unix_start": 52
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24618,
+        "min_line_bytes": 476,
+        "max_line_bytes": 506,
+        "numeric": {
+          "logical_attempt": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "payload_chars": {
+            "min": 396.0,
+            "max": 6601.0
+          },
+          "prompt_tokens": {
+            "min": 5.0,
+            "max": 1235.0
+          },
+          "cached_tokens": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "predicted_tokens": {
+            "min": 6.0,
+            "max": 85.0
+          },
+          "prompt_ms": {
+            "min": 35.001,
+            "max": 720.433
+          },
+          "predicted_ms": {
+            "min": 66.653,
+            "max": 2820.328
+          },
+          "wall_seconds": {
+            "min": 0.110539,
+            "max": 3.383192
+          },
+          "content_chars": {
+            "min": 0.0,
+            "max": 298.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 192.0
+          },
+          "unix_start": {
+            "min": 1785515711.8276021,
+            "max": 1785515745.6073475
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"request_identity\": \"conv-01\", \"component\": \"L language grammar\", \"logical_attempt\": 0, \"payload_sha256\": \"49fdc2c1a55fb34744042227cccbef7d696ffe6b8fda2333f48b166aa4d2c5d0\", \"payload_chars\": 1177, \"prompt_tokens\": 226, \"cached_tokens\": 0,…"
+          },
+          {
+            "offset": 478,
+            "line": 2,
+            "text": "{\"request_identity\": \"conv-01\", \"component\": \"G semantic guard\", \"logical_attempt\": 0, \"payload_sha256\": \"500996e9f429fde8c759d56e9aab429c225c188d35a4726567a8aedbd1609709\", \"payload_chars\": 830, \"prompt_tokens\": 166, \"cached_tokens\": 0, \"p…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24129,
+            "line": 51,
+            "text": "{\"request_identity\": \"tail-01\", \"component\": \"chat / knowledge reply\", \"logical_attempt\": 0, \"payload_sha256\": \"663820c7b8e81aa15cdc8a6217719adb3f5b65456fb028f188f217acecf6e88f\", \"payload_chars\": 1030, \"prompt_tokens\": 16, \"cached_tokens\":…"
+          },
+          {
+            "offset": 24618,
+            "line": 52,
+            "text": "{\"request_identity\": \"tail-01\", \"component\": \"P primary policy\", \"logical_attempt\": 0, \"payload_sha256\": \"9ef03e24e79d980f6bf10a7ff92039cb6623fe0881472d25de42d08de83d1ba1\", \"payload_chars\": 5614, \"prompt_tokens\": 625, \"cached_tokens\": 554,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_primary_stream_ab_20260730.order1-baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31686,
+      "sha256": "f1b31681e4665ccfd774d383e0829a0d58ab55560289b13d22626025977a9f9d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 29,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 4,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31685,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 264.874,
+          "max": 264.874
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 259.2221,
+          "max": 259.2221
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_reasoning_early_abort_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 173556,
+      "sha256": "68fb56e0e8d35de8edb9bb97218ea0160cd22855b7077b8beebcedebbfae09f6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparisons",
+          "effects_executed",
+          "gates",
+          "measured_at_utc",
+          "promotion_rule",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "measured_at_utc",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arms": 4,
+          "comparisons": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 173555,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"gates\", \"measured_at_utc\", \"promotion_rule\", \"schema\", \"workload\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"gates\", \"measured_at_utc\", \"promotion_rule\", \"schema\", \"workload\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_reasoning_early_abort_ab_20260730.order1-baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31651,
+      "sha256": "67d2dafbf744b09a597879a87acca8c24eb3e4c1248f9f917199b50602e21e0f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 28,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31650,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 264.411,
+          "max": 264.411
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 258.1283,
+          "max": 258.1283
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    }
+  }
+}

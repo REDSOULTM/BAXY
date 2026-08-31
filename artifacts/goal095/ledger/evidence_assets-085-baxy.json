@@ -1,0 +1,2758 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-085-baxy",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:44:32Z",
+  "closed_utc": "2026-08-31T05:44:34Z",
+  "estimated_tokens": 296655,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 89,
+  "subsystem": "baxy_art_mvp",
+  "subsystems": [
+    "baxy_art_mvp",
+    "baxy_art_planner_recovery",
+    "baxy_art_product"
+  ],
+  "files": [
+    {
+      "path": "artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl",
+      "sha256": "712f86a8755de82403238e75d1bd6e5cbaec90150b416c4a03f4764f4fd6f065",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl"
+    },
+    {
+      "path": "artifacts/mvp/catalog_provider_read_only_v1.json",
+      "sha256": "898d2d5a0e302e6302652a5741fc19efd949643905f3c0cce386fc729f45c6bb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/catalog_provider_read_only_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/catalog_routing_matrix_v1.json",
+      "sha256": "7e0c9e59dc341be4175387ade9576a46088a65d9e9e8d132fb44066cc5aa08f1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/catalog_routing_matrix_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/external_provider_contract_matrix_v1.json",
+      "sha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/external_provider_contract_matrix_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/external_provider_contract_matrix_v1/external_provider_contract_matrix_v1.trx",
+      "sha256": "da493dfb037f766838615f8ffb83a92022e5915c41960ad258c80a4220d1cfc1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/external_provider_contract_matrix_v1/external_provider_contract_matrix_v1.trx"
+    },
+    {
+      "path": "artifacts/mvp/llm_plan_execution_gate_repairs_v3.json",
+      "sha256": "a899c3173f5f9d44c3d2d68c8d3e351a5c61b9e99672aacb84e94cb1fc9b71be",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/llm_plan_execution_gate_repairs_v3.json"
+    },
+    {
+      "path": "artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json",
+      "sha256": "8dfa930ac5fabccb3b2c17bc66b429a822a141f5a8fe8b3896de7197834e9ce7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/llm_plan_execution_gate_v1.json",
+      "sha256": "3ca6b606269d0ab05e8ddde82343a1c890972a8406eaa7d10935dc834f29e71d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/llm_plan_execution_gate_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/llm_plan_execution_gate_v2.json",
+      "sha256": "eb0c66c30f562cc312ab551137e88f4f507375791731ce66bf8cbc912b5e4b67",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/llm_plan_execution_gate_v2.json"
+    },
+    {
+      "path": "artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json",
+      "sha256": "99f950724024e11de09ef766fb6734b6d3874711b5dad5f9084990490f381ae1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/local_mutable_matrix_v1/local_mutable_integration_v1.trx",
+      "sha256": "1581b04d7de6cb1a2ca84fc9bb754d2d5e2c1f40c1fba6e9da1331347213f099",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_mutable_matrix_v1/local_mutable_integration_v1.trx"
+    },
+    {
+      "path": "artifacts/mvp/local_mutable_matrix_v1/local_mutable_providers_v1.trx",
+      "sha256": "3983ed2d5f0480c64c558851a1e17c446e97d84d7bafc7193ae5c1192e37ba4f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_mutable_matrix_v1/local_mutable_providers_v1.trx"
+    },
+    {
+      "path": "artifacts/mvp/local_stateful_handler_matrix_v1.json",
+      "sha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_stateful_handler_matrix_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/local_stateful_handler_matrix_v1/local_stateful_handler_matrix_v1.trx",
+      "sha256": "fcd1b63fc67e480692734c60437211029a5fef59a6da13de7147303b6d230b2b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_stateful_handler_matrix_v1/local_stateful_handler_matrix_v1.trx"
+    },
+    {
+      "path": "artifacts/mvp/local_transient_handler_matrix_v1.json",
+      "sha256": "a493666ba28c3a1e811c35715ca63d913e089754ce7b46703e4398e994d30ce1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_transient_handler_matrix_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/local_transient_handler_matrix_v1/local_transient_handler_matrix_v1.trx",
+      "sha256": "ccca7dd1a42053ed30bdf80dd61f8dfe4dabe7477ce211a4db6b94d809ba4efa",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_transient_handler_matrix_v1/local_transient_handler_matrix_v1.trx"
+    },
+    {
+      "path": "artifacts/mvp/local_transient_handler_matrix_v2.json",
+      "sha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_transient_handler_matrix_v2.json"
+    },
+    {
+      "path": "artifacts/mvp/local_transient_handler_matrix_v2/local_transient_handler_matrix_v2.trx",
+      "sha256": "8b3c4a4a8aa96807e6e1226787bac998e9b42bf6fa63d6d482694c3182a624bf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/local_transient_handler_matrix_v2/local_transient_handler_matrix_v2.trx"
+    },
+    {
+      "path": "artifacts/mvp/memory_handler_matrix_v1.json",
+      "sha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/memory_handler_matrix_v1.json"
+    },
+    {
+      "path": "artifacts/mvp/memory_handler_matrix_v1/memory_handler_matrix_v1.trx",
+      "sha256": "95a9fcae479076de416f135fd40d3fd8ccbb95ce392c86e6b5ae673cbb8eb622",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/memory_handler_matrix_v1/memory_handler_matrix_v1.trx"
+    },
+    {
+      "path": "artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json",
+      "sha256": "f2f7ae1b5c653672fec99d974240d345b278809986fbf64085623f44e38873a9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json"
+    },
+    {
+      "path": "artifacts/mvp/source_quality_full_20260811_final.log",
+      "sha256": "9da8223a8110d237a618dc10c5579e3b9330d36acb4b69bf214fd0e3597dc094",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/source_quality_full_20260811_final.log"
+    },
+    {
+      "path": "artifacts/mvp/source_quality_full_20260811_r5_final.log",
+      "sha256": "4247bbbbaf6505bfecd0917d651491408aa164aa7d88cd1259ed9f84cf4050f9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/source_quality_full_20260811_r5_final.log"
+    },
+    {
+      "path": "artifacts/mvp/ui_smoke_v1/shell-trace.jsonl",
+      "sha256": "5d402773709a46dfc0db77e4cab8ad29d2d1c54b507eec3a6d0d6b8231edf0da",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/ui_smoke_v1/shell-trace.jsonl"
+    },
+    {
+      "path": "artifacts/mvp/ui_smoke_v2/report.json",
+      "sha256": "edaec71465befe21cda3db6241fd3aad4f4a3762c21e3ec3a51b97a541ba0dfd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/ui_smoke_v2/report.json"
+    },
+    {
+      "path": "artifacts/mvp/ui_smoke_v2/shell-trace.jsonl",
+      "sha256": "ab260e2f78145628203623d7e6aa56c9f0944b12ab17c6a8742336d5b5a47470",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/ui_smoke_v2/shell-trace.jsonl"
+    },
+    {
+      "path": "artifacts/mvp/validate_only_20260811/receipt.json",
+      "sha256": "d44706dd53ed3739921de120e7f69477a8edee782379db4a3f0a42133fe7bb9e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/validate_only_20260811/receipt.json"
+    },
+    {
+      "path": "artifacts/mvp/visible_smoke_20260811/launcher.stdout.log",
+      "sha256": "b890945d3690cfb5aed9a7c45a9abe7a65e6dc93e7187ae504965574e9f0f92f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visible_smoke_20260811/launcher.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visible_smoke_20260811/receipt.json",
+      "sha256": "b9272985963e8b67e26a071931070f22b831a9028ff73bdaa8e39c139ea893e3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visible_smoke_20260811/receipt.json"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/after_baxy_branding.jpg",
+      "sha256": "25470fcdb3ad22e928b3bdf68c03223a3495eff97d1f3568e6187d6bb4709cf8",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/after_baxy_branding.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/after_model_identity.jpg",
+      "sha256": "fe075753f91258b69d34f39bb983b68b145d71142335bb1b7bf3588e9142eb1d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/after_model_identity.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/after_native_overlay.jpg",
+      "sha256": "925215f34aa5da7342e57239655af93c2fd66f90aa0c972832004712ab8a26ef",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/after_native_overlay.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/after_presentability.jpg",
+      "sha256": "6ae5e1fe871257186a9e7d99d9bfe5991b2803b8615e3c9df08708eccd03cf5d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/after_presentability.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher.stdout.log",
+      "sha256": "292805499be94d695a008dccf568e3c131c7e9445f69e83cb08a004f3e15ff8e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher2.stdout.log",
+      "sha256": "7ad59cd6bc9fc2ddb397f27bee328c4974da2a021cc19980186b208f451cb0b9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher2.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher3.stdout.log",
+      "sha256": "dde459a1e2287a0227e712fa186cecbeb76badc18532bd2497d3ff1d12c9debc",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher3.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher_bounds.stdout.log",
+      "sha256": "999b97441fc6c94dcfcb2425a811ff1e65216693e6d2c340156275dea1c0b41b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher_bounds.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher_branded.stdout.log",
+      "sha256": "167c52a16953db72fac9c7ee3e883bf8cf8ed637e5e322f5cf80a896af8fdec7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher_branded.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher_final.stdout.log",
+      "sha256": "8391cf7b507a5b28d391072e54b0215a30866e75b27af4943d8a89a3d22f93e0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher_final.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher_overlay.stdout.log",
+      "sha256": "b8c6bf9ac21298e35453c742be28d2dab3cf2d0684771be258a1c64b310f7bac",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher_overlay.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher_readonly_settings.stdout.log",
+      "sha256": "25c72a1ce0dbe0d0c60195fe71b6f77786d7baae30c3f126ad8bf5fdf826bf81",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher_readonly_settings.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/launcher_readonly_settings_v2.stdout.log",
+      "sha256": "e17fce84072acb8819161b9590274f888fd5b02a2c303e95e4313000f8da9e82",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/launcher_readonly_settings_v2.stdout.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/receipt.json",
+      "sha256": "f22aef6fc3a5cc58ab354b5e005218abe8870d570685de58efc1a43afdf8410d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/receipt.json"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_about.jpg",
+      "sha256": "80fff1cb047fd3b7eeaddb112ab4fb3dcc7da71d0f58d130ccbd20afff8da2c8",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_about.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_about_final.jpg",
+      "sha256": "27a76ad47ff4da1f6d2435bd2428cae58550ab4905859d353c427c9dde4c4f7a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_about_final.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_about_verified.jpg",
+      "sha256": "7c681f3734416f02495fe66b656c0ac0663b7ab98e1105988d52d4fc3bf24a14",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_about_verified.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_overlay_about.jpg",
+      "sha256": "e533753dfa6dcf346da6112f872647e45f64ca1ae443a5e50505dfbafe12fea0",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_overlay_about.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_readonly_final.jpg",
+      "sha256": "8201c0a9322dc6be4b52527716d076f08d0c516fe61d2fffc381fc688b1d1a1b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_readonly_final.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_readonly_verified.jpg",
+      "sha256": "321284233508328fa5bbfdf2a4a444767c6e1db1c149898c2166a1b84fbe4299",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_readonly_verified.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/settings_transcript_final.jpg",
+      "sha256": "5cf60b4831fda00bb189e88c34ee3c86c5c79451c0aae7295370d41f52576988",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/settings_transcript_final.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/source_quality_full_final.log",
+      "sha256": "bab7b1a4e3983efc04f487357391b269c1909e1d15665bbc26efeb4f2bc0720d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/source_quality_full_final.log"
+    },
+    {
+      "path": "artifacts/mvp/visual_review_20260811/source_quality_full_final_v2.log",
+      "sha256": "c3fdb82429a721503029e94ba7b21dd229be3fba83ca0e883bdcd503225c61ba",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/mvp/visual_review_20260811/source_quality_full_final_v2.log"
+    },
+    {
+      "path": "artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json",
+      "sha256": "3b1f36e139c7138fde0bf1523a2598ea0fc7d5fe10b5483e87dd338c54d5a894",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/external_adapters_gate_v2.json",
+      "sha256": "4625519c39734b3f74422c51352f1d3ed126fa0fa126c49c3388ccbc4238739d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/external_adapters_gate_v2.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/external_messaging_gate.json",
+      "sha256": "d8da703bb50a613ba9c690ae3b4abc50179871df36ba2fa7b2bb1543a230629f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/external_messaging_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/external_safe_gate.json",
+      "sha256": "77700ac8040ce1095abadebb1a8cd86415df659c99571aaa9c6da30a6097b8c6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/external_safe_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/fault_recovery_gate.json",
+      "sha256": "38a1a18a5859a57d7221d4f8ed572b6a0995357e38fa3719843b1c807aa54442",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/fault_recovery_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/hardware_effects_gate.json",
+      "sha256": "7bc465cb7db92e5be9ee6aabf258e9c444a0d51f42447b61151ae8027db98e0b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/hardware_effects_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_compound_audit.json",
+      "sha256": "e6775104bdb6377daa359d21fafb039d58ba6e469f76965b1fffdbe25bb401e5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_compound_audit.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json",
+      "sha256": "408fa3ea3ea9833fd883014260ecf322d04dd66d745c882d895671b80ce13521",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json",
+      "sha256": "f1fb096f281c29d3099eb09e8a9497a9a2a996fbcdd80d8024f5034c5e4ae7c3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_planner_gate.json",
+      "sha256": "df2a033d4d2c684c36be7e1484d768c3240cca4d1340d696cbc944accafbd79d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_planner_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_planner_gate.single_review_batch.json",
+      "sha256": "ea78f682d43d70690f2ffbe1a04ab7bb85a5670b773698a6f202a0faee48521e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_planner_gate.single_review_batch.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_user_mission_audit.json",
+      "sha256": "96d56311d2361b75ce758623ba874a06bebbf1f3a6cbfb0cdff746c098607fb9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_user_mission_audit.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/historical_user_mission_planner_gate.json",
+      "sha256": "f519f84af3416166a806531db780fe4b85ec3374b6f17a778d70f0b21ebb62ce",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/historical_user_mission_planner_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/llm_plan_execution_gate.json",
+      "sha256": "9fb0b1b4579adf7e24e787314d594e76045dd353220711cad3b457746fcfd83c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/llm_plan_execution_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/planner_gate.json",
+      "sha256": "dd718394d2daf94ca05923b467de0e983a5a7809b6661cd8766d4c6d57cfe411",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/planner_gate.json"
+    },
+    {
+      "path": "artifacts/planner_recovery/steam_launch_gate.json",
+      "sha256": "6564ea65ccf4960813e63955d281a90e2990f7e0bf98d22cc73cd5d0550a0e07",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/planner_recovery/steam_launch_gate.json"
+    },
+    {
+      "path": "artifacts/product/app_open_gate.json",
+      "sha256": "872c4f24fd282443996cf9f9d346b4cb87596eb9fa709f72f8b838232bacb4e7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/app_open_gate.json"
+    },
+    {
+      "path": "artifacts/product/app_open_gate_r26_current.json",
+      "sha256": "34249d5b0be7a0cb6a292e7f83c268eaa46145a582a407deddd1e1750a7bb26e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/app_open_gate_r26_current.json"
+    },
+    {
+      "path": "artifacts/product/architecture_seams_gate.json",
+      "sha256": "07bc8bcef444fa18f3e9bf339abfe93e2378966cff7d4684e56c599133299c44",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/architecture_seams_gate.json"
+    },
+    {
+      "path": "artifacts/product/audio_control_gate.json",
+      "sha256": "43b598ddad342f5e6ab9926350bbb13f39997c5d8b0e9c243a4311f4573d607d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audio_control_gate.json"
+    },
+    {
+      "path": "artifacts/product/audit-2026-07-27-app-open.json",
+      "sha256": "165eff95aa34dfd0a64a59fe38972b0e1ff24d4e9823aa2fc5d1e0ed1c9efd1f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-2026-07-27-app-open.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.attestation.json",
+      "sha256": "f6fa04c0f395c9cf3b4a4a87c875b7879a96066bf27ea1cf00ee1a6797ec44eb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.attestation.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.json",
+      "sha256": "d153a405fd60e1f15fe7fe683611d9e5a224a1df6723394d9c0aa929ed0bd2b3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.trx",
+      "sha256": "7ac71b833fd67941ffa830e12115bae28798de97e63c5de65ddc9f4b7e5093ab",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.trx"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.attestation.json",
+      "sha256": "f9cf67b2ff3206c696db488dfe34c9709b9145a9ebb56bc30cbc2de84ea011f7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.attestation.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.json",
+      "sha256": "00f86a0183ba87a018bc1151f6e949cbfc4780caff3051ae9b31a8bb78c9f61f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.trx",
+      "sha256": "5db226d798fd0e044ba5ab4b61c42a8732085d7ffe3dba8a88fd5af82e7a30d0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.trx"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.attestation.json",
+      "sha256": "210d1d762f3ad84f0f94ee81c7a3899c6d101698417c70c0d1056dfc7badbfd2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.attestation.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.json",
+      "sha256": "1c28b137b17454c7a79192590d5da697203e50440e511f158c1f33e1aeceb628",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.json"
+    },
+    {
+      "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.trx",
+      "sha256": "5336fd9fc951fdbfa48cef63603c1516ffd0a7d4a49926e64d3e0ec51a74bd8d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.trx"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json",
+      "sha256": "15b978a7ddede4797ce4c49de839f9a55081966847c168eb0b5ba3b0a997628b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json",
+      "sha256": "9241d54231597ebed9aedcf0e832d1432c23576e3b8561963997f4c1e0da15de",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json",
+      "sha256": "3fba925446946f567e910b6071953297cf3b66924faf8a5642af9785db4449be",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json",
+      "sha256": "1aae4b049d2dedd89549d8a006fd2ad32d864b300688029db30c82ee8491cd76",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json",
+      "sha256": "52962297f03d91c5183e1ecdd662a7cdc7492631264a01036ca5c89195e971fb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json",
+      "sha256": "3ba148accbda5587cb315a82e1ceca72c0fba61e31aa7974cd0886472b19ce09",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json"
+    },
+    {
+      "path": "artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json",
+      "sha256": "f9d52161ede2eeccb0202791b8df392a61fc14d222b60b024e4bc517e2f58a13",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json#artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-085-baxy-01-artifacts-mvp-catalog_functional_matrix_mind_v1.raw.jsonl",
+      "card_kind": "metric",
+      "corpus": "artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl",
+      "denominator": "1 files in group artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "catalog_functional_matrix_mind_v1.raw.jsonl parser=jsonl rows=318 bytes=374465 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-02-artifacts-mvp-catalog_provider_read_only_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/catalog_provider_read_only_v1.json",
+      "denominator": "1 files in group artifacts/mvp/catalog_provider_read_only_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/catalog_provider_read_only_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/catalog_provider_read_only_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "catalog_provider_read_only_v1.json parser=json rows=1 bytes=73810 dist={\"scalar_keys\": [\"catalog_count\", \"core\", \"core_version\", \"measured_at\", \"schema\", \"seconds\", \"stderr\"], \"list_lengths\": {\"cases\": 169}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "artifacts/mvp/catalog_provider_read_only_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-03-artifacts-mvp-catalog_routing_matrix_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/catalog_routing_matrix_v1.json",
+      "denominator": "1 files in group artifacts/mvp/catalog_routing_matrix_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/catalog_routing_matrix_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/catalog_routing_matrix_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "catalog_routing_matrix_v1.json parser=json rows=1 bytes=88929 dist={\"scalar_keys\": [\"effects_executed\", \"measured_at_utc\", \"overall_mvp_gate_passed\", \"program_sha256\", \"provider_execution_gate_passed\", \"routing_gate_passed\", \"schema\", \"scope\", \"s…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "artifacts/mvp/catalog_routing_matrix_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-04-artifacts-mvp-external_provider_contract_matrix_v1",
+      "card_kind": "corpus",
+      "corpus": "artifacts/mvp/external_provider_contract_matrix_v1",
+      "denominator": "1 files in group artifacts/mvp/external_provider_contract_matrix_v1; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/external_provider_contract_matrix_v1",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/external_provider_contract_matrix_v1/external_provider_contract_matrix_v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "external_provider_contract_matrix_v1.trx parser=xml rows=19 bytes=2952 dist={\"tags\": {\"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"UnitTestResult\": 1, \"Results\": 1, \"Execution\": 1, \"TestMethod\": 1, \"UnitTest\": 1, \"TestDefinitions\": 1, \"…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/external_provider_contract_matrix_v1/external_provider_contract_matrix_v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-05-artifacts-mvp-external_provider_contract_matrix_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/external_provider_contract_matrix_v1.json",
+      "denominator": "1 files in group artifacts/mvp/external_provider_contract_matrix_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/external_provider_contract_matrix_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/external_provider_contract_matrix_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "external_provider_contract_matrix_v1.json parser=json rows=1 bytes=26244 dist={\"scalar_keys\": [\"actualEffectsExecuted\", \"coreAssembly\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"schema\", \"scope\", \"simulatedEffectReceipts\", \"testAssembly\", \"testA…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/external_provider_contract_matrix_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-06-artifacts-mvp-llm_plan_execution_gate_repairs_v3.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/llm_plan_execution_gate_repairs_v3.json",
+      "denominator": "1 files in group artifacts/mvp/llm_plan_execution_gate_repairs_v3.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/llm_plan_execution_gate_repairs_v3.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/llm_plan_execution_gate_repairs_v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llm_plan_execution_gate_repairs_v3.json parser=json rows=1 bytes=12826 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"total_seconds\"], \"list_lengths\": {\"cases\": 5}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/llm_plan_execution_gate_repairs_v3.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-07-artifacts-mvp-llm_plan_execution_gate_streaming_repair_v1.js",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json",
+      "denominator": "1 files in group artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llm_plan_execution_gate_streaming_repair_v1.json parser=json rows=1 bytes=3847 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"total_seconds\"], \"list_lengths\": {\"cases\": 1}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-08-artifacts-mvp-llm_plan_execution_gate_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/llm_plan_execution_gate_v1.json",
+      "denominator": "1 files in group artifacts/mvp/llm_plan_execution_gate_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/llm_plan_execution_gate_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/llm_plan_execution_gate_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llm_plan_execution_gate_v1.json parser=json rows=1 bytes=50359 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"total_seconds\"], \"list_lengths\": {\"cases\": 16}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/llm_plan_execution_gate_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-09-artifacts-mvp-llm_plan_execution_gate_v2.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/llm_plan_execution_gate_v2.json",
+      "denominator": "1 files in group artifacts/mvp/llm_plan_execution_gate_v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/llm_plan_execution_gate_v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/llm_plan_execution_gate_v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llm_plan_execution_gate_v2.json parser=json rows=1 bytes=55902 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"total_seconds\"], \"list_lengths\": {\"cases\": 16}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/llm_plan_execution_gate_v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-10-artifacts-mvp-llm_plan_execution_gate_web_repairs_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json",
+      "denominator": "1 files in group artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llm_plan_execution_gate_web_repairs_v1.json parser=json rows=1 bytes=4435 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"total_seconds\"], \"list_lengths\": {\"cases\": 2}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-11-artifacts-mvp-local_mutable_matrix_v1",
+      "card_kind": "corpus",
+      "corpus": "artifacts/mvp/local_mutable_matrix_v1",
+      "denominator": "2 files in group artifacts/mvp/local_mutable_matrix_v1; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_mutable_matrix_v1",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_mutable_matrix_v1/local_mutable_integration_v1.trx",
+        "artifacts/mvp/local_mutable_matrix_v1/local_mutable_providers_v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_mutable_integration_v1.trx parser=xml rows=786 bytes=210775 dist={\"tags\": {\"UnitTestResult\": 155, \"TestEntry\": 155, \"Execution\": 154, \"TestMethod\": 154, \"UnitTest\": 154, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\":… | local_mutable_providers_v1.trx parser=xml rows=274 bytes=71508 dist={\"tags\": {\"UnitTestResult\": 52, \"Execution\": 52, \"TestMethod\": 52, \"UnitTest\": 52, \"TestEntry\": 52, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_mutable_matrix_v1/local_mutable_integration_v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-12-artifacts-mvp-local_stateful_handler_matrix_v1",
+      "card_kind": "corpus",
+      "corpus": "artifacts/mvp/local_stateful_handler_matrix_v1",
+      "denominator": "1 files in group artifacts/mvp/local_stateful_handler_matrix_v1; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_stateful_handler_matrix_v1",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_stateful_handler_matrix_v1/local_stateful_handler_matrix_v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_stateful_handler_matrix_v1.trx parser=xml rows=19 bytes=2969 dist={\"tags\": {\"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"UnitTestResult\": 1, \"Results\": 1, \"Execution\": 1, \"TestMethod\": 1, \"UnitTest\": 1, \"TestDefinitions\": 1, \"…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_stateful_handler_matrix_v1/local_stateful_handler_matrix_v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-13-artifacts-mvp-local_stateful_handler_matrix_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/local_stateful_handler_matrix_v1.json",
+      "denominator": "1 files in group artifacts/mvp/local_stateful_handler_matrix_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_stateful_handler_matrix_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_stateful_handler_matrix_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_stateful_handler_matrix_v1.json parser=json rows=1 bytes=9713 dist={\"scalar_keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"isolatedStoreMutations\", \"measuredAtUtc\", \"schema\", \"scope\", \"testAssemblySha256\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_stateful_handler_matrix_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-14-artifacts-mvp-local_transient_handler_matrix_v1",
+      "card_kind": "corpus",
+      "corpus": "artifacts/mvp/local_transient_handler_matrix_v1",
+      "denominator": "1 files in group artifacts/mvp/local_transient_handler_matrix_v1; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_transient_handler_matrix_v1",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_transient_handler_matrix_v1/local_transient_handler_matrix_v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_transient_handler_matrix_v1.trx parser=xml rows=19 bytes=2955 dist={\"tags\": {\"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"UnitTestResult\": 1, \"Results\": 1, \"Execution\": 1, \"TestMethod\": 1, \"UnitTest\": 1, \"TestDefinitions\": 1, \"…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_transient_handler_matrix_v1/local_transient_handler_matrix_v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-15-artifacts-mvp-local_transient_handler_matrix_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/local_transient_handler_matrix_v1.json",
+      "denominator": "1 files in group artifacts/mvp/local_transient_handler_matrix_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_transient_handler_matrix_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_transient_handler_matrix_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_transient_handler_matrix_v1.json parser=json rows=1 bytes=4771 dist={\"scalar_keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"schema\", \"scope\", \"testAssemblySha256\"], \"list_lengths\": {\"rows\": 15}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_transient_handler_matrix_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-16-artifacts-mvp-local_transient_handler_matrix_v2",
+      "card_kind": "corpus",
+      "corpus": "artifacts/mvp/local_transient_handler_matrix_v2",
+      "denominator": "1 files in group artifacts/mvp/local_transient_handler_matrix_v2; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_transient_handler_matrix_v2",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_transient_handler_matrix_v2/local_transient_handler_matrix_v2.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_transient_handler_matrix_v2.trx parser=xml rows=19 bytes=2955 dist={\"tags\": {\"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"UnitTestResult\": 1, \"Results\": 1, \"Execution\": 1, \"TestMethod\": 1, \"UnitTest\": 1, \"TestDefinitions\": 1, \"…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_transient_handler_matrix_v2/local_transient_handler_matrix_v2.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-17-artifacts-mvp-local_transient_handler_matrix_v2.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/local_transient_handler_matrix_v2.json",
+      "denominator": "1 files in group artifacts/mvp/local_transient_handler_matrix_v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/local_transient_handler_matrix_v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/local_transient_handler_matrix_v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "local_transient_handler_matrix_v2.json parser=json rows=1 bytes=5326 dist={\"scalar_keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"schema\", \"scope\", \"testAssemblySha256\"], \"list_lengths\": {\"rows\": 17}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/local_transient_handler_matrix_v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-18-artifacts-mvp-memory_handler_matrix_v1",
+      "card_kind": "corpus",
+      "corpus": "artifacts/mvp/memory_handler_matrix_v1",
+      "denominator": "1 files in group artifacts/mvp/memory_handler_matrix_v1; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/memory_handler_matrix_v1",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/memory_handler_matrix_v1/memory_handler_matrix_v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "memory_handler_matrix_v1.trx parser=xml rows=19 bytes=2953 dist={\"tags\": {\"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"UnitTestResult\": 1, \"Results\": 1, \"Execution\": 1, \"TestMethod\": 1, \"UnitTest\": 1, \"TestDefinitions\": 1, \"…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/mvp/memory_handler_matrix_v1/memory_handler_matrix_v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-19-artifacts-mvp-memory_handler_matrix_v1.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/memory_handler_matrix_v1.json",
+      "denominator": "1 files in group artifacts/mvp/memory_handler_matrix_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/memory_handler_matrix_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/memory_handler_matrix_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "memory_handler_matrix_v1.json parser=json rows=1 bytes=4233 dist={\"scalar_keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"isolatedStoreOperations\", \"measuredAtUtc\", \"protectionMode\", \"providerAssemblySha256\", \"schema\",…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/mvp/memory_handler_matrix_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-20-artifacts-mvp-mind_budget_gate_v6_current_tree_20260811.json",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json",
+      "denominator": "1 files in group artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "mind_budget_gate_v6_current_tree_20260811.json parser=json rows=1 bytes=66684 dist={\"scalar_keys\": [\"adr\", \"catalog_operations\", \"measured_at_utc\", \"schema\", \"status\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-21-artifacts-mvp-source_quality_full_20260811_final.log",
+      "card_kind": "metric",
+      "corpus": "artifacts/mvp/source_quality_full_20260811_final.log",
+      "denominator": "1 files in group artifacts/mvp/source_quality_full_20260811_final.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/source_quality_full_20260811_final.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/source_quality_full_20260811_final.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "source_quality_full_20260811_final.log parser=log rows=190 bytes=14722 dist={\"fail_like\": 6, \"pass_like\": 7}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/source_quality_full_20260811_final.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-22-artifacts-mvp-source_quality_full_20260811_r5_final.log",
+      "card_kind": "metric",
+      "corpus": "artifacts/mvp/source_quality_full_20260811_r5_final.log",
+      "denominator": "1 files in group artifacts/mvp/source_quality_full_20260811_r5_final.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/source_quality_full_20260811_r5_final.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/source_quality_full_20260811_r5_final.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "source_quality_full_20260811_r5_final.log parser=log rows=188 bytes=14704 dist={\"fail_like\": 6, \"pass_like\": 7}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/source_quality_full_20260811_r5_final.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-23-artifacts-mvp-ui_smoke_v1",
+      "card_kind": "metric",
+      "corpus": "artifacts/mvp/ui_smoke_v1",
+      "denominator": "1 files in group artifacts/mvp/ui_smoke_v1; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/ui_smoke_v1",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/ui_smoke_v1/shell-trace.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "shell-trace.jsonl parser=jsonl rows=31 bytes=2908 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/ui_smoke_v1/shell-trace.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-24-artifacts-mvp-ui_smoke_v2",
+      "card_kind": "metric",
+      "corpus": "artifacts/mvp/ui_smoke_v2",
+      "denominator": "2 files in group artifacts/mvp/ui_smoke_v2; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/ui_smoke_v2",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/ui_smoke_v2/report.json",
+        "artifacts/mvp/ui_smoke_v2/shell-trace.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "report.json parser=json rows=1 bytes=2036 dist={\"scalar_keys\": [\"appSha256\", \"audioCapturedOrPlayed\", \"effectsExecuted\", \"error\", \"gatePassed\", \"launcherSha256\", \"measuredAtUtc\", \"programSha256\", \"query\", \"schema\", \"scope\"], \"… | shell-trace.jsonl parser=jsonl rows=36 bytes=3337 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/ui_smoke_v2/report.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-25-artifacts-mvp-validate_only_20260811",
+      "card_kind": "run",
+      "corpus": "artifacts/mvp/validate_only_20260811",
+      "denominator": "1 files in group artifacts/mvp/validate_only_20260811; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/validate_only_20260811",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/validate_only_20260811/receipt.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "receipt.json parser=json rows=1 bytes=1825 dist={\"scalar_keys\": [\"applicationStarted\", \"audioPlayedOrCaptured\", \"command\", \"effectsExecuted\", \"exitCode\", \"mandatoryAssetsAndRuntimeValid\", \"measuredAtLocal\", \"ownedProcessesRemai…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/validate_only_20260811/receipt.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-26-artifacts-mvp-visible_smoke_20260811",
+      "card_kind": "metric",
+      "corpus": "artifacts/mvp/visible_smoke_20260811",
+      "denominator": "2 files in group artifacts/mvp/visible_smoke_20260811; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/visible_smoke_20260811",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/visible_smoke_20260811/launcher.stdout.log",
+        "artifacts/mvp/visible_smoke_20260811/receipt.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "launcher.stdout.log parser=log rows=42 bytes=3180 dist={\"fail_like\": 1, \"pass_like\": 0} | receipt.json parser=json rows=1 bytes=1238 dist={\"scalar_keys\": [\"commit\", \"launcher\", \"measured_at_local\", \"result\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/visible_smoke_20260811/launcher.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-27-artifacts-mvp-visual_review_20260811",
+      "card_kind": "asset",
+      "corpus": "artifacts/mvp/visual_review_20260811",
+      "denominator": "23 files in group artifacts/mvp/visual_review_20260811; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/mvp/visual_review_20260811",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/mvp/visual_review_20260811/after_baxy_branding.jpg",
+        "artifacts/mvp/visual_review_20260811/after_model_identity.jpg",
+        "artifacts/mvp/visual_review_20260811/after_native_overlay.jpg",
+        "artifacts/mvp/visual_review_20260811/after_presentability.jpg",
+        "artifacts/mvp/visual_review_20260811/launcher.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher2.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher3.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher_bounds.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher_branded.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher_final.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher_overlay.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher_readonly_settings.stdout.log",
+        "artifacts/mvp/visual_review_20260811/launcher_readonly_settings_v2.stdout.log",
+        "artifacts/mvp/visual_review_20260811/receipt.json",
+        "artifacts/mvp/visual_review_20260811/settings_about.jpg",
+        "artifacts/mvp/visual_review_20260811/settings_about_final.jpg",
+        "artifacts/mvp/visual_review_20260811/settings_about_verified.jpg",
+        "artifacts/mvp/visual_review_20260811/settings_overlay_about.jpg",
+        "artifacts/mvp/visual_review_20260811/settings_readonly_final.jpg",
+        "artifacts/mvp/visual_review_20260811/settings_readonly_verified.jpg",
+        "artifacts/mvp/visual_review_20260811/settings_transcript_final.jpg",
+        "artifacts/mvp/visual_review_20260811/source_quality_full_final.log",
+        "artifacts/mvp/visual_review_20260811/source_quality_full_final_v2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "after_baxy_branding.jpg parser=binary_inventory rows=0 bytes=53463 dist={} | after_model_identity.jpg parser=binary_inventory rows=0 bytes=52599 dist={} | after_native_overlay.jpg parser=binary_inventory rows=0 bytes=52269 dist={} | after_presentability.jpg parser=binary_inventory rows=0 bytes=54120 dist={} | launcher.stdout.log parser=log rows=9 bytes=621 dist={\"fail_like\": 0, \"pass_like\": 0} | launcher2.stdout.log parser=log rows=38 bytes=2736 dist={\"fail_like\": 1, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/mvp/visual_review_20260811/after_baxy_branding.jpg",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-28-artifacts-planner_recovery-bluetooth_radio_roundtrip_gate.js",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "bluetooth_radio_roundtrip_gate.json parser=json rows=1 bytes=261 dist={\"scalar_keys\": [\"baseline_state\", \"measured_at_utc\", \"restored\", \"schema_version\", \"scope\", \"total_steps\", \"verified_steps\"], \"list_lengths\": {\"error_codes\": 0}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-29-artifacts-planner_recovery-external_adapters_gate_v2.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/external_adapters_gate_v2.json",
+      "denominator": "1 files in group artifacts/planner_recovery/external_adapters_gate_v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/external_adapters_gate_v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/external_adapters_gate_v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "external_adapters_gate_v2.json parser=json rows=1 bytes=17356 dist={\"scalar_keys\": [\"core_catalog_count\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\"], \"list_lengths\": {\"cases\": 32}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/external_adapters_gate_v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-30-artifacts-planner_recovery-external_messaging_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/external_messaging_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/external_messaging_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/external_messaging_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/external_messaging_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "external_messaging_gate.json parser=json rows=1 bytes=1710 dist={\"scalar_keys\": [\"core_catalog_count\", \"core_exit\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\"], \"list_lengths\": {\"cases\": 2}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/external_messaging_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-31-artifacts-planner_recovery-external_safe_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/external_safe_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/external_safe_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/external_safe_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/external_safe_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "external_safe_gate.json parser=json rows=1 bytes=1679 dist={\"scalar_keys\": [\"core_catalog_count\", \"measured_at\", \"schema_version\", \"scope\"], \"list_lengths\": {\"cases\": 7}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/external_safe_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-32-artifacts-planner_recovery-fault_recovery_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/fault_recovery_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/fault_recovery_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/fault_recovery_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/fault_recovery_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "fault_recovery_gate.json parser=json rows=1 bytes=916 dist={\"scalar_keys\": [\"measured_at\", \"schema_version\", \"scope\", \"status\"], \"list_lengths\": {\"cases\": 10}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/fault_recovery_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-33-artifacts-planner_recovery-hardware_effects_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/hardware_effects_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/hardware_effects_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/hardware_effects_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/hardware_effects_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "hardware_effects_gate.json parser=json rows=1 bytes=3945 dist={\"scalar_keys\": [\"measured_at\", \"schema_version\", \"scope\", \"stderr\"], \"list_lengths\": {\"cases\": 12}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/hardware_effects_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-34-artifacts-planner_recovery-historical_compound_audit.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_compound_audit.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_compound_audit.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_compound_audit.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_compound_audit.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_compound_audit.json parser=json rows=1 bytes=85772 dist={\"scalar_keys\": [\"generated_at\", \"schema_version\", \"source\"], \"list_lengths\": {\"missions\": 166}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_compound_audit.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-35-artifacts-planner_recovery-historical_planner_gate.before_ex",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_planner_gate.before_external_adapters.json parser=json rows=1 bytes=57720 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\"], \"list_lengths\": {\"cas…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-36-artifacts-planner_recovery-historical_planner_gate.before_gr",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_planner_gate.before_graceful_recovery.json parser=json rows=1 bytes=58661 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\"], \"list_lengths\": {\"cas…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-37-artifacts-planner_recovery-historical_planner_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_planner_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_planner_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_planner_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_planner_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_planner_gate.json parser=json rows=1 bytes=55470 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\"], \"list_lengths\": {\"cas…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_planner_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-38-artifacts-planner_recovery-historical_planner_gate.single_re",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_planner_gate.single_review_batch.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_planner_gate.single_review_batch.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_planner_gate.single_review_batch.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_planner_gate.single_review_batch.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_planner_gate.single_review_batch.json parser=json rows=1 bytes=55469 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\"], \"list_lengths\": {\"cas…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_planner_gate.single_review_batch.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-39-artifacts-planner_recovery-historical_user_mission_audit.jso",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_user_mission_audit.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_user_mission_audit.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_user_mission_audit.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_user_mission_audit.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_user_mission_audit.json parser=json rows=1 bytes=207004 dist={\"scalar_keys\": [\"generated_at\", \"schema_version\", \"source\", \"source_sha256\"], \"list_lengths\": {\"missions\": 263}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_user_mission_audit.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-40-artifacts-planner_recovery-historical_user_mission_planner_g",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/historical_user_mission_planner_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/historical_user_mission_planner_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/historical_user_mission_planner_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/historical_user_mission_planner_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "historical_user_mission_planner_gate.json parser=json rows=1 bytes=53550 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\"], \"list_lengths\": {\"cas…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "artifacts/planner_recovery/historical_user_mission_planner_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-41-artifacts-planner_recovery-llm_plan_execution_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/llm_plan_execution_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/llm_plan_execution_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/llm_plan_execution_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/llm_plan_execution_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llm_plan_execution_gate.json parser=json rows=1 bytes=20618 dist={\"scalar_keys\": [\"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"total_seconds\"], \"list_lengths\": {\"cases\": 9}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/planner_recovery/llm_plan_execution_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-42-artifacts-planner_recovery-planner_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/planner_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/planner_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/planner_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/planner_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "planner_gate.json parser=json rows=1 bytes=2652 dist={\"scalar_keys\": [\"core_catalog_count\", \"measured_at\", \"model\", \"router\", \"schema_version\", \"scope\", \"starting_revision\"], \"list_lengths\": {\"cases\": 6}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/planner_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-43-artifacts-planner_recovery-steam_launch_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/planner_recovery/steam_launch_gate.json",
+      "denominator": "1 files in group artifacts/planner_recovery/steam_launch_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/planner_recovery/steam_launch_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/planner_recovery/steam_launch_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "steam_launch_gate.json parser=json rows=1 bytes=471 dist={\"scalar_keys\": [\"catalog_target_present\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/planner_recovery/steam_launch_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-44-artifacts-product-app_open_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/product/app_open_gate.json",
+      "denominator": "1 files in group artifacts/product/app_open_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/app_open_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/app_open_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "app_open_gate.json parser=json rows=1 bytes=1330 dist={\"scalar_keys\": [\"gate_script_sha256\", \"notes_capture_sha256\", \"observed_utc\", \"schema\", \"scope\"], \"list_lengths\": {\"limitations\": 2}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/app_open_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-45-artifacts-product-app_open_gate_r26_current.json",
+      "card_kind": "run",
+      "corpus": "artifacts/product/app_open_gate_r26_current.json",
+      "denominator": "1 files in group artifacts/product/app_open_gate_r26_current.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/app_open_gate_r26_current.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/app_open_gate_r26_current.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "app_open_gate_r26_current.json parser=json rows=1 bytes=1030 dist={\"scalar_keys\": [\"data_root\", \"status\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/app_open_gate_r26_current.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-46-artifacts-product-architecture_seams_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/product/architecture_seams_gate.json",
+      "denominator": "1 files in group artifacts/product/architecture_seams_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/architecture_seams_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/architecture_seams_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "architecture_seams_gate.json parser=json rows=1 bytes=3063 dist={\"scalar_keys\": [\"observed_utc\", \"schema\", \"scope\", \"source_head\", \"status\"], \"list_lengths\": {\"limitations\": 3}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/architecture_seams_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-47-artifacts-product-audio_control_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/product/audio_control_gate.json",
+      "denominator": "1 files in group artifacts/product/audio_control_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/audio_control_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/audio_control_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "audio_control_gate.json parser=json rows=1 bytes=4397 dist={\"scalar_keys\": [\"observed_utc\", \"schema\", \"scope\"], \"list_lengths\": {\"limitations\": 4}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/audio_control_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-48-artifacts-product-audit-2026-07-27-app-open.json",
+      "card_kind": "run",
+      "corpus": "artifacts/product/audit-2026-07-27-app-open.json",
+      "denominator": "1 files in group artifacts/product/audit-2026-07-27-app-open.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/audit-2026-07-27-app-open.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/audit-2026-07-27-app-open.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "audit-2026-07-27-app-open.json parser=json rows=1 bytes=371 dist={\"scalar_keys\": [\"close_notepad_requested\", \"core_exited\", \"data_root_removed\", \"error\", \"gate_notepad_exited\", \"job_closed\", \"notepad_survived_job_close\", \"owned_product_processe…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/audit-2026-07-27-app-open.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-49-artifacts-product-audit-remediation-2026-07-27",
+      "card_kind": "run",
+      "corpus": "artifacts/product/audit-remediation-2026-07-27",
+      "denominator": "9 files in group artifacts/product/audit-remediation-2026-07-27; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/audit-remediation-2026-07-27",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.attestation.json",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.json",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.trx",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.attestation.json",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.json",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.trx",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.attestation.json",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.json",
+        "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "mind-shell-e2e-final-v2.attestation.json parser=json rows=1 bytes=1279 dist={\"scalar_keys\": [\"anchor_sha256\", \"completed_records\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\",… | mind-shell-e2e-final-v2.json parser=json rows=1 bytes=8607 dist={\"scalar_keys\": [\"completed_utc\", \"duration_seconds\", \"schema\", \"started_utc\", \"status\"], \"list_lengths\": {}} | mind-shell-e2e-final-v2.trx parser=xml rows=58 bytes=15799 dist={\"tags\": {\"UnitTestResult\": 8, \"Execution\": 8, \"TestMethod\": 8, \"UnitTest\": 8, \"TestEntry\": 8, \"Output\": 2, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Message… | mind-shell-e2e-final-v3.attestation.json parser=json rows=1 bytes=1472 dist={\"scalar_keys\": [\"anchor_sha256\", \"comple…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.attestation.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-50-artifacts-product-baxy_wake_cascade_physical_human_augmented",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_physical_human_augmented_prereg_v1.json parser=json rows=1 bytes=2447 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"role\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-51-artifacts-product-baxy_wake_cascade_physical_validation_prer",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_physical_validation_prereg_v1.json parser=json rows=1 bytes=2196 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"role\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-52-artifacts-product-baxy_wake_cascade_physical_validation_prer",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_physical_validation_prereg_v2.json parser=json rows=1 bytes=2196 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"role\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-53-artifacts-product-baxy_wake_cascade_physical_validation_prer",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_physical_validation_prereg_v3.json parser=json rows=1 bytes=2447 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"role\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-54-artifacts-product-baxy_wake_cascade_v15_physical_sapi_fresh_",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json parser=json rows=1 bytes=2447 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"role\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-55-artifacts-product-baxy_wake_cascade_v15_physical_sapi_fresh_",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json parser=json rows=1 bytes=67214 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-085-baxy-56-artifacts-product-baxy_wake_cascade_v3_physical_human_augmen",
+      "card_kind": "run",
+      "corpus": "artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json",
+      "denominator": "1 files in group artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json parser=json rows=1 bytes=71335 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=89 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-086-baxy-baxy_art_product",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-085-baxy.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

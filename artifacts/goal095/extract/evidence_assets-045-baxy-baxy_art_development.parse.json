@@ -1,0 +1,2668 @@
+{
+  "batch_id": "evidence_assets-045-baxy-baxy_art_development",
+  "source_id": "baxy",
+  "file_count": 37,
+  "hash_ok": 37,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 743079,
+      "sha256": "143a14cf648a41d49552354b37c7eab625b985b654348c7c920eda67c21cba4d",
+      "rows": 652,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 652,
+          "phase": 652,
+          "raw_decision": 652,
+          "request_id": 652,
+          "schema": 652,
+          "stages": 652,
+          "final": 331
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 741115,
+        "min_line_bytes": 363,
+        "max_line_bytes": 2050,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 740684,
+            "line": 651,
+            "text": "{\"candidate_operations\":[\"app.installed\",\"game.catalog.list\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"app.installed\",\"game.catalog.list\"],\"effect_verification\":\"multiple\"…"
+          },
+          {
+            "offset": 741115,
+            "line": 652,
+            "text": "{\"candidate_operations\":[\"app.installed\",\"game.catalog.list\"],\"final\":{\"effect_operations\":[\"app.installed\",\"game.catalog.list\"],\"intent_operations\":[\"app.installed\",\"game.catalog.list\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conv…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r3_failures.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 109440,
+      "sha256": "1c3e7345122cb1f0beef66a410226167202e02192ea6c4f0f93cbac5c0d69406",
+      "rows": 109,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "development_only",
+          "failure_cause",
+          "family",
+          "final_effect_operations",
+          "final_intent_operations",
+          "final_kind",
+          "first_loss_stage",
+          "language",
+          "outcome",
+          "owner",
+          "raw_operations",
+          "schema",
+          "source_cut",
+          "surface",
+          "text",
+          "unsafe_effect"
+        ],
+        "key_freq": {
+          "candidate_operations": 109,
+          "case_id": 109,
+          "case_type": 109,
+          "compatible_effect_operation_sets": 109,
+          "compatible_terminal_operation_sets": 109,
+          "development_only": 109,
+          "failure_cause": 109,
+          "family": 109,
+          "final_effect_operations": 109,
+          "final_intent_operations": 109,
+          "final_kind": 109,
+          "first_loss_stage": 109,
+          "language": 109,
+          "outcome": 109,
+          "owner": 109,
+          "raw_operations": 109,
+          "schema": 109,
+          "source_cut": 109,
+          "surface": 109,
+          "text": 109,
+          "unsafe_effect": 109
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 108509,
+        "min_line_bytes": 705,
+        "max_line_bytes": 1489,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\": [], \"case_id\": \"r3-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"development_only\": true, \"failure…"
+          },
+          {
+            "offset": 709,
+            "line": 2,
+            "text": "{\"candidate_operations\": [], \"case_id\": \"r3-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"development_only\": true, \"fai…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 107639,
+            "line": 108,
+            "text": "{\"candidate_operations\": [\"message.recipient.resolve\", \"message.send\", \"clipboard.copy\", \"clipboard.paste\", \"clipboard.read.text\", \"clipboard.write.text\"], \"case_id\": \"r3-message-clarify-02-plain\", \"case_type\": \"clarification\", \"compatible…"
+          },
+          {
+            "offset": 108509,
+            "line": 109,
+            "text": "{\"candidate_operations\": [\"message.recipient.resolve\", \"message.send\", \"clipboard.copy\", \"clipboard.paste\", \"clipboard.read.text\", \"clipboard.write.text\", \"app.close\", \"app.installed\", \"app.open\"], \"case_id\": \"r3-message-clarify-02-address…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx": {
+      "parser": "xml",
+      "bytes": 14824,
+      "sha256": "a9c6d0ffc8db06b52e915ac0a265009115488d44f0d3bc5b5347190f83d5e58f",
+      "rows": 64,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 10,
+          "Execution": 10,
+          "TestMethod": 10,
+          "UnitTest": 10,
+          "TestEntry": 10,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14823
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 63,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 64,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 327789,
+      "sha256": "ed0be6d659de823f06584f1d437d8eb43e0a69fc0272885f5d20d1b30b563771",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 330
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 327788,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 743327,
+      "sha256": "82c31aa4bba09a83139f4caf85cf877420b901f3cfbe593d194f8a4bef7cc954",
+      "rows": 657,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 657,
+          "phase": 657,
+          "raw_decision": 657,
+          "request_id": 657,
+          "schema": 657,
+          "stages": 657,
+          "final": 331,
+          "error_type": 3,
+          "failure_kind": 3,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 741363,
+        "min_line_bytes": 232,
+        "max_line_bytes": 2050,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 740932,
+            "line": 656,
+            "text": "{\"candidate_operations\":[\"game.catalog.list\",\"app.installed\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"game.catalog.list\",\"app.installed\"],\"effect_verification\":\"multiple\"…"
+          },
+          {
+            "offset": 741363,
+            "line": 657,
+            "text": "{\"candidate_operations\":[\"game.catalog.list\",\"app.installed\"],\"final\":{\"effect_operations\":[\"game.catalog.list\",\"app.installed\"],\"intent_operations\":[\"game.catalog.list\",\"app.installed\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conv…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 316957,
+      "sha256": "98632220de86a0f44c8327279e16fb25ee4e46b5dc8492178ef20deb65fb46f8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 330
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 316956,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 743247,
+      "sha256": "4576e8916344a8f1bd938b848456ba564b23561518ea1f40b06d0bcab6427535",
+      "rows": 652,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 652,
+          "phase": 652,
+          "raw_decision": 652,
+          "request_id": 652,
+          "schema": 652,
+          "stages": 652,
+          "final": 331
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 741283,
+        "min_line_bytes": 363,
+        "max_line_bytes": 2050,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 740852,
+            "line": 651,
+            "text": "{\"candidate_operations\":[\"game.catalog.list\",\"app.installed\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"game.catalog.list\",\"app.installed\"],\"effect_verification\":\"multiple\"…"
+          },
+          {
+            "offset": 741283,
+            "line": 652,
+            "text": "{\"candidate_operations\":[\"game.catalog.list\",\"app.installed\"],\"final\":{\"effect_operations\":[\"game.catalog.list\",\"app.installed\"],\"intent_operations\":[\"game.catalog.list\",\"app.installed\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conv…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_failures.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 270497,
+      "sha256": "5fa4021f034ab13ee1e15a84484a97907373bf4daddb410d02b8c79b0ab6a4ef",
+      "rows": 275,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "development_only",
+          "failure_cause",
+          "family",
+          "final_effect_operations",
+          "final_intent_operations",
+          "final_kind",
+          "first_loss_stage",
+          "language",
+          "outcome",
+          "owner",
+          "raw_operations",
+          "schema",
+          "source_cut",
+          "surface",
+          "text",
+          "unsafe_effect"
+        ],
+        "key_freq": {
+          "candidate_operations": 275,
+          "case_id": 275,
+          "case_type": 275,
+          "compatible_effect_operation_sets": 275,
+          "compatible_terminal_operation_sets": 275,
+          "development_only": 275,
+          "failure_cause": 275,
+          "family": 275,
+          "final_effect_operations": 275,
+          "final_intent_operations": 275,
+          "final_kind": 275,
+          "first_loss_stage": 275,
+          "language": 275,
+          "outcome": 275,
+          "owner": 275,
+          "raw_operations": 275,
+          "schema": 275,
+          "source_cut": 275,
+          "surface": 275,
+          "text": 275,
+          "unsafe_effect": 275
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 269737,
+        "min_line_bytes": 710,
+        "max_line_bytes": 1514,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\": [], \"case_id\": \"r4-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"development_only\": true, \"failure…"
+          },
+          {
+            "offset": 710,
+            "line": 2,
+            "text": "{\"candidate_operations\": [\"game.installed.named\", \"game.install.status\", \"game.catalog.list\", \"game.install.cancel\", \"game.install.cancel.active\", \"game.purchase.prepare\", \"game.launch\", \"game.install.prepare\", \"game.install.named\", \"game.…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 268574,
+            "line": 274,
+            "text": "{\"candidate_operations\": [\"system.identity\", \"system.time\", \"system.status\", \"routine.phrase.create\", \"notification.diagnose\", \"notification.cancel.latest\", \"notification.cancel.at\", \"email.latest.reply\", \"email.latest.read\", \"input.keyboa…"
+          },
+          {
+            "offset": 269737,
+            "line": 275,
+            "text": "{\"candidate_operations\": [\"peripheral.list\", \"peripheral.print\", \"peripheral.scan\"], \"case_id\": \"r4-out-of-scope-20-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]],…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx": {
+      "parser": "xml",
+      "bytes": 14824,
+      "sha256": "ca31f42c4843a2d01fe3c13c524e2ab40758ef6739738af03f21e4d18bfb3f0a",
+      "rows": 64,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 10,
+          "Execution": 10,
+          "TestMethod": 10,
+          "UnitTest": 10,
+          "TestEntry": 10,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14823
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 63,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 64,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx": {
+      "parser": "xml",
+      "bytes": 4085,
+      "sha256": "4d898a692edbea646295efb3f50d5a1f49b038e399b1138a71ad0d012636c61f",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "Text",
+          "RunInfo",
+          "RunInfos",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "Text": 1,
+          "RunInfo": 1,
+          "RunInfos": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4084
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 13,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 14,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 383568,
+      "sha256": "2ad448dee06fd38b8eb59f0eb704d8c0f571274598b5c923f366a5e5e326b756",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 383567,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 877202,
+      "sha256": "29f1cff63498c007f7a745333f4209fe1d358c6df27c0bdeb3ded635bc6768d5",
+      "rows": 794,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 794,
+          "phase": 794,
+          "raw_decision": 794,
+          "request_id": 794,
+          "schema": 794,
+          "stages": 794,
+          "final": 391,
+          "error_type": 16,
+          "failure_kind": 16,
+          "recovery": 8
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 875224,
+        "min_line_bytes": 235,
+        "max_line_bytes": 2416,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 874621,
+            "line": 793,
+            "text": "{\"candidate_operations\":[\"peripheral.list\",\"peripheral.print\",\"peripheral.scan\",\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"app.close\",\"app.installed\",\"app.open\"],\"phase\"…"
+          },
+          {
+            "offset": 875224,
+            "line": 794,
+            "text": "{\"candidate_operations\":[\"peripheral.list\",\"peripheral.print\",\"peripheral.scan\",\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"app.close\",\"app.installed\",\"app.open\"],\"final\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 384899,
+      "sha256": "90b3aae88563b7f0374214d6f64bf7c7efe008bfe51e3b16138d8770652696bf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 384898,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 874704,
+      "sha256": "04aba1b8f97801f2d10402da845570b5b49592fabacc1bb1e176ca45782db95f",
+      "rows": 787,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 787,
+          "phase": 787,
+          "raw_decision": 787,
+          "request_id": 787,
+          "schema": 787,
+          "stages": 787,
+          "final": 391,
+          "error_type": 10,
+          "failure_kind": 10,
+          "recovery": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 874195,
+        "min_line_bytes": 235,
+        "max_line_bytes": 2132,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 873956,
+            "line": 786,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"development-product-r4-r4-out-of-scope-20-addressed\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 874195,
+            "line": 787,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"prot…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 385778,
+      "sha256": "352ca253ca2b674c2874f4f2fdb1ae23324e7d81d8172e948c4873e7e00719a0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 385777,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 876246,
+      "sha256": "79a89a46f88fa9bcc870e51bc51dab95152deac4afcf853711e85defbc6a14cd",
+      "rows": 775,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 775,
+          "phase": 775,
+          "raw_decision": 775,
+          "request_id": 775,
+          "schema": 775,
+          "stages": 775,
+          "final": 391,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 874496,
+        "min_line_bytes": 235,
+        "max_line_bytes": 2132,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 874121,
+            "line": 774,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 874496,
+            "line": 775,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 385760,
+      "sha256": "4f3a2c36a2c1472a92b5dd0081ca0163e3107004b76b541ea52354924fd2b23f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 385759,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 372952,
+      "sha256": "af88d1d10eba58af0a8436c4a48d0a54c5084db8ea1467e7a96d6e066606df33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 372951,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 876635,
+      "sha256": "7c8e88cbb7a2ac9c8bc3a0f4bc2fc6db24a74384e618dbf69a8604fd50353532",
+      "rows": 772,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 772,
+          "phase": 772,
+          "raw_decision": 772,
+          "request_id": 772,
+          "schema": 772,
+          "stages": 772,
+          "final": 391
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 874885,
+        "min_line_bytes": 363,
+        "max_line_bytes": 2132,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 874510,
+            "line": 771,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 874885,
+            "line": 772,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_failures.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 266589,
+      "sha256": "f63d096074c83557b503c3fc91981398b77adef69a05a4229a2ab945bb747ab3",
+      "rows": 249,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "development_only",
+          "failure_cause",
+          "family",
+          "final_effect_operations",
+          "final_intent_operations",
+          "final_kind",
+          "first_loss_stage",
+          "language",
+          "outcome",
+          "owner",
+          "raw_operations",
+          "schema",
+          "source_cut",
+          "surface",
+          "text",
+          "unsafe_effect"
+        ],
+        "key_freq": {
+          "candidate_operations": 249,
+          "case_id": 249,
+          "case_type": 249,
+          "compatible_effect_operation_sets": 249,
+          "compatible_terminal_operation_sets": 249,
+          "development_only": 249,
+          "failure_cause": 249,
+          "family": 249,
+          "final_effect_operations": 249,
+          "final_intent_operations": 249,
+          "final_kind": 249,
+          "first_loss_stage": 249,
+          "language": 249,
+          "outcome": 249,
+          "owner": 249,
+          "raw_operations": 249,
+          "schema": 249,
+          "source_cut": 249,
+          "surface": 249,
+          "text": 249,
+          "unsafe_effect": 249
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 265364,
+        "min_line_bytes": 709,
+        "max_line_bytes": 1540,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\": [\"system.identity\", \"system.status\", \"system.time\", \"system.settings.status\", \"system.settings.adjust\", \"system.application.crash.diagnose\", \"system.process.terminate.named\", \"system.recyclebin.empty\", \"system.proc…"
+          },
+          {
+            "offset": 1464,
+            "line": 2,
+            "text": "{\"candidate_operations\": [\"vision.describe\", \"app.close\", \"app.installed\", \"app.open\", \"system.identity\", \"system.status\", \"system.time\", \"system.settings.status\", \"system.settings.adjust\", \"system.application.crash.diagnose\", \"system.proc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 264155,
+            "line": 248,
+            "text": "{\"candidate_operations\": [\"notification.cancel.at\", \"notification.cancel.latest\", \"notification.diagnose\", \"browser.tabs.list\", \"browser.navigate\", \"browser.control\", \"audio.mute\", \"audio.volume\", \"audio.status\", \"routine.restore\", \"routin…"
+          },
+          {
+            "offset": 265364,
+            "line": 249,
+            "text": "{\"candidate_operations\": [\"notification.diagnose\", \"notification.cancel.latest\", \"notification.cancel.at\", \"reminder.list\", \"reminder.delete\", \"routine.read\", \"routine.list\", \"routine.set.enabled\", \"wifi.disconnect\", \"wifi.connect.named\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx": {
+      "parser": "xml",
+      "bytes": 15706,
+      "sha256": "b54afe706258cea809c71ca2925a8770539c0008b4b8e5ac9b8413c419ba55a1",
+      "rows": 64,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 10,
+          "Execution": 10,
+          "TestMethod": 10,
+          "UnitTest": 10,
+          "TestEntry": 10,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15705
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 63,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 64,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 387584,
+      "sha256": "5af375d9f984c0190a030a5543afe5cf045e63e4fbb34c8ce62fcfe7652f3228",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 387583,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 905607,
+      "sha256": "167c1cd3b55c23644d3f0695fc25c9084974275948ac1e64bdd13124e633414a",
+      "rows": 790,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 790,
+          "phase": 790,
+          "raw_decision": 790,
+          "request_id": 790,
+          "schema": 790,
+          "stages": 790,
+          "final": 391,
+          "error_type": 12,
+          "failure_kind": 12,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 903857,
+        "min_line_bytes": 235,
+        "max_line_bytes": 2585,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 903482,
+            "line": 789,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 903857,
+            "line": 790,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 387735,
+      "sha256": "82f8052fa3ff9416125d8bf3e0c8dab882f4d9cc1d33b7a38174a3e2d6a1847d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 387734,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 888615,
+      "sha256": "36c87f65cf8f61e0338cd65d929c072a53343468f13c334e1d3a2e79e9f1e6ca",
+      "rows": 792,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 792,
+          "phase": 792,
+          "raw_decision": 792,
+          "request_id": 792,
+          "schema": 792,
+          "stages": 792,
+          "final": 391,
+          "error_type": 13,
+          "failure_kind": 13,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 886865,
+        "min_line_bytes": 235,
+        "max_line_bytes": 2585,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 886490,
+            "line": 791,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 886865,
+            "line": 792,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 375903,
+      "sha256": "658810f671f6e7cd14561c983aeb08885a648a1a71e4ba008d8ec4adbcf6e858",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 375902,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 890335,
+      "sha256": "d7047d67121a9b6703a9a471950ea154c73dcfc1c18bb764c5851a99f1abcb40",
+      "rows": 772,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 772,
+          "phase": 772,
+          "raw_decision": 772,
+          "request_id": 772,
+          "schema": 772,
+          "stages": 772,
+          "final": 391
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 888585,
+        "min_line_bytes": 363,
+        "max_line_bytes": 2585,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 888210,
+            "line": 771,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 888585,
+            "line": 772,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 375903,
+      "sha256": "c5ac9ccd9f0258fdae294620680dce39d763973a130c42629ef8544171f08ae8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 390
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 375902,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_failures.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 114661,
+      "sha256": "03160f2c41607af5d247b055b46e43cf537e72ca9daff83c2b853b9b698559a3",
+      "rows": 110,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "development_only",
+          "failure_cause",
+          "family",
+          "final_effect_operations",
+          "final_intent_operations",
+          "final_kind",
+          "first_loss_stage",
+          "language",
+          "outcome",
+          "owner",
+          "raw_operations",
+          "schema",
+          "source_cut",
+          "surface",
+          "text",
+          "unsafe_effect"
+        ],
+        "key_freq": {
+          "candidate_operations": 110,
+          "case_id": 110,
+          "case_type": 110,
+          "compatible_effect_operation_sets": 110,
+          "compatible_terminal_operation_sets": 110,
+          "development_only": 110,
+          "failure_cause": 110,
+          "family": 110,
+          "final_effect_operations": 110,
+          "final_intent_operations": 110,
+          "final_kind": 110,
+          "first_loss_stage": 110,
+          "language": 110,
+          "outcome": 110,
+          "owner": 110,
+          "raw_operations": 110,
+          "schema": 110,
+          "source_cut": 110,
+          "surface": 110,
+          "text": 110,
+          "unsafe_effect": 110
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 113918,
+        "min_line_bytes": 704,
+        "max_line_bytes": 1689,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\": [\"notification.diagnose\", \"notification.list.due\", \"notification.cancel.latest\", \"notification.cancel.at\", \"notification.dismiss\", \"notification.schedule\", \"peripheral.list\", \"peripheral.scan\", \"peripheral.print\",…"
+          },
+          {
+            "offset": 1373,
+            "line": 2,
+            "text": "{\"candidate_operations\": [\"window.active\", \"window.restore\", \"window.resolve\", \"window.minimize\", \"window.maximize\", \"window.focus\", \"window.application.status\", \"window.resize\", \"window.move\", \"wifi.status\", \"wifi.profile.list\", \"wifi.ens…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 113186,
+            "line": 109,
+            "text": "{\"candidate_operations\": [], \"case_id\": \"r6-out-of-scope-39-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"development_only\": true, \"failure_cause\": \"conversa…"
+          },
+          {
+            "offset": 113918,
+            "line": 110,
+            "text": "{\"candidate_operations\": [], \"case_id\": \"r6-out-of-scope-40-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"development_only\": true, \"failure_cause\": \"conversa…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx": {
+      "parser": "xml",
+      "bytes": 17462,
+      "sha256": "a8e820ccf08ead3de7a576cef6f2031a8856d765dff55cd8d145504366851932",
+      "rows": 74,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 12,
+          "Execution": 12,
+          "TestMethod": 12,
+          "UnitTest": 12,
+          "TestEntry": 12,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17461
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 73,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 74,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 592322,
+      "sha256": "5ce569b6572454d6c232d16334d08eb615f378113572ff8e1fddf78a7d36a89d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 588
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 592321,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1371703,
+      "sha256": "214d34fa757654f24cf8184ad87f491035c37c7a164867903e1cc26a2e96180f",
+      "rows": 1170,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1170,
+          "phase": 1170,
+          "raw_decision": 1170,
+          "request_id": 1170,
+          "schema": 1170,
+          "stages": 1170,
+          "final": 589,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1369935,
+        "min_line_bytes": 235,
+        "max_line_bytes": 3269,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1369558,
+            "line": 1169,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 1369935,
+            "line": 1170,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 592571,
+      "sha256": "77b5aa9ceae4fba7f9cc75fbb278e65c284833c58c8440d9a8a011cdc557e52a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 588
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 592570,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1372018,
+      "sha256": "4fbe2b1002a9d605182c797b20978ee1b6477bc4f5bd3b3e3b7fa2f6152a08d9",
+      "rows": 1167,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1167,
+          "phase": 1167,
+          "raw_decision": 1167,
+          "request_id": 1167,
+          "schema": 1167,
+          "stages": 1167,
+          "final": 589,
+          "error_type": 6,
+          "failure_kind": 6,
+          "recovery": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1371504,
+        "min_line_bytes": 235,
+        "max_line_bytes": 3269,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1371265,
+            "line": 1166,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"development-product-r6-r6-out-of-scope-44-addressed\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 1371504,
+            "line": 1167,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 592998,
+      "sha256": "0a0d9d5c2bbdf63bd50a6e7fac0025bdfe63be245cca0d10ec4f90b290da8797",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 588
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 592997,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1372796,
+      "sha256": "3995bdf209cb9b4c763d7fee8ff6a838f67005e81b407bd3e26ad329e512593d",
+      "rows": 1161,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 1161,
+          "phase": 1161,
+          "raw_decision": 1161,
+          "request_id": 1161,
+          "schema": 1161,
+          "stages": 1161,
+          "final": 589,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1371046,
+        "min_line_bytes": 239,
+        "max_line_bytes": 3269,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1370671,
+            "line": 1160,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 1371046,
+            "line": 1161,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 573245,
+      "sha256": "e26b4cce9a62fdfe5e4d7d3859b4b86fd8a331574532843de1026c1d57aa140e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 588
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 573244,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

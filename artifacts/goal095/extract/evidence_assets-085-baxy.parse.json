@@ -1,0 +1,5581 @@
+{
+  "batch_id": "evidence_assets-085-baxy",
+  "source_id": "baxy",
+  "file_count": 89,
+  "hash_ok": 89,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/mvp/catalog_functional_matrix_mind_v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 374465,
+      "sha256": "712f86a8755de82403238e75d1bd6e5cbaec90150b416c4a03f4764f4fd6f065",
+      "rows": 318,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 318,
+          "phase": 318,
+          "raw_decision": 318,
+          "request_id": 318,
+          "schema": 318,
+          "stages": 318,
+          "final": 159
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 372534,
+        "min_line_bytes": 348,
+        "max_line_bytes": 2277,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 348,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 372116,
+            "line": 317,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 372534,
+            "line": 318,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"final\":{\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"intent_operations\":[\"window.resolve\",\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/catalog_provider_read_only_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 73810,
+      "sha256": "898d2d5a0e302e6302652a5741fc19efd949643905f3c0cce386fc729f45c6bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "core",
+          "core_version",
+          "measured_at",
+          "schema",
+          "seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "measured_at",
+          "schema",
+          "seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 73809,
+        "catalog_count": {
+          "min": 169,
+          "max": 169
+        },
+        "seconds": {
+          "min": 138.35,
+          "max": 138.35
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"measured_at\", \"schema\", \"seconds\", \"stderr\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"measured_at\", \"schema\", \"seconds\", \"stderr\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/catalog_routing_matrix_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 88929,
+      "sha256": "7e0c9e59dc341be4175387ade9576a46088a65d9e9e8d132fb44066cc5aa08f1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "overall_mvp_gate_passed",
+          "program_sha256",
+          "provider_execution_gate_passed",
+          "routing_gate_passed",
+          "rows",
+          "schema",
+          "scope",
+          "sources",
+          "status"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "overall_mvp_gate_passed",
+          "program_sha256",
+          "provider_execution_gate_passed",
+          "routing_gate_passed",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "rows": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 88928,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"measured_at_utc\", \"metrics\", \"overall_mvp_gate_passed\", \"program_sha256\", \"provider_execution_gate_passed\", \"routing_gate_passed\", \"rows\", \"schema\", \"scope\", \"sources\", \"status\"], \"n_keys\": 12, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"measured_at_utc\", \"metrics\", \"overall_mvp_gate_passed\", \"program_sha256\", \"provider_execution_gate_passed\", \"routing_gate_passed\", \"rows\", \"schema\", \"scope\", \"sources\", \"status\"], \"n_keys\": 12, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/external_provider_contract_matrix_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 26244,
+      "sha256": "529e0587b946b2579be67b39de171c6fa52842b96cd63a389b76b9c970c02764",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actualEffectsExecuted",
+          "coreAssembly",
+          "coreAssemblySha256",
+          "gatePassed",
+          "measuredAtUtc",
+          "metrics",
+          "rows",
+          "schema",
+          "scope",
+          "simulatedEffectReceipts",
+          "testAssembly",
+          "testAssemblySha256"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actualEffectsExecuted",
+          "coreAssembly",
+          "coreAssemblySha256",
+          "gatePassed",
+          "measuredAtUtc",
+          "schema",
+          "scope",
+          "simulatedEffectReceipts",
+          "testAssembly",
+          "testAssemblySha256"
+        ],
+        "list_lengths": {
+          "rows": 85
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26243,
+        "actualEffectsExecuted": {
+          "min": 0,
+          "max": 0
+        },
+        "simulatedEffectReceipts": {
+          "min": 61,
+          "max": 61
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualEffectsExecuted\", \"coreAssembly\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"simulatedEffectReceipts\", \"testAssembly\", \"testAssemblySha256\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualEffectsExecuted\", \"coreAssembly\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"simulatedEffectReceipts\", \"testAssembly\", \"testAssemblySha256\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/external_provider_contract_matrix_v1/external_provider_contract_matrix_v1.trx": {
+      "parser": "xml",
+      "bytes": 2952,
+      "sha256": "da493dfb037f766838615f8ffb83a92022e5915c41960ad258c80a4220d1cfc1",
+      "rows": 19,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "UnitTestResult",
+          "Results",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestDefinitions",
+          "TestEntry",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "UnitTestResult": 1,
+          "Results": 1,
+          "Execution": 1,
+          "TestMethod": 1,
+          "UnitTest": 1,
+          "TestDefinitions": 1,
+          "TestEntry": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2951
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 18,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 19,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/llm_plan_execution_gate_repairs_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12826,
+      "sha256": "a899c3173f5f9d44c3d2d68c8d3e351a5c61b9e99672aacb84e94cb1fc9b71be",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "runtime",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "cases": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12825,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 169,
+          "max": 169
+        },
+        "total_seconds": {
+          "min": 16.035,
+          "max": 16.035
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/llm_plan_execution_gate_streaming_repair_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3847,
+      "sha256": "8dfa930ac5fabccb3b2c17bc66b429a822a141f5a8fe8b3896de7197834e9ce7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "runtime",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3846,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 169,
+          "max": 169
+        },
+        "total_seconds": {
+          "min": 10.947,
+          "max": 10.947
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/llm_plan_execution_gate_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50359,
+      "sha256": "3ca6b606269d0ab05e8ddde82343a1c890972a8406eaa7d10935dc834f29e71d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "runtime",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "cases": 16
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50358,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 169,
+          "max": 169
+        },
+        "total_seconds": {
+          "min": 63.702,
+          "max": 63.702
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/llm_plan_execution_gate_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55902,
+      "sha256": "eb0c66c30f562cc312ab551137e88f4f507375791731ce66bf8cbc912b5e4b67",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "runtime",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "cases": 16
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55901,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 169,
+          "max": 169
+        },
+        "total_seconds": {
+          "min": 22.289,
+          "max": 22.289
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/llm_plan_execution_gate_web_repairs_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4435,
+      "sha256": "99f950724024e11de09ef766fb6734b6d3874711b5dad5f9084990490f381ae1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "runtime",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4434,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 169,
+          "max": 169
+        },
+        "total_seconds": {
+          "min": 11.352,
+          "max": 11.352
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_mutable_matrix_v1/local_mutable_integration_v1.trx": {
+      "parser": "xml",
+      "bytes": 210775,
+      "sha256": "1581b04d7de6cb1a2ca84fc9bb754d2d5e2c1f40c1fba6e9da1331347213f099",
+      "rows": 786,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "TestEntry",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 155,
+          "TestEntry": 155,
+          "Execution": 154,
+          "TestMethod": 154,
+          "UnitTest": 154,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 210774
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 785,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 786,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_mutable_matrix_v1/local_mutable_providers_v1.trx": {
+      "parser": "xml",
+      "bytes": 71508,
+      "sha256": "3983ed2d5f0480c64c558851a1e17c446e97d84d7bafc7193ae5c1192e37ba4f",
+      "rows": 274,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 52,
+          "Execution": 52,
+          "TestMethod": 52,
+          "UnitTest": 52,
+          "TestEntry": 52,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 71507
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 273,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 274,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_stateful_handler_matrix_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9713,
+      "sha256": "873e048bb723ef0dfc8314d3009ffc29991cfb6257c49b5cbe0ce622a0785f84",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "isolatedStoreMutations",
+          "measuredAtUtc",
+          "metrics",
+          "rows",
+          "schema",
+          "scope",
+          "testAssemblySha256"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "isolatedStoreMutations",
+          "measuredAtUtc",
+          "schema",
+          "scope",
+          "testAssemblySha256"
+        ],
+        "list_lengths": {
+          "rows": 45
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9712,
+        "actualUserEffectsExecuted": {
+          "min": 0,
+          "max": 0
+        },
+        "isolatedStoreMutations": {
+          "min": 45,
+          "max": 45
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"isolatedStoreMutations\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"testAssemblySha256\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"isolatedStoreMutations\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"testAssemblySha256\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_stateful_handler_matrix_v1/local_stateful_handler_matrix_v1.trx": {
+      "parser": "xml",
+      "bytes": 2969,
+      "sha256": "fcd1b63fc67e480692734c60437211029a5fef59a6da13de7147303b6d230b2b",
+      "rows": 19,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "UnitTestResult",
+          "Results",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestDefinitions",
+          "TestEntry",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "UnitTestResult": 1,
+          "Results": 1,
+          "Execution": 1,
+          "TestMethod": 1,
+          "UnitTest": 1,
+          "TestDefinitions": 1,
+          "TestEntry": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2968
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 18,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 19,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_transient_handler_matrix_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4771,
+      "sha256": "a493666ba28c3a1e811c35715ca63d913e089754ce7b46703e4398e994d30ce1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "measuredAtUtc",
+          "metrics",
+          "rows",
+          "schema",
+          "scope",
+          "testAssemblySha256"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "measuredAtUtc",
+          "schema",
+          "scope",
+          "testAssemblySha256"
+        ],
+        "list_lengths": {
+          "rows": 15
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4770,
+        "actualUserEffectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"testAssemblySha256\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"testAssemblySha256\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_transient_handler_matrix_v1/local_transient_handler_matrix_v1.trx": {
+      "parser": "xml",
+      "bytes": 2955,
+      "sha256": "ccca7dd1a42053ed30bdf80dd61f8dfe4dabe7477ce211a4db6b94d809ba4efa",
+      "rows": 19,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "UnitTestResult",
+          "Results",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestDefinitions",
+          "TestEntry",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "UnitTestResult": 1,
+          "Results": 1,
+          "Execution": 1,
+          "TestMethod": 1,
+          "UnitTest": 1,
+          "TestDefinitions": 1,
+          "TestEntry": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2954
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 18,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 19,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_transient_handler_matrix_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5326,
+      "sha256": "2000433efaafac0d5857786240533ecc90d6d4ffff269be07e9ce37aa7dd2083",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "measuredAtUtc",
+          "metrics",
+          "rows",
+          "schema",
+          "scope",
+          "testAssemblySha256"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "measuredAtUtc",
+          "schema",
+          "scope",
+          "testAssemblySha256"
+        ],
+        "list_lengths": {
+          "rows": 17
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5325,
+        "actualUserEffectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"testAssemblySha256\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"measuredAtUtc\", \"metrics\", \"rows\", \"schema\", \"scope\", \"testAssemblySha256\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/local_transient_handler_matrix_v2/local_transient_handler_matrix_v2.trx": {
+      "parser": "xml",
+      "bytes": 2955,
+      "sha256": "8b3c4a4a8aa96807e6e1226787bac998e9b42bf6fa63d6d482694c3182a624bf",
+      "rows": 19,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "UnitTestResult",
+          "Results",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestDefinitions",
+          "TestEntry",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "UnitTestResult": 1,
+          "Results": 1,
+          "Execution": 1,
+          "TestMethod": 1,
+          "UnitTest": 1,
+          "TestDefinitions": 1,
+          "TestEntry": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2954
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 18,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 19,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/memory_handler_matrix_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4233,
+      "sha256": "121a722190075369e81e8221e3a0845b7ac581b71a76c7de4de4d2de46c0a141",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "isolatedStoreOperations",
+          "measuredAtUtc",
+          "metrics",
+          "protectionMode",
+          "providerAssemblySha256",
+          "rows",
+          "schema",
+          "scope",
+          "secretCanaryFoundAtRest",
+          "securityAssemblySha256"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actualUserEffectsExecuted",
+          "coreAssemblySha256",
+          "gatePassed",
+          "isolatedStoreOperations",
+          "measuredAtUtc",
+          "protectionMode",
+          "providerAssemblySha256",
+          "schema",
+          "scope",
+          "secretCanaryFoundAtRest",
+          "securityAssemblySha256"
+        ],
+        "list_lengths": {
+          "rows": 11
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4232,
+        "actualUserEffectsExecuted": {
+          "min": 0,
+          "max": 0
+        },
+        "isolatedStoreOperations": {
+          "min": 11,
+          "max": 11
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"isolatedStoreOperations\", \"measuredAtUtc\", \"metrics\", \"protectionMode\", \"providerAssemblySha256\", \"rows\", \"schema\", \"scope\", \"secretCanaryFoundAtRest\", \"securityAs…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actualUserEffectsExecuted\", \"coreAssemblySha256\", \"gatePassed\", \"isolatedStoreOperations\", \"measuredAtUtc\", \"metrics\", \"protectionMode\", \"providerAssemblySha256\", \"rows\", \"schema\", \"scope\", \"secretCanaryFoundAtRest\", \"securityAs…"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/memory_handler_matrix_v1/memory_handler_matrix_v1.trx": {
+      "parser": "xml",
+      "bytes": 2953,
+      "sha256": "95a9fcae479076de416f135fd40d3fd8ccbb95ce392c86e6b5ae673cbb8eb622",
+      "rows": 19,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "UnitTestResult",
+          "Results",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestDefinitions",
+          "TestEntry",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "UnitTestResult": 1,
+          "Results": 1,
+          "Execution": 1,
+          "TestMethod": 1,
+          "UnitTest": 1,
+          "TestDefinitions": 1,
+          "TestEntry": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2952
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 18,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 19,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/mind_budget_gate_v6_current_tree_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 66684,
+      "sha256": "f2f7ae1b5c653672fec99d974240d345b278809986fbf64085623f44e38873a9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adr",
+          "catalog_operations",
+          "limits",
+          "measured_at_utc",
+          "method",
+          "profiles",
+          "runtime",
+          "schema",
+          "status",
+          "workload"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adr",
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 66683,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adr\", \"catalog_operations\", \"limits\", \"measured_at_utc\", \"method\", \"profiles\", \"runtime\", \"schema\", \"status\", \"workload\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adr\", \"catalog_operations\", \"limits\", \"measured_at_utc\", \"method\", \"profiles\", \"runtime\", \"schema\", \"status\", \"workload\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/source_quality_full_20260811_final.log": {
+      "parser": "log",
+      "encoding": "utf-8-sig",
+      "bytes": 14722,
+      "sha256": "9da8223a8110d237a618dc10c5579e3b9330d36acb4b69bf214fd0e3597dc094",
+      "rows": 190,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 6,
+        "pass_like": 7
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14683,
+        "min_line_bytes": 2,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified"
+          },
+          {
+            "offset": 139,
+            "line": 2,
+            "text": "source_quality_stage_started: powershell-source"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14640,
+            "line": 189,
+            "text": "source_quality_stage_passed: python-tests"
+          },
+          {
+            "offset": 14683,
+            "line": 190,
+            "text": "source_quality_gate_passed: mode=Full"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/source_quality_full_20260811_r5_final.log": {
+      "parser": "log",
+      "encoding": "utf-8-sig",
+      "bytes": 14704,
+      "sha256": "4247bbbbaf6505bfecd0917d651491408aa164aa7d88cd1259ed9f84cf4050f9",
+      "rows": 188,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 6,
+        "pass_like": 7
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14665,
+        "min_line_bytes": 2,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified"
+          },
+          {
+            "offset": 139,
+            "line": 2,
+            "text": "source_quality_stage_started: powershell-source"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14622,
+            "line": 187,
+            "text": "source_quality_stage_passed: python-tests"
+          },
+          {
+            "offset": 14665,
+            "line": 188,
+            "text": "source_quality_gate_passed: mode=Full"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/ui_smoke_v1/shell-trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2908,
+      "sha256": "5d402773709a46dfc0db77e4cab8ad29d2d1c54b507eec3a6d0d6b8231edf0da",
+      "rows": 31,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 31,
+          "ms": 31,
+          "scope": 31,
+          "id": 31,
+          "stage": 31,
+          "detail": 31
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2816,
+        "min_line_bytes": 87,
+        "max_line_bytes": 106,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 31.0
+          },
+          "ms": {
+            "min": 0.471,
+            "max": 22944.988
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.471,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":321.681,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2727,
+            "line": 30,
+            "text": "{\"seq\":30,\"ms\":22921.869,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 2816,
+            "line": 31,
+            "text": "{\"seq\":31,\"ms\":22944.988,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/ui_smoke_v2/report.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 2036,
+      "sha256": "edaec71465befe21cda3db6241fd3aad4f4a3762c21e3ec3a51b97a541ba0dfd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "appSha256",
+          "audioCapturedOrPlayed",
+          "effectsExecuted",
+          "error",
+          "evidence",
+          "gatePassed",
+          "launcherSha256",
+          "measuredAtUtc",
+          "programSha256",
+          "query",
+          "schema",
+          "scope",
+          "shutdown",
+          "trace"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "appSha256",
+          "audioCapturedOrPlayed",
+          "effectsExecuted",
+          "error",
+          "gatePassed",
+          "launcherSha256",
+          "measuredAtUtc",
+          "programSha256",
+          "query",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2035,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        },
+        "audioCapturedOrPlayed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"appSha256\", \"audioCapturedOrPlayed\", \"effectsExecuted\", \"error\", \"evidence\", \"gatePassed\", \"launcherSha256\", \"measuredAtUtc\", \"programSha256\", \"query\", \"schema\", \"scope\", \"shutdown\", \"trace\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"appSha256\", \"audioCapturedOrPlayed\", \"effectsExecuted\", \"error\", \"evidence\", \"gatePassed\", \"launcherSha256\", \"measuredAtUtc\", \"programSha256\", \"query\", \"schema\", \"scope\", \"shutdown\", \"trace\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/ui_smoke_v2/shell-trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3337,
+      "sha256": "ab260e2f78145628203623d7e6aa56c9f0944b12ab17c6a8742336d5b5a47470",
+      "rows": 36,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 36,
+          "ms": 36,
+          "scope": 36,
+          "id": 36,
+          "stage": 36,
+          "detail": 36
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3246,
+        "min_line_bytes": 86,
+        "max_line_bytes": 105,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 36.0
+          },
+          "ms": {
+            "min": 0.407,
+            "max": 20469.2
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.407,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 92,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":317.243,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3158,
+            "line": 35,
+            "text": "{\"seq\":35,\"ms\":20438.990,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 3246,
+            "line": 36,
+            "text": "{\"seq\":36,\"ms\":20469.200,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/validate_only_20260811/receipt.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1825,
+      "sha256": "d44706dd53ed3739921de120e7f69477a8edee782379db4a3f0a42133fe7bb9e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "applicationStarted",
+          "audioPlayedOrCaptured",
+          "available",
+          "command",
+          "discardedInvocation",
+          "effectsExecuted",
+          "exitCode",
+          "focusedTests",
+          "mandatoryAssetsAndRuntimeValid",
+          "measuredAtLocal",
+          "mvpWakeCandidate",
+          "ownedProcessesRemaining",
+          "schema",
+          "source",
+          "sourceQualityFast",
+          "status",
+          "wakeProgramTree"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "applicationStarted",
+          "audioPlayedOrCaptured",
+          "command",
+          "effectsExecuted",
+          "exitCode",
+          "mandatoryAssetsAndRuntimeValid",
+          "measuredAtLocal",
+          "ownedProcessesRemaining",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "available": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1824,
+        "exitCode": {
+          "min": 0,
+          "max": 0
+        },
+        "ownedProcessesRemaining": {
+          "min": 0,
+          "max": 0
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"applicationStarted\", \"audioPlayedOrCaptured\", \"available\", \"command\", \"discardedInvocation\", \"effectsExecuted\", \"exitCode\", \"focusedTests\", \"mandatoryAssetsAndRuntimeValid\", \"measuredAtLocal\", \"mvpWakeCandidate\", \"ownedProcesses…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"applicationStarted\", \"audioPlayedOrCaptured\", \"available\", \"command\", \"discardedInvocation\", \"effectsExecuted\", \"exitCode\", \"focusedTests\", \"mandatoryAssetsAndRuntimeValid\", \"measuredAtLocal\", \"mvpWakeCandidate\", \"ownedProcesses…"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visible_smoke_20260811/launcher.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3180,
+      "sha256": "b890945d3690cfb5aed9a7c45a9abe7a65e6dc93e7187ae504965574e9f0f92f",
+      "rows": 42,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3154,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3100,
+            "line": 41,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3154,
+            "line": 42,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visible_smoke_20260811/receipt.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1238,
+      "sha256": "b9272985963e8b67e26a071931070f22b831a9028ff73bdaa8e39c139ea893e3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "commit",
+          "launcher",
+          "logs",
+          "measured_at_local",
+          "observed",
+          "result",
+          "safety",
+          "schema",
+          "shutdown"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "commit",
+          "launcher",
+          "measured_at_local",
+          "result",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1237
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"commit\", \"launcher\", \"logs\", \"measured_at_local\", \"observed\", \"result\", \"safety\", \"schema\", \"shutdown\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"commit\", \"launcher\", \"logs\", \"measured_at_local\", \"observed\", \"result\", \"safety\", \"schema\", \"shutdown\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/after_baxy_branding.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 53463,
+      "sha256": "25470fcdb3ad22e928b3bdf68c03223a3495eff97d1f3568e6187d6bb4709cf8",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/after_baxy_branding.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 53462
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 53462,
+            "line": 0,
+            "text": "eof bytes=53463"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/after_model_identity.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 52599,
+      "sha256": "fe075753f91258b69d34f39bb983b68b145d71142335bb1b7bf3588e9142eb1d",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/after_model_identity.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 52598
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 52598,
+            "line": 0,
+            "text": "eof bytes=52599"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/after_native_overlay.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 52269,
+      "sha256": "925215f34aa5da7342e57239655af93c2fd66f90aa0c972832004712ab8a26ef",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/after_native_overlay.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 52268
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 52268,
+            "line": 0,
+            "text": "eof bytes=52269"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/after_presentability.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 54120,
+      "sha256": "6ae5e1fe871257186a9e7d99d9bfe5991b2803b8615e3c9df08708eccd03cf5d",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/after_presentability.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54119
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 54119,
+            "line": 0,
+            "text": "eof bytes=54120"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 621,
+      "sha256": "292805499be94d695a008dccf568e3c131c7e9445f69e83cb08a004f3e15ff8e",
+      "rows": 9,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 559,
+        "min_line_bytes": 14,
+        "max_line_bytes": 117
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 545,
+            "line": 8,
+            "text": "BAXY lanzada."
+          },
+          {
+            "offset": 559,
+            "line": 9,
+            "text": "C�digo .NET sin cambios; reutilizando la compilaci�n actual."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher2.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2736,
+      "sha256": "7ad59cd6bc9fc2ddb397f27bee328c4974da2a021cc19980186b208f451cb0b9",
+      "rows": 38,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2710,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2656,
+            "line": 37,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 2710,
+            "line": 38,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher3.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3167,
+      "sha256": "dde459a1e2287a0227e712fa186cecbeb76badc18532bd2497d3ff1d12c9debc",
+      "rows": 42,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3141,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3087,
+            "line": 41,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3141,
+            "line": 42,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher_bounds.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3193,
+      "sha256": "999b97441fc6c94dcfcb2425a811ff1e65216693e6d2c340156275dea1c0b41b",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3167,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3113,
+            "line": 42,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3167,
+            "line": 43,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher_branded.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3193,
+      "sha256": "167c52a16953db72fac9c7ee3e883bf8cf8ed637e5e322f5cf80a896af8fdec7",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3167,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3113,
+            "line": 42,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3167,
+            "line": 43,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher_final.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3193,
+      "sha256": "8391cf7b507a5b28d391072e54b0215a30866e75b27af4943d8a89a3d22f93e0",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3167,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3113,
+            "line": 42,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3167,
+            "line": 43,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher_overlay.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3193,
+      "sha256": "b8c6bf9ac21298e35453c742be28d2dab3cf2d0684771be258a1c64b310f7bac",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3167,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3113,
+            "line": 42,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3167,
+            "line": 43,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher_readonly_settings.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3193,
+      "sha256": "25c72a1ce0dbe0d0c60195fe71b6f77786d7baae30c3f126ad8bf5fdf826bf81",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3167,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3113,
+            "line": 42,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3167,
+            "line": 43,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/launcher_readonly_settings_v2.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3193,
+      "sha256": "e17fce84072acb8819161b9590274f888fd5b02a2c303e95e4313000f8da9e82",
+      "rows": 43,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3167,
+        "min_line_bytes": 2,
+        "max_line_bytes": 138
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY MVP: UI y mente reales, sin instalar ni tocar la aplicacion instalada."
+          },
+          {
+            "offset": 76,
+            "line": 2,
+            "text": "Voz: wake word v25a + Nemotron parcial + Parakeet final."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3113,
+            "line": 42,
+            "text": "Cambi� el c�digo .NET; compilando autom�ticamente..."
+          },
+          {
+            "offset": 3167,
+            "line": 43,
+            "text": "Compilaci�n actualizada."
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/receipt.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2808,
+      "sha256": "f22aef6fc3a5cc58ab354b5e005218abe8870d570685de58efc1a43afdf8410d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effectsExecuted",
+          "fieldUiTreeSealSha256",
+          "launch",
+          "measuredAtLocal",
+          "schema",
+          "sourceSha256",
+          "validation",
+          "verified",
+          "visualEvidence",
+          "wakeProgram"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "fieldUiTreeSealSha256",
+          "measuredAtLocal",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2807,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effectsExecuted\", \"fieldUiTreeSealSha256\", \"launch\", \"measuredAtLocal\", \"schema\", \"sourceSha256\", \"validation\", \"verified\", \"visualEvidence\", \"wakeProgram\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effectsExecuted\", \"fieldUiTreeSealSha256\", \"launch\", \"measuredAtLocal\", \"schema\", \"sourceSha256\", \"validation\", \"verified\", \"visualEvidence\", \"wakeProgram\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_about.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 36763,
+      "sha256": "80fff1cb047fd3b7eeaddb112ab4fb3dcc7da71d0f58d130ccbd20afff8da2c8",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_about.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36762
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36762,
+            "line": 0,
+            "text": "eof bytes=36763"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_about_final.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 35179,
+      "sha256": "27a76ad47ff4da1f6d2435bd2428cae58550ab4905859d353c427c9dde4c4f7a",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_about_final.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35178
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 35178,
+            "line": 0,
+            "text": "eof bytes=35179"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_about_verified.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 34890,
+      "sha256": "7c681f3734416f02495fe66b656c0ac0663b7ab98e1105988d52d4fc3bf24a14",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_about_verified.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34889
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34889,
+            "line": 0,
+            "text": "eof bytes=34890"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_overlay_about.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 38773,
+      "sha256": "e533753dfa6dcf346da6112f872647e45f64ca1ae443a5e50505dfbafe12fea0",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_overlay_about.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38772
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 38772,
+            "line": 0,
+            "text": "eof bytes=38773"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_readonly_final.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 33026,
+      "sha256": "8201c0a9322dc6be4b52527716d076f08d0c516fe61d2fffc381fc688b1d1a1b",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_readonly_final.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33025
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33025,
+            "line": 0,
+            "text": "eof bytes=33026"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_readonly_verified.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 37574,
+      "sha256": "321284233508328fa5bbfdf2a4a444767c6e1db1c149898c2166a1b84fbe4299",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_readonly_verified.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37573
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 37573,
+            "line": 0,
+            "text": "eof bytes=37574"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/settings_transcript_final.jpg": {
+      "parser": "binary_inventory",
+      "bytes": 42695,
+      "sha256": "5cf60b4831fda00bb189e88c34ee3c86c5c79451c0aae7295370d41f52576988",
+      "format": "jpeg",
+      "magic_hex": "ffd8ffe000104a464946000101010090",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/mvp/visual_review_20260811/settings_transcript_final.jpg"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "jpeg"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42694
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=ffd8ffe000104a464946000101010090 format=jpeg"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 42694,
+            "line": 0,
+            "text": "eof bytes=42695"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/source_quality_full_final.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 7462,
+      "sha256": "bab7b1a4e3983efc04f487357391b269c1909e1d15665bbc26efeb4f2bc0720d",
+      "rows": 45,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7336,
+        "min_line_bytes": 4,
+        "max_line_bytes": 408
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified"
+          },
+          {
+            "offset": 274,
+            "line": 2,
+            "text": "source_quality_stage_started: powershell-source"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7226,
+            "line": 44,
+            "text": "Omitidas CompareLegacyAndCurrentJsonHotPaths [1 ms]"
+          },
+          {
+            "offset": 7336,
+            "line": 45,
+            "text": "Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]"
+          }
+        ]
+      }
+    },
+    "artifacts/mvp/visual_review_20260811/source_quality_full_final_v2.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 31108,
+      "sha256": "c3fdb82429a721503029e94ba7b21dd229be3fba83ca0e883bdcd503225c61ba",
+      "rows": 190,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31030,
+        "min_line_bytes": 4,
+        "max_line_bytes": 432
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified"
+          },
+          {
+            "offset": 274,
+            "line": 2,
+            "text": "source_quality_stage_started: powershell-source"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 30944,
+            "line": 189,
+            "text": "source_quality_stage_passed: python-tests"
+          },
+          {
+            "offset": 31030,
+            "line": 190,
+            "text": "source_quality_gate_passed: mode=Full"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/bluetooth_radio_roundtrip_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 261,
+      "sha256": "3b1f36e139c7138fde0bf1523a2598ea0fc7d5fe10b5483e87dd338c54d5a894",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline_state",
+          "error_codes",
+          "measured_at_utc",
+          "restored",
+          "schema_version",
+          "scope",
+          "total_steps",
+          "verified_steps"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baseline_state",
+          "measured_at_utc",
+          "restored",
+          "schema_version",
+          "scope",
+          "total_steps",
+          "verified_steps"
+        ],
+        "list_lengths": {
+          "error_codes": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 260,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "verified_steps": {
+          "min": 2,
+          "max": 2
+        },
+        "total_steps": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline_state\", \"error_codes\", \"measured_at_utc\", \"restored\", \"schema_version\", \"scope\", \"total_steps\", \"verified_steps\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline_state\", \"error_codes\", \"measured_at_utc\", \"restored\", \"schema_version\", \"scope\", \"total_steps\", \"verified_steps\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/external_adapters_gate_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17356,
+      "sha256": "4625519c39734b3f74422c51352f1d3ed126fa0fa126c49c3388ccbc4238739d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "core_catalog_count",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_catalog_count",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17355,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        },
+        "core_catalog_count": {
+          "min": 158,
+          "max": 158
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/external_messaging_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1710,
+      "sha256": "d8da703bb50a613ba9c690ae3b4abc50179871df36ba2fa7b2bb1543a230629f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "core_catalog_count",
+          "core_exit",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_catalog_count",
+          "core_exit",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1709,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        },
+        "core_catalog_count": {
+          "min": 102,
+          "max": 102
+        },
+        "core_exit": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"core_exit\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\", \"summary\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"core_exit\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\", \"summary\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/external_safe_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1679,
+      "sha256": "77700ac8040ce1095abadebb1a8cd86415df659c99571aaa9c6da30a6097b8c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "core_catalog_count",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "summary"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_catalog_count",
+          "measured_at",
+          "schema_version",
+          "scope"
+        ],
+        "list_lengths": {
+          "cases": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1678,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 102,
+          "max": 102
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"measured_at\", \"schema_version\", \"scope\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"measured_at\", \"schema_version\", \"scope\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/fault_recovery_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 916,
+      "sha256": "38a1a18a5859a57d7221d4f8ed572b6a0995357e38fa3719843b1c807aa54442",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "focused_dotnet",
+          "global_dotnet",
+          "measured_at",
+          "python",
+          "schema_version",
+          "scope",
+          "status"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema_version",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 915,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"focused_dotnet\", \"global_dotnet\", \"measured_at\", \"python\", \"schema_version\", \"scope\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"focused_dotnet\", \"global_dotnet\", \"measured_at\", \"python\", \"schema_version\", \"scope\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/hardware_effects_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3945,
+      "sha256": "7bc465cb7db92e5be9ee6aabf258e9c444a0d51f42447b61151ae8027db98e0b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3944,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_compound_audit.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 85772,
+      "sha256": "e6775104bdb6377daa359d21fafb039d58ba6e469f76965b1fffdbe25bb401e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "generated_at",
+          "missions",
+          "policy",
+          "schema_version",
+          "source",
+          "summary"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "schema_version",
+          "source"
+        ],
+        "list_lengths": {
+          "missions": 166
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 85771,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"generated_at\", \"missions\", \"policy\", \"schema_version\", \"source\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"generated_at\", \"missions\", \"policy\", \"schema_version\", \"source\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_planner_gate.before_external_adapters.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 57720,
+      "sha256": "408fa3ea3ea9833fd883014260ecf322d04dd66d745c882d895671b80ce13521",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 123
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 57719,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 102,
+          "max": 102
+        },
+        "startup_and_total_seconds": {
+          "min": 765.733,
+          "max": 765.733
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_planner_gate.before_graceful_recovery.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58661,
+      "sha256": "f1fb096f281c29d3099eb09e8a9497a9a2a996fbcdd80d8024f5034c5e4ae7c3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 123
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58660,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 105,
+          "max": 105
+        },
+        "startup_and_total_seconds": {
+          "min": 489.031,
+          "max": 489.031
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_planner_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55470,
+      "sha256": "df2a033d4d2c684c36be7e1484d768c3240cca4d1340d696cbc944accafbd79d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 123
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55469,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 105,
+          "max": 105
+        },
+        "startup_and_total_seconds": {
+          "min": 129.589,
+          "max": 129.589
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_planner_gate.single_review_batch.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55469,
+      "sha256": "ea78f682d43d70690f2ffbe1a04ab7bb85a5670b773698a6f202a0faee48521e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 123
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55468,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 105,
+          "max": 105
+        },
+        "startup_and_total_seconds": {
+          "min": 103.877,
+          "max": 103.877
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_user_mission_audit.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 207004,
+      "sha256": "96d56311d2361b75ce758623ba874a06bebbf1f3a6cbfb0cdff746c098607fb9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "generated_at",
+          "missions",
+          "policy",
+          "schema_version",
+          "source",
+          "source_sha256",
+          "summary"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "schema_version",
+          "source",
+          "source_sha256"
+        ],
+        "list_lengths": {
+          "missions": 263
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 207003,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"generated_at\", \"missions\", \"policy\", \"schema_version\", \"source\", \"source_sha256\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"generated_at\", \"missions\", \"policy\", \"schema_version\", \"source\", \"source_sha256\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/historical_user_mission_planner_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 53550,
+      "sha256": "f519f84af3416166a806531db780fe4b85ec3374b6f17a778d70f0b21ebb62ce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr",
+          "summary"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "source_audit",
+          "startup_and_total_seconds",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 141
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 53549,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 105,
+          "max": 105
+        },
+        "startup_and_total_seconds": {
+          "min": 18.213,
+          "max": 18.213
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"schema_version\", \"scope\", \"source_audit\", \"startup_and_total_seconds\", \"stderr\", \"summary\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/llm_plan_execution_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20618,
+      "sha256": "9fb0b1b4579adf7e24e787314d594e76045dd353220711cad3b457746fcfd83c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "runtime",
+          "schema_version",
+          "scope",
+          "stderr",
+          "summary",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "complete",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "schema_version",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "cases": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20617,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "core_catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "total_seconds": {
+          "min": 29.924,
+          "max": 29.924
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"complete\", \"core_catalog_count\", \"measured_at\", \"model\", \"runtime\", \"schema_version\", \"scope\", \"stderr\", \"summary\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/planner_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2652,
+      "sha256": "dd718394d2daf94ca05923b467de0e983a5a7809b6661cd8766d4c6d57cfe411",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "router",
+          "schema_version",
+          "scope",
+          "starting_revision",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_catalog_count",
+          "measured_at",
+          "model",
+          "router",
+          "schema_version",
+          "scope",
+          "starting_revision"
+        ],
+        "list_lengths": {
+          "cases": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2651,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        },
+        "core_catalog_count": {
+          "min": 102,
+          "max": 102
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"measured_at\", \"model\", \"router\", \"schema_version\", \"scope\", \"starting_revision\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"core_catalog_count\", \"measured_at\", \"model\", \"router\", \"schema_version\", \"scope\", \"starting_revision\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/planner_recovery/steam_launch_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 471,
+      "sha256": "6564ea65ccf4960813e63955d281a90e2990f7e0bf98d22cc73cd5d0550a0e07",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_target_present",
+          "launch",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_target_present",
+          "measured_at",
+          "schema_version",
+          "scope",
+          "stderr"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 470,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_target_present\", \"launch\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_target_present\", \"launch\", \"measured_at\", \"schema_version\", \"scope\", \"stderr\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/app_open_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1330,
+      "sha256": "872c4f24fd282443996cf9f9d346b4cb87596eb9fa709f72f8b838232bacb4e7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "approvals",
+          "build",
+          "gate_script_sha256",
+          "limitations",
+          "notes_capture_sha256",
+          "observed_utc",
+          "result",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "gate_script_sha256",
+          "notes_capture_sha256",
+          "observed_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "limitations": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1329
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"approvals\", \"build\", \"gate_script_sha256\", \"limitations\", \"notes_capture_sha256\", \"observed_utc\", \"result\", \"schema\", \"scope\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"approvals\", \"build\", \"gate_script_sha256\", \"limitations\", \"notes_capture_sha256\", \"observed_utc\", \"result\", \"schema\", \"scope\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/app_open_gate_r26_current.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1030,
+      "sha256": "34249d5b0be7a0cb6a292e7f83c268eaa46145a582a407deddd1e1750a7bb26e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "core",
+          "data_root",
+          "operation",
+          "replay",
+          "status"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "data_root",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1029
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"core\", \"data_root\", \"operation\", \"replay\", \"status\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"core\", \"data_root\", \"operation\", \"replay\", \"status\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/architecture_seams_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3063,
+      "sha256": "07bc8bcef444fa18f3e9bf339abfe93e2378966cff7d4684e56c599133299c44",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog",
+          "limitations",
+          "observed_utc",
+          "schema",
+          "scope",
+          "seams",
+          "source_head",
+          "source_sha256",
+          "status",
+          "tests"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "observed_utc",
+          "schema",
+          "scope",
+          "source_head",
+          "status"
+        ],
+        "list_lengths": {
+          "limitations": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3062
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"limitations\", \"observed_utc\", \"schema\", \"scope\", \"seams\", \"source_head\", \"source_sha256\", \"status\", \"tests\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"limitations\", \"observed_utc\", \"schema\", \"scope\", \"seams\", \"source_head\", \"source_sha256\", \"status\", \"tests\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audio_control_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4397,
+      "sha256": "43b598ddad342f5e6ab9926350bbb13f39997c5d8b0e9c243a4311f4573d607d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "cleanup",
+          "limitations",
+          "machine",
+          "mute_operation",
+          "native_aot",
+          "observed_utc",
+          "post_gate_gui_capture",
+          "post_gate_product_build",
+          "recovered_harness_incident",
+          "restoration",
+          "result",
+          "same_invocation_replay",
+          "schema",
+          "scope",
+          "target",
+          "termination_preflight",
+          "volume_operation"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "observed_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "limitations": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4396
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"cleanup\", \"limitations\", \"machine\", \"mute_operation\", \"native_aot\", \"observed_utc\", \"post_gate_gui_capture\", \"post_gate_product_build\", \"recovered_harness_incident\", \"restoration\", \"result\", \"same_invocation_replay\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"cleanup\", \"limitations\", \"machine\", \"mute_operation\", \"native_aot\", \"observed_utc\", \"post_gate_gui_capture\", \"post_gate_product_build\", \"recovered_harness_incident\", \"restoration\", \"result\", \"same_invocation_replay\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-2026-07-27-app-open.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 371,
+      "sha256": "165eff95aa34dfd0a64a59fe38972b0e1ff24d4e9823aa2fc5d1e0ed1c9efd1f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup_errors",
+          "close_notepad_requested",
+          "core_exited",
+          "data_root_removed",
+          "error",
+          "gate_notepad_exited",
+          "job_closed",
+          "notepad_survived_job_close",
+          "owned_product_processes",
+          "status",
+          "stderr_bytes"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "close_notepad_requested",
+          "core_exited",
+          "data_root_removed",
+          "error",
+          "gate_notepad_exited",
+          "job_closed",
+          "notepad_survived_job_close",
+          "owned_product_processes",
+          "status",
+          "stderr_bytes"
+        ],
+        "list_lengths": {
+          "cleanup_errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 370,
+        "owned_product_processes": {
+          "min": 0,
+          "max": 0
+        },
+        "stderr_bytes": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup_errors\", \"close_notepad_requested\", \"core_exited\", \"data_root_removed\", \"error\", \"gate_notepad_exited\", \"job_closed\", \"notepad_survived_job_close\", \"owned_product_processes\", \"status\", \"stderr_bytes\"], \"n_keys\": 11, \"roo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup_errors\", \"close_notepad_requested\", \"core_exited\", \"data_root_removed\", \"error\", \"gate_notepad_exited\", \"job_closed\", \"notepad_survived_job_close\", \"owned_product_processes\", \"status\", \"stderr_bytes\"], \"n_keys\": 11, \"roo…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.attestation.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1279,
+      "sha256": "f6fa04c0f395c9cf3b4a4a87c875b7879a96066bf27ea1cf00ee1a6797ec44eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "anchor_sha256",
+          "completed_records",
+          "completions",
+          "expected_read_only_operations_observed",
+          "invocation_pairs_valid",
+          "journal_authentication",
+          "journal_integrity_validated",
+          "journal_records",
+          "journal_sha256",
+          "journal_structure_valid",
+          "operation_counts",
+          "schema",
+          "started_operations_match_completed",
+          "started_records"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "anchor_sha256",
+          "completed_records",
+          "expected_read_only_operations_observed",
+          "invocation_pairs_valid",
+          "journal_authentication",
+          "journal_integrity_validated",
+          "journal_records",
+          "journal_sha256",
+          "journal_structure_valid",
+          "schema",
+          "started_operations_match_completed",
+          "started_records"
+        ],
+        "list_lengths": {
+          "completions": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1278,
+        "journal_records": {
+          "min": 6,
+          "max": 6
+        },
+        "started_records": {
+          "min": 3,
+          "max": 3
+        },
+        "completed_records": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"anchor_sha256\", \"completed_records\", \"completions\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\", \"journal_records\", \"journal_sha256\", \"journal_struc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"anchor_sha256\", \"completed_records\", \"completions\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\", \"journal_records\", \"journal_sha256\", \"journal_struc…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8607,
+      "sha256": "d153a405fd60e1f15fe7fe683611d9e5a224a1df6723394d9c0aa929ed0bd2b3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "boundary",
+          "checks",
+          "completed_utc",
+          "duration_seconds",
+          "evidence",
+          "runtime",
+          "schema",
+          "source",
+          "started_utc",
+          "status",
+          "test"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "completed_utc",
+          "duration_seconds",
+          "schema",
+          "started_utc",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8606,
+        "duration_seconds": {
+          "min": 147.462,
+          "max": 147.462
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary\", \"checks\", \"completed_utc\", \"duration_seconds\", \"evidence\", \"runtime\", \"schema\", \"source\", \"started_utc\", \"status\", \"test\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary\", \"checks\", \"completed_utc\", \"duration_seconds\", \"evidence\", \"runtime\", \"schema\", \"source\", \"started_utc\", \"status\", \"test\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v2.trx": {
+      "parser": "xml",
+      "bytes": 15799,
+      "sha256": "7ac71b833fd67941ffa830e12115bae28798de97e63c5de65ddc9f4b7e5093ab",
+      "rows": 58,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "Output",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 8,
+          "Execution": 8,
+          "TestMethod": 8,
+          "UnitTest": 8,
+          "TestEntry": 8,
+          "Output": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Message": 1,
+          "StackTrace": 1,
+          "ErrorInfo": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15798
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 57,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 58,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.attestation.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1472,
+      "sha256": "f9cf67b2ff3206c696db488dfe34c9709b9145a9ebb56bc30cbc2de84ea011f7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "anchor_sha256",
+          "completed_records",
+          "completions",
+          "expected_read_only_operations_observed",
+          "invocation_pairs_valid",
+          "journal_authentication",
+          "journal_integrity_validated",
+          "journal_records",
+          "journal_sha256",
+          "journal_structure_valid",
+          "operation_counts",
+          "schema",
+          "started_operations_match_completed",
+          "started_records"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "anchor_sha256",
+          "completed_records",
+          "expected_read_only_operations_observed",
+          "invocation_pairs_valid",
+          "journal_authentication",
+          "journal_integrity_validated",
+          "journal_records",
+          "journal_sha256",
+          "journal_structure_valid",
+          "schema",
+          "started_operations_match_completed",
+          "started_records"
+        ],
+        "list_lengths": {
+          "completions": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1471,
+        "journal_records": {
+          "min": 8,
+          "max": 8
+        },
+        "started_records": {
+          "min": 4,
+          "max": 4
+        },
+        "completed_records": {
+          "min": 4,
+          "max": 4
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"anchor_sha256\", \"completed_records\", \"completions\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\", \"journal_records\", \"journal_sha256\", \"journal_struc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"anchor_sha256\", \"completed_records\", \"completions\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\", \"journal_records\", \"journal_sha256\", \"journal_struc…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9657,
+      "sha256": "00f86a0183ba87a018bc1151f6e949cbfc4780caff3051ae9b31a8bb78c9f61f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "boundary",
+          "checks",
+          "completed_utc",
+          "duration_seconds",
+          "evidence",
+          "runtime",
+          "schema",
+          "source",
+          "started_utc",
+          "status",
+          "test"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "completed_utc",
+          "duration_seconds",
+          "schema",
+          "started_utc",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9656,
+        "duration_seconds": {
+          "min": 179.696,
+          "max": 179.696
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary\", \"checks\", \"completed_utc\", \"duration_seconds\", \"evidence\", \"runtime\", \"schema\", \"source\", \"started_utc\", \"status\", \"test\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary\", \"checks\", \"completed_utc\", \"duration_seconds\", \"evidence\", \"runtime\", \"schema\", \"source\", \"started_utc\", \"status\", \"test\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final-v3.trx": {
+      "parser": "xml",
+      "bytes": 13503,
+      "sha256": "5db226d798fd0e044ba5ab4b61c42a8732085d7ffe3dba8a88fd5af82e7a30d0",
+      "rows": 59,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 9,
+          "Execution": 9,
+          "TestMethod": 9,
+          "UnitTest": 9,
+          "TestEntry": 9,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13502
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 58,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 59,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.attestation.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 889,
+      "sha256": "210d1d762f3ad84f0f94ee81c7a3899c6d101698417c70c0d1056dfc7badbfd2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "anchor_sha256",
+          "completed_records",
+          "completions",
+          "expected_read_only_operations_observed",
+          "invocation_pairs_valid",
+          "journal_authentication",
+          "journal_integrity_validated",
+          "journal_records",
+          "journal_sha256",
+          "journal_structure_valid",
+          "operation_counts",
+          "schema",
+          "started_operations_match_completed",
+          "started_records"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "anchor_sha256",
+          "completed_records",
+          "expected_read_only_operations_observed",
+          "invocation_pairs_valid",
+          "journal_authentication",
+          "journal_integrity_validated",
+          "journal_records",
+          "journal_sha256",
+          "journal_structure_valid",
+          "schema",
+          "started_operations_match_completed",
+          "started_records"
+        ],
+        "list_lengths": {
+          "completions": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 888,
+        "journal_records": {
+          "min": 2,
+          "max": 2
+        },
+        "started_records": {
+          "min": 1,
+          "max": 1
+        },
+        "completed_records": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"anchor_sha256\", \"completed_records\", \"completions\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\", \"journal_records\", \"journal_sha256\", \"journal_struc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"anchor_sha256\", \"completed_records\", \"completions\", \"expected_read_only_operations_observed\", \"invocation_pairs_valid\", \"journal_authentication\", \"journal_integrity_validated\", \"journal_records\", \"journal_sha256\", \"journal_struc…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3773,
+      "sha256": "1c28b137b17454c7a79192590d5da697203e50440e511f158c1f33e1aeceb628",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "boundary",
+          "checks",
+          "completed_utc",
+          "duration_seconds",
+          "evidence",
+          "runtime",
+          "schema",
+          "source",
+          "started_utc",
+          "status",
+          "test"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "completed_utc",
+          "duration_seconds",
+          "schema",
+          "started_utc",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3772,
+        "duration_seconds": {
+          "min": 142.351,
+          "max": 142.351
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary\", \"checks\", \"completed_utc\", \"duration_seconds\", \"evidence\", \"runtime\", \"schema\", \"source\", \"started_utc\", \"status\", \"test\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary\", \"checks\", \"completed_utc\", \"duration_seconds\", \"evidence\", \"runtime\", \"schema\", \"source\", \"started_utc\", \"status\", \"test\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/product/audit-remediation-2026-07-27/mind-shell-e2e-final.trx": {
+      "parser": "xml",
+      "bytes": 15277,
+      "sha256": "5336fd9fc951fdbfa48cef63603c1516ffd0a7d4a49926e64d3e0ec51a74bd8d",
+      "rows": 53,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "Output",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 7,
+          "Execution": 7,
+          "TestMethod": 7,
+          "UnitTest": 7,
+          "TestEntry": 7,
+          "Output": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Message": 1,
+          "StackTrace": 1,
+          "ErrorInfo": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15276
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 52,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 53,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_physical_human_augmented_prereg_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2447,
+      "sha256": "15b978a7ddede4797ce4c49de839f9a55081966847c168eb0b5ba3b0a997628b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidate",
+          "candidateFrozen",
+          "captureContract",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "evaluationContract",
+          "role",
+          "schema",
+          "sourceSelection"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2446,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2196,
+      "sha256": "9241d54231597ebed9aedcf0e832d1432c23576e3b8561963997f4c1e0da15de",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidate",
+          "candidateFrozen",
+          "captureContract",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "evaluationContract",
+          "role",
+          "schema",
+          "sourceSelection"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2195,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2196,
+      "sha256": "3fba925446946f567e910b6071953297cf3b66924faf8a5642af9785db4449be",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidate",
+          "candidateFrozen",
+          "captureContract",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "evaluationContract",
+          "role",
+          "schema",
+          "sourceSelection"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2195,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_physical_validation_prereg_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2447,
+      "sha256": "1aae4b049d2dedd89549d8a006fd2ad32d864b300688029db30c82ee8491cd76",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidate",
+          "candidateFrozen",
+          "captureContract",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "evaluationContract",
+          "role",
+          "schema",
+          "sourceSelection"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2446,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_prereg_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2447,
+      "sha256": "52962297f03d91c5183e1ecdd662a7cdc7492631264a01036ca5c89195e971fb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidate",
+          "candidateFrozen",
+          "captureContract",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "evaluationContract",
+          "role",
+          "schema",
+          "sourceSelection"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusSelectionFrozen",
+          "createdAtUtc",
+          "effectsExecuted",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2446,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidate\", \"candidateFrozen\", \"captureContract\", \"corpusSelectionFrozen\", \"createdAtUtc\", \"effectsExecuted\", \"evaluationContract\", \"role\", \"schema\", \"sourceSelection\"], \"n_keys\": 11, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_v15_physical_sapi_fresh_validation_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67214,
+      "sha256": "3ba148accbda5587cb315a82e1ceca72c0fba61e31aa7974cd0886472b19ce09",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "negative",
+          "openedCorpusPassed",
+          "positive",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67213,
+        "elapsedWallSeconds": {
+          "min": 32.487978599994676,
+          "max": 32.487978599994676
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ]
+      }
+    },
+    "artifacts/product/baxy_wake_cascade_v3_physical_human_augmented_validation_v14.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 71335,
+      "sha256": "f9d52161ede2eeccb0202791b8df392a61fc14d222b60b024e4bc517e2f58a13",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "negative",
+          "openedCorpusPassed",
+          "positive",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 71334,
+        "elapsedWallSeconds": {
+          "min": 17.15590310000698,
+          "max": 17.15590310000698
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,3920 @@
+{
+  "batch_id": "evidence_assets-069-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 52,
+  "hash_ok": 52,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/policy_reasoning_early_abort_ab_20260730.order1-candidate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31543,
+      "sha256": "4600b3badcd6c291010e7e13b17695d39e9514dc4db1cf81cd9351313266b71c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 28,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31542,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 229.048,
+          "max": 229.048
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 1,
+          "max": 1
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 220.6291,
+          "max": 220.6291
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_reasoning_early_abort_ab_20260730.order2-baseline.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31667,
+      "sha256": "bb672d71d31a0411c9221a6e173b46f9ec96ac59c46cbd2e9d9ccce918262711",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 28,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 5,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31666,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 276.682,
+          "max": 276.682
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 270.5557,
+          "max": 270.5557
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_reasoning_early_abort_ab_20260730.order2-candidate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31539,
+      "sha256": "e24092144df1619c4f8f135b387f8aeba031e2dc8a618c504e98394175c49a4d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 28,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_early_aborts",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_early_abort",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31538,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 227.055,
+          "max": 227.055
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 1,
+          "max": 1
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 221.0747,
+          "max": 221.0747
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_early_aborts\", \"primary_compact_prefill\", \"primary_direct_compact…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_token_rate_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9650,
+      "sha256": "8575765cee58264b07ac62194179fe67906754c507d40f1afa2186f13a094900",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "per_arm",
+          "question",
+          "runtime",
+          "samples",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "question",
+          "schema"
+        ],
+        "list_lengths": {
+          "samples": 15
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9649,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"effects_executed\", \"measured_at_utc\", \"method\", \"per_arm\", \"question\", \"runtime\", \"samples\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"effects_executed\", \"measured_at_utc\", \"method\", \"per_arm\", \"question\", \"runtime\", \"samples\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_tool_quality_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1130708,
+      "sha256": "6026915d3a434894b3ebbfefc7014c5cb00d5c3982747f48249d621769fb00de",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy_exact",
+          "attribution",
+          "attribution_note",
+          "by_case",
+          "by_variant",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "never_exact_cases",
+          "outcomes",
+          "policy_calls",
+          "question",
+          "retrievability",
+          "retrievability_note",
+          "retry_cost",
+          "runtime",
+          "samples",
+          "schema",
+          "stable_exact_cases",
+          "turns",
+          "unstable_cases"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy_exact",
+          "attribution_note",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "question",
+          "retrievability_note",
+          "schema",
+          "stable_exact_cases",
+          "turns"
+        ],
+        "list_lengths": {
+          "never_exact_cases": 21,
+          "policy_calls": 473,
+          "samples": 456,
+          "unstable_cases": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1130707,
+        "accuracy_exact": {
+          "min": 0.5746,
+          "max": 0.5746
+        },
+        "cases": {
+          "min": 57,
+          "max": 57
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "stable_exact_cases": {
+          "min": 27,
+          "max": 27
+        },
+        "turns": {
+          "min": 456,
+          "max": 456
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy_exact\", \"attribution\", \"attribution_note\", \"by_case\", \"by_variant\", \"cases\", \"effects_executed\", \"measured_at_utc\", \"method\", \"never_exact_cases\", \"outcomes\", \"policy_calls\", \"question\", \"retrievability\", \"retrievabilit…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy_exact\", \"attribution\", \"attribution_note\", \"by_case\", \"by_variant\", \"cases\", \"effects_executed\", \"measured_at_utc\", \"method\", \"never_exact_cases\", \"outcomes\", \"policy_calls\", \"question\", \"retrievability\", \"retrievabilit…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_tool_quality_telemetry_20260731.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 312961,
+      "sha256": "e98cdc653610171c85679f99352b5554ab92b527650af36a3894ea02a852e06e",
+      "rows": 473,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "turn_id",
+          "raw_policy",
+          "shortlist",
+          "predicted_n",
+          "predicted_ms",
+          "prompt_ms",
+          "cache_n"
+        ],
+        "key_freq": {
+          "turn_id": 473,
+          "raw_policy": 473,
+          "shortlist": 473,
+          "predicted_n": 473,
+          "predicted_ms": 473,
+          "prompt_ms": 473,
+          "cache_n": 473
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 312332,
+        "min_line_bytes": 480,
+        "max_line_bytes": 854,
+        "numeric": {
+          "predicted_n": {
+            "min": 51.0,
+            "max": 160.0
+          },
+          "predicted_ms": {
+            "min": 693.796,
+            "max": 2665.346
+          },
+          "prompt_ms": {
+            "min": 58.482,
+            "max": 623.939
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 1280.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"turn_id\": \"warm\", \"raw_policy\": {\"mode\": \"conversation\", \"effect_operations\": []}, \"shortlist\": [\"window.active\", \"window.restore\", \"window.resolve\", \"window.minimize\", \"window.maximize\", \"window.focus\", \"window.application.status\", \"win…"
+          },
+          {
+            "offset": 676,
+            "line": 2,
+            "text": "{\"turn_id\": \"baseline-0-tool-03\", \"raw_policy\": {\"mode\": \"conversation\", \"effect_operations\": [\"system.time\"]}, \"shortlist\": [\"task.create\", \"task.list\", \"task.search\", \"task.resolve.exact\", \"task.restore\", \"task.reopen\", \"task.complete\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 311597,
+            "line": 472,
+            "text": "{\"turn_id\": \"baseline-1-tool-62\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"audio.volume.adjust\"]}, \"shortlist\": [\"audio.volume\", \"audio.volume.adjust\", \"audio.status\", \"input.pointer.control\", \"input.keyboard.open\", \"input.v…"
+          },
+          {
+            "offset": 312332,
+            "line": 473,
+            "text": "{\"turn_id\": \"baseline-1-tool-63\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.play.query\"]}, \"shortlist\": [\"media.play.query\", \"streaming.play.named\", \"filesystem.hash\", \"filesystem.known.trash.named\", \"filesystem.file.op…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/policy_tool_quality_verdict_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6031,
+      "sha256": "f8fccf9c1a719a274418a287091d9d94b2b125bfe89a76b1bc1675e568e00402",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "artifact",
+          "decomposition",
+          "effects_executed",
+          "failure_taxonomy_of_the_final_envelope",
+          "headline",
+          "honesty",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "model_accuracy_given_a_fair_shortlist",
+          "post_policy_machinery_is_not_the_problem",
+          "probe",
+          "retrieval_evidence",
+          "retry_cost",
+          "schema",
+          "state",
+          "systematic_model_defect_confirmed",
+          "what_this_changes_about_the_plan",
+          "why"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "artifact",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "probe",
+          "schema",
+          "state",
+          "systematic_model_defect_confirmed",
+          "what_this_changes_about_the_plan",
+          "why"
+        ],
+        "list_lengths": {
+          "honesty": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6030,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"artifact\", \"decomposition\", \"effects_executed\", \"failure_taxonomy_of_the_final_envelope\", \"headline\", \"honesty\", \"installation_touched\", \"measured_at_utc\", \"method\", \"model_accuracy_given_a_fair_shortlist\", \"post_policy_machiner…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"artifact\", \"decomposition\", \"effects_executed\", \"failure_taxonomy_of_the_final_envelope\", \"headline\", \"honesty\", \"installation_touched\", \"measured_at_utc\", \"method\", \"model_accuracy_given_a_fair_shortlist\", \"post_policy_machiner…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/predicted_family_gate_attribution_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 103374,
+      "sha256": "89c945ee1f826c317088d81be40ad5b2d9cf94923a768d90359681dc4ca2c592",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "no_operation_share",
+          "outcomes",
+          "right_family_share",
+          "rows",
+          "runtime_manifest_changed",
+          "schema",
+          "seconds_p50",
+          "seconds_p95",
+          "source",
+          "wrong_raw_proposals_retaining_authority"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "no_operation_share",
+          "right_family_share",
+          "runtime_manifest_changed",
+          "schema",
+          "seconds_p50",
+          "seconds_p95",
+          "source",
+          "wrong_raw_proposals_retaining_authority"
+        ],
+        "list_lengths": {
+          "rows": 140
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 103373,
+        "cases": {
+          "min": 140,
+          "max": 140
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "no_operation_share": {
+          "min": 0.4357,
+          "max": 0.4357
+        },
+        "right_family_share": {
+          "min": 0.4,
+          "max": 0.4
+        },
+        "seconds_p50": {
+          "min": 1.5023,
+          "max": 1.5023
+        },
+        "seconds_p95": {
+          "min": 2.4439,
+          "max": 2.4439
+        },
+        "wrong_raw_proposals_retaining_authority": {
+          "min": 20,
+          "max": 20
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"method\", \"no_operation_share\", \"outcomes\", \"right_family_share\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"seconds_p50\", \"seconds_p95\", \"source\", \"wron…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"method\", \"no_operation_share\", \"outcomes\", \"right_family_share\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"seconds_p50\", \"seconds_p95\", \"source\", \"wron…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/predicted_family_gate_survival_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75434,
+      "sha256": "03c353c74a605a41fbe3c49ff0c76e301b264a320f06a91b18a2f56c25c4d233",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "no_operation_share",
+          "outcomes",
+          "right_family_share",
+          "rows",
+          "runtime_manifest_changed",
+          "schema",
+          "seconds_p50",
+          "seconds_p95",
+          "source",
+          "wrong_raw_proposals_retaining_authority"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "no_operation_share",
+          "right_family_share",
+          "runtime_manifest_changed",
+          "schema",
+          "seconds_p50",
+          "seconds_p95",
+          "source",
+          "wrong_raw_proposals_retaining_authority"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75433,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "no_operation_share": {
+          "min": 0.4558,
+          "max": 0.4558
+        },
+        "right_family_share": {
+          "min": 0.3878,
+          "max": 0.3878
+        },
+        "seconds_p50": {
+          "min": 1.5822,
+          "max": 1.5822
+        },
+        "seconds_p95": {
+          "min": 2.4778,
+          "max": 2.4778
+        },
+        "wrong_raw_proposals_retaining_authority": {
+          "min": 20,
+          "max": 20
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"method\", \"no_operation_share\", \"outcomes\", \"right_family_share\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"seconds_p50\", \"seconds_p95\", \"source\", \"wron…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"method\", \"no_operation_share\", \"outcomes\", \"right_family_share\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"seconds_p50\", \"seconds_p95\", \"source\", \"wron…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/presentable_policy_abba_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42891,
+      "sha256": "0ec77a16d4dc2b29d100bb5039f78b2a44e1da20831c1fea3388831a06a64f5d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "authority",
+          "candidate_minus_control_family_accuracy",
+          "cases_per_session",
+          "effects_executed",
+          "families",
+          "installation_touched",
+          "measured_at_utc",
+          "order",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "structural_activation"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "candidate_minus_control_family_accuracy",
+          "cases_per_session",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {
+          "families": 26,
+          "order": 4,
+          "samples": 104,
+          "structural_activation": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42890,
+        "candidate_minus_control_family_accuracy": {
+          "min": 0.28846153846153844,
+          "max": 0.28846153846153844
+        },
+        "cases_per_session": {
+          "min": 26,
+          "max": 26
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"authority\", \"candidate_minus_control_family_accuracy\", \"cases_per_session\", \"effects_executed\", \"families\", \"installation_touched\", \"measured_at_utc\", \"order\", \"runtime_manifest_changed\", \"samples\", \"schema\", \"structural…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"authority\", \"candidate_minus_control_family_accuracy\", \"cases_per_session\", \"effects_executed\", \"families\", \"installation_touched\", \"measured_at_utc\", \"order\", \"runtime_manifest_changed\", \"samples\", \"schema\", \"structural…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/presentable_product_oracle_qwen3_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67030,
+      "sha256": "fbe513f3e0a1269817861b120b54a38f2a81a11b60af4d3e2279a59cb585ace2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "metrics",
+          "population",
+          "runtime",
+          "runtime_manifest_changed",
+          "runtime_manifest_sha256_after",
+          "runtime_manifest_sha256_before",
+          "samples",
+          "schema",
+          "targets"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "runtime_manifest_sha256_after",
+          "runtime_manifest_sha256_before",
+          "schema"
+        ],
+        "list_lengths": {
+          "samples": 140
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67029,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"metrics\", \"population\", \"runtime\", \"runtime_manifest_changed\", \"runtime_manifest_sha256_after\", \"runtime_manifest_sha256_before\", \"samples\", \"schema\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"metrics\", \"population\", \"runtime\", \"runtime_manifest_changed\", \"runtime_manifest_sha256_after\", \"runtime_manifest_sha256_before\", \"samples\", \"schema\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_contract_component_table_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7036,
+      "sha256": "dd80af6973fea522737ea927d2456a9ed4d88a63b7fe11a87cce63a42e057287",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "components",
+          "conclusion",
+          "measured_at_utc",
+          "payload_source",
+          "prefill_economics",
+          "representation_alternatives_ledger",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "conclusion",
+          "measured_at_utc",
+          "payload_source",
+          "schema"
+        ],
+        "list_lengths": {
+          "components": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7035
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"components\", \"conclusion\", \"measured_at_utc\", \"payload_source\", \"prefill_economics\", \"representation_alternatives_ledger\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"components\", \"conclusion\", \"measured_at_utc\", \"payload_source\", \"prefill_economics\", \"representation_alternatives_ledger\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_dynamic_compact_grammar_pair_reverse_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 222516,
+      "sha256": "79c6d3c4db1b5b1b4537e09e73f8dc9d11b985946e507826dee8e8ba41b5387d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 222515,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_dynamic_compact_grammar_pair_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 222391,
+      "sha256": "ed126ec1c569cc28eb518db4378c8f30090c266eb5b0b6575cd66c525c711f89",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 222390,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_dynamic_compact_grammar_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 400809,
+      "sha256": "3efbdbbce4fba2a385f7b3eaaf1581c0412dc753699b832ae56a9b33e55a7089",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 400808,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_dynamic_no_thought_smoke_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 436828,
+      "sha256": "ae0cfcfdc96c48f65bc55dd3e2973babbad8afec4570240e5788e44b803deac5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 436827,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_dynamic_no_thought_smoke_reverse_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 422510,
+      "sha256": "17baa2d1381b2f3bae99925ba285658f15b35bebd890eaaceb49f0c022efeeb6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 422509,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"workload\"], \"n_keys\": 14,…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_minified_prompt_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 127062,
+      "sha256": "f46afec632a4ea9ea0f7e9d6ee10f80c892ee7fdd43262aca8003cb57aca624e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "corpus",
+          "decision_rule",
+          "exclusive_gpu_preflight",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "decision_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 127061
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"corpus\", \"decision_rule\", \"exclusive_gpu_preflight\", \"runtime\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"corpus\", \"decision_rule\", \"exclusive_gpu_preflight\", \"runtime\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_minified_prompt_reverse_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 125131,
+      "sha256": "7b2c8b357965337a714f3634a28dbc2a1e826e7c0939563fd90be70b9e38f360",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparison",
+          "corpus",
+          "decision_rule",
+          "exclusive_gpu_preflight",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "decision_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125130
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"corpus\", \"decision_rule\", \"exclusive_gpu_preflight\", \"runtime\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_status\", \"comparison\", \"corpus\", \"decision_rule\", \"exclusive_gpu_preflight\", \"runtime\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/primary_minified_prompt_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2631,
+      "sha256": "7753559496e8c00f6ce88b6e2e6f654af900ee8684a69a44888a79dbf7fa3324",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "candidate_status",
+          "decision_rule",
+          "replica_stability",
+          "replicas",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "decision_rule",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {
+          "replicas": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2630
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"candidate_status\", \"decision_rule\", \"replica_stability\", \"replicas\", \"schema\", \"verdict\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"candidate_status\", \"decision_rule\", \"replica_stability\", \"replicas\", \"schema\", \"verdict\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/private_store_dacl_observation_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3537,
+      "sha256": "66b053200210c51f545f7455b20488b819fb809b29e04de0028aaec1cd4b96e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "component",
+          "effects_executed",
+          "first_pass_was_inconclusive",
+          "fix",
+          "how_it_was_resolved",
+          "measured_at_utc",
+          "schema",
+          "severity_assessment",
+          "state",
+          "tests_committed",
+          "what_was_being_checked"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "component",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "severity_assessment",
+          "state",
+          "what_was_being_checked"
+        ],
+        "list_lengths": {
+          "tests_committed": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3536,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"component\", \"effects_executed\", \"first_pass_was_inconclusive\", \"fix\", \"how_it_was_resolved\", \"measured_at_utc\", \"schema\", \"severity_assessment\", \"state\", \"tests_committed\", \"what_was_being_checked\"], \"n_keys\": 11, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"component\", \"effects_executed\", \"first_pass_was_inconclusive\", \"fix\", \"how_it_was_resolved\", \"measured_at_utc\", \"schema\", \"severity_assessment\", \"state\", \"tests_committed\", \"what_was_being_checked\"], \"n_keys\": 11, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/promotion_boundary_decisions_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 805111,
+      "sha256": "218070f1cf993ecae24f23b6ea7780e2c35d0ba13cbbb65e4a9ead552b87865c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "corpus_rows",
+          "deterministic",
+          "deterministic_rows",
+          "effects_executed",
+          "material",
+          "measured_at_utc",
+          "model_rows",
+          "prompt_composition_differs",
+          "runtime",
+          "schema",
+          "semantic_cache_unstable",
+          "semantic_readiness_seconds",
+          "top_candidate_differs",
+          "unstable",
+          "visible_operations_differ"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "corpus_rows",
+          "deterministic_rows",
+          "effects_executed",
+          "measured_at_utc",
+          "model_rows",
+          "prompt_composition_differs",
+          "schema",
+          "semantic_cache_unstable",
+          "semantic_readiness_seconds",
+          "top_candidate_differs",
+          "visible_operations_differ"
+        ],
+        "list_lengths": {
+          "deterministic": 107,
+          "material": 223,
+          "unstable": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 805110,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "corpus_rows": {
+          "min": 330,
+          "max": 330
+        },
+        "deterministic_rows": {
+          "min": 107,
+          "max": 107
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "model_rows": {
+          "min": 223,
+          "max": 223
+        },
+        "prompt_composition_differs": {
+          "min": 223,
+          "max": 223
+        },
+        "semantic_cache_unstable": {
+          "min": 0,
+          "max": 0
+        },
+        "semantic_readiness_seconds": {
+          "min": 21.391,
+          "max": 21.391
+        },
+        "top_candidate_differs": {
+          "min": 163,
+          "max": 163
+        },
+        "visible_operations_differ": {
+          "min": 223,
+          "max": 223
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"corpus_rows\", \"deterministic\", \"deterministic_rows\", \"effects_executed\", \"material\", \"measured_at_utc\", \"model_rows\", \"prompt_composition_differs\", \"runtime\", \"schema\", \"semantic_cache_unstable\", \"semantic_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"corpus_rows\", \"deterministic\", \"deterministic_rows\", \"effects_executed\", \"material\", \"measured_at_utc\", \"model_rows\", \"prompt_composition_differs\", \"runtime\", \"schema\", \"semantic_cache_unstable\", \"semantic_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/pv_empty_length_retry_direct_gbnf_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4942894,
+      "sha256": "999ac93ac189d6843721c97c60c5982d3f95fd6839a38f7a5f9a91671abcb2bf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparisons",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "grammar_catalog_contract_sha256_by_arm",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4942893,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"grammar_catalog_contract_sha256_by_arm\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_ha…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"grammar_catalog_contract_sha256_by_arm\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_ha…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/pv_empty_length_retry_expanded_budget_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4745843,
+      "sha256": "709d01ae4eaa402457fe241672d7436f6bdfdf026bc8dbe6869f8988d21c0739",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparisons",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "schema",
+          "workload"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4745842,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"schema\", \"workload\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"schema\", \"workload\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/pv_response_format_direct_gbnf_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4987295,
+      "sha256": "abf6768adeeac69a424779bbd66d28eb7b73c685c71edfcff0f9d23a06316a68",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "candidate",
+          "candidate_status",
+          "comparisons",
+          "effects_executed",
+          "evaluation_rule",
+          "gates",
+          "grammar_catalog",
+          "measured_at_utc",
+          "measurement_outcome",
+          "runtime",
+          "runtime_hashes",
+          "schema",
+          "verification_grammar_catalog",
+          "workload"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "evaluation_rule",
+          "measured_at_utc",
+          "measurement_outcome",
+          "schema"
+        ],
+        "list_lengths": {
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4987294,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"verification_grammar_cat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"candidate\", \"candidate_status\", \"comparisons\", \"effects_executed\", \"evaluation_rule\", \"gates\", \"grammar_catalog\", \"measured_at_utc\", \"measurement_outcome\", \"runtime\", \"runtime_hashes\", \"schema\", \"verification_grammar_cat…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_cold_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 52552,
+      "sha256": "485b919d314104caf65e71cb5b0951dc558a1ca6a1ad054f4c5174c91134bcc0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "startup",
+          "trace_rows"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 52551,
+        "trace_rows": {
+          "min": 39,
+          "max": 39
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_cold_order1_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 14105,
+      "sha256": "a35913fb5b95f5878c1dca1680cdc6945b25139bbbfc3a08feb22b261eae8d59",
+      "rows": 39,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 39,
+          "unix_start": 39,
+          "elapsed_seconds": 39,
+          "messages_chars": 39,
+          "messages_sha256": 39,
+          "max_tokens": 39,
+          "temperature": 39,
+          "seed": 39,
+          "error": 39,
+          "prompt_n": 39,
+          "prompt_ms": 39,
+          "predicted_n": 39,
+          "predicted_ms": 39,
+          "cache_n": 39,
+          "finish_reason": 39,
+          "content_chars": 39
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13734,
+        "min_line_bytes": 353,
+        "max_line_bytes": 376,
+        "numeric": {
+          "unix_start": {
+            "min": 1785442150.2062519,
+            "max": 1785442187.506743
+          },
+          "elapsed_seconds": {
+            "min": 0.4262,
+            "max": 5.8146
+          },
+          "messages_chars": {
+            "min": 406.0,
+            "max": 6714.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 13.0,
+            "max": 1365.0
+          },
+          "prompt_ms": {
+            "min": 155.084,
+            "max": 1112.653
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 97.0
+          },
+          "predicted_ms": {
+            "min": 188.206,
+            "max": 5139.859
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 314.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785442150.2072513, \"elapsed_seconds\": 1.3877, \"messages_chars\": 1191, \"messages_sha256\": \"9e6a3fde5d00513a\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 227, \"prompt…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785442150.2072513, \"elapsed_seconds\": 1.7973, \"messages_chars\": 844, \"messages_sha256\": \"fd6c83ee534d4941\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 167, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13365,
+            "line": 38,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785442183.6484337, \"elapsed_seconds\": 3.8576, \"messages_chars\": 5178, \"messages_sha256\": \"64e1f64a6ef49146\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 535, \"…"
+          },
+          {
+            "offset": 13734,
+            "line": 39,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785442187.506743, \"elapsed_seconds\": 0.6695, \"messages_chars\": 682, \"messages_sha256\": \"bc784be01693a3b0\", \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_cold_order2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 52575,
+      "sha256": "d6825977749bb383033946b6ade516bd5c22b24c3e57ccfbe34ee123e3f05e1c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "startup",
+          "trace_rows"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 52574,
+        "trace_rows": {
+          "min": 39,
+          "max": 39
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_cold_order2_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 14102,
+      "sha256": "2554a15054bec3664290edf31fe7f91d53c72a8b5c31071b2a4eb0586e97b7e0",
+      "rows": 39,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 39,
+          "unix_start": 39,
+          "elapsed_seconds": 39,
+          "messages_chars": 39,
+          "messages_sha256": 39,
+          "max_tokens": 39,
+          "temperature": 39,
+          "seed": 39,
+          "error": 39,
+          "prompt_n": 39,
+          "prompt_ms": 39,
+          "predicted_n": 39,
+          "predicted_ms": 39,
+          "cache_n": 39,
+          "finish_reason": 39,
+          "content_chars": 39
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13730,
+        "min_line_bytes": 352,
+        "max_line_bytes": 376,
+        "numeric": {
+          "unix_start": {
+            "min": 1785442469.37108,
+            "max": 1785442506.2078984
+          },
+          "elapsed_seconds": {
+            "min": 0.3522,
+            "max": 4.5681
+          },
+          "messages_chars": {
+            "min": 406.0,
+            "max": 6714.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 13.0,
+            "max": 1365.0
+          },
+          "prompt_ms": {
+            "min": 165.666,
+            "max": 1173.301
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 96.0
+          },
+          "predicted_ms": {
+            "min": 169.028,
+            "max": 3694.602
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 297.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785442469.3720808, \"elapsed_seconds\": 1.4401, \"messages_chars\": 1191, \"messages_sha256\": \"9e6a3fde5d00513a\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 227, \"prompt…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785442469.37108, \"elapsed_seconds\": 1.8564, \"messages_chars\": 844, \"messages_sha256\": \"fd6c83ee534d4941\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 167, \"prompt_ms…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13361,
+            "line": 38,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785442502.9151816, \"elapsed_seconds\": 3.2917, \"messages_chars\": 5178, \"messages_sha256\": \"64e1f64a6ef49146\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 535, \"…"
+          },
+          {
+            "offset": 13730,
+            "line": 39,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785442506.2078984, \"elapsed_seconds\": 0.6541, \"messages_chars\": 682, \"messages_sha256\": \"bc784be01693a3b0\", \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_settled_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 30993,
+      "sha256": "58b8f1c3dfb78d1f19cdccb5c0dc243e7ad2d95d43046b0c15b1b65269b103a1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "startup",
+          "trace_rows"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 30992,
+        "trace_rows": {
+          "min": 39,
+          "max": 39
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_settled_order1_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 14101,
+      "sha256": "da132750ef8b956bbfa26b88d84d8c3434a985110bcfab3c6fd6dd55460d357f",
+      "rows": 39,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 39,
+          "unix_start": 39,
+          "elapsed_seconds": 39,
+          "messages_chars": 39,
+          "messages_sha256": 39,
+          "max_tokens": 39,
+          "temperature": 39,
+          "seed": 39,
+          "error": 39,
+          "prompt_n": 39,
+          "prompt_ms": 39,
+          "predicted_n": 39,
+          "predicted_ms": 39,
+          "cache_n": 39,
+          "finish_reason": 39,
+          "content_chars": 39
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13730,
+        "min_line_bytes": 353,
+        "max_line_bytes": 375,
+        "numeric": {
+          "unix_start": {
+            "min": 1785442289.5886219,
+            "max": 1785442322.017661
+          },
+          "elapsed_seconds": {
+            "min": 0.3608,
+            "max": 4.1982
+          },
+          "messages_chars": {
+            "min": 406.0,
+            "max": 5839.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 13.0,
+            "max": 1208.0
+          },
+          "prompt_ms": {
+            "min": 164.163,
+            "max": 985.37
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 91.0
+          },
+          "predicted_ms": {
+            "min": 177.65,
+            "max": 3646.839
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 277.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785442289.5886219, \"elapsed_seconds\": 1.3447, \"messages_chars\": 1191, \"messages_sha256\": \"9e6a3fde5d00513a\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 227, \"prompt…"
+          },
+          {
+            "offset": 357,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785442289.5886219, \"elapsed_seconds\": 1.7497, \"messages_chars\": 844, \"messages_sha256\": \"fd6c83ee534d4941\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 167, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13362,
+            "line": 38,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785442318.6477864, \"elapsed_seconds\": 3.369, \"messages_chars\": 5178, \"messages_sha256\": \"64e1f64a6ef49146\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 535, \"p…"
+          },
+          {
+            "offset": 13730,
+            "line": 39,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785442322.017661, \"elapsed_seconds\": 0.7118, \"messages_chars\": 682, \"messages_sha256\": \"bc784be01693a3b0\", \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_settled_order2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31004,
+      "sha256": "e4d16f91b5dc393fc0c087ac18f4836e24a7844d8c87dee284b13baa5bb3396b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "startup",
+          "trace_rows"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "trace_rows"
+        ],
+        "list_lengths": {
+          "cases": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31003,
+        "trace_rows": {
+          "min": 39,
+          "max": 39
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"measured_at_utc\", \"runtime\", \"schema\", \"startup\", \"trace_rows\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_after_settled_order2_20260730.trace.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 14110,
+      "sha256": "384208f3bf033d0d4f4f4644988a526091275b8e7a73a8d12c14649562453294",
+      "rows": 39,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "label",
+          "unix_start",
+          "elapsed_seconds",
+          "messages_chars",
+          "messages_sha256",
+          "max_tokens",
+          "temperature",
+          "seed",
+          "error",
+          "prompt_n",
+          "prompt_ms",
+          "predicted_n",
+          "predicted_ms",
+          "cache_n",
+          "finish_reason",
+          "content_chars"
+        ],
+        "key_freq": {
+          "label": 39,
+          "unix_start": 39,
+          "elapsed_seconds": 39,
+          "messages_chars": 39,
+          "messages_sha256": 39,
+          "max_tokens": 39,
+          "temperature": 39,
+          "seed": 39,
+          "error": 39,
+          "prompt_n": 39,
+          "prompt_ms": 39,
+          "predicted_n": 39,
+          "predicted_ms": 39,
+          "cache_n": 39,
+          "finish_reason": 39,
+          "content_chars": 39
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13737,
+        "min_line_bytes": 353,
+        "max_line_bytes": 376,
+        "numeric": {
+          "unix_start": {
+            "min": 1785442424.0730855,
+            "max": 1785442456.5295074
+          },
+          "elapsed_seconds": {
+            "min": 0.4275,
+            "max": 4.2808
+          },
+          "messages_chars": {
+            "min": 406.0,
+            "max": 5839.0
+          },
+          "max_tokens": {
+            "min": 12.0,
+            "max": 160.0
+          },
+          "temperature": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "seed": {
+            "min": 0.0,
+            "max": 0.0
+          },
+          "prompt_n": {
+            "min": 13.0,
+            "max": 1208.0
+          },
+          "prompt_ms": {
+            "min": 159.054,
+            "max": 1012.742
+          },
+          "predicted_n": {
+            "min": 6.0,
+            "max": 95.0
+          },
+          "predicted_ms": {
+            "min": 178.162,
+            "max": 3682.456
+          },
+          "cache_n": {
+            "min": 0.0,
+            "max": 554.0
+          },
+          "content_chars": {
+            "min": 17.0,
+            "max": 288.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\": \"gbnf:4747af9f\", \"unix_start\": 1785442424.0735884, \"elapsed_seconds\": 1.3191, \"messages_chars\": 1191, \"messages_sha256\": \"9e6a3fde5d00513a\", \"max_tokens\": 12, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 227, \"prompt…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"label\": \"gbnf:3886877f\", \"unix_start\": 1785442424.0735884, \"elapsed_seconds\": 1.7196, \"messages_chars\": 844, \"messages_sha256\": \"fd6c83ee534d4941\", \"max_tokens\": 64, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 167, \"prompt_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13368,
+            "line": 38,
+            "text": "{\"label\": \"baxy_turn_decision\", \"unix_start\": 1785442452.9998822, \"elapsed_seconds\": 3.5297, \"messages_chars\": 5178, \"messages_sha256\": \"64e1f64a6ef49146\", \"max_tokens\": 160, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\": 535, \"…"
+          },
+          {
+            "offset": 13737,
+            "line": 39,
+            "text": "{\"label\": \"baxy_operation_compatibility\", \"unix_start\": 1785442456.5295074, \"elapsed_seconds\": 0.6584, \"messages_chars\": 682, \"messages_sha256\": \"bc784be01693a3b0\", \"max_tokens\": 24, \"temperature\": 0.0, \"seed\": 0, \"error\": null, \"prompt_n\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r3_regime_stability_verdict_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 21291,
+      "sha256": "af58efbbb5d13f192d92808690bb1031d3fdf0de3961e813a10f72c0ed9bf564",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "per_case",
+          "recorded_baseline_before_this_change",
+          "results",
+          "runtime",
+          "schema",
+          "startup",
+          "subject"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "schema",
+          "subject"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21290,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"measured_at_utc\", \"method\", \"per_case\", \"recorded_baseline_before_this_change\", \"results\", \"runtime\", \"schema\", \"startup\", \"subject\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"measured_at_utc\", \"method\", \"per_case\", \"recorded_baseline_before_this_change\", \"results\", \"runtime\", \"schema\", \"startup\", \"subject\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/r9_sweep_inventory_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6251,
+      "sha256": "0bedd8c27c73163bebab2c2a34db846ef09f61437eb1b9dc0b95ba5091bdb61d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "correct_behaviour_demonstrated",
+          "defects_found_and_fixed",
+          "honesty_note",
+          "kernel",
+          "legend",
+          "measured_at_utc",
+          "observed_not_changed",
+          "purpose",
+          "scale_correction",
+          "schema",
+          "security_windows",
+          "setup",
+          "still_missing_for_a_complete_sweep"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "honesty_note",
+          "measured_at_utc",
+          "purpose",
+          "scale_correction",
+          "schema"
+        ],
+        "list_lengths": {
+          "defects_found_and_fixed": 2,
+          "correct_behaviour_demonstrated": 6,
+          "observed_not_changed": 1,
+          "still_missing_for_a_complete_sweep": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6250
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"correct_behaviour_demonstrated\", \"defects_found_and_fixed\", \"honesty_note\", \"kernel\", \"legend\", \"measured_at_utc\", \"observed_not_changed\", \"purpose\", \"scale_correction\", \"schema\", \"security_windows\", \"setup\", \"still_missing_for_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"correct_behaviour_demonstrated\", \"defects_found_and_fixed\", \"honesty_note\", \"kernel\", \"legend\", \"measured_at_utc\", \"observed_not_changed\", \"purpose\", \"scale_correction\", \"schema\", \"security_windows\", \"setup\", \"still_missing_for_…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/raw_e2b_latency_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3599,
+      "sha256": "7a5a965b6a48c22745e1e6c9a245301559368e5a320c7c2aa9e343c7c3e2b156",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "baxy_minus_raw_p50_seconds",
+          "cases",
+          "observations",
+          "runtime",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_minus_raw_p50_seconds",
+          "cases",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "observations": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3598,
+        "baxy_minus_raw_p50_seconds": {
+          "min": -1.4765264500092599,
+          "max": -1.4765264500092599
+        },
+        "cases": {
+          "min": 4,
+          "max": 4
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"baxy_minus_raw_p50_seconds\", \"cases\", \"observations\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"baxy_minus_raw_p50_seconds\", \"cases\", \"observations\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/raw_e2b_latency_repro_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3599,
+      "sha256": "5110dbcff6e23fec0c3dd754c52971a2eafb13f12e50c37923fe8906450508e7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "baxy_minus_raw_p50_seconds",
+          "cases",
+          "observations",
+          "runtime",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_minus_raw_p50_seconds",
+          "cases",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "observations": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3598,
+        "baxy_minus_raw_p50_seconds": {
+          "min": -0.8875285999965854,
+          "max": -0.8875285999965854
+        },
+        "cases": {
+          "min": 4,
+          "max": 4
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"baxy_minus_raw_p50_seconds\", \"cases\", \"observations\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"baxy_minus_raw_p50_seconds\", \"cases\", \"observations\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/recovered_grounding_target_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 15434,
+      "sha256": "b0b83becab1a28a720eff91e848dd218038cde38398536420a27f77e69b7543a",
+      "rows": 14,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 14,
+          "phase": 14,
+          "raw_decision": 14,
+          "request_id": 14,
+          "schema": 14,
+          "stages": 14,
+          "final": 7
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13430,
+        "min_line_bytes": 333,
+        "max_line_bytes": 2004,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 333,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12496,
+            "line": 13,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          },
+          {
+            "offset": 13430,
+            "line": 14,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/router_delay_0_a_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1591,
+      "sha256": "303de8776714f536d9d349cdd5a29cef1de0ecaa80e91f36b4f47c8d4794da95",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "catalog_configure_seconds",
+          "early_cases",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_configure_seconds",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "early_cases": 3,
+          "status_timeline": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1590,
+        "catalog_configure_seconds": {
+          "min": 3.561,
+          "max": 3.561
+        },
+        "index_ready_seconds_after_catalog": {
+          "min": 16.58,
+          "max": 16.58
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/router_delay_0_b_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1589,
+      "sha256": "20f36e5519759d7d155ce9dd1b77f8b7501d59ea6a1bd0596ef439cbb4de82cc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "catalog_configure_seconds",
+          "early_cases",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_configure_seconds",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "early_cases": 3,
+          "status_timeline": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1588,
+        "catalog_configure_seconds": {
+          "min": 3.466,
+          "max": 3.466
+        },
+        "index_ready_seconds_after_catalog": {
+          "min": 14.78,
+          "max": 14.78
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/router_delay_3_a_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1669,
+      "sha256": "4a33ba1b76933332a43039fc6f60342d83e49efe931f32643c032e4c561fb2dd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "catalog_configure_seconds",
+          "early_cases",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_configure_seconds",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "early_cases": 3,
+          "status_timeline": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1668,
+        "catalog_configure_seconds": {
+          "min": 3.448,
+          "max": 3.448
+        },
+        "index_ready_seconds_after_catalog": {
+          "min": 17.3,
+          "max": 17.3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/router_delay_3_b_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1671,
+      "sha256": "c505483438edc525fd1950dec84f86433b76c1586c03716ec31e4041efcf5e55",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "catalog_configure_seconds",
+          "early_cases",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_configure_seconds",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "early_cases": 3,
+          "status_timeline": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1670,
+        "catalog_configure_seconds": {
+          "min": 3.385,
+          "max": 3.385
+        },
+        "index_ready_seconds_after_catalog": {
+          "min": 15.05,
+          "max": 15.05
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/router_delay_6_a_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1671,
+      "sha256": "0e2980dfa64b48ba97bbbadb2680d444647ee74f6bb6f1de61049e0800ef0376",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "catalog_configure_seconds",
+          "early_cases",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_configure_seconds",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "early_cases": 3,
+          "status_timeline": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1670,
+        "catalog_configure_seconds": {
+          "min": 3.938,
+          "max": 3.938
+        },
+        "index_ready_seconds_after_catalog": {
+          "min": 19.03,
+          "max": 19.03
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/router_delay_6_b_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1669,
+      "sha256": "a0a7916bdb3c171233ac64c01c3d4f9887cf95638d9f6a73d45333e2ac5fe673",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "catalog_configure_seconds",
+          "early_cases",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_configure_seconds",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "router_start_delay_env",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "early_cases": 3,
+          "status_timeline": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1668,
+        "catalog_configure_seconds": {
+          "min": 3.417,
+          "max": 3.417
+        },
+        "index_ready_seconds_after_catalog": {
+          "min": 18.91,
+          "max": 18.91
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"catalog_configure_seconds\", \"early_cases\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"router_start_delay_env\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/scope_abba_same_session_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4851,
+      "sha256": "20def70c22f7c0d15dbe4f58e8d37b11b3e89387ccef896b5d9d176955c6c810",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments_all_equal",
+          "arguments_equivalence",
+          "baseline",
+          "candidate",
+          "delta_p50_s",
+          "design",
+          "effects_executed",
+          "measured_at_utc",
+          "measures",
+          "runtime",
+          "samples",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arguments_all_equal",
+          "delta_p50_s",
+          "design",
+          "effects_executed",
+          "measured_at_utc",
+          "measures",
+          "schema"
+        ],
+        "list_lengths": {
+          "samples": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4850,
+        "delta_p50_s": {
+          "min": -1.012,
+          "max": -1.012
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments_all_equal\", \"arguments_equivalence\", \"baseline\", \"candidate\", \"delta_p50_s\", \"design\", \"effects_executed\", \"measured_at_utc\", \"measures\", \"runtime\", \"samples\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments_all_equal\", \"arguments_equivalence\", \"baseline\", \"candidate\", \"delta_p50_s\", \"design\", \"effects_executed\", \"measured_at_utc\", \"measures\", \"runtime\", \"samples\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/serial_vs_parallel_policy_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12561,
+      "sha256": "c854f330f8bc9e1c5591c6d363dac2ff0f59b3a357d7f6bb352d505213251a98",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "delta_p50_s",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "output_stability",
+          "parallel",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "serial"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "delta_p50_s",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "question",
+          "schema"
+        ],
+        "list_lengths": {
+          "samples": 16
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12560,
+        "delta_p50_s": {
+          "min": -0.0371,
+          "max": -0.0371
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"delta_p50_s\", \"effects_executed\", \"measured_at_utc\", \"method\", \"output_stability\", \"parallel\", \"question\", \"runtime\", \"samples\", \"schema\", \"serial\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"delta_p50_s\", \"effects_executed\", \"measured_at_utc\", \"method\", \"output_stability\", \"parallel\", \"question\", \"runtime\", \"samples\", \"schema\", \"serial\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/server_concurrency_cancel_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2214,
+      "sha256": "affcff0ad560d2a369df5830700eae5534bcde86fa390d15f9851de21463adf9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cancellation",
+          "concurrency",
+          "gpu_state_after",
+          "gpu_state_before",
+          "runtime",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "gpu_state_after",
+          "gpu_state_before",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2213
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cancellation\", \"concurrency\", \"gpu_state_after\", \"gpu_state_before\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cancellation\", \"concurrency\", \"gpu_state_after\", \"gpu_state_before\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/shortlist_floor_verdict_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7645,
+      "sha256": "e744663e261efa998b6edca29501aff29fa4d496d88b26264bfd1ae47dba8996",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "change",
+          "component",
+          "defect",
+          "effects_executed",
+          "evidence_of_the_mechanism",
+          "gate",
+          "installation_touched",
+          "knob_sweep",
+          "measured_at_utc",
+          "physical_ab",
+          "raises_the_ceiling",
+          "regressions_not_hidden",
+          "rollback",
+          "schema",
+          "state",
+          "why_promoted_despite_them",
+          "why_this_and_not_the_model"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "change",
+          "component",
+          "defect",
+          "effects_executed",
+          "gate",
+          "installation_touched",
+          "measured_at_utc",
+          "raises_the_ceiling",
+          "rollback",
+          "schema",
+          "state",
+          "why_promoted_despite_them",
+          "why_this_and_not_the_model"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7644,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"change\", \"component\", \"defect\", \"effects_executed\", \"evidence_of_the_mechanism\", \"gate\", \"installation_touched\", \"knob_sweep\", \"measured_at_utc\", \"physical_ab\", \"raises_the_ceiling\", \"regressions_not_hidden\", \"rollback\", \"schema…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"change\", \"component\", \"defect\", \"effects_executed\", \"evidence_of_the_mechanism\", \"gate\", \"installation_touched\", \"knob_sweep\", \"measured_at_utc\", \"physical_ab\", \"raises_the_ceiling\", \"regressions_not_hidden\", \"rollback\", \"schema…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/shortlist_recall_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 94251,
+      "sha256": "6184b3263c609bbc0b7041cd06c95963251b0f2b044f323f576be00277462ca5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "encoder_used",
+          "gained_by_the_expansion",
+          "lost_to_the_expansion",
+          "measured_at_utc",
+          "model_invocations",
+          "question",
+          "reading",
+          "recall",
+          "rows",
+          "runtime",
+          "schema",
+          "sweep"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "encoder_used",
+          "measured_at_utc",
+          "model_invocations",
+          "question",
+          "reading",
+          "schema"
+        ],
+        "list_lengths": {
+          "sweep": 30,
+          "lost_to_the_expansion": 0,
+          "gained_by_the_expansion": 0,
+          "rows": 57
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94250,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "model_invocations": {
+          "min": 0,
+          "max": 0
+        },
+        "cases": {
+          "min": 57,
+          "max": 57
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"encoder_used\", \"gained_by_the_expansion\", \"lost_to_the_expansion\", \"measured_at_utc\", \"model_invocations\", \"question\", \"reading\", \"recall\", \"rows\", \"runtime\", \"schema\", \"sweep\"], \"n_keys\": 14, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"encoder_used\", \"gained_by_the_expansion\", \"lost_to_the_expansion\", \"measured_at_utc\", \"model_invocations\", \"question\", \"reading\", \"recall\", \"rows\", \"runtime\", \"schema\", \"sweep\"], \"n_keys\": 14, \"root\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/sibling_leaf_candidate.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2318,
+      "sha256": "94220bb0fc9ba41426fe98da2adc05150364e8a8c1790b72e0dc227a3847773d",
+      "rows": 8,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "turn_id",
+          "raw_policy",
+          "shortlist",
+          "contract"
+        ],
+        "key_freq": {
+          "turn_id": 8,
+          "raw_policy": 8,
+          "shortlist": 8,
+          "contract": 8
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1987,
+        "min_line_bytes": 255,
+        "max_line_bytes": 331,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"turn_id\": \"warm\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.status\"]}, \"shortlist\": [\"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.youtube\", \"media.seek.relative\", \"media.status\"], \"contract\": \"…"
+          },
+          {
+            "offset": 255,
+            "line": 2,
+            "text": "{\"turn_id\": \"warm\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.status\"]}, \"shortlist\": [\"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.youtube\", \"media.seek.relative\", \"media.status\"], \"contract\": \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1671,
+            "line": 7,
+            "text": "{\"turn_id\": \"leading_band-1-spotify-open\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"app.open\"]}, \"shortlist\": [\"app.close\", \"app.installed\", \"app.open\", \"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.yo…"
+          },
+          {
+            "offset": 1987,
+            "line": 8,
+            "text": "{\"turn_id\": \"leading_band-1-spotify-search-play\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.play.query\"]}, \"shortlist\": [\"app.close\", \"app.installed\", \"app.open\", \"media.control\", \"media.play.exact\", \"media.play.query\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/sibling_leaf_catalog_baseline.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2166,
+      "sha256": "ffdb005cd7c9bb5ce8fd3b735cd37b82f8398f8f650b2262c8ba4f1082e8b0ed",
+      "rows": 8,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "turn_id",
+          "raw_policy",
+          "shortlist",
+          "contract"
+        ],
+        "key_freq": {
+          "turn_id": 8,
+          "raw_policy": 8,
+          "shortlist": 8,
+          "contract": 8
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1877,
+        "min_line_bytes": 255,
+        "max_line_bytes": 289,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"turn_id\": \"warm\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.status\"]}, \"shortlist\": [\"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.youtube\", \"media.seek.relative\", \"media.status\"], \"contract\": \"…"
+          },
+          {
+            "offset": 255,
+            "line": 2,
+            "text": "{\"turn_id\": \"warm\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.status\"]}, \"shortlist\": [\"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.youtube\", \"media.seek.relative\", \"media.status\"], \"contract\": \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1595,
+            "line": 7,
+            "text": "{\"turn_id\": \"leading_band-1-spotify-open\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.play.exact\"]}, \"shortlist\": [\"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.youtube\", \"media.seek.relative\", \"me…"
+          },
+          {
+            "offset": 1877,
+            "line": 8,
+            "text": "{\"turn_id\": \"leading_band-1-spotify-search-play\", \"raw_policy\": {\"mode\": \"action\", \"effect_operations\": [\"media.play.query\"]}, \"shortlist\": [\"media.control\", \"media.play.exact\", \"media.play.query\", \"media.play.youtube\", \"media.seek.relativ…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/sibling_leaf_discrimination_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19897,
+      "sha256": "9bfe4364ab506d1186a5f89c8798bb904c6af6a3f20c70258b8c49203d701bc1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "arms",
+          "cases",
+          "delta_exact",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "session_order",
+          "source",
+          "telemetry"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "delta_exact",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {
+          "cases": 4,
+          "rows": 32,
+          "session_order": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19896,
+        "delta_exact": {
+          "min": 0.375,
+          "max": 0.375
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"arms\", \"cases\", \"delta_exact\", \"effects_executed\", \"measured_at_utc\", \"method\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"session_order\", \"source\", \"telemetry\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"arms\", \"cases\", \"delta_exact\", \"effects_executed\", \"measured_at_utc\", \"method\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"session_order\", \"source\", \"telemetry\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-075-baxy-baxy_art_historical_exhaustive",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:44:06Z",
+  "lease_expires_utc": "2026-08-31T11:44:06Z",
+  "estimated_tokens": 295455,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 97,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/evidence_assets-075-baxy-baxy_art_historical_exhaustive.json",
+  "closed_utc": "2026-08-31T05:44:09Z"
+}

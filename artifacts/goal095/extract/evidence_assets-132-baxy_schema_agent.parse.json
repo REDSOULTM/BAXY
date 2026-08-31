@@ -1,0 +1,121 @@
+{
+  "batch_id": "evidence_assets-132-baxy_schema_agent",
+  "source_id": "baxy_schema_agent",
+  "file_count": 3,
+  "hash_ok": 3,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "documentacion/datos_crudos/schemas_16_consolidated.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9074,
+      "sha256": "981897f35736c0d06436a34db368ba84f06205e2e7ac18962b74e86be3559450",
+      "rows": 16,
+      "schema": {
+        "root": "array",
+        "n": 16,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9073
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"system_info\", \"description\": \"Lee info del sistema (lectura, no destructivo). metric: 'time'|'cpu'|'ram'|'gpu'|'disk'|'battery'|'volume'.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"metric\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9073,
+            "line": 16,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"skill_load\", \"description\": \"Carga skill por nombre.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\"}}, \"required\": [\"name\"]}}}"
+          }
+        ]
+      }
+    },
+    "documentacion/datos_crudos/schemas_60_individuales.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 32185,
+      "sha256": "8de7f6145d3bb228722e1af3a305b1d0ffb2cbffb3eae601231bca7f95d731ac",
+      "rows": 60,
+      "schema": {
+        "root": "array",
+        "n": 60,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 32184
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"system_set_volume\", \"description\": \"Ajusta el volumen master del sistema. level es 0..100.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"level\": {\"type\": \"integer\", \"minimum\": 0, \"maximum\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 32184,
+            "line": 60,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"vision_locate_target\", \"description\": \"Verifica si un elemento (boton, link, tarjeta) esta visible en pantalla ANTES de intentar clickear. Devuelve {visible, x, y, confidence}. Util para gating: s…"
+          }
+        ]
+      }
+    },
+    "gemma4_agent/data/fg/tool_schemas_slim.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43345,
+      "sha256": "5e391b8d05f562fc34904c2c9752392dae71d76afe0d4fd0279984ad6da19784",
+      "rows": 110,
+      "schema": {
+        "root": "array",
+        "n": 110,
+        "elem_keys": [
+          "function",
+          "type"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43344
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"time\", \"description\": \"time [Windows system tool]\", \"parameters\": {\"type\": \"object\", \"properties\": {}}}}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43344,
+            "line": 110,
+            "text": "{\"type\": \"function\", \"function\": {\"name\": \"app_opened\", \"description\": \"app opened [verification tool]\", \"parameters\": {\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\"}, \"query\": {\"type\": \"string\"}, \"path\": {\"type\": \"string\"}, \"…"
+          }
+        ]
+      }
+    }
+  }
+}

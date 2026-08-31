@@ -1,0 +1,699 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-127-baxy-baxy_legacy_data",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:48:09Z",
+  "closed_utc": "2026-08-31T05:48:12Z",
+  "estimated_tokens": 295983,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 58,
+  "subsystem": "baxy_legacy_data",
+  "subsystems": [
+    "baxy_legacy_data"
+  ],
+  "files": [
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-legacy-b9959-release-final.json",
+      "sha256": "8eb0dad938d62dcb40b57cd34937ea16daf320612962473d8db8651304369647",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-legacy-b9959-release-final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-legacy-b9959.json",
+      "sha256": "360ade2c68e2f8a503a2441e3e6c7887a7c595245f65c44bf65d7846f31471ef",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-legacy-b9959.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-legacy-post-hardening-v2.json",
+      "sha256": "ebad90f7bf0c7b908341b78da10c353fc4938fe62e6578aa627fe5ac6ba8e174",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-legacy-post-hardening-v2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-b9959-contract-official-mmproj.json",
+      "sha256": "201ed921c7773ffb2a6461105b6bf06959b8a9544555c7a798a1baedfb60beaa",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-b9959-contract-official-mmproj.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-b9959-final.json",
+      "sha256": "632e9685c4850855ddc94959d873f429ff4932b2c44d386086ce85eb4c3db9b8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-b9959-final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-b9959-release-final.json",
+      "sha256": "41bd2ed788038a97c795b3c1fa33b119adab26b3a61984a7aa2380ee886467f0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-b9959-release-final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-b9959.json",
+      "sha256": "cd7a2e84dd1db8ae520d5c99db39318310a5d0f2a10a52f882bffdfcbdb53a20",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-b9959.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-b9980-contract-v1.json",
+      "sha256": "d1c18a7e7bf65f9c5c5f86a15de2b225fbcc3c64b2676ef8018b9f23f30f37b9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-b9980-contract-v1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-b9980-q2-contract-v1.json",
+      "sha256": "8e39a7b8afb2d7ac4d5e9bc5952bad3eaedc84e6490a88fed148d787075bb0d1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-b9980-q2-contract-v1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v2.json",
+      "sha256": "1ef9bb94b56198300efb88638a77441055a1a7be1eca6768dacee0bab6a288bb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v3.json",
+      "sha256": "5c998f417f8b873178d9ded1600e19ba8d134c1f8fe748a5f16ca794c9899ffe",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/b9959-18080.stderr.log",
+      "sha256": "ea04eb842d357c115f82a61fb48530823fb8d8f52f4ec11d87d8c9da773a116f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/b9959-18080.stderr.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/b9959-bf16-18082.log",
+      "sha256": "01c648bd01b9f490561f387a5f25ada5e6bc388ed41393ce644cc7c85a6f48a2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/b9959-bf16-18082.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/b9959-f16-18081.log",
+      "sha256": "a7657da4dc70a34f83b331b2077e86c17bf512224bb1961c93b7886b8ff577d0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/b9959-f16-18081.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/functiongemma-routing-live-lifecycle-20260713-205314.json",
+      "sha256": "365a430e999118d4ffc0ae5e9520abef91eb70b4df469af1ad1a1ef8a4ed5d82",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/functiongemma-routing-live-lifecycle-20260713-205314.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gemma4-routing-live-durable-20260713.json",
+      "sha256": "0d4ce6be17707f147d5597df645f5e8a2e9ac70760a6dff02542ebaba2da7631",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gemma4-routing-live-durable-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gemma4-routing-live-lifecycle-20260713-204807.json",
+      "sha256": "eed1f78b6825e33a65b460eebc97ac169fcc403761d650304dbaafe6ffaba108",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gemma4-routing-live-lifecycle-20260713-204807.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gemma4-routing-live-owned-20260713.json",
+      "sha256": "9c88503fefa1b4de9dcbf5a400bce6f011dac5972052643115f07bca2617b503",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gemma4-routing-live-owned-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gemma4-routing-live-postreboot-20260713.json",
+      "sha256": "4790c8ee84a2946bff41434ab141e2018e3fea4bef36c92e5ea6eb3ba3c8b96c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gemma4-routing-live-postreboot-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gemma4-unified-b9980-final.json",
+      "sha256": "6b316983fd8d29259e1105a622a090f2a3f71a95a136aff344dd3461904b9bc1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gemma4-unified-b9980-final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stderr.log",
+      "sha256": "bb0190d340f8dea31a0803a6b94df30ec789b441ec527880982d80d1a47b6b30",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stderr.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stdout.log",
+      "sha256": "40f00479b8153c99786b5d4d51a363b1bc0a5066ad8d380e7c291292349096aa",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stdout.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stderr.log",
+      "sha256": "13120d21ba0e4837d38690dcbfcc6ce1370f7a92410b80060d0df56f314f42e7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stderr.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stdout.log",
+      "sha256": "334ffd1399ba0face363366ef7971d0317c81595e4ccafc9760a570c08f4eccf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stdout.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980/stderr.log",
+      "sha256": "f29b15afc86e46447c23d45d270d87361f7ae36b9efe9ecb5021a6d6f098fe38",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980/stderr.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/routing-29.json",
+      "sha256": "8bd31faad11df49bc492580184d083ba0a7c30f1a2fed2ddc6a6ca0d709b12cb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/routing-29.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-identity.json",
+      "sha256": "39fe8c5636c4bfa1215ad4a41a74be7bbdb1411d38962870555923f9cfb3bbdd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-identity.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-props.json",
+      "sha256": "34ddb06c04e6ba36dafc741bb88157e79e75d1e94be891684ca777350e75bcfe",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-props.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server.stderr.log",
+      "sha256": "83bd163a38f78b09cbbfe752e4d1de7275c2aeb619e213eb6eb1994a6190d10d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server.stderr.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/tooling-live.json",
+      "sha256": "4e06a4bc1f13c5038e2bcadfac190ddb09e2a13c7e7b11b0929a55659ae49d7a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/tooling-live.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/routing-29.json",
+      "sha256": "3f9bbf12fb51f03677363e1f78dcfc3870e805fd75d5e8218042b95585ef6011",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/routing-29.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-identity.json",
+      "sha256": "3ce12f4b94b6dbacc076f59377cb706353546a2bfac0b6b133ff871856fd4cb4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-identity.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-props.json",
+      "sha256": "42e0b931e9f776d589ff6aa591c4eaf023e6834a692f54db16dbd7303a00ccbe",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-props.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server.stderr.log",
+      "sha256": "eb9d5cedee2ff97611049991e8186a70071cbb7bb8ae8255746becb66e9fc573",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server.stderr.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/tooling-live.json",
+      "sha256": "2ebe89b795485e65ac983e07f28d450a79e6d25a226e46e11dda41ac42a6d877",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/tooling-live.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/checkpoint.json",
+      "sha256": "0520fe67ebd435f652d654edb6dc5dbcb9061dbaa6c7951c22e86fe64648c5ba",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/checkpoint.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/controller.stdout.log",
+      "sha256": "e9ac1f63e0a7b19d33244afc2806cca156ba35ed3ea4ddd99810647620a1a7c5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/controller.stdout.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/events.jsonl",
+      "sha256": "1b2951dbc1220332b022e9642acbfcbb5e1f5eaa1082a20025e0223e483f85ef",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/events.jsonl"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/final.json",
+      "sha256": "e7832a18163851be637354bcbe217eab2609bc57954c683506698d56e349d271",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/heartbeat.json",
+      "sha256": "9e025eb111aa70eda13406e1f5299805c2ca49ea9b822ccb8193669b838aa885",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/heartbeat.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/run.json",
+      "sha256": "e23af05fa61e879da74cfa89a09149ff6c589d5684cac82590c39484f04a4a41",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/run.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/checkpoint.json",
+      "sha256": "b1166300a7b1403dcbf278ee95e6942738b0c5581065a5fab9d972cbc6a86625",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/checkpoint.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/controller.stdout.log",
+      "sha256": "849bda58958390f53e4e8bb019bb734a4289651aa19b83673f4af18cca305f5a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/controller.stdout.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/events.jsonl",
+      "sha256": "8cd861ae3f54ac38550bdfea377dda4f4a2449eb5e0ca6dee9603a9d632ade35",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/events.jsonl"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/final.json",
+      "sha256": "bdb27db721ab5ffb273b6c47c1c8d43d761652dcfd6b8dc0f10300a912479b4f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/heartbeat.json",
+      "sha256": "171852b5a8f612584f982b481f52c1a1d8ec27319b4893f5054cca03f8c6eba6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/heartbeat.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/run.json",
+      "sha256": "0d6c0b9adc32ce50780201f0328f4d340f9e0f88a699ae0251898ff38ca42c3b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/run.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/checkpoint.json",
+      "sha256": "69337515d787c18e05b8506232557d99277cd2670c387720336c8baa3aa8db01",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/checkpoint.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/controller.stdout.log",
+      "sha256": "f3fa3771216a41c0984c9a91b707f77c56ee252901e3952a63ed3f8c6ed602ef",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/controller.stdout.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/events.jsonl",
+      "sha256": "ebea357d652e2653a507110626d337af4dcbb2cd2a94145a498a77c964dc2ba8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/events.jsonl"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/final.json",
+      "sha256": "31895db028066371ae4f26fa6895c8dcfe3e9225d6a91e0855d7a607c2a11b02",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/heartbeat.json",
+      "sha256": "0ba51bc50f270a5341c93e60b819b98ec54259dc18ada07761c992a3b0ce5eb5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/heartbeat.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/run.json",
+      "sha256": "36d2c097f46589c1b56bc82597b5ab696eb7d3ae1d28027eccc772ca94564eca",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/run.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/checkpoint.json",
+      "sha256": "cde3532a668cdd527f02b7afceb2ca1cebf72bae0e52631ba4477ec799df0244",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/checkpoint.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/controller.stdout.log",
+      "sha256": "005f6f2e848cb398cde61e48bd2e32bf58bf5264aa936b2300ed1709fe9ad922",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/controller.stdout.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/events.jsonl",
+      "sha256": "5a9f96356c4f3ff2663d4517053f31bb38d88637088683ecf9826db0abff0b86",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/events.jsonl"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/final.json",
+      "sha256": "cd44e923a17f1122773f9474bab9680225815613ab964cadf341db8723bd90f2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/final.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/heartbeat.json",
+      "sha256": "186d9b00b30d0f2febdeff4db62f1f7623503b455f37957f1e581b71b0adf09a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/heartbeat.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-127-baxy-baxy_legacy_data-01-legacy-data-logs",
+      "card_kind": "metric",
+      "corpus": "legacy/data/logs",
+      "denominator": "58 files in group legacy/data/logs; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:legacy/data/logs",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/data/logs/gemma4-audit/activation-legacy-b9959-release-final.json",
+        "legacy/data/logs/gemma4-audit/activation-legacy-b9959.json",
+        "legacy/data/logs/gemma4-audit/activation-legacy-post-hardening-v2.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-b9959-contract-official-mmproj.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-b9959-final.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-b9959-release-final.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-b9959.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-b9980-contract-v1.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-b9980-q2-contract-v1.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v2.json",
+        "legacy/data/logs/gemma4-audit/activation-unified-post-hardening-v3.json",
+        "legacy/data/logs/gemma4-audit/b9959-18080.stderr.log",
+        "legacy/data/logs/gemma4-audit/b9959-bf16-18082.log",
+        "legacy/data/logs/gemma4-audit/b9959-f16-18081.log",
+        "legacy/data/logs/gemma4-audit/functiongemma-routing-live-lifecycle-20260713-205314.json",
+        "legacy/data/logs/gemma4-audit/gemma4-routing-live-durable-20260713.json",
+        "legacy/data/logs/gemma4-audit/gemma4-routing-live-lifecycle-20260713-204807.json",
+        "legacy/data/logs/gemma4-audit/gemma4-routing-live-owned-20260713.json",
+        "legacy/data/logs/gemma4-audit/gemma4-routing-live-postreboot-20260713.json",
+        "legacy/data/logs/gemma4-audit/gemma4-unified-b9980-final.json",
+        "legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stderr.log",
+        "legacy/data/logs/gemma4-audit/gui-v2-note-final-b9980/stdout.log",
+        "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stderr.log",
+        "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980-live/stdout.log",
+        "legacy/data/logs/gemma4-audit/gui-v2-note-fix-b9980/stderr.log",
+        "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/routing-29.json",
+        "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-identity.json",
+        "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server-props.json",
+        "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/server.stderr.log",
+        "legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/tooling-live.json",
+        "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/routing-29.json",
+        "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-identity.json",
+        "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server-props.json",
+        "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/server.stderr.log",
+        "legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/tooling-live.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/checkpoint.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/controller.stdout.log",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/events.jsonl",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/final.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/heartbeat.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-103747-2b17d05/run.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/checkpoint.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/controller.stdout.log",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/events.jsonl",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/final.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/heartbeat.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-160203-7768eddb/run.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/checkpoint.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/controller.stdout.log",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/events.jsonl",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/final.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/heartbeat.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-20260711-173152-18427391/run.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/checkpoint.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/controller.stdout.log",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/events.jsonl",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/final.json",
+        "legacy/data/logs/gemma4-audit/long-soak-24h-b9980-20260713-070840-43a834ba/heartbeat.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "activation-legacy-b9959-release-final.json parser=json rows=1 bytes=29383 dist={\"scalar_keys\": [\"generated_at\", \"kind\", \"schema_version\", \"setup_error\"], \"list_lengths\": {\"rows\": 29}} | activation-legacy-b9959.json parser=json rows=1 bytes=29742 dist={\"scalar_keys\": [\"generated_at\", \"kind\", \"schema_version\", \"setup_error\"], \"list_lengths\": {\"rows\": 29}} | activation-legacy-post-hardening-v2.json parser=json rows=1 bytes=35871 dist={\"scalar_keys\": [\"generated_at\", \"kind\", \"schema_version\", \"setup_error\"], \"list_lengths\": {\"rows\": 29}} | activation-unified-b9959-contract-official-mmproj.json parser=json rows=1 bytes=37777 dist={\"scalar_keys\": [\"generated_at\", \"kind\", \"schema_version\", \"setup_error\"], \"list_lengths\": {\"rows\": 29}} | activation-unified-b9959-final.json parser=json rows=1 byte…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "legacy/data/logs/gemma4-audit/activation-legacy-b9959-release-final.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=58 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-128-baxy-baxy_legacy_data",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-127-baxy-baxy_legacy_data.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

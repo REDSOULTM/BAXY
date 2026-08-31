@@ -1,0 +1,974 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-100-baxy-baxy_art_technology_tournament",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:46:22Z",
+  "closed_utc": "2026-08-31T05:46:23Z",
+  "estimated_tokens": 297088,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 85,
+  "subsystem": "baxy_art_technology_tournament",
+  "subsystems": [
+    "baxy_art_technology_tournament"
+  ],
+  "files": [
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Cookies",
+      "sha256": "c8e5017b318bcc84b0f02bdfe8b7c8ffdf2982e3b7eb6c54bee7de6c27d16c2f",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Cookies",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Device Bound Sessions",
+      "sha256": "ed90c803dbac3e3d245fe75145506230f1b47dfc7f16274c79dd1565ade4e014",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Device Bound Sessions",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Network Persistent State",
+      "sha256": "88c9590388d22bb0bd8da3f7d50389311957024ee5c2dfe562e2649ad427fd7d",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Reporting and NEL",
+      "sha256": "8b86bbe225327a60bb03abcae3e4f927367240f7df368c8bf1d9dbe309686506",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Reporting and NEL",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/SCT Auditing Pending Reports",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/SCT Auditing Pending Reports",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Sdch Dictionaries",
+      "sha256": "6028bd681dbf11a0a58dde8a0cd884115c04caa59d080ba51bde1b086ce0079d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Sdch Dictionaries",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Trust Tokens",
+      "sha256": "8b5a62a399e316009e0c0ee1727ede327893d7f82f38a136e795422b3f9c333c",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Trust Tokens",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Preferences",
+      "sha256": "6fb288e3e20b3e85d0a809e2c805da0e4fa11deffeb377d8dfb65c3ba1ac00be",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/README",
+      "sha256": "a0c9abae18599f0a65fc654ad36251f6330794bea66b718a09d8b297f3e38e87",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/README",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Secure Preferences",
+      "sha256": "729e93c312d72b13f6f4eab944b0b96d002475288ffd393c2f08151bf5f4a70d",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/ServerCertificate",
+      "sha256": "4d2411474fd0bd7237bae798a21959c422dccc3275d742b8de4440cc244b22ce",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/ServerCertificate",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Session Storage/000003.log",
+      "sha256": "18b7902c357d5ad7e6891b9f4282274b3e0c6bec70bdd0ca23632edd4f56e3d2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Session Storage/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Session Storage/LOG",
+      "sha256": "2883e923333bfa280684152f10c64668cca7a5269878995468d4c6c77dbfaa6b",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Shared Dictionary/cache/index-dir/the-real-index",
+      "sha256": "3242cb6c9470f1e397731a36c6901a1598008d33fbc6b1a95ddff401d3958c9e",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Shared Dictionary/db",
+      "sha256": "fbb86c665b2fed35c372ce8996eb1c4e31082aedd6ad5fc6086cfac889c3471b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Shared Dictionary/db",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Site Characteristics Database/000003.log",
+      "sha256": "f096bc366a931fba656bdcd77b24af15a5f29fc53281a727c79f82c608ecfab8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Site Characteristics Database/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Site Characteristics Database/LOG",
+      "sha256": "59ebab75e8c32d380c9b4af69977f8a374270153a03ec85039c86c03a853c51d",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Sync Data/LevelDB/000003.log",
+      "sha256": "8ff00d859349a3ea206706cdd3fa2762ae7c8efe2fdd33a95a72fee45aac6bc4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Sync Data/LevelDB/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Sync Data/LevelDB/LOG",
+      "sha256": "de078be8dfce7cab212a91cd2a3489d246ef36bef8f1fd5f5763d18b8ffaecf4",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Vpn Tokens",
+      "sha256": "621c0b0003ef5568ab968aa855fac40b4870947445dd78d060acfec7d3cdeaf5",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Vpn Tokens",
+      "binary_format": "sqlite"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Web Data",
+      "sha256": "8a1a9f00c47926175d8f8c4a3a0268884f46ea1b84cda247979267ada8f7c800",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/000003.log",
+      "sha256": "ab5c71347d95f319781df230012713c7819ac0d69373e8c9a7302cae3f9a04b7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/LOG",
+      "sha256": "f6851b22d19e551b1d601999bff3b37b87f7fece34a96b7bce03f63426332809",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log",
+      "sha256": "22840594138a09654c4c75a97d9b540ea39f8e350b2bb7ac5bca3fd7f8f2e6ed",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/metadata/LOG",
+      "sha256": "a83be98a8bce782938321148857a5c16e8463a25b5d8e35b9a92e2390803eab4",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db",
+      "sha256": "0ab48b25cba617ed3a4acca0161813b314c095ef63544bb4af60769eb1012977",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal",
+      "sha256": "df5b2f4080d8bc0410095843b18d02f469b6cbf6a943512f9579842aa980451b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite-wal-with-parent:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GrShaderCache/data_0",
+      "sha256": "8c88cd97ba26d8bb11ded2cbb7877ae25ed2f0572011884f1e13ed8758901c23",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GrShaderCache/data_1",
+      "sha256": "50faad2ba8e4901a4ac10f42a8c3c0e29927339a6720d8d7a533d9f89d0ac3ed",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GrShaderCache/data_3",
+      "sha256": "3471d2f716254d5da2ec21cb8b005b99bdb7feece3d00690b138e4c0020ecaef",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GrShaderCache/index",
+      "sha256": "72ab3ed275b692fc3ca7a4c40d7bfc9cf6cdab03ab90e4e932f147152669e017",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Last Version",
+      "sha256": "0768b2391a786a90e8139901c284f12b9719267579169bbb809ac12fcca36c1e",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Last Version",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Local State",
+      "sha256": "45838b93a648757d3966feea55e7f237682c81099225f28411961b6daff84666",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/ShaderCache/index",
+      "sha256": "a0d17a568e1290b10bf3a40fe8e4a6cedd788bb07d03b520cab41af144e61dd8",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/customSettings",
+      "sha256": "d8d672f953e823063955bd9981532fc3453800c2e74c0cc3653d091088abd3b3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/customSettings",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/customSettings_F95BA787499AB4FA9EFFF472CE383A14",
+      "sha256": "2bae8302f9bd2d87ae26acf692663df1639b8e2068157451da4773bd8bd30a2b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/customSettings_F95BA787499AB4FA9EFFF472CE383A14",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings",
+      "sha256": "42ccb5159b168dbe5d5ddf026e5f7ed3dbf50873cfe47c7c3ef0677bb07b90d4",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings_2.0-0",
+      "sha256": "e6beb5ac43dfa3e05ca3c40c4e5de7d763e2e0580203ad9034c6f0527ac0e45b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings_2.0-0",
+      "binary_format": "0-0"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic",
+      "sha256": "eb28e8ed7c014f211bd81308853f407df86aebb5f80f8e4640c608cd772544c2",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic_170540185939602997400506234197983529371",
+      "sha256": "c1ce928fbef4ef5a4207abafd9ab6382cc29d11ddecc215314b0522749ef6a5a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic_170540185939602997400506234197983529371",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Variations",
+      "sha256": "b26da4f8c7e283aa74386da0229d66af14a37986b8ca828e054fc932f68dd557",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Variations",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/first_party_sets.db",
+      "sha256": "faac40f0e3ef5895564b9debadb2b610651cf7e14642f9ea82d8853ca48d0dfe",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/first_party_sets.db"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56886F-9BB0.pma",
+      "sha256": "c7bf41d4aee68455f3d9f9a084074a55a858dc5d54db7c1f5fc72c99189ca59a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56886F-9BB0.pma",
+      "binary_format": "pma"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Crashpad/settings.dat",
+      "sha256": "981bae88752bc93fdab1bd80cfa43cf8966a4752053cc2822d5be2e6238c3955",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Crashpad/settings.dat",
+      "binary_format": "dat"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0",
+      "sha256": "d9c8a1a500de73575ef59672365718fb0bcbf15a7432790e2bb2ee1992c51d28",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Code Cache/js/index-dir/the-real-index",
+      "sha256": "50993a8f2a8b05790b91d58204873241a90f6f04e1e258c043881529d911121f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Code Cache/wasm/index-dir/the-real-index",
+      "sha256": "4d4e9bf6d76e2f4050e802c8a134be78660d71e1e7784cc4a4ae40c9eb0e1fc9",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/DawnGraphiteCache/index",
+      "sha256": "b14e4544eb0221fa459863cbca3ff0fb658f6d7bb6d7506f8b22650247ae2524",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/DawnWebGPUCache/index",
+      "sha256": "6e1c9f303556fffebd38f51eacf15e33b674283fddba5fa352ceddc0c43efe1d",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Extension Rules/LOG",
+      "sha256": "664b4014ed9d7eefc39fac08d4267c99d955bced2ae4dd0e5bf4a3c788589d0b",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Extension Scripts/LOG",
+      "sha256": "220a3992e953fa135e2690a793ffe3cd8420e338e3a32beb6a9075ec74c16c03",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Extension State/LOG",
+      "sha256": "6819285bc612b59b4c70bd2579fb90a559bd467316ff49f4020463b825d50915",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/GPUCache/data_0",
+      "sha256": "eab219426ec23495b6d6af7b53527d5d941149546889e4f3fd694226f738eb44",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/GPUCache/data_1",
+      "sha256": "3e8291b1a6a4630fe483ea8efd9a555f0eaf2d17a3f52aacf7135071f4214134",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/GPUCache/data_2",
+      "sha256": "345189a5ee7f3ebf6ebc8aed9a8c0e1a9abaccc09c3a7b9c4b3298f55e7c2a1b",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/GPUCache/index",
+      "sha256": "818300c0889ead17b1ab9dd0276b4539dad66765d92921170cc0d56712fc6ff2",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/History",
+      "sha256": "d54be420a528f3b5a2ee6789c6094ca87e9f7e1828b206dbe35384091010f700",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Local Storage/leveldb/LOG",
+      "sha256": "38d2f8db497932dca9a16b974fab17575977adee6a2153aab2994e5306a6f398",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Preferences",
+      "sha256": "2bb6ef3813bfc5d1704ef82602933f0aa1677e1313d2ac6b32f7e1b05a153c40",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Secure Preferences",
+      "sha256": "c77769dd204c9e42297187675f92155862f31e4801e1933e3400c3fbf2cd2bf2",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Session Storage/000003.log",
+      "sha256": "5c6032e0e922f76976287ae6da3a05822b381d14922480350e2ec8fd0f7adecd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Session Storage/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Session Storage/LOG",
+      "sha256": "4143dcb5a3030e693aa2c1cfc4ac9a7b66afe521a172aa33093b0c905cc715eb",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Shared Dictionary/cache/index-dir/the-real-index",
+      "sha256": "391b44a4911ad1a046bd6c318c1cf88b0ed1ff74fe8267efb27f7d449c6bbe69",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Site Characteristics Database/LOG",
+      "sha256": "48d4e3926c69a19762e193b0ac3ba7fed10d2a91742e6108605564e5ba12cc25",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Sync Data/LevelDB/LOG",
+      "sha256": "798fdda6ca306c4c1ee7f5ed66bd06fe13604ec6830eb90bae42d291c58c800c",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/shared_proto_db/LOG",
+      "sha256": "8a0eee6db428ead5b7429bcca6b6ad984fe41902eb6fcd594b20604a3440b5ac",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log",
+      "sha256": "a792964d5ebd33476fb20fbf266347330a858e37eed58c0cad9e8080ed030a1f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/shared_proto_db/metadata/LOG",
+      "sha256": "2dbe17e018fae90d43f7232f351df74633dbdbc3cac560838c64255a9bf37837",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal",
+      "sha256": "d502f00185aae7dec572aa84c6b9c0433b4752aafdd7518d73a95e33579b0354",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite-wal-with-parent:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/data_0",
+      "sha256": "fca0a23fa0885c3a7cb7ff9ea6795f63f97bb5eb603cb9b0cb7866f710341685",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/data_1",
+      "sha256": "db3aa45bbe997fa4d669cc715e53000211613329c80eda3f346b169075d0b7ca",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/data_3",
+      "sha256": "5c1eba9657a2d29dc83b596d9b5741445194d8c1dca8defac14c7043d1ef80bc",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/f_000001",
+      "sha256": "0b16c0ebdc762ac572a66293d9e2e4982473ee977fe1b0178c78722228c78abe",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/f_000001",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/f_000002",
+      "sha256": "20713f318573981da9fad10991c1a5405364c61afd71b012dc586b46a35ce6de",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/f_000002",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/index",
+      "sha256": "aea29150a02df16a9d5955afebdf098fca70bcb6040df146dd12660e7787881f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Local State",
+      "sha256": "81b96271197cf87ce7dd7697fa03aa2020f6fdd1f0b253d2c2403e885f410db9",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "browser_profile_cache"
+      ],
+      "exclusion_rule": "browser_profile_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/ShaderCache/index",
+      "sha256": "f7a8934513d00a12594988d344c6af00c6af599ca0c9d20c15a12ebb263b344f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/SmartScreen/local/uriCache",
+      "sha256": "3d6f3f8f1456d7ce78dd9dfa8187318b38e731a658e513f561ee178766e74d39",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/SmartScreen/local/uriCache",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/SmartScreen/local/uriCache_",
+      "sha256": "6906dbdd42601aa7cd1122f7eeab1be5b1d357fa9f85b6e87883db989a71a8e2",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/SmartScreen/local/uriCache_",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56888B-85C8.pma",
+      "sha256": "8a16c95ccaf7fa1892f046a8697166768c8eaeb5dccc2082c4d8252c4e1d01fd",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56888B-85C8.pma",
+      "binary_format": "pma"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Crashpad/settings.dat",
+      "sha256": "6f79da3d05423eed3f3ec115d0bb70705dbd07bb06af2e5c7b2e5d54b4c3a46b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Crashpad/settings.dat",
+      "binary_format": "dat"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0",
+      "sha256": "015e4ac3ab2ea0de5fb4f5b22d8130c24463b6395b98cba2d428465f94772c29",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json#artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0",
+      "binary_format": "unknown"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Code Cache/js/index-dir/the-real-index",
+      "sha256": "765710648364712b343281ed024f625be8614ef1ab16f8717bc836184470f655",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Code Cache/wasm/index-dir/the-real-index",
+      "sha256": "8940b4e0f13031e171ace67bfa1d925a72364f77bd4b4f658289b922c5297d01",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/DawnGraphiteCache/index",
+      "sha256": "b4e1bb885795ac8a66a248e40a5a8e5e22ad4fe45469db5c51d8a481f61c44e4",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_incremental_cache"
+      ],
+      "exclusion_rule": "rust_incremental_cache"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-100-baxy-baxy_art_technology_tournament-01-artifacts-technology_tournament-runtime",
+      "card_kind": "asset",
+      "corpus": "artifacts/technology_tournament/runtime",
+      "denominator": "37 files in group artifacts/technology_tournament/runtime; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/technology_tournament/runtime",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "source_files": [
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Cookies",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Device Bound Sessions",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Reporting and NEL",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/SCT Auditing Pending Reports",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Sdch Dictionaries",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Trust Tokens",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/README",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/ServerCertificate",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Session Storage/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Shared Dictionary/db",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Site Characteristics Database/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Sync Data/LevelDB/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Vpn Tokens",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Last Version",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/customSettings",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/customSettings_F95BA787499AB4FA9EFFF472CE383A14",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings_2.0-0",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic_170540185939602997400506234197983529371",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Variations",
+        "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/first_party_sets.db",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56886F-9BB0.pma",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Crashpad/settings.dat",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/Session Storage/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/f_000001",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/GrShaderCache/f_000002",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/SmartScreen/local/uriCache",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-inspect/WebView2/EBWebView/SmartScreen/local/uriCache_",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56888B-85C8.pma",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Crashpad/settings.dat",
+        "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Cookies parser=binary_inventory rows=0 bytes=20480 dist={} | Device Bound Sessions parser=binary_inventory rows=0 bytes=20480 dist={} | Reporting and NEL parser=binary_inventory rows=0 bytes=36864 dist={} | SCT Auditing Pending Reports parser=binary_inventory rows=0 bytes=2 dist={} | Sdch Dictionaries parser=binary_inventory rows=0 bytes=40 dist={} | Trust Tokens parser=binary_inventory rows=0 bytes=36864 dist={}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/technology_tournament/runtime/round_b/automation-NETWebView/WebView2/EBWebView/Default/Network/Cookies",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=85 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-101-baxy-baxy_art_technology_tournament",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-100-baxy-baxy_art_technology_tournament.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

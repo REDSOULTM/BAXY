@@ -1,0 +1,4382 @@
+{
+  "batch_id": "evidence_assets-055-baxy",
+  "source_id": "baxy",
+  "file_count": 73,
+  "hash_ok": 73,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/turn_policy_probe_r47_v37_highrisk_r4_baseline.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9926,
+      "sha256": "724c27eca6e4980efbfa4476204640dbdc387532dc8626086f4376382e6af1b8",
+      "rows": 12,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 12,
+          "phase": 12,
+          "raw_decision": 12,
+          "request_id": 12,
+          "schema": 12,
+          "stages": 12,
+          "final": 8
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9548,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7782,
+            "line": 11,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"final\":{\"effect_operations\":[\"web.search\"],\"intent_operations\":[\"web.search\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.se…"
+          },
+          {
+            "offset": 9548,
+            "line": 12,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"note.read\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"gate-baseline-0b33f6d7edbc8b7b8bbc9f8e\",\"schema\":\"baxy.mind-turn-audit.v1\",\"st…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_highrisk_r4_evidence.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5300,
+      "sha256": "200d9291e7013d128f06015ac4486f7c9227e5182c05af4d412b24706ec1c799",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5299,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_highrisk_r4_evidence.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9926,
+      "sha256": "75a52495fa8be36f0ce017ef394f8023b77898c206ddfb51c90d91d1fd6184eb",
+      "rows": 12,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 12,
+          "phase": 12,
+          "raw_decision": 12,
+          "request_id": 12,
+          "schema": 12,
+          "stages": 12,
+          "final": 8
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9548,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 7782,
+            "line": 11,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"final\":{\"effect_operations\":[\"web.search\"],\"intent_operations\":[\"web.search\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.se…"
+          },
+          {
+            "offset": 9548,
+            "line": 12,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"note.read\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"gate-evidence-0b33f6d7edbc8b7b8bbc9f8e\",\"schema\":\"baxy.mind-turn-audit.v1\",\"st…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_highrisk_r5_baseline.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5301,
+      "sha256": "99d41cdf044d2b037a127f343904d3d4e367049ec787413efa80d2156508df3d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5300,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_highrisk_r5_evidence.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5300,
+      "sha256": "6bd6a61e862cffaa24b6b8c6480f77f412158d8645d3a97c125c4a2e669b89a1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5299,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r1_baseline.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61120,
+      "sha256": "e4cb7d96178bc0de33501edf048370f3ea9311540151421c6d18a9c5f7c75579",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61119,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r1_baseline.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 197043,
+      "sha256": "d1a74ac23503a7ec4c6ffd7736224d33bd49a7d6077aa52ab205c17547e7addb",
+      "rows": 170,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 170,
+          "phase": 170,
+          "raw_decision": 170,
+          "request_id": 170,
+          "schema": 170,
+          "stages": 170,
+          "final": 92
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 195004,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2507,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 194383,
+            "line": 169,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 195004,
+            "line": 170,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r1_evidence.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61174,
+      "sha256": "f9dd17ec50480a9614ae6c06d9ce7c8cbb868b0d9ae702eaecc73bbb8023f7f6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61173,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r1_evidence.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 196933,
+      "sha256": "13d71d73f4c7ce289d69ccaacd64e77816ff65ba6a2f9f6d97adb9e8eb272e58",
+      "rows": 170,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 170,
+          "phase": 170,
+          "raw_decision": 170,
+          "request_id": 170,
+          "schema": 170,
+          "stages": 170,
+          "final": 92
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 194894,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2507,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 194273,
+            "line": 169,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 194894,
+            "line": 170,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r2_baseline.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61118,
+      "sha256": "0b7976b933545f853c7d9a9b5b9d115357e5a0385a7cf20e3800cbf6f3ad8ec9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61117,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r2_baseline.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 195685,
+      "sha256": "dcb76801eac3a2fe25c0c8b7327d51564db55177b06a1850285da7eeee75dbf6",
+      "rows": 170,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 170,
+          "phase": 170,
+          "raw_decision": 170,
+          "request_id": 170,
+          "schema": 170,
+          "stages": 170,
+          "final": 92
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 193646,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2507,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 193025,
+            "line": 169,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 193646,
+            "line": 170,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r2_evidence.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61153,
+      "sha256": "2d00f625be911ae5f1d286ce82fd7ce9092958296e4b383f797d854d207da939",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61152,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r2_evidence.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 195767,
+      "sha256": "e88361a48b00e0a2b44edac84d678495916422f724e319339d256a01c3e13fd7",
+      "rows": 170,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 170,
+          "phase": 170,
+          "raw_decision": 170,
+          "request_id": 170,
+          "schema": 170,
+          "stages": 170,
+          "final": 92
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 193728,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2507,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 193107,
+            "line": 169,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 193728,
+            "line": 170,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r3_baseline.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61098,
+      "sha256": "2985f1049bd63abd95cab2555e435758301c755b10965418cc283e0b6c5062b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61097,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r3_baseline.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 190571,
+      "sha256": "24c9a8c8cad49b06ec3d0ed6601800568f862b26e17e2abf84d09342e0dd2e16",
+      "rows": 168,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 168,
+          "phase": 168,
+          "raw_decision": 168,
+          "request_id": 168,
+          "schema": 168,
+          "stages": 168,
+          "final": 92
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 188532,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2472,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 187911,
+            "line": 167,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 188532,
+            "line": 168,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r3_evidence.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61115,
+      "sha256": "c3b0957faa314f396689a284a909c26b0d584401f55dd78c631597bcad095faf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61114,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v37_historical_r3_evidence.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 190791,
+      "sha256": "06d3cce3ecbed1e080215f99e09d6aa8289c4bafe0d85b1ff195d33d961a2e7c",
+      "rows": 168,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 168,
+          "phase": 168,
+          "raw_decision": 168,
+          "request_id": 168,
+          "schema": 168,
+          "stages": 168,
+          "final": 92
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 188752,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2472,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 188131,
+            "line": 167,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          },
+          {
+            "offset": 188752,
+            "line": 168,
+            "text": "{\"candidate_operations\":[\"task.complete\",\"task.create\",\"task.delete\",\"task.list\",\"task.reopen\",\"task.resolve.exact\",\"task.restore\",\"task.search\",\"task.update\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v5_recovery_fixes.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1848,
+      "sha256": "08464bce1e2ee1a77e87718dc092d7e9d0a1b92af85adb130ba539d7888c423e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1847,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v5_recovery_fixes.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 6265,
+      "sha256": "722671adcdbb58a7ff721edd317d9e6fa44cdaaba75edf1950c342127fddd35a",
+      "rows": 6,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 6,
+          "phase": 6,
+          "raw_decision": 6,
+          "request_id": 6,
+          "schema": 6,
+          "stages": 6,
+          "final": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4499,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4126,
+            "line": 5,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.search\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"web.search\",\"questio…"
+          },
+          {
+            "offset": 4499,
+            "line": 6,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"final\":{\"effect_operations\":[\"web.search\"],\"intent_operations\":[\"web.search\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.se…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v6_recovery_fixes.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1916,
+      "sha256": "dda9b91ae14e1e40d8dd15df2d9de7ae89973fe4951515ca0db6dc7d3c1078de",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1915,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v6_recovery_fixes.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4554,
+      "sha256": "81a3b0872722d9aba9efadeb295026bc7e2d5071875a62d608902cf0ea078b4c",
+      "rows": 5,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 5,
+          "phase": 5,
+          "raw_decision": 5,
+          "request_id": 5,
+          "schema": 5,
+          "stages": 5,
+          "final": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2788,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2415,
+            "line": 4,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.search\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"web.search\",\"questio…"
+          },
+          {
+            "offset": 2788,
+            "line": 5,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"final\":{\"effect_operations\":[\"web.search\"],\"intent_operations\":[\"web.search\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.se…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v7_findings_fixes.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3219,
+      "sha256": "c8cc7a1ab6facb6f42b101908735f4e108a7ad6cf220c2aa45a3458d7b9fafab",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3218,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v7_findings_fixes.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10543,
+      "sha256": "e44aa3e6228ffa99c64d14136e797857e9a18f07a059e763ec09e68f00c430e7",
+      "rows": 10,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 10,
+          "phase": 10,
+          "raw_decision": 10,
+          "request_id": 10,
+          "schema": 10,
+          "stages": 10,
+          "final": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8788,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8424,
+            "line": 9,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 8788,
+            "line": 10,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v8_ambiguous_reference_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1251,
+      "sha256": "3c11233d1cb8dff638e250edd67385553837a7a2e62f1e5a052a4eab9d488824",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1250,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v8_ambiguous_reference_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4241,
+      "sha256": "691c6c840272dc9c744ccb4d8f8175d8744609e9f8ac5432b5f7f1a22d56ef36",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2452,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1789,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2027,
+            "line": 3,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.open\"],\"effect_verification\":\"agreed\",\"intent_operations\":[\"app.op…"
+          },
+          {
+            "offset": 2452,
+            "line": 4,
+            "text": "{\"candidate_operations\":[\"app.close\",\"app.installed\",\"app.open\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v9_ambiguous_reference_deterministic_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1291,
+      "sha256": "580774ff178c296ab5ccf8bcfd32fa075dc51efb5505c9bea7418790ba07d1fe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1290,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_v9_ambiguous_reference_deterministic_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4272,
+      "sha256": "27f636ef58f5eb6368908cd25aeedbd163dbf3b26eabe5235179ff5feed3a9b8",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2388,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1884,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2027,
+            "line": 3,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"followup\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respo…"
+          },
+          {
+            "offset": 2388,
+            "line": 4,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"followup\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_appl…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_video_current_fact_fixes.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1905,
+      "sha256": "fb57d676a8ce79e9e66b15d1bdf0c82b7278f8bb6ebde7b043df67f5a0457957",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1904,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_video_current_fact_fixes.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 6265,
+      "sha256": "0773f53525f719a490d793e1faf33b03519d498db1e5f6085db69695a6f17064",
+      "rows": 6,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 6,
+          "phase": 6,
+          "raw_decision": 6,
+          "request_id": 6,
+          "schema": 6,
+          "stages": 6,
+          "final": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4510,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1755,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4146,
+            "line": 5,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 4510,
+            "line": 6,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_weather_followup_anchor_fixes.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4168,
+      "sha256": "4a04d758a3b4460b23d5fbd2db91d777478b8a51a41d59a7825b20b9fb8fafda",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4167,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_weather_followup_anchor_fixes.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10053,
+      "sha256": "5c5173751e4899583ababd8c4441da707aeaa174ba7c75485aeba085f3b53c14",
+      "rows": 16,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_reason",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 16,
+          "phase": 16,
+          "raw_decision": 16,
+          "request_id": 16,
+          "schema": 16,
+          "stages": 16,
+          "final": 5,
+          "error_type": 4,
+          "failure_kind": 4,
+          "failure_reason": 4,
+          "failure_stage": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9552,
+        "min_line_bytes": 329,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9223,
+            "line": 15,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ConversationReplyContractError\",\"failure_kind\":\"runtime\",\"failure_reason\":\"unsupported_missing_anchor\",\"failure_stage\":\"conversation_reply\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\"…"
+          },
+          {
+            "offset": 9552,
+            "line": 16,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_weather_followup_anchor_fixes.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3669,
+      "sha256": "7f832543cc29b5ed48cfbe6a3c9135cfd928f49a3b41130abb4708b181eb3b72",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3668,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_weather_followup_anchor_fixes.v2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10285,
+      "sha256": "be4ec97dc7ab7be6194e8c4fa34f7bc15885f6c9dcd026e8c0f0da1223dc0e64",
+      "rows": 13,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_reason",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 13,
+          "phase": 13,
+          "raw_decision": 13,
+          "request_id": 13,
+          "schema": 13,
+          "stages": 13,
+          "final": 5,
+          "error_type": 2,
+          "failure_kind": 2,
+          "failure_reason": 2,
+          "failure_stage": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8530,
+        "min_line_bytes": 332,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8166,
+            "line": 12,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 8530,
+            "line": 13,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_weather_followup_anchor_fixes.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1235,
+      "sha256": "a27769659accbe6d2eacea033161daed335a64c8ec698d136dc43bb3e833f3ea",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1234,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_probe_r47_weather_followup_anchor_fixes.v3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4166,
+      "sha256": "4250bff7db6932df7ba3bf7891e4f4ac982a393b44b62a36a0c0016a07c0aa55",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2400,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1766,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2027,
+            "line": 3,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.search\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"web.search\",\"questio…"
+          },
+          {
+            "offset": 2400,
+            "line": 4,
+            "text": "{\"candidate_operations\":[\"web.search\"],\"final\":{\"effect_operations\":[\"web.search\"],\"intent_operations\":[\"web.search\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"web.se…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_probe_r47_after_systemic_fix.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4940,
+      "sha256": "0dc60709a82837e99b17449c093e3a65da5d47985cf9cd271865d890ee59f9e3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4939,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_probe_r47_after_systemic_fix.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17618,
+      "sha256": "5cd9389a0effce418a0ebd543ef3b53c27b0d7f5e49f7585783081f99059516c",
+      "rows": 14,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 14,
+          "phase": 14,
+          "raw_decision": 14,
+          "request_id": 14,
+          "schema": 14,
+          "stages": 14,
+          "final": 7
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15318,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2368,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14442,
+            "line": 13,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",\"wifi.profile.list\",\"wifi.ensure.connecte…"
+          },
+          {
+            "offset": 15318,
+            "line": 14,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",\"wifi.profile.list\",\"wifi.ensure.connecte…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_probe_r47_after_systemic_fix.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 218,
+      "sha256": "242875337332026002e8e4511515cc79db4ecfaced4c6671b8c6ae2cc881ed3d",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94,
+        "min_line_bytes": 3,
+        "max_line_bytes": 124
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 6,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 91,
+            "line": 6,
+            "text": "}"
+          },
+          {
+            "offset": 94,
+            "line": 7,
+            "text": "status=diagnostic_completed -> D:\\BAXY\\source\\artifacts\\development\\turn_policy_recovery_probe_r47_after_systemic_fix.json"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_probe_r47_two_new_systemic_fixes.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1965,
+      "sha256": "fe58a9bccc602a949972323a24e3f37f70bb33f1da8d4d66feb03c1de92849bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1964,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_probe_r47_two_new_systemic_fixes.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 6235,
+      "sha256": "1477d9a7880204a0e8ed488c7c1d52f05497654807eb65ffb17c10e7792f7aed",
+      "rows": 6,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 6,
+          "phase": 6,
+          "raw_decision": 6,
+          "request_id": 6,
+          "schema": 6,
+          "stages": 6,
+          "final": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4480,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1755,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4116,
+            "line": 5,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 4480,
+            "line": 6,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_reason_probe_r47.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7337,
+      "sha256": "7bb54fedbcbeddbd321a53cf7ba8c08b8934c90594afb6a5cc05e1e848f39299",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7336,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_reason_probe_r47.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 15658,
+      "sha256": "2039a94070e95bc75c5cee8e6c7b9aa04f006a77a7110fdf0a39dbf512237d07",
+      "rows": 32,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "failure_reason",
+          "final",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 32,
+          "phase": 32,
+          "raw_decision": 32,
+          "request_id": 32,
+          "schema": 32,
+          "stages": 32,
+          "error_type": 12,
+          "failure_kind": 12,
+          "failure_stage": 12,
+          "failure_reason": 10,
+          "final": 7,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15157,
+        "min_line_bytes": 261,
+        "max_line_bytes": 1689,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14896,
+            "line": 31,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"failure_stage\":\"action_grounding\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"gate-baseline-1aa5edb2de041ad22b35501e\",\"schema\":\"baxy.mind-turn-a…"
+          },
+          {
+            "offset": 15157,
+            "line": 32,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_reason_probe_r47.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 207,
+      "sha256": "ea2f4e028ed383e4cc96a81f9d09d11a68f9cd2fb185904f1359a340f7c95454",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 95,
+        "min_line_bytes": 3,
+        "max_line_bytes": 112
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 6,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 92,
+            "line": 6,
+            "text": "}"
+          },
+          {
+            "offset": 95,
+            "line": 7,
+            "text": "status=diagnostic_completed -> D:\\BAXY\\source\\artifacts\\development\\turn_policy_recovery_reason_probe_r47.json"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_stage_probe_r47.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7150,
+      "sha256": "fb398c6c2bb8d8fa718a58f739c0ee6062357f2e7bcc3f89440b53c46287e76f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7149,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_stage_probe_r47.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17750,
+      "sha256": "2b6f152a0ab75c5bbaf5cae22ffd00ebf9d60bac73c81c0a6aa99297107dc5be",
+      "rows": 34,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "final",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 34,
+          "phase": 34,
+          "raw_decision": 34,
+          "request_id": 34,
+          "schema": 34,
+          "stages": 34,
+          "error_type": 12,
+          "failure_kind": 12,
+          "failure_stage": 12,
+          "final": 8,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17249,
+        "min_line_bytes": 261,
+        "max_line_bytes": 2098,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16988,
+            "line": 33,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"failure_stage\":\"turn_preparation\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"gate-baseline-1aa5edb2de041ad22b35501e\",\"schema\":\"baxy.mind-turn-a…"
+          },
+          {
+            "offset": 17249,
+            "line": 34,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_recovery_stage_probe_r47.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 206,
+      "sha256": "4f492f48d1bd3575e25f4be90343087dada7e06fe3d64133799b12ce8fa7af65",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 95,
+        "min_line_bytes": 3,
+        "max_line_bytes": 111
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 7,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 92,
+            "line": 6,
+            "text": "}"
+          },
+          {
+            "offset": 95,
+            "line": 7,
+            "text": "status=diagnostic_completed -> D:\\BAXY\\source\\artifacts\\development\\turn_policy_recovery_stage_probe_r47.json"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_runtime_development_manifest.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1440,
+      "sha256": "5478a2367b4a4c502f0dbacc0616211d8184fea449b5203f94f64928b3d6ace9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "diagnostics",
+          "excluded",
+          "outputs",
+          "partition_id",
+          "schema",
+          "selection",
+          "source"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "partition_id",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1439
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"diagnostics\", \"excluded\", \"outputs\", \"partition_id\", \"schema\", \"selection\", \"source\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"diagnostics\", \"excluded\", \"outputs\", \"partition_id\", \"schema\", \"selection\", \"source\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_unsafe_aspiration_probe_r47_after_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1339,
+      "sha256": "932be998e30fde6d51fed39692a3c01f6e96dec252f65e08bcb538a8834ac474",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1338,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_unsafe_aspiration_probe_r47_after_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4146,
+      "sha256": "b499fcc44c42bb3e4ff01f03c1a870a384c9586540034160b6ab0ae1669db246",
+      "rows": 4,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 4,
+          "phase": 4,
+          "raw_decision": 4,
+          "request_id": 4,
+          "schema": 4,
+          "stages": 4,
+          "final": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2391,
+        "min_line_bytes": 338,
+        "max_line_bytes": 1755,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2027,
+            "line": 3,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 2391,
+            "line": 4,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/uncovered_operation_floor_20260812.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27887,
+      "sha256": "46d2bc1ce64711a44d9fc7463f2ddc909d6586df8eaf2b9c1313a1bd06329c6b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "rows",
+          "schema",
+          "source",
+          "summary"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "source"
+        ],
+        "list_lengths": {
+          "rows": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27886,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"rows\", \"schema\", \"source\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"rows\", \"schema\", \"source\", \"summary\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/unread_machine_assertion_guard_20260812.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40313,
+      "sha256": "312836d6bf309438b36adeac54062f176c8d4573a4103b9efd8b3072b65aa2ea",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "summary"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40312,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"schema\", \"summary\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"schema\", \"summary\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/unsupported_reply_authorship_20260812.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7526,
+      "sha256": "ab498403af2d11f3858ce730f7f062c806bf6694fbd83811d18719870740b73e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "records",
+          "schema",
+          "summary"
+        ],
+        "n_keys": 4,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7525
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"records\", \"schema\", \"summary\"], \"n_keys\": 4, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"records\", \"schema\", \"summary\"], \"n_keys\": 4, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/dist/assets/index-CjozYCnU.css": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 35984,
+      "sha256": "b12e05792e837b28f29a93b63fe173563fe0ecf722ad55d0e6da85fa0bb36f88",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 35984,
+        "max_line_bytes": 35984
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "#root{width:100vw;height:100vh}.shell{grid-template-rows:36px 1fr 22px;height:100vh;display:grid}.ibtn.mic-btn.mic-ptt{background:#b83a4a0a;border-style:dashed}.ibtn.mic-btn.mic-ptt:hover{background:#b83a4a1a}.ibtn.mic-btn.mic-loading{colo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "#root{width:100vw;height:100vh}.shell{grid-template-rows:36px 1fr 22px;height:100vh;display:grid}.ibtn.mic-btn.mic-ptt{background:#b83a4a0a;border-style:dashed}.ibtn.mic-btn.mic-ptt:hover{background:#b83a4a1a}.ibtn.mic-btn.mic-loading{colo…"
+          }
+        ]
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/dist/index.html": {
+      "parser": "xml",
+      "bytes": 1016,
+      "sha256": "533fde8f6c1b5120e16fb4ba29cc805c640c2b02669c6d9caa2291ecda50222e",
+      "rows": 0,
+      "schema": {
+        "keys": []
+      },
+      "distribution": {
+        "tags": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1015
+      },
+      "errors": [
+        {
+          "error": "syntax error: line 1, column 0"
+        }
+      ],
+      "samples": {
+        "head": [],
+        "tail": []
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/index.html": {
+      "parser": "xml",
+      "bytes": 916,
+      "sha256": "c3b3d4fc5575ec308a3f2d6bdc11b2ca2497635953aa1caf4b0093a4aded7806",
+      "rows": 0,
+      "schema": {
+        "keys": []
+      },
+      "distribution": {
+        "tags": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 915
+      },
+      "errors": [
+        {
+          "error": "syntax error: line 1, column 0"
+        }
+      ],
+      "samples": {
+        "head": [],
+        "tail": []
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/package.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 740,
+      "sha256": "912b9b4984f6e46d4f830a648ed16acaa9adf773c49172539f17224cd0a8804a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "dependencies",
+          "devDependencies",
+          "name",
+          "private",
+          "scripts",
+          "type",
+          "version"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "name",
+          "private",
+          "type",
+          "version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 739
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"dependencies\", \"devDependencies\", \"name\", \"private\", \"scripts\", \"type\", \"version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"dependencies\", \"devDependencies\", \"name\", \"private\", \"scripts\", \"type\", \"version\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/pnpm-lock.yaml": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 59063,
+      "sha256": "7a5aecfc32b758aa07d7338dd748a931932127d0ddaa85fca76153a79c975dc1",
+      "rows": 1722,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 59046,
+        "min_line_bytes": 2,
+        "max_line_bytes": 150
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "lockfileVersion: '9.0'"
+          },
+          {
+            "offset": 24,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 59044,
+            "line": 1721,
+            "text": ""
+          },
+          {
+            "offset": 59046,
+            "line": 1722,
+            "text": "zod@4.4.3: {}"
+          }
+        ]
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/tsconfig.app.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 642,
+      "sha256": "61ab483a94a0556e57ea95cc7353bb07b9f3084c0691364070bbf853910646e8",
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 641
+      },
+      "errors": [
+        {
+          "error": "Expecting property name enclosed in double quotes: line 10 column 5 (char 244)"
+        }
+      ],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{ \"compilerOptions\": { \"tsBuildInfoFile\": \"./node_modules/.tmp/tsconfig.app.tsbuildinfo\", \"target\": \"es2023\", \"lib\": [\"ES2023\", \"DOM\"], \"module\": \"esnext\", \"types\": [\"vite/client\"], \"skipLibCheck\": true, /* Bundler mode */ \"moduleResolutio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 402,
+            "line": 1,
+            "text": "rce\", \"noEmit\": true, \"jsx\": \"react-jsx\", /* Linting */ \"noUnusedLocals\": true, \"noUnusedParameters\": true, \"erasableSyntaxOnly\": true, \"noFallthroughCasesInSwitch\": true }, \"include\": [\"src\"] }"
+          }
+        ]
+      }
+    },
+    "artifacts/field-ui-4a83f2d-export/gui/ui_field/tsconfig.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 126,
+      "sha256": "ad28d132ee48d6e23917cf5827cace785d0fc01a44ca68b0dda51cc8c3fd3f52",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "files",
+          "references"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "files": 0,
+          "references": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"files\", \"references\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"files\", \"references\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/field-ui-4a83f2d.zip": {
+      "parser": "binary_inventory",
+      "bytes": 212950,
+      "sha256": "bd2ca1cece3eb6ffbab216f4d537c5dfe6694c490ddab00984049cb2d8697e64",
+      "format": "zip",
+      "magic_hex": "504b03040a00000000002031e25c0000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/field-ui-4a83f2d.zip"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "zip"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 212949
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=504b03040a00000000002031e25c0000 format=zip"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 212949,
+            "line": 0,
+            "text": "eof bytes=212950"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/browser-media-voice/aud-008-027-runtime-evidence.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5535,
+      "sha256": "3a79de5d9bdfa254a332e23744da9ca830d80df22dd96a263969b1db70adf968",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aud008Aud027SpotifyExact",
+          "aud013Aud014Aud026Browser",
+          "aud017WakeWord",
+          "aud018HistoricalVoiceSample",
+          "automatedValidation",
+          "branch",
+          "core",
+          "measuredAtUtc",
+          "repository",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "branch",
+          "measuredAtUtc",
+          "repository",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5534
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aud008Aud027SpotifyExact\", \"aud013Aud014Aud026Browser\", \"aud017WakeWord\", \"aud018HistoricalVoiceSample\", \"automatedValidation\", \"branch\", \"core\", \"measuredAtUtc\", \"repository\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aud008Aud027SpotifyExact\", \"aud013Aud014Aud026Browser\", \"aud017WakeWord\", \"aud018HistoricalVoiceSample\", \"automatedValidation\", \"branch\", \"core\", \"measuredAtUtc\", \"repository\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud001-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4406,
+      "sha256": "6f21326979b73ac979e2691ef6ccb5be59fb8bef38c84f622fc08e0af39b668d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4405
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud001-before.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2797,
+      "sha256": "3a87deac5bc24592a2a5498c5a90697588180c9749fef99647ae1926d2baa91f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2796
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud002-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2581,
+      "sha256": "104b76002277bde73911237e3f7919e0bfe74a104ee9d5ea9e50ea92038eadaa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema",
+          "winget_on_path"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema",
+          "winget_on_path"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2580
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\", \"winget_on_path\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\", \"winget_on_path\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud002-before.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1740,
+      "sha256": "84d2c343d7daec47216fc787e2e537314c7c93de95c9195d5dc251004227afb3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema",
+          "winget_on_path"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema",
+          "winget_on_path"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1739
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\", \"winget_on_path\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\", \"winget_on_path\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud003-after-timeout4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12797,
+      "sha256": "e6c4c384ce5c4aa4db5d75aa9130ad2bd18445dcd72defc75502411fe8eceea9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12796
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud003-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12797,
+      "sha256": "689079e39f502a08dc891b7f9cf21749039bfc4a8230f5c0fd5764e55a4d1f4b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12796
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud003-before.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 656,
+      "sha256": "bc3ae27098a02fe131ffdfb6987e05d12abdd0f47b381fc4f1c6aa51d3ae2c9d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 655
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud019-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25457,
+      "sha256": "10450523a92aece0fa9a80bc68122c4b72face2bc6ff403144037cd0994ea2c1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "total",
+          "verified"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 23
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25456,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 1.6037824000013643,
+          "max": 1.6037824000013643
+        },
+        "total": {
+          "min": 23,
+          "max": 23
+        },
+        "verified": {
+          "min": 23,
+          "max": 23
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"total\", \"verified\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"total\", \"verified\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/core-boundaries/baxy-aud019-before.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4493,
+      "sha256": "18113f541548797d61795e5047f64480e5a4e7b95c15396e0baf2f72cc3eae85",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "total",
+          "verified"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4492,
+        "catalog_count": {
+          "min": 166,
+          "max": 166
+        },
+        "catalog_utf8_bytes": {
+          "min": 73492,
+          "max": 73492
+        },
+        "elapsed_seconds": {
+          "min": 0.19897960000525927,
+          "max": 0.19897960000525927
+        },
+        "total": {
+          "min": 4,
+          "max": 4
+        },
+        "verified": {
+          "min": 4,
+          "max": 4
+        },
+        "process_exit_code": {
+          "min": 70,
+          "max": 70
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"total\", \"verified\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"total\", \"verified\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Contracts.Tests.trx": {
+      "parser": "xml",
+      "bytes": 67890,
+      "sha256": "f654927d50e78050cd9e43b386e4752da085b4b64b2548eab7b8484811498e97",
+      "rows": 269,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 51,
+          "Execution": 51,
+          "TestMethod": 51,
+          "UnitTest": 51,
+          "TestEntry": 51,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67889
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 268,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 269,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Integration.Tests.trx": {
+      "parser": "xml",
+      "bytes": 1590138,
+      "sha256": "96f9aa90d279ecc181a3586b4d2918e41c1d7bbbe408b8a6cb1518e792a6bd67",
+      "rows": 5725,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "TestEntry",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "StackTrace",
+          "StdOut",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 1126,
+          "TestEntry": 1126,
+          "Execution": 1125,
+          "TestMethod": 1125,
+          "UnitTest": 1125,
+          "Output": 22,
+          "Message": 21,
+          "ErrorInfo": 21,
+          "StackTrace": 13,
+          "StdOut": 9,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1590137
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 5724,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 5725,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/dotnet-full-final-v2/Baxy.Kernel.Tests.trx": {
+      "parser": "xml",
+      "bytes": 116939,
+      "sha256": "b056bc6a7969fae8c6e52078dcb816356a0e24664814cb54b2a7eeacdbd6d1a8",
+      "rows": 472,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "StdOut",
+          "Output",
+          "Message",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 90,
+          "Execution": 90,
+          "TestMethod": 90,
+          "UnitTest": 90,
+          "TestEntry": 90,
+          "StdOut": 3,
+          "Output": 3,
+          "Message": 2,
+          "ErrorInfo": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 116938
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 471,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 472,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    }
+  }
+}

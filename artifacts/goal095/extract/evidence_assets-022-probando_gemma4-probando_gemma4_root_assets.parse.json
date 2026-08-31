@@ -1,0 +1,377 @@
+{
+  "batch_id": "evidence_assets-022-probando_gemma4-probando_gemma4_root_assets",
+  "source_id": "probando_gemma4",
+  "file_count": 6,
+  "hash_ok": 6,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "_mission_eval_v1_ft.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 198975,
+      "sha256": "7b162ca092cdcbb8d7e4c8cda7ce92b07f5b1edd789ea91c9f31fdfbb7385ec6",
+      "rows": 659,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "dt",
+          "passes",
+          "tools_exec",
+          "tools_expected",
+          "also_valid",
+          "reply",
+          "issues"
+        ],
+        "key_freq": {
+          "i": 659,
+          "cat": 659,
+          "lang": 659,
+          "user_text": 659,
+          "prev_text": 659,
+          "dt": 659,
+          "passes": 659,
+          "tools_exec": 659,
+          "tools_expected": 659,
+          "also_valid": 659,
+          "reply": 659,
+          "issues": 659
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 198672,
+        "min_line_bytes": 212,
+        "max_line_bytes": 557,
+        "numeric": {
+          "i": {
+            "min": 0.0,
+            "max": 658.0
+          },
+          "dt": {
+            "min": 0.17,
+            "max": 7.03
+          },
+          "passes": {
+            "min": 1.0,
+            "max": 4.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"hola\", \"prev_text\": \"\", \"dt\": 0.37, \"passes\": 2, \"tools_exec\": [], \"tools_expected\": [], \"also_valid\": [], \"reply\": \"Hola, soy Baxy, tu asistente de voz local en Windows. ¿En qué…"
+          },
+          {
+            "offset": 279,
+            "line": 2,
+            "text": "{\"i\": 1, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"explícame la ley de Ohm simple\", \"prev_text\": \"\", \"dt\": 0.43, \"passes\": 2, \"tools_exec\": [], \"tools_expected\": [], \"also_valid\": [], \"reply\": \"La ley de Ohm establece que la corri…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 198359,
+            "line": 658,
+            "text": "{\"i\": 657, \"cat\": \"system_brightness\", \"lang\": \"it\", \"user_text\": \"Abbassa la luminosità dello schermo\", \"prev_text\": \"\", \"dt\": 0.68, \"passes\": 3, \"tools_exec\": [\"safety\"], \"tools_expected\": [\"system\"], \"also_valid\": [], \"reply\": \"Listo, b…"
+          },
+          {
+            "offset": 198672,
+            "line": 659,
+            "text": "{\"i\": 658, \"cat\": \"system_brightness\", \"lang\": \"it\", \"user_text\": \"Alza la luminosità al massimo\", \"prev_text\": \"\", \"dt\": 0.64, \"passes\": 3, \"tools_exec\": [\"safety\"], \"tools_expected\": [\"system\"], \"also_valid\": [], \"reply\": \"Listo, subí la…"
+          }
+        ]
+      }
+    },
+    "_mission_eval_v2_ft.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 200535,
+      "sha256": "77205379d12580556cd72883350d3856e32396a169535745a9bffb18e8e23a62",
+      "rows": 659,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "dt",
+          "passes",
+          "tools_exec",
+          "tools_expected",
+          "also_valid",
+          "reply",
+          "issues"
+        ],
+        "key_freq": {
+          "i": 659,
+          "cat": 659,
+          "lang": 659,
+          "user_text": 659,
+          "prev_text": 659,
+          "dt": 659,
+          "passes": 659,
+          "tools_exec": 659,
+          "tools_expected": 659,
+          "also_valid": 659,
+          "reply": 659,
+          "issues": 659
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 200172,
+        "min_line_bytes": 215,
+        "max_line_bytes": 669,
+        "numeric": {
+          "i": {
+            "min": 0.0,
+            "max": 658.0
+          },
+          "dt": {
+            "min": 0.2,
+            "max": 5.92
+          },
+          "passes": {
+            "min": 1.0,
+            "max": 9.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"hola\", \"prev_text\": \"\", \"dt\": 0.38, \"passes\": 2, \"tools_exec\": [], \"tools_expected\": [], \"also_valid\": [], \"reply\": \"Hola, soy Baxy, tu asistente de voz local en Windows. ¿En qué…"
+          },
+          {
+            "offset": 279,
+            "line": 2,
+            "text": "{\"i\": 1, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"explícame la ley de Ohm simple\", \"prev_text\": \"\", \"dt\": 0.42, \"passes\": 2, \"tools_exec\": [], \"tools_expected\": [], \"also_valid\": [], \"reply\": \"La ley de Ohm establece que la corri…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 199865,
+            "line": 658,
+            "text": "{\"i\": 657, \"cat\": \"system_brightness\", \"lang\": \"it\", \"user_text\": \"Abbassa la luminosità dello schermo\", \"prev_text\": \"\", \"dt\": 0.26, \"passes\": 2, \"tools_exec\": [], \"tools_expected\": [\"system\"], \"also_valid\": [], \"reply\": \"Listo, abbassé l…"
+          },
+          {
+            "offset": 200172,
+            "line": 659,
+            "text": "{\"i\": 658, \"cat\": \"system_brightness\", \"lang\": \"it\", \"user_text\": \"Alza la luminosità al massimo\", \"prev_text\": \"\", \"dt\": 0.79, \"passes\": 3, \"tools_exec\": [\"safety\"], \"tools_expected\": [\"system\"], \"also_valid\": [], \"reply\": \"Aumentare la l…"
+          }
+        ]
+      }
+    },
+    "_rerun_6162_console.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 9406,
+      "sha256": "80c26253cf9e2a5ce2baa55706b83d97b983e2c3c1ccb425c607d87017e23cfc",
+      "rows": 171,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 6
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9364,
+        "min_line_bytes": 11,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[rerun] FINAL 6162 con fixes activos -> prefijo _rerun_tanda_"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "[rerun] tanda 1/6: offset=0 limit=1000 ..."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9324,
+            "line": 170,
+            "text": "[rerun] tanda 6/6 DONE rc=0 en 76.1min"
+          },
+          {
+            "offset": 9364,
+            "line": 171,
+            "text": "[rerun] COMPLETO: 6162 casos en 378.1min"
+          }
+        ]
+      }
+    },
+    "overnight_audit_results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4826,
+      "sha256": "a02895969ae49ac4210d46ba96abe501348c0d5d46b45008d543d8207f2e0a84",
+      "rows": 1,
+      "schema": {
+        "root": "array",
+        "n": 1,
+        "elem_keys": [
+          "elapsed_ms",
+          "error",
+          "evidence",
+          "id",
+          "module",
+          "prompt",
+          "status",
+          "verifier"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4825
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"W01\", \"module\": \"WhatsApp\", \"prompt\": \"manda un whatsapp a Musica que diga hola\", \"status\": \"FAIL\", \"elapsed_ms\": 30969, \"verifier\": \"Gemma4Agent.tools.execute('whatsapp', args) child process + visible message verifier\", \"evidence\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4825,
+            "line": 1,
+            "text": "{\"id\": \"W01\", \"module\": \"WhatsApp\", \"prompt\": \"manda un whatsapp a Musica que diga hola\", \"status\": \"FAIL\", \"elapsed_ms\": 30969, \"verifier\": \"Gemma4Agent.tools.execute('whatsapp', args) child process + visible message verifier\", \"evidence\"…"
+          }
+        ]
+      }
+    },
+    "whatsapp_diag_095753.png": {
+      "parser": "binary_inventory",
+      "bytes": 2346640,
+      "sha256": "f604d8f32e47cfdebce465677e85e671a01274a0964dbbb192809a93b9db1083",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "whatsapp_diag_095753.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 3840,
+        "height": 2160
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2346639
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2346639,
+            "line": 0,
+            "text": "eof bytes=2346640"
+          }
+        ]
+      }
+    },
+    "whatsapp_diag_095918.png": {
+      "parser": "binary_inventory",
+      "bytes": 2261085,
+      "sha256": "180d665bee3f008c9f3aad75539a78d2d6b162fd90ee32797f82759ca8080970",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "whatsapp_diag_095918.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 3840,
+        "height": 2160
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2261084
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2261084,
+            "line": 0,
+            "text": "eof bytes=2261085"
+          }
+        ]
+      }
+    }
+  }
+}

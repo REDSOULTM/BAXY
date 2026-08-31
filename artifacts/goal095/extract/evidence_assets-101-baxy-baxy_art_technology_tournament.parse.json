@@ -1,0 +1,1846 @@
+{
+  "batch_id": "evidence_assets-101-baxy-baxy_art_technology_tournament",
+  "source_id": "baxy",
+  "file_count": 82,
+  "hash_ok": 82,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/DawnWebGPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Extension Rules/LOG": {
+      "parser": "exclude",
+      "bytes": 415,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Extension Scripts/LOG": {
+      "parser": "exclude",
+      "bytes": 419,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Extension State/LOG": {
+      "parser": "exclude",
+      "bytes": 417,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/GPUCache/data_0": {
+      "parser": "exclude",
+      "bytes": 45056,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/GPUCache/data_1": {
+      "parser": "exclude",
+      "bytes": 270336,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/GPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/History": {
+      "parser": "exclude",
+      "bytes": 212992,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Local Storage/leveldb/LOG": {
+      "parser": "exclude",
+      "bytes": 427,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Preferences": {
+      "parser": "exclude",
+      "bytes": 7906,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Secure Preferences": {
+      "parser": "exclude",
+      "bytes": 9764,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Session Storage/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 221,
+      "sha256": "fba76dba294ee7d645f0aaf46ec9926e7ba11b032ac416e180b6c2bd2d1c3231",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 221,
+        "max_line_bytes": 221
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "��j+\u0017\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u0007version\u00011ШDva\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0001 next-map-id\u00011\u0001Bnamespace-dbc75bd0_6915_4f41_a0d9_0cfa2183c8c8-https://baxy.local/\u00010�<�1P\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0000Bnamespace-dbc75bd0_6915_4f41_a0d9_0cfa2183c8c8-https://baxy.local/"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "��j+\u0017\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u0007version\u00011ШDva\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0001 next-map-id\u00011\u0001Bnamespace-dbc75bd0_6915_4f41_a0d9_0cfa2183c8c8-https://baxy.local/\u00010�<�1P\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0000Bnamespace-dbc75bd0_6915_4f41_a0d9_0cfa2183c8c8-https://baxy.local/"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Session Storage/LOG": {
+      "parser": "exclude",
+      "bytes": 415,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Shared Dictionary/cache/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 48,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Site Characteristics Database/LOG": {
+      "parser": "exclude",
+      "bytes": 445,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Sync Data/LevelDB/LOG": {
+      "parser": "exclude",
+      "bytes": 421,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/Web Data": {
+      "parser": "exclude",
+      "bytes": 221184,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/shared_proto_db/LOG": {
+      "parser": "exclude",
+      "bytes": 417,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 474,
+      "sha256": "4a9b397f462877d844c751fa8887cc7a7fb0564c9fafbf74b5cb69aa3af71ac8",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 279,
+        "min_line_bytes": 195,
+        "max_line_bytes": 279
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�h.6\u001b\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000t��\u001b\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000y\u0004\u0002H\u0016\u0000\u0001\u0003\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0000g��\u0016\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0000zw�)\u0016\u0000\u0001\u0005\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0000����\u0016\u0000\u0001\u0006\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0000��N�\u0016\u0000\u0001\u0007\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0000^\u000e]D\u0016\u0000\u0001\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000321_\u0004\b\u0000…"
+          },
+          {
+            "offset": 279,
+            "line": 2,
+            "text": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0001��\bm\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0001��p\u000f\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0001��Ѥ\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0001�X�n\u0016\u0000\u0001\u000e\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0001/\u0004� \u0016\u0000\u0001\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000344_\u0004\b\u0000\u0018\u0001��6�\u0016\u0000\u0001\u0010\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000321_\u0004\b\u0000\u0018\u0001"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�h.6\u001b\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000t��\u001b\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000y\u0004\u0002H\u0016\u0000\u0001\u0003\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0000g��\u0016\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0000zw�)\u0016\u0000\u0001\u0005\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0000����\u0016\u0000\u0001\u0006\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0000��N�\u0016\u0000\u0001\u0007\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0000^\u000e]D\u0016\u0000\u0001\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000321_\u0004\b\u0000…"
+          },
+          {
+            "offset": 279,
+            "line": 2,
+            "text": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0001��\bm\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0001��p\u000f\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0001��Ѥ\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0001�X�n\u0016\u0000\u0001\u000e\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0001/\u0004� \u0016\u0000\u0001\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000344_\u0004\b\u0000\u0018\u0001��6�\u0016\u0000\u0001\u0010\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000321_\u0004\b\u0000\u0018\u0001"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Default/shared_proto_db/metadata/LOG": {
+      "parser": "exclude",
+      "bytes": 435,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal": {
+      "parser": "sqlite-wal-with-parent",
+      "bytes": 12392,
+      "sha256": "2b1e0f88cd6bef2f8011b8d5e97557d904a6c197de95f5b8b3c3be25bd22c13f",
+      "rows": 0,
+      "schema": {
+        "tables": [
+          "entries"
+        ],
+        "detail": [
+          {
+            "name": "entries",
+            "rows": 0,
+            "columns": [
+              "key",
+              "content",
+              "input_signature",
+              "write_timestamp"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4095
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"entries\", \"rows\": 0, \"columns\": [\"key\", \"content\", \"input_signature\", \"write_timestamp\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4095,
+            "line": 1,
+            "text": "[{\"name\": \"entries\", \"rows\": 0, \"columns\": [\"key\", \"content\", \"input_signature\", \"write_timestamp\"]}]"
+          }
+        ]
+      },
+      "wal_bytes": 12392,
+      "wal_note": "parsed parent db with wal copied"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GrShaderCache/data_0": {
+      "parser": "exclude",
+      "bytes": 45056,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GrShaderCache/data_1": {
+      "parser": "exclude",
+      "bytes": 270336,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GrShaderCache/data_3": {
+      "parser": "exclude",
+      "bytes": 4202496,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GrShaderCache/f_000003": {
+      "parser": "binary_inventory",
+      "bytes": 17260,
+      "sha256": "ccf066c121b8c010faf72e19382c8dee5b5a56f27e0e8a9476e9e83a9713254e",
+      "format": "unknown",
+      "magic_hex": "0c00000042504c4701000000a6930000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GrShaderCache/f_000003"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17259
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=0c00000042504c4701000000a6930000 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17259,
+            "line": 0,
+            "text": "eof bytes=17260"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/GrShaderCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/Local State": {
+      "parser": "exclude",
+      "bytes": 5927,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/ShaderCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings": {
+      "parser": "exclude",
+      "bytes": 81,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings_2.0-a82cb2897a8bf9445d68dcc2be05af89ad4b2fda1fddb2952693be7cd5353ad3": {
+      "parser": "binary_inventory",
+      "bytes": 130578,
+      "sha256": "a82cb2897a8bf9445d68dcc2be05af89ad4b2fda1fddb2952693be7cd5353ad3",
+      "format": "0-a82cb2897a8bf9445d68dcc2be05af89ad4b2fda1fddb2952693be7cd5353ad3",
+      "magic_hex": "7b0d0a20202267656f69644d61707322",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/RemoteData/edgeSettings_2.0-a82cb2897a8bf9445d68dcc2be05af89ad4b2fda1fddb2952693be7cd5353ad3"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "0-a82cb2897a8bf9445d68dcc2be05af89ad4b2fda1fddb2952693be7cd5353ad3"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130577
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=7b0d0a20202267656f69644d61707322 format=0-a82cb2897a8bf9445d68dcc2be05af89ad4b2fda1fddb2952693be7cd5353ad3"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 130577,
+            "line": 0,
+            "text": "eof bytes=130578"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic": {
+      "parser": "exclude",
+      "bytes": 29,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic_638004170464094982": {
+      "parser": "binary_inventory",
+      "bytes": 460992,
+      "sha256": "5a6b49358772db0b5c682575f02e8630083568542b984d6d00727740506569d4",
+      "format": "unknown",
+      "magic_hex": "0001b7326c49bd35183c43003bd37b9a",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/RemoteData/topTraffic_638004170464094982"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 460991
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=0001b7326c49bd35183c43003bd37b9a format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 460991,
+            "line": 0,
+            "text": "eof bytes=460992"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/local/downloadCache": {
+      "parser": "binary_inventory",
+      "bytes": 14,
+      "sha256": "6e5ddba6d7aa3b287ea364034e1f843e4146ff92c07d8426f4a7c4b0e6435006",
+      "format": "unknown",
+      "magic_hex": "646f776e6c6f616443616368655f",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/local/downloadCache"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=646f776e6c6f616443616368655f format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13,
+            "line": 0,
+            "text": "eof bytes=14"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/local/downloadCache_": {
+      "parser": "binary_inventory",
+      "bytes": 29,
+      "sha256": "87c1ba0f3a75480bef554b38abd51d7858bbe2cff07d4fd29162b4468d2b6c43",
+      "format": "unknown",
+      "magic_hex": "7b2276657273696f6e223a312c226361",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/WebView2/EBWebView/SmartScreen/local/downloadCache_"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=7b2276657273696f6e223a312c226361 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28,
+            "line": 0,
+            "text": "eof bytes=29"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/journal.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 859,
+      "sha256": "eddb37c7adc60e904e203d533cc3b5487f092e9345f78c4b4e4fc54f6743de59",
+      "rows": 2,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema_version",
+          "status",
+          "invocation_id",
+          "message",
+          "result"
+        ],
+        "key_freq": {
+          "schema_version": 2,
+          "status": 2,
+          "invocation_id": 2,
+          "message": 2,
+          "result": 1
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=started": 1,
+          "status=completed": 1,
+          "result={'schema_version': 1, 'invocation_id': '4a2ce48f-dc6c-43db-b98a-e3b0dbd2c159', 'mission_id': 'mission-4a2ce48f-dc6c-43db-b98a-e3b0dbd2c159', 'state': 'done', 'intent': 'note.create', 'effect': 'reversible', 'risk': 'low', 'operations': [{'operation': 'note.create', 'state': 'done', 'relative_path': 'notes/ideas.txt'}], 'verification': {'status': 'verified', 'evidence': [{'kind': 'file_readback', 'relative_path': 'notes/ideas.txt', 'utf8_bytes': 11}]}, 'response': 'Creé y verifiqué la nota ideas.txt.', 'replayed': False, 'journal_recovered': False}": 1
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 160,
+        "min_line_bytes": 160,
+        "max_line_bytes": 699,
+        "numeric": {
+          "schema_version": {
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema_version\":1,\"status\":\"started\",\"invocation_id\":\"4a2ce48f-dc6c-43db-b98a-e3b0dbd2c159\",\"message\":\"Crea la nota ideas.txt con el texto: comprar t\\u00E9\"}"
+          },
+          {
+            "offset": 160,
+            "line": 2,
+            "text": "{\"schema_version\":1,\"status\":\"completed\",\"invocation_id\":\"4a2ce48f-dc6c-43db-b98a-e3b0dbd2c159\",\"message\":\"Crea la nota ideas.txt con el texto: comprar t\\u00E9\",\"result\":{\"schema_version\":1,\"invocation_id\":\"4a2ce48f-dc6c-43db-b98a-e3b0dbd2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema_version\":1,\"status\":\"started\",\"invocation_id\":\"4a2ce48f-dc6c-43db-b98a-e3b0dbd2c159\",\"message\":\"Crea la nota ideas.txt con el texto: comprar t\\u00E9\"}"
+          },
+          {
+            "offset": 160,
+            "line": 2,
+            "text": "{\"schema_version\":1,\"status\":\"completed\",\"invocation_id\":\"4a2ce48f-dc6c-43db-b98a-e3b0dbd2c159\",\"message\":\"Crea la nota ideas.txt con el texto: comprar t\\u00E9\",\"result\":{\"schema_version\":1,\"invocation_id\":\"4a2ce48f-dc6c-43db-b98a-e3b0dbd2…"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56883C-5F88.pma": {
+      "parser": "binary_inventory",
+      "bytes": 1310720,
+      "sha256": "a903aacfe8b19743cd426c6426a21afaf8359d6fdc3950993b4d31587e254023",
+      "format": "pma",
+      "magic_hex": "dc058340000014000000140003000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A56883C-5F88.pma"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pma"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1310719
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=dc058340000014000000140003000000 format=pma"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1310719,
+            "line": 0,
+            "text": "eof bytes=1310720"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Crashpad/settings.dat": {
+      "parser": "binary_inventory",
+      "bytes": 288,
+      "sha256": "289158d3f19e221cdfb531dfaa4e3679f0d2b5289ea5ea81bb0b6efd33da356c",
+      "format": "dat",
+      "magic_hex": "73645043070000000100000000000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Crashpad/settings.dat"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "dat"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=73645043070000000100000000000000 format=dat"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 287,
+            "line": 0,
+            "text": "eof bytes=288"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0": {
+      "parser": "binary_inventory",
+      "bytes": 230,
+      "sha256": "e17c1873ba4404f3380c1463356cbab01f854436a9ff3e5e4d995414a285ce8a",
+      "format": "unknown",
+      "magic_hex": "305c72a71b6dfbfc0500000032000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Code Cache/js/1275c3cf93305ab8_0"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 229
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=305c72a71b6dfbfc0500000032000000 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 229,
+            "line": 0,
+            "text": "eof bytes=230"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Code Cache/js/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 72,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Code Cache/wasm/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 48,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/DawnGraphiteCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/DawnWebGPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Extension Rules/LOG": {
+      "parser": "exclude",
+      "bytes": 411,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Extension Scripts/LOG": {
+      "parser": "exclude",
+      "bytes": 415,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Extension State/LOG": {
+      "parser": "exclude",
+      "bytes": 411,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/GPUCache/data_0": {
+      "parser": "exclude",
+      "bytes": 45056,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/GPUCache/data_1": {
+      "parser": "exclude",
+      "bytes": 270336,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/GPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/History": {
+      "parser": "exclude",
+      "bytes": 212992,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Local Storage/leveldb/LOG": {
+      "parser": "exclude",
+      "bytes": 423,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Preferences": {
+      "parser": "exclude",
+      "bytes": 7802,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Secure Preferences": {
+      "parser": "exclude",
+      "bytes": 9764,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Session Storage/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 221,
+      "sha256": "15c9b903002f731ed42bb8c0fb051f9a1b130994a71b7cd8d56b3dd6b1d186d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 221,
+        "max_line_bytes": 221
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "��j+\u0017\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u0007version\u00011A�\u0007�a\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0001 next-map-id\u00011\u0001Bnamespace-c110e158_a309_40cd_a632_735922a0612b-https://baxy.local/\u000105�}\u0017P\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0000Bnamespace-c110e158_a309_40cd_a632_735922a0612b-https://baxy.local/"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "��j+\u0017\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u0007version\u00011A�\u0007�a\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0001 next-map-id\u00011\u0001Bnamespace-c110e158_a309_40cd_a632_735922a0612b-https://baxy.local/\u000105�}\u0017P\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0000Bnamespace-c110e158_a309_40cd_a632_735922a0612b-https://baxy.local/"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Session Storage/LOG": {
+      "parser": "exclude",
+      "bytes": 411,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Shared Dictionary/cache/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 48,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Site Characteristics Database/LOG": {
+      "parser": "exclude",
+      "bytes": 439,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/Sync Data/LevelDB/LOG": {
+      "parser": "exclude",
+      "bytes": 415,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/shared_proto_db/LOG": {
+      "parser": "exclude",
+      "bytes": 411,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/shared_proto_db/metadata/000003.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 474,
+      "sha256": "752606a61bd70ff85ae304c295a605dea93812a76232cba65fc87c86868ec7f5",
+      "rows": 2,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 279,
+        "min_line_bytes": 195,
+        "max_line_bytes": 279
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�h.6\u001b\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000t��\u001b\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000y\u0004\u0002H\u0016\u0000\u0001\u0003\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0000g��\u0016\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0000e P�\u0016\u0000\u0001\u0005\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0000\u0015G&�\u0016\u0000\u0001\u0006\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0000��X�\u0016\u0000\u0001\u0007\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0000c�1&\u0016\u0000\u0001\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000344_\u0004\b\u0000…"
+          },
+          {
+            "offset": 279,
+            "line": 2,
+            "text": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0001�ܓ�\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000344_\u0004\b\u0000\u0018\u0001��\u0001�\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0001Q�\u001bN\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0001�a�x\u0016\u0000\u0001\u000e\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0001�K![\u0016\u0000\u0001\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0001��6�\u0016\u0000\u0001\u0010\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000321_\u0004\b\u0000\u0018\u0001"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "�h.6\u001b\u0000\u0001\u0001\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000t��\u001b\u0000\u0001\u0002\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\b__global\u0004\b\u0000 \u0000y\u0004\u0002H\u0016\u0000\u0001\u0003\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0000g��\u0016\u0000\u0001\u0004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0000e P�\u0016\u0000\u0001\u0005\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0000\u0015G&�\u0016\u0000\u0001\u0006\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0000��X�\u0016\u0000\u0001\u0007\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0000c�1&\u0016\u0000\u0001\b\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000344_\u0004\b\u0000…"
+          },
+          {
+            "offset": 279,
+            "line": 2,
+            "text": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000350_\u0004\b\u0000\u0018\u0001�ܓ�\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000344_\u0004\b\u0000\u0018\u0001��\u0001�\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000349_\u0004\b\u0000\u0018\u0001Q�\u001bN\u0016\u0000\u0001 \u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000333_\u0004\b\u0000\u0018\u0001�a�x\u0016\u0000\u0001\u000e\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000348_\u0004\b\u0000\u0018\u0001�K![\u0016\u0000\u0001\u000f\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000352_\u0004\b\u0000\u0018\u0001��6�\u0016\u0000\u0001\u0010\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0001\u000321_\u0004\b\u0000\u0018\u0001"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Default/shared_proto_db/metadata/LOG": {
+      "parser": "exclude",
+      "bytes": 429,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/GPUPersistentCache/DawnGraphiteCache/MNIWWJ6LYBXKQS7RZ2KZNUZ3QHFNW4K3/cache.db-wal": {
+      "parser": "sqlite-wal-with-parent",
+      "bytes": 12392,
+      "sha256": "2032283d247d00ee81b2169c12d6c7552df6a72438f1da9256982ca80ca1ba28",
+      "rows": 0,
+      "schema": {
+        "tables": [
+          "entries"
+        ],
+        "detail": [
+          {
+            "name": "entries",
+            "rows": 0,
+            "columns": [
+              "key",
+              "content",
+              "input_signature",
+              "write_timestamp"
+            ]
+          }
+        ]
+      },
+      "distribution": {
+        "table_count": 1,
+        "rows_total": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4095
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[{\"name\": \"entries\", \"rows\": 0, \"columns\": [\"key\", \"content\", \"input_signature\", \"write_timestamp\"]}]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4095,
+            "line": 1,
+            "text": "[{\"name\": \"entries\", \"rows\": 0, \"columns\": [\"key\", \"content\", \"input_signature\", \"write_timestamp\"]}]"
+          }
+        ]
+      },
+      "wal_bytes": 12392,
+      "wal_note": "parsed parent db with wal copied"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/GrShaderCache/data_0": {
+      "parser": "exclude",
+      "bytes": 45056,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/GrShaderCache/data_1": {
+      "parser": "exclude",
+      "bytes": 270336,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/GrShaderCache/data_3": {
+      "parser": "exclude",
+      "bytes": 4202496,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/GrShaderCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/Local State": {
+      "parser": "exclude",
+      "bytes": 5725,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/ShaderCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/VariationsRuntimeSeedV2": {
+      "parser": "binary_inventory",
+      "bytes": 19,
+      "sha256": "1560b22b2264f7cb6b7f6910164813f76c5e8a06fb1acf85b375e687ee49c1ad",
+      "format": "unknown",
+      "magic_hex": "28b52ffd200a5100000a001200180020",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/VariationsRuntimeSeedV2"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=28b52ffd200a5100000a001200180020 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18,
+            "line": 0,
+            "text": "eof bytes=19"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/VariationsSeedV2": {
+      "parser": "binary_inventory",
+      "bytes": 11,
+      "sha256": "b4cc4174735c28360b9081be3c3d0552d8a4b3cdb54431ac00ed0d622bab6296",
+      "format": "unknown",
+      "magic_hex": "28b52ffd20021100000a00",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet/WebView2/EBWebView/VariationsSeedV2"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "unknown"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=28b52ffd20021100000a00 format=unknown"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10,
+            "line": 0,
+            "text": "eof bytes=11"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A568A53-87E4.pma": {
+      "parser": "binary_inventory",
+      "bytes": 1310720,
+      "sha256": "10b7a9e815e923b714a235efd4799e4b16aa5528ca3152aca89d6d69757ec7f3",
+      "format": "pma",
+      "magic_hex": "dc058340000014000000140003000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/BrowserMetrics/BrowserMetrics-6A568A53-87E4.pma"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "pma"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1310719
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=dc058340000014000000140003000000 format=pma"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1310719,
+            "line": 0,
+            "text": "eof bytes=1310720"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Crashpad/settings.dat": {
+      "parser": "binary_inventory",
+      "bytes": 288,
+      "sha256": "218f8b474423f164b782594659ae9166b07a8cfd281109efef45d008b8ea3336",
+      "format": "dat",
+      "magic_hex": "73645043070000000100000000000000",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Crashpad/settings.dat"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "dat"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=73645043070000000100000000000000 format=dat"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 287,
+            "line": 0,
+            "text": "eof bytes=288"
+          }
+        ]
+      }
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Code Cache/js/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 48,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Code Cache/wasm/index-dir/the-real-index": {
+      "parser": "exclude",
+      "bytes": 48,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/DawnGraphiteCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/DawnWebGPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Extension Rules/LOG": {
+      "parser": "exclude",
+      "bytes": 405,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Extension Scripts/LOG": {
+      "parser": "exclude",
+      "bytes": 409,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Extension State/LOG": {
+      "parser": "exclude",
+      "bytes": 405,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/GPUCache/index": {
+      "parser": "exclude",
+      "bytes": 262512,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/History": {
+      "parser": "exclude",
+      "bytes": 212992,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Local Storage/leveldb/LOG": {
+      "parser": "exclude",
+      "bytes": 417,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "rust_incremental_cache"
+    },
+    "artifacts/technology_tournament/runtime/round_b/ids/WebView2/EBWebView/Default/Preferences": {
+      "parser": "exclude",
+      "bytes": 7245,
+      "sha256": null,
+      "rows": 0,
+      "schema": {},
+      "distribution": {},
+      "extremes": {},
+      "errors": [],
+      "samples": {
+        "head": [],
+        "tail": []
+      },
+      "exclusion_rule": "browser_profile_cache"
+    }
+  }
+}

@@ -1,0 +1,4437 @@
+{
+  "batch_id": "evidence_assets-094-baxy-baxy_art_research",
+  "source_id": "baxy",
+  "file_count": 59,
+  "hash_ok": 59,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate2_ccby_development.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7171,
+      "sha256": "b503a68729f8fe38b4bda7a60a990bbada2cdfc342aa2de3f17b377e7a5bd671",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "counts",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "records",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7170,
+        "threshold": {
+          "min": 0.96,
+          "max": 0.96
+        },
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "step_seconds": {
+          "min": 0.25,
+          "max": 0.25
+        },
+        "positive_recall": {
+          "min": 0.21428571428571427,
+          "max": 0.21428571428571427
+        },
+        "hard_negative_rejection": {
+          "min": 1.0,
+          "max": 1.0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate2_operating_threshold.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2471,
+      "sha256": "fc311dd633eca14006adaa66dd32c68545a78a7774bdf8cc921f94eb5e69aea2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "negative_features",
+          "onnxruntime",
+          "operating_point",
+          "positive_features",
+          "schema",
+          "score_quantiles",
+          "validation_hours"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "onnxruntime",
+          "schema",
+          "validation_hours"
+        ],
+        "list_lengths": {
+          "negative_features": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2470,
+        "clip_duration_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "validation_hours": {
+          "min": 17.52,
+          "max": 17.52
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate3_context_ccby_development.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7193,
+      "sha256": "1611147513a6ce5f75bdc95257568c4308e4ee2caf20e8e653bef60cb7fb86dd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "counts",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "records",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7192,
+        "threshold": {
+          "min": 0.963370978832245,
+          "max": 0.963370978832245
+        },
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "step_seconds": {
+          "min": 0.25,
+          "max": 0.25
+        },
+        "positive_recall": {
+          "min": 0.07142857142857142,
+          "max": 0.07142857142857142
+        },
+        "hard_negative_rejection": {
+          "min": 1.0,
+          "max": 1.0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate3_context_operating_threshold.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2470,
+      "sha256": "48243cf65fd99b2a85f8c582447a9c903cff485feb2aa948c4bd966e196894ec",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "negative_features",
+          "onnxruntime",
+          "operating_point",
+          "positive_features",
+          "schema",
+          "score_quantiles",
+          "validation_hours"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "onnxruntime",
+          "schema",
+          "validation_hours"
+        ],
+        "list_lengths": {
+          "negative_features": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2469,
+        "clip_duration_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "validation_hours": {
+          "min": 17.52,
+          "max": 17.52
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate4_mixed_ccby_development.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7186,
+      "sha256": "aa9eff921a6ed1e17c185ff06e6996dabe31a8e1ce133cf110f5cc4af810166c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "counts",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "records",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7185,
+        "threshold": {
+          "min": 0.946897327899933,
+          "max": 0.946897327899933
+        },
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "step_seconds": {
+          "min": 0.25,
+          "max": 0.25
+        },
+        "positive_recall": {
+          "min": 0.14285714285714285,
+          "max": 0.14285714285714285
+        },
+        "hard_negative_rejection": {
+          "min": 1.0,
+          "max": 1.0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate4_mixed_operating_threshold.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2465,
+      "sha256": "de88a67a4d9d3a48df752b3b37e5b3d52d5172f4d1fe0d2d55f6ce2ace56b2ac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "negative_features",
+          "onnxruntime",
+          "operating_point",
+          "positive_features",
+          "schema",
+          "score_quantiles",
+          "validation_hours"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "onnxruntime",
+          "schema",
+          "validation_hours"
+        ],
+        "list_lengths": {
+          "negative_features": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2464,
+        "clip_duration_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "validation_hours": {
+          "min": 17.52,
+          "max": 17.52
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_backsee_ipa_pilot.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20058,
+      "sha256": "4e37515464f029d5f417becb15d6e290309ca5168841e898cbc0eab8135fcfc9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "source_manifest",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20057,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_backsie_ipa_pilot.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20041,
+      "sha256": "38104cdcf164300d6cea742c1608935d2832f83344ba8ca69f9c7889a7ff6e05",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "source_manifest",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20040,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_2048_filtered_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 889277,
+      "sha256": "f1311c494b72918471f7bf9c637be7c3200c7b366c56045a0c6629ff9a056692",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 1354
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 889276,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_2048_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1205645,
+      "sha256": "cf76cc30fd997c0bffca7d439a698293c3fd2650aeecb1154f54890ad88e1d8a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 2048
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1205644,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_2048_selected_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 877271,
+      "sha256": "f4e1a6533e5e8cf6d864d9ecf977c1c99ff4292d58274ce419d4f79ce49678b2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 1336
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 877270,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_256_filtered_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 87229,
+      "sha256": "a154424e1b653a62d60c3cd14830d9e444a553c503d68e2ee21ec8b4923aad12",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 163
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 87228,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"reco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"reco…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_256_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 132576,
+      "sha256": "ac5ee39f3286154ef834ca33e6a4d0dbe42d3ed011bf96f1253a258286d1a83e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "source_manifest",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 256
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 132575,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_context_2048_filtered_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 912024,
+      "sha256": "0713241dde4fa4e5c50e232ce3270563a52ad3b7555e542690cd278fe0904550",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "positive_ipa_policy",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "positive_ipa_policy",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 6,
+          "records": 1369
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 912023,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_context_2048_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1366017,
+      "sha256": "f61e8fab7479f84e03aaa593562d55d777a6baad87d9e1931e9e7cec6fe557c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "positive_ipa_policy",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "positive_ipa_policy",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_partition"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 6,
+          "records": 2048
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1366016,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_context_2048_selected_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 905371,
+      "sha256": "cd6d4936758959dd94d50eb2f4c1d70a2b081a570a6f5e8858e2825328a8d17c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "positive_ipa_policy",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "positive_ipa_policy",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 6,
+          "records": 1359
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 905370,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_baxy_guided_ipa_pilot.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20014,
+      "sha256": "0ed139911197d8dc763190933251964668e3292f6f918eb495f2e33f8400e07d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "source_manifest",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20013,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_ipa_pilot.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20016,
+      "sha256": "f2c23a5009cc696ae66a7b8ea99d7723524fc4049fed2adc73aa8c8b3fad58ed",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "source_manifest",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 32
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20015,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"phoneme_recognizer\", \"records\", \"schema\", \"scope\", \"source_generatio…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_negative_2208_filtered_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1201276,
+      "sha256": "5e8decad4f877b8c838593ba4402544016c71240c49bcfaa310e233e62c0b69c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 1976
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1201275,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_negative_2208_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1347206,
+      "sha256": "4528b28d7398001f679fb807f9c7401e6eefd63dcaedccb9ace48ff69beeb285",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 2208
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1347205,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_negative_2208_selected_expanded_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1200759,
+      "sha256": "d8d660c0157756fc61972335d6fd3aee4a9a5c0f83f85502119533c17478cb40",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "positive_ipa_policy",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "positive_ipa_policy",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 6,
+          "records": 1975
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1200758,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_gguf_negative_2208_selected_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1200398,
+      "sha256": "10de58659e17cf72390c49923b98f729ddf015c0ac6fd79cba5bbba934b74b58",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 1975
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1200397,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mdc_stt_acquisition_plan_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2260,
+      "sha256": "f47e9451b83dabb12d7e27fbb385983e2c9b88bbac157f354e534e06fef90702",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "api",
+          "archiveOpened",
+          "audioDecoded",
+          "baxyOperationsExecuted",
+          "bindings",
+          "createdAtUtc",
+          "credentialsPersisted",
+          "datasets",
+          "modelInvoked",
+          "outputRoot",
+          "referenceTranscriptsOpened",
+          "role",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "archiveOpened",
+          "audioDecoded",
+          "baxyOperationsExecuted",
+          "createdAtUtc",
+          "credentialsPersisted",
+          "modelInvoked",
+          "outputRoot",
+          "referenceTranscriptsOpened",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {
+          "datasets": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2259,
+        "baxyOperationsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"api\", \"archiveOpened\", \"audioDecoded\", \"baxyOperationsExecuted\", \"bindings\", \"createdAtUtc\", \"credentialsPersisted\", \"datasets\", \"modelInvoked\", \"outputRoot\", \"referenceTranscriptsOpened\", \"role\", \"schema\"], \"n_keys\": 13, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"api\", \"archiveOpened\", \"audioDecoded\", \"baxyOperationsExecuted\", \"bindings\", \"createdAtUtc\", \"credentialsPersisted\", \"datasets\", \"modelInvoked\", \"outputRoot\", \"referenceTranscriptsOpened\", \"role\", \"schema\"], \"n_keys\": 13, \"root\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mdeberta_native_selector_mtop_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 144254,
+      "sha256": "9949751900987c7394aa6dcb47eb89eee18d343ab7345a4517568da1b44712ee",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "configuration",
+          "contains_utterance_text",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "records",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "contains_utterance_text",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 198
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 144253,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"configuration\", \"contains_utterance_text\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"configuration\", \"contains_utterance_text\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mdtc_livekit_student_human_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 24875,
+      "sha256": "5fb308778ca7249c5dbd8cb56960e8b1ec6163d2046f785867441657e0d8866e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "human_development_zero_false_point",
+          "livekit",
+          "measured_at_utc",
+          "metrics_at_training_development_threshold",
+          "partition",
+          "product_operating_point",
+          "records",
+          "schema",
+          "student"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "partition",
+          "product_operating_point",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24874,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"human_development_zero_false_point\", \"livekit\", \"measured_at_utc\", \"metrics_at_training_development_threshold…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"human_development_zero_false_point\", \"livekit\", \"measured_at_utc\", \"metrics_at_training_development_threshold…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mdtc_livekit_student_human_development_v1_all_windows.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 72193,
+      "sha256": "76c49e4e20bb8846d3f584e7872b1f1e77ea63acb058826306f89aeb775f113a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "human_development_zero_false_point",
+          "livekit",
+          "measured_at_utc",
+          "metrics_at_training_development_threshold",
+          "partition",
+          "product_operating_point",
+          "records",
+          "schema",
+          "student"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "partition",
+          "product_operating_point",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 72192,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"human_development_zero_false_point\", \"livekit\", \"measured_at_utc\", \"metrics_at_training_development_threshold…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"human_development_zero_false_point\", \"livekit\", \"measured_at_utc\", \"metrics_at_training_development_threshold…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/minds14_stt_preregistration_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77052,
+      "sha256": "5ff3e233bd88093821cee9c75889264b3c5144130cb1e09bcaa0c5e2222bdfe9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioPayloadRead",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationContract",
+          "evaluationStatus",
+          "generator",
+          "metadataColumnsRead",
+          "modelAudioDecoded",
+          "modelContaminationAudit",
+          "preregisteredAtUtc",
+          "researchRuntime",
+          "role",
+          "schema",
+          "selection",
+          "source",
+          "transcriptionPayloadRead",
+          "wakeProgramTree"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioPayloadRead",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "modelAudioDecoded",
+          "preregisteredAtUtc",
+          "role",
+          "schema",
+          "transcriptionPayloadRead"
+        ],
+        "list_lengths": {
+          "metadataColumnsRead": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77051,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioPayloadRead\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationContract\", \"evaluationStatus\", \"generator\", \"metadataColumnsRead\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"preregisteredAtUtc\", \"researchRuntime\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioPayloadRead\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationContract\", \"evaluationStatus\", \"generator\", \"metadataColumnsRead\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"preregisteredAtUtc\", \"researchRuntime\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/msner_spanish_entity_stt_preregistration_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3320,
+      "sha256": "8b714f9d3f8ffdd547032cb8372916ee24f47981c44153efef611bbf657b6f75",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "contract",
+          "createdAtUtc",
+          "effectsExecuted",
+          "generator",
+          "oracle",
+          "partition",
+          "provenance",
+          "schema",
+          "source",
+          "wakeProgramTree"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "effectsExecuted",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3319,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contract\", \"createdAtUtc\", \"effectsExecuted\", \"generator\", \"oracle\", \"partition\", \"provenance\", \"schema\", \"source\", \"wakeProgramTree\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contract\", \"createdAtUtc\", \"effectsExecuted\", \"generator\", \"oracle\", \"partition\", \"provenance\", \"schema\", \"source\", \"wakeProgramTree\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_hyperspotter_ctc_fusion_train16_tuning_v5.cache.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25668,
+      "sha256": "a4845bd6686a57f70ba0a6d74e2fe8522fd35c37717a941b5fed199d04f813a0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25667,
+        "runtime_seconds": {
+          "min": 38.100569000002,
+          "max": 38.100569000002
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_hyperspotter_ctc_fusion_train16_tuning_v5.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25577,
+      "sha256": "4bdb1e502ab0cb61945349148141e1122b1879dfd0fd30731f679fadadb036cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25576,
+        "runtime_seconds": {
+          "min": 34.08681329997489,
+          "max": 34.08681329997489
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_hyperspotter_ctc_fusion_tuning_v5.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25622,
+      "sha256": "2c822ad997053816ab8bdd3a34eba9aa5263b9e640e46b350559382de7a72e9b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25621,
+        "runtime_seconds": {
+          "min": 34.37279039999703,
+          "max": 34.37279039999703
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_hyperspotter_listwise_tuning_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2366,
+      "sha256": "c3f3b22ff1f6a42e13d42fefac9fc8961ef38884d90e8ac52476eee214e59ad1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "metrics",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources",
+          "zero_false_true_pair_recall"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "zero_false_true_pair_recall"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2365,
+        "zero_false_true_pair_recall": {
+          "min": 0.009166666666666667,
+          "max": 0.009166666666666667
+        },
+        "runtime_seconds": {
+          "min": 25.17392919998383,
+          "max": 25.17392919998383
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_example…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_example…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_hyperspotter_spanish_tuning_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2372,
+      "sha256": "e4eba900178cb8216b9b8bad207af1e51e06f493e6a640ed70f48b57a4e89d07",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "metrics",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources",
+          "zero_false_true_pair_recall"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "zero_false_true_pair_recall"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2371,
+        "zero_false_true_pair_recall": {
+          "min": 0.0020833333333333333,
+          "max": 0.0020833333333333333
+        },
+        "runtime_seconds": {
+          "min": 26.83788430003915,
+          "max": 26.83788430003915
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_example…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_example…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_calibrated_selector_reserved_preregistration_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4133,
+      "sha256": "60c1fa2691178db1f09a974d63707e89eb2c0a9436cf68345f6af317bf40e76b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "decision_locked",
+          "effects_executed",
+          "locked_protocol",
+          "official_test_audio_accessed",
+          "preregistered_at_utc",
+          "reserved_audio_accessed_before_preregistration",
+          "schema",
+          "sources",
+          "tuning_evidence"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "decision_locked",
+          "effects_executed",
+          "official_test_audio_accessed",
+          "preregistered_at_utc",
+          "reserved_audio_accessed_before_preregistration",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4132,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"decision_locked\", \"effects_executed\", \"locked_protocol\", \"official_test_audio_accessed\", \"preregistered_at_utc\", \"reserved_audio_accessed_before_preregistration\", \"schema\", \"sources\", \"tuning_eviden…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"decision_locked\", \"effects_executed\", \"locked_protocol\", \"official_test_audio_accessed\", \"preregistered_at_utc\", \"reserved_audio_accessed_before_preregistration\", \"schema\", \"sources\", \"tuning_eviden…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_calibrated_selector_reserved_preregistration_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6009,
+      "sha256": "1a26228f4b33911433a667d69a9605db1fe01ce047011dab6839c5255291ef00",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "decision_locked",
+          "effects_executed",
+          "locked_protocol",
+          "official_test_audio_accessed",
+          "preregistered_at_utc",
+          "reserved_audio_accessed_before_preregistration",
+          "schema",
+          "sources",
+          "tuning_evidence"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "decision_locked",
+          "effects_executed",
+          "official_test_audio_accessed",
+          "preregistered_at_utc",
+          "reserved_audio_accessed_before_preregistration",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6008,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"decision_locked\", \"effects_executed\", \"locked_protocol\", \"official_test_audio_accessed\", \"preregistered_at_utc\", \"reserved_audio_accessed_before_preregistration\", \"schema\", \"sources\", \"tuning_eviden…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"decision_locked\", \"effects_executed\", \"locked_protocol\", \"official_test_audio_accessed\", \"preregistered_at_utc\", \"reserved_audio_accessed_before_preregistration\", \"schema\", \"sources\", \"tuning_eviden…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_calibrated_selector_reserved_v11.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4022,
+      "sha256": "902285f82d13c049904fac4983e20e312ab5bfef52ecde9278e88124992d560c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "aggregates",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "metrics",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "reserved_pass_number",
+          "runtime",
+          "schema",
+          "scope",
+          "sources",
+          "zero_false_true_pair_recall"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "reserved_pass_number",
+          "schema",
+          "scope",
+          "zero_false_true_pair_recall"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4021,
+        "zero_false_true_pair_recall": {
+          "min": 0.6133333333333333,
+          "max": 0.6133333333333333
+        },
+        "reserved_pass_number": {
+          "min": 1,
+          "max": 1
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_calibrated_selector_tuning_v10.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3478,
+      "sha256": "d63bfdf5c165f7d281b487d80675bb957c20398121e897d5633f8e385d65c77a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "aggregates",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "folds",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "metrics",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime",
+          "schema",
+          "scope",
+          "sources",
+          "zero_false_true_pair_recall"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope",
+          "zero_false_true_pair_recall"
+        ],
+        "list_lengths": {
+          "folds": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3477,
+        "zero_false_true_pair_recall": {
+          "min": 0.43416666666666665,
+          "max": 0.43416666666666665
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"folds\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"folds\", \"individual_examples_exported\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_ctc_temporal_tuning_v13.features.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1998,
+      "sha256": "51c6419a1974c5b978719373d7f9fb46b5bc18fbf0551400d10485dec9ce12dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1997,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 10,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 10,…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_faster_whisper_large_v3_tuning_v8.cache.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6089,
+      "sha256": "c25bca5f48eab91dca92c2a31c0556a8d44f8819431663f2a4c3e0fc09399efb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "selected",
+          "sources",
+          "transcription_aggregates"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6088,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_faster_whisper_large_v3_tuning_v8.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5995,
+      "sha256": "11fe8b0d2fe96938e530c639622eb26c29795c8b280cc8bc15803eb1f2cd26e7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "selected",
+          "sources",
+          "transcription_aggregates"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5994,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_forced_alignment_shortlist_depth3_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1258,
+      "sha256": "89f69d0c5f1fb33877e5c402dc57d4b63bed385d5c82fc49ac45678f2239aab9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1257,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"schema\", \"scope\", \"sources\"], \"n…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"schema\", \"scope\", \"sources\"], \"n…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_ctc_sequence_tuning_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19263,
+      "sha256": "433b6b14858184771685cc66a8ccc2ba54eac04636ac69bb5a5c3bf6867e399f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 20
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19262,
+        "runtime_seconds": {
+          "min": 38.826232599967625,
+          "max": 38.826232599967625
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_fresh_gate_preregistration_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4227,
+      "sha256": "6716549df12885517ab4837bb59fff35142159514b60ad390ccbfe74919abf78",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate",
+          "contract",
+          "effects_executed",
+          "fresh_evaluation_open_count",
+          "fresh_examples_scored",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "reference",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "fresh_evaluation_open_count",
+          "fresh_examples_scored",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4226,
+        "fresh_evaluation_open_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate\", \"contract\", \"effects_executed\", \"fresh_evaluation_open_count\", \"fresh_examples_scored\", \"measured_at_utc\", \"official_test_audio_accessed\", \"reference\", \"sch…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate\", \"contract\", \"effects_executed\", \"fresh_evaluation_open_count\", \"fresh_examples_scored\", \"measured_at_utc\", \"official_test_audio_accessed\", \"reference\", \"sch…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_fresh_gate_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3393,
+      "sha256": "d7ac545168b7a69f0a6709be03be529974e036752cdaf0613f41fb50d2c1c588",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "fresh_evaluation_open_count",
+          "fresh_examples_scored",
+          "gate",
+          "individual_query_metrics_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "reference",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "fresh_evaluation_open_count",
+          "fresh_examples_scored",
+          "individual_query_metrics_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3392,
+        "runtime_seconds": {
+          "min": 9.929709599993657,
+          "max": 9.929709599993657
+        },
+        "fresh_evaluation_open_count": {
+          "min": 1,
+          "max": 1
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fresh_evaluation_open_count\", \"fresh_examples_scored\", \"gate\", \"individual_query_metrics_exported\", \"me…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fresh_evaluation_open_count\", \"fresh_examples_scored\", \"gate\", \"individual_query_metrics_exported\", \"me…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_hybrid_layer16_seed_ensemble_tuning_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 249450,
+      "sha256": "0d3abf5a0b44db53ed1b7bfc1c5dcdb291a95c7198b000a0a1f795555a93282f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "open_selection_examples_scored",
+          "queries",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "open_selection_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "queries": 1200
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 249449,
+        "runtime_seconds": {
+          "min": 13.806173599965405,
+          "max": 13.806173599965405
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"open_selection_examples_scored\", \"queries\", \"runtime_seconds\", \"schema\", \"scope\", \"sou…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"open_selection_examples_scored\", \"queries\", \"runtime_seconds\", \"schema\", \"scope\", \"sou…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_selection_gate_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 532247,
+      "sha256": "9abd566c361862159a93e457aafacf9ed7d6b100fbd963065d161a6acd0ace5f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "open_selection_examples_scored",
+          "open_selection_open_count",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "open_selection_examples_scored",
+          "open_selection_open_count",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 532246,
+        "runtime_seconds": {
+          "min": 13.888476599997375,
+          "max": 13.888476599997375
+        },
+        "open_selection_open_count": {
+          "min": 1,
+          "max": 1
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"official_test_audio_accessed\", \"open_selection_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidate\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"official_test_audio_accessed\", \"open_selection_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_selection_preregistration_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11711,
+      "sha256": "552c5a577f4d1f6a1b3f58127e692b8c0a83e8f00a05cb9b08610392329b15aa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "candidates",
+          "contract",
+          "effects_executed",
+          "frozen_baseline",
+          "measured_at_utc",
+          "open_selection_examples_scored",
+          "schema",
+          "scope",
+          "selected_candidate",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baxy_human_examples_scored",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "open_selection_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "candidates": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11710,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidates\", \"contract\", \"effects_executed\", \"frozen_baseline\", \"measured_at_utc\", \"open_selection_examples_scored\", \"schema\", \"scope\", \"selected_candidate\", \"sources\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baxy_human_examples_scored\", \"blind_human_audio_accessed\", \"candidates\", \"contract\", \"effects_executed\", \"frozen_baseline\", \"measured_at_utc\", \"open_selection_examples_scored\", \"schema\", \"scope\", \"selected_candidate\", \"sources\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_sequence_tuning_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9005,
+      "sha256": "c9c9d1bbfd10c37f80df8f5da77687785cf391ebbdbf00ce3e554193ef45d8e0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9004,
+        "runtime_seconds": {
+          "min": 60.17783860000782,
+          "max": 60.17783860000782
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_similarity_cnn_tuning_v4.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18850,
+      "sha256": "bf6ea15457d3a4aeb009c3f56ee264b6693716e6bf3801de4063c3915cd7dca2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 20
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18849,
+        "runtime_seconds": {
+          "min": 175.33255110000027,
+          "max": 175.33255110000027
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_qbye_ssl_baseline_tuning_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2208441,
+      "sha256": "d95d4c23c30beb846916ce840f9ee2ee8d4383851b193ea158f8cddff1ed8d9e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_training_started",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected_run",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_training_started",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2208440,
+        "runtime_seconds": {
+          "min": 42.631586500036065,
+          "max": 42.631586500036065
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_training_started\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\", \"selected_run\", \"sources\"], \"n_keys\": 12…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_training_started\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"runs\", \"runtime_seconds\", \"schema\", \"scope\", \"selected_run\", \"sources\"], \"n_keys\": 12…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_reserved_forced_alignment_cache_v10.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1535,
+      "sha256": "3809c043ada80177482253a41421e1b6d3064dee0a9bcc42ce47ab03ac1b58c0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "queries_cached",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "queries_cached",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1534,
+        "queries_cached": {
+          "min": 1200,
+          "max": 1200
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"queries_cached\", \"research_reserved_examples_scored\", \"research_tuning_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"queries_cached\", \"research_reserved_examples_scored\", \"research_tuning_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_reserved_hyper_ctc_cache_v6.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1212,
+      "sha256": "a1e79e7a6153980df64253d2c49d1f7888aa189532a65d5742921c5cbd7d4bd7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "queries_cached",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "queries_cached",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1211,
+        "queries_cached": {
+          "min": 1200,
+          "max": 1200
+        },
+        "runtime_seconds": {
+          "min": 24.8562439000234,
+          "max": 24.8562439000234
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"queries_cached\", \"research_reserved_examples_scored\", \"research_tuning_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"queries_cached\", \"research_reserved_examples_scored\", \"research_tuning_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_reserved_shortlist_depth3_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1308,
+      "sha256": "ddceb3487552d2c64323b61c333fcb0eca5c7060d1ecb841d9e54724a6cb5574",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "label_metrics_computed",
+          "measured_at_utc",
+          "metrics",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "label_metrics_computed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1307,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"label_metrics_computed\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"schema…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"label_metrics_computed\", \"measured_at_utc\", \"metrics\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"schema…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_reserved_whisper_large_v3_cache_v9.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1360,
+      "sha256": "c015c544336ab52a512856c83dd12b88dbcd3940dd64afd5b8e8997e9fea6555",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "queries_cached",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "queries_cached",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1359,
+        "queries_cached": {
+          "min": 1200,
+          "max": 1200
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"queries_cached\", \"research_reserved_examples_scored\", \"research_tuning_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"queries_cached\", \"research_reserved_examples_scored\", \"research_tuning_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_reserved_whisper_silence_prior_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1321,
+      "sha256": "be16e45e4a69357a33211c704e7e2c3e986537ece2cdacc89e7c012762a44df8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregates",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1320,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runtime\", \"schema\", \"scope\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runtime\", \"schema\", \"scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_text_ctc_tuning_v4.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9328,
+      "sha256": "3622827504f29361b04009c989412bbb4194a86d83d29a6bb62bf6554d426e2f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9327,
+        "runtime_seconds": {
+          "min": 18.191163799958304,
+          "max": 18.191163799958304
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_whisper_base_forced_alignment_tuning_v9.smoke300.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6037,
+      "sha256": "d41c8fbc2931beca37ac931f99940ca8aa2992ace08e0ea372a05151bd58b35f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "quality_floor_passed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_complete",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "quality_floor_passed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_complete",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6036,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"quality_floor_passed\", \"research_reserved_examples_scored\", \"research_t…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"quality_floor_passed\", \"research_reserved_examples_scored\", \"research_t…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_whisper_forced_alignment_shortlist_tuning_v9.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6108,
+      "sha256": "43f0e30150349a424859652acb9e02fbefea5577bb750a4d439ed7bc91fdd529",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "quality_floor_passed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_complete",
+          "research_tuning_examples_scored",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "selected",
+          "sources"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted",
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "individual_examples_exported",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "quality_floor_passed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_complete",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "runs": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6107,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"quality_floor_passed\", \"research_reserved_examples_scored\", \"research_t…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"individual_examples_exported\", \"measured_at_utc\", \"official_test_audio_accessed\", \"quality_floor_passed\", \"research_reserved_examples_scored\", \"research_t…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/mswc_spanish_whisper_silence_prior_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1324,
+      "sha256": "9b22bdf13eac4d3cb0ce366b4a8ecd50e9d8ddc8f6af60ebfde292e8d79b256c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregates",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "official_test_audio_accessed",
+          "research_reserved_examples_scored",
+          "research_tuning_examples_scored",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1323,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runtime\", \"schema\", \"scope\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregates\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"measured_at_utc\", \"official_test_audio_accessed\", \"research_reserved_examples_scored\", \"research_tuning_examples_scored\", \"runtime\", \"schema\", \"scope\",…"
+          }
+        ]
+      }
+    }
+  }
+}

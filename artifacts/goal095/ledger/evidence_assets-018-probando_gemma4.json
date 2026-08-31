@@ -1,0 +1,3199 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-018-probando_gemma4",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:40:33Z",
+  "closed_utc": "2026-08-31T05:40:56Z",
+  "estimated_tokens": 293651,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 92,
+  "subsystem": "pg4_docs__router_artifact_bak",
+  "subsystems": [
+    "pg4_docs__router_artifact_bak",
+    "pg4_docs__tool_head_retrain_enc31.log",
+    "pg4_docs__tools_reduce_router_eval_bytool_latest.log",
+    "pg4_docs__tools_reduce_router_eval_fails.log",
+    "pg4_docs__tools_reduce_router_eval_fails_after_iter.log",
+    "pg4_docs__tools_reduce_router_eval_fails_current.log",
+    "pg4_docs__tools_reduce_router_eval_fails_final_candidate.log",
+    "pg4_docs__tools_reduce_router_eval_fails_latest.log",
+    "pg4_docs__wake_monitor_live.log",
+    "pg4_docs__wake_v5_overnight.log",
+    "pg4_docs_datos_crudos",
+    "pg4_docs_graficos",
+    "pg4_logs",
+    "pg4_output",
+    "pg4_scripts"
+  ],
+  "files": [
+    {
+      "path": "documentacion/_router_artifact_bak/tool_head.json.bak",
+      "sha256": "49051b84958e3a9b836666ad05e53604e57a4b6ffaab6f4454521081ea0ddd45",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_router_artifact_bak/tool_head.json.bak",
+      "binary_format": "bak"
+    },
+    {
+      "path": "documentacion/_tool_head_retrain_enc31.log",
+      "sha256": "fbec700698de82ee95e446009504934280532d7767203ae6191d73a430db1082",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tool_head_retrain_enc31.log"
+    },
+    {
+      "path": "documentacion/_tools_reduce_router_eval_bytool_latest.log",
+      "sha256": "47eb1ee55740c096100474d1536667bc4a75fb8f20d7c89dadc4f2a12928a58a",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tools_reduce_router_eval_bytool_latest.log"
+    },
+    {
+      "path": "documentacion/_tools_reduce_router_eval_fails.log",
+      "sha256": "db26898cf0257a6e2737862fc03eab70e21e9d8d930f247899a3bee1a8842597",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tools_reduce_router_eval_fails.log"
+    },
+    {
+      "path": "documentacion/_tools_reduce_router_eval_fails_after_iter.log",
+      "sha256": "f9d075f2963eaeaf77b6bfbc08b5f5ab0a1a077ca7f66f3fecf958746eeffab6",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tools_reduce_router_eval_fails_after_iter.log"
+    },
+    {
+      "path": "documentacion/_tools_reduce_router_eval_fails_current.log",
+      "sha256": "8357881d90dfa73fa441580d408f38e876544e8b4009eacba8e45c1a304f2ed5",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tools_reduce_router_eval_fails_current.log"
+    },
+    {
+      "path": "documentacion/_tools_reduce_router_eval_fails_final_candidate.log",
+      "sha256": "c9980f959f902dbfca83d563420bcf81ac2e1734b77434f39d6ed7fff738dc29",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tools_reduce_router_eval_fails_final_candidate.log"
+    },
+    {
+      "path": "documentacion/_tools_reduce_router_eval_fails_latest.log",
+      "sha256": "b8cdb156cdb7c3a5b2d950a9e3ed138774c0a3e9e5f62aea3c6eed4238c3d7dd",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_tools_reduce_router_eval_fails_latest.log"
+    },
+    {
+      "path": "documentacion/_wake_monitor_live.log",
+      "sha256": "500b69a4554a012f289dfbb3af74d1c427b15390528d853eb0adc06b38c7d982",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_wake_monitor_live.log"
+    },
+    {
+      "path": "documentacion/_wake_v5_overnight.log",
+      "sha256": "0d2141405c80386177ed5bca89b149aa82982880a387c20b7717ddd58ef4bf55",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/_wake_v5_overnight.log"
+    },
+    {
+      "path": "documentacion/datos_crudos/carter540_consolidated_v6.json",
+      "sha256": "e58850eca396665573b8afb8dcb4454cbfd5e7c14f55d042a08b99b34da20f6f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/datos_crudos/carter540_consolidated_v6.json"
+    },
+    {
+      "path": "documentacion/datos_crudos/carter540_v14_GANADOR.json",
+      "sha256": "6fc0710b7f75676001e4bb8213073f3457ccaeeaa3fac3c81e77706e4bac80de",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/datos_crudos/carter540_v14_GANADOR.json"
+    },
+    {
+      "path": "documentacion/graficos/01_fase2_22_modelos.png",
+      "sha256": "d2fb344125444bf8cb2907023a7c8c49d232b5046174261e70d15690cfa7b701",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/01_fase2_22_modelos.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/02_fase2_top8_desglose.png",
+      "sha256": "fba9f42738624b96f1fe70ede8f9560f35590e89d7fd6c210a858785963e1a18",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/02_fase2_top8_desglose.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/03_vram_por_modelo.png",
+      "sha256": "cdd5b3b13fb100a448baa3ce5cce8d6fd56014857ce950c3c04fcfdbd350171a",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/03_vram_por_modelo.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/04_gemma_vs_qwen_patrones.png",
+      "sha256": "6dfb8787a1f9393d3687ee40f5bd2a95d57183d111be598a975ca9a174021eb4",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/04_gemma_vs_qwen_patrones.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/05_latencia_categoria_540.png",
+      "sha256": "7409c2b58c74ab95d5937c4b42c20a7aeccad1d0e4167acfc2c6af0da1b8b35a",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/05_latencia_categoria_540.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/06_progresion_v1_v14.png",
+      "sha256": "9de1f0ba5cd3b180907a28cfdade4e8bd0e46f6b783ae235619acca6da5cc4fe",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/06_progresion_v1_v14.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/07_categorias_v14_540.png",
+      "sha256": "f0af7c54f9eaf76b5477f3690830ab657c09ccd3d7ab909c2722be8d71a24740",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/07_categorias_v14_540.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/08_consolidated_vs_individual.png",
+      "sha256": "54d21ead989f240b2d597e405a33b677e58aec3202915502120ad656a2463e9c",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/08_consolidated_vs_individual.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/09_escalabilidad_tools.png",
+      "sha256": "ea00d1593651e730b9e1167f8c39484717b0da1d5864566faf287b02a4aac976",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/09_escalabilidad_tools.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/10_audio_gemma_vs_whisper.png",
+      "sha256": "a8e814f49cc3fd6063e82c1b184f84dbe7c9fd98245dfa87276a741d3bf9dd77",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/10_audio_gemma_vs_whisper.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/11_consolidated_v1_v6.png",
+      "sha256": "10b91e5c58e4440487b57b70431164acca5de7d0f69f7a1052878523ea1f2e58",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/11_consolidated_v1_v6.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/12_vulkan_vs_cuda.png",
+      "sha256": "92489a0001d9b0108b4888eadf944694871ca12327c8d1d7f19fb5cfaf40d26e",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/12_vulkan_vs_cuda.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/13_causas_raiz_fails.png",
+      "sha256": "94f932135a08c7b88a441fe283a2e31201e1aebddbcae9d5789db63749a056da",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/13_causas_raiz_fails.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/14_cobertura_fases.png",
+      "sha256": "27d57d60350178c0d22b5e6148a8c1d8dd72b31d0c17c00f5416d383d060076d",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/14_cobertura_fases.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/15_selector_hardware.png",
+      "sha256": "fe1a35d17fb674a99dd7f02b3898eecb782cecab60ddfcfb56e7def7e06ff3c7",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/15_selector_hardware.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "documentacion/graficos/16_30_valores_carter.png",
+      "sha256": "3b95d5a1744278e1f1a0e319e0e59256f98505df788256cd02a39601f0eb36b6",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#documentacion/graficos/16_30_valores_carter.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "gemma4_agent/logs/llama-server.err.log",
+      "sha256": "576a0018daf75b02e5c9622b2d671dae6a8c881408f69cfa18497075040fc15b",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#gemma4_agent/logs/llama-server.err.log"
+    },
+    {
+      "path": "gemma4_agent/logs/llama-server.manual.err.log",
+      "sha256": "7e9aa5bd6f773a3123a89446a853fffe58e8f6f3c328d559a0e966c9c3ff634d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#gemma4_agent/logs/llama-server.manual.err.log"
+    },
+    {
+      "path": "gemma4_agent/logs/llama-server.out.log",
+      "sha256": "fe6d8cb46ec3abd669adcbdb1eec0fef844b591172ca0f1d4799a64b4cced991",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#gemma4_agent/logs/llama-server.out.log"
+    },
+    {
+      "path": "output/baxy_p2_de_mls/_pipeline.log",
+      "sha256": "032a73c26c681db65eff36cdb890ffc1bdee1fa2b7681ae2463d59bab68e03f2",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_de_mls/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_es_sharvard/_pipeline.log",
+      "sha256": "484e2a524cda6f4888175306fdf8ac234045dd3e5bff791d9fab526b88c77fc4",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_es_sharvard/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_fr_mls/_pipeline.log",
+      "sha256": "c3655cbb23e7415b9512b115215b4ff543cd0c4e5d42512f1fe98fa1375c4a1d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_fr_mls/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_nl_pim/_pipeline.log",
+      "sha256": "455d5f9c11ab2904dda074fcc144ebe8b3c5bd9f134bf2f5d7390fe0dda1af97",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_nl_pim/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_pl_mc_speech/_pipeline.log",
+      "sha256": "cd45992b730f4ad09d11aeb468a4590a3400f588f0b69aea6d361ab83911e11e",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_pl_mc_speech/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_pt_cadu/_pipeline.log",
+      "sha256": "82219282abe2ca5057015037194f20b57b76ebff4e14b1b1be90a51f34b6242f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_pt_cadu/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_ru_dmitri/_pipeline.log",
+      "sha256": "d592dbb2340b6d6cce44e51bd81b277e23f78cd17b1fbdfbca6d1d79af0160f1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_ru_dmitri/_pipeline.log"
+    },
+    {
+      "path": "output/baxy_p2_zh_xiao_ya/_pipeline.log",
+      "sha256": "9b3ffcf36d14c4ad2b2a777536fc015f46bc363a2d090cb77d82474796a250d9",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#output/baxy_p2_zh_xiao_ya/_pipeline.log"
+    },
+    {
+      "path": "scripts/_diag/_action_reply_lang.log",
+      "sha256": "df4c01cca60c989917ac39b86637a00ea69bd2945dae0744442b22e6cbfebea2",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_action_reply_lang.log"
+    },
+    {
+      "path": "scripts/_diag/_action_reply_lang2.log",
+      "sha256": "3344b5492f0c1d00dbbe6a29ea3bd667aad167a29bae48920f0d92f6f53f1888",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_action_reply_lang2.log"
+    },
+    {
+      "path": "scripts/_diag/_batch10_tmp.json",
+      "sha256": "dd0c26eb53a8f41553669a7ca9cfbe8fdf471eaaa9c63da05a7aa66f89afbfb1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_batch10_tmp.json"
+    },
+    {
+      "path": "scripts/_diag/_batch3_tmp.json",
+      "sha256": "40885c6c99db9b89c45792f56d672a2b60938111d0cd2a6ab5d7d6f381c00d7f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_batch3_tmp.json"
+    },
+    {
+      "path": "scripts/_diag/_batch4_slice.json",
+      "sha256": "a9875b44d06d8f1a684a1d8582ee64123ff830db0bb02bf7ee7cb1e9f93256c8",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_batch4_slice.json"
+    },
+    {
+      "path": "scripts/_diag/_batch6_350_420.json",
+      "sha256": "f7a8105b201d6e8b6453c909d784201e9248b3c14cbdaf279039be5fd9d02a6c",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_batch6_350_420.json"
+    },
+    {
+      "path": "scripts/_diag/_battery/abri_calc.png",
+      "sha256": "ac2feac5fbf0cf83d8978c61f4a2dd7500e3ad53cc7e4db32d6e82e6c575f63f",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/abri_calc.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/calc_open.png",
+      "sha256": "69849e2f722a6b744c5aad83d58199f00a74c7dfd47b88c8e662ee0bbfba6677",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/calc_open.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/calc_type.png",
+      "sha256": "77d1ff4bdf4c68239957940669735aa8fd2f04c759b70c5db3eacf4fb37dedf4",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/calc_type.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/carry_calc.png",
+      "sha256": "00dcbe35c2739ba8d7872f7768c1e57498e0409e230335b5c360b5fcbf02d786",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/carry_calc.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/chain3.png",
+      "sha256": "d109794aac9a205cdeff8a2c40b91e39ad6bbbecddedc8f3074fa717846bcc79",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/chain3.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/chain_open_type.png",
+      "sha256": "09a69d0cdccd91b5a6e826c7a852f44d5febe78032ed48a6f15a91608c9e2f04",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/chain_open_type.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/dictation.png",
+      "sha256": "403de706be1dfd3be862b79603dfe79fc5659a5ba2d21145a5ecfd6806ea3cd1",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/dictation.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/query.png",
+      "sha256": "69ca5985848f546ca14d909f7b04da6673b87ac9577fad32e44dbfbf050a6e35",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/query.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/screenshot.png",
+      "sha256": "1b8c7a9b157593e00469b6477fa3414edd93c87b16ac7f0227b93933acd09b80",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/type_calc.png",
+      "sha256": "35cff4b9a55c2aac6fe3191613a91f59da4df5001d026fa03eb0baa518e1cc62",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/type_calc.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/type_notepad.png",
+      "sha256": "dc2d4f468863d906bfe9659092c2483b9125f755090809a922d59c1e0beb1c8f",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/type_notepad.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/volume.png",
+      "sha256": "65746f728cc60383414ccda0bc5dc2acae74c84db6b9ec82a7eec1f327741031",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/volume.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_battery/word_type.png",
+      "sha256": "9001f90d5c6fba238cf94fa5a8d41c19aa5a4fe33a50c01add1d873591e9abf1",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_battery/word_type.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_cancelturn.log",
+      "sha256": "6a585c7a20fa0131091e8dcf42905a1a03a6ec5d1080ac24213876709b0b1a9d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_cancelturn.log"
+    },
+    {
+      "path": "scripts/_diag/_capture_lat.log",
+      "sha256": "bd8c9e1e217ee72d2ac0994c0dffcff17e4cbf817b1bf7d1c1dd85861b056377",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_capture_lat.log"
+    },
+    {
+      "path": "scripts/_diag/_capture_replies.log",
+      "sha256": "c025d9cb070bfa021d95ec48c0c29fbbfedce9ae209fbb12af04f97f62722391",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_capture_replies.log"
+    },
+    {
+      "path": "scripts/_diag/_capture_replies2.log",
+      "sha256": "a5875a379797ebfebf4b32bca582d52a42b7f181681efecd7c3d39c839e1e47b",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_capture_replies2.log"
+    },
+    {
+      "path": "scripts/_diag/_capture_replies3.log",
+      "sha256": "13f1b28b1c8a9041790f08d2a0ff6a8939787fce108d4761a249535e7bf28f5a",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_capture_replies3.log"
+    },
+    {
+      "path": "scripts/_diag/_diag_bf.log",
+      "sha256": "e80bc55f0586b7e36356e161a801f15105ec466f744d20058eeff8774010fd31",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_diag_bf.log"
+    },
+    {
+      "path": "scripts/_diag/_dump_sysprompt.log",
+      "sha256": "351dc7222fa6059ce90326c2664c39f833f220f3e2acc4d451ca6f1d9a2e5586",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_dump_sysprompt.log"
+    },
+    {
+      "path": "scripts/_diag/_e2e_proof.png",
+      "sha256": "81e7dbac40b3640ab37d83bd3027acf28da91fb8730975dca82f510b015ead94",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_e2e_proof.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_encoder_clean.log",
+      "sha256": "745137f597d3053f144b68abf0b7d6cb784683d0e5eaeccd7890e945b415ffca",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_encoder_clean.log"
+    },
+    {
+      "path": "scripts/_diag/_encoder_retrain.log",
+      "sha256": "7977aac7b6ebc35eb6964273ee3b06bd403810a6af23af4324043c458bb28c69",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_encoder_retrain.log"
+    },
+    {
+      "path": "scripts/_diag/_encoder_retrain_full.log",
+      "sha256": "899fb0c8d1609b2f091669df7df93a04b4c004c8505b8fb1ac309e9ecfe8fc93",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_encoder_retrain_full.log"
+    },
+    {
+      "path": "scripts/_diag/_florence/00_screen.png",
+      "sha256": "464f85f7708c8b886a3bd3ba145890a2cd9f5e445ccd69616522adab319c2423",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_florence/00_screen.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_florence/01_od.png",
+      "sha256": "5d043a42a81eb7ac0f0f3bdd1cb5b3af325bd1d44cdf3060798a649295d9659f",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_florence/01_od.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_florence/02_dense.png",
+      "sha256": "40dffc0da8d3d5b786a96eaae3203547bb87fa31a31e8b8f58aed1b5e8ac1639",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_florence/02_dense.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_florence/04_ground_button.png",
+      "sha256": "092652de7f483ab8b8c670c5cba1d250200fc6fddbb6a6215e6e4d6d01980f2c",
+      "source_id": "probando_gemma4",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_florence/04_ground_button.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "scripts/_diag/_focos_balance.log",
+      "sha256": "28582d1735a30d40c873b3ee43a0778b0a67581aa3b05b79884e4f0c1cb77835",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_focos_balance.log"
+    },
+    {
+      "path": "scripts/_diag/_focos_balance2.log",
+      "sha256": "c8e5c1368644987aa899d1ab380362936bd82db84b5bb1942f337222cf885dff",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_focos_balance2.log"
+    },
+    {
+      "path": "scripts/_diag/_focos_final.log",
+      "sha256": "93842dc8b1345961688645bcc3e55e5f6d089277b5a64f45b12a861fca5bcc29",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_focos_final.log"
+    },
+    {
+      "path": "scripts/_diag/_focos_final2.log",
+      "sha256": "cb2d90dc835fa971436db0552269f99cbc401c5dd78aee3e775f037a42e68d1e",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_focos_final2.log"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_analyses_full.json",
+      "sha256": "f3223fc93962e1e8c8d1808da0e50d81bf3f0a1ba23a6cfeed5f62501e8c54fc",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_analyses_full.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_coverage_clean.json",
+      "sha256": "922a372e164b3cbb14b1d9fe25cca8b57d36826c4feac6a87fce84de75e7e766",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_coverage_clean.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_coverage_new.json",
+      "sha256": "9128da989b263b3bf2840bebd3f37915243f4a2a2650a2fe0495f0400161e03d",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_coverage_new.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_coverage_raw.json",
+      "sha256": "058f50601397ab75fb77d911f792d95908aaca8937adbe4f8a1485858d76a0e7",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_coverage_raw.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_failmode_idioma.json",
+      "sha256": "c75a4c8873cdf32f8901a03f1c0f8dda693d7be6c3b09dc0c4fa4e60158a5025",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_failmode_idioma.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_generated_ok.json",
+      "sha256": "cd7c4d84588993e4bd055e2d6889af2114426297b948b699977302866ac51515",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_generated_ok.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_generated_raw.json",
+      "sha256": "a17a28e40b366519e0954753d2f31c18d3bf0edbedca76c50e84fe16c94fd763",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_generated_raw.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_judge_bugs.json",
+      "sha256": "52eaa14c3331d16d0b772ba9a71c4720e47ee64363a9e1ba132f7f9ffc36ecb5",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_judge_bugs.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_langbalance_ok.json",
+      "sha256": "2abfa8c4ed556eebc26ab698b86619275eeb664b9a5b75873366891700086acc",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_langbalance_ok.json"
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_seed_examples.jsonl",
+      "sha256": "b0bf98b115c6fbda25669399f22fe044fb0ff12bd94fb376625c626e95a6951f",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_ftfail/_seed_examples.jsonl"
+    },
+    {
+      "path": "scripts/_diag/_hunt_tanda_0.jsonl",
+      "sha256": "30521bdc2438972d840c69bcdf4d3aa314dbd8d588ed2d360f55930412640cb1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_hunt_tanda_0.jsonl"
+    },
+    {
+      "path": "scripts/_diag/_hunt_tanda_1000.jsonl",
+      "sha256": "1e26e0125d4db739a61371d38adff1f6b4fead6d732d93085b10c58d43fd941c",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_hunt_tanda_1000.jsonl"
+    },
+    {
+      "path": "scripts/_diag/_hunt_tanda_2000.jsonl",
+      "sha256": "6b43d17d2c7e3fb122d86eed2cf5a4de265d475fcc8f7c5faccb10f719b3c4e1",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_hunt_tanda_2000.jsonl"
+    },
+    {
+      "path": "scripts/_diag/_hunt_tanda_3000.jsonl",
+      "sha256": "6e75715a8a6bc8c90c1729de38bfb8dd2db8aac1fb2e29434c49c5c0062aedda",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_hunt_tanda_3000.jsonl"
+    },
+    {
+      "path": "scripts/_diag/_hunt_tanda_4000.jsonl",
+      "sha256": "9bfcd086a5d86a9234d29db21f530177382adaaf70a4a735bfc79feba14b83ac",
+      "source_id": "probando_gemma4",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json#scripts/_diag/_hunt_tanda_4000.jsonl"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-01-documentacion-_router_artifact_bak-tool_head.json.bak",
+      "card_kind": "asset",
+      "corpus": "documentacion/_router_artifact_bak/tool_head.json.bak",
+      "denominator": "1 files in group documentacion/_router_artifact_bak/tool_head.json.bak; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_router_artifact_bak/tool_head.json.bak",
+      "consumers": "mind router / language routing experiments",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_router_artifact_bak/tool_head.json.bak"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "tool_head.json.bak parser=binary_inventory rows=0 bytes=486461 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_router_artifact_bak/tool_head.json.bak",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-02-documentacion-_tool_head_retrain_enc31.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tool_head_retrain_enc31.log",
+      "denominator": "1 files in group documentacion/_tool_head_retrain_enc31.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tool_head_retrain_enc31.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tool_head_retrain_enc31.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tool_head_retrain_enc31.log parser=log rows=20 bytes=701 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "documentacion/_tool_head_retrain_enc31.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-03-documentacion-_tools_reduce_router_eval_bytool_latest.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tools_reduce_router_eval_bytool_latest.log",
+      "denominator": "1 files in group documentacion/_tools_reduce_router_eval_bytool_latest.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tools_reduce_router_eval_bytool_latest.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tools_reduce_router_eval_bytool_latest.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tools_reduce_router_eval_bytool_latest.log parser=log rows=162 bytes=16068 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_tools_reduce_router_eval_bytool_latest.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-04-documentacion-_tools_reduce_router_eval_fails.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tools_reduce_router_eval_fails.log",
+      "denominator": "1 files in group documentacion/_tools_reduce_router_eval_fails.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tools_reduce_router_eval_fails.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tools_reduce_router_eval_fails.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tools_reduce_router_eval_fails.log parser=log rows=111 bytes=12018 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_tools_reduce_router_eval_fails.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-05-documentacion-_tools_reduce_router_eval_fails_after_iter.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tools_reduce_router_eval_fails_after_iter.log",
+      "denominator": "1 files in group documentacion/_tools_reduce_router_eval_fails_after_iter.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tools_reduce_router_eval_fails_after_iter.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tools_reduce_router_eval_fails_after_iter.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tools_reduce_router_eval_fails_after_iter.log parser=log rows=67 bytes=6954 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_tools_reduce_router_eval_fails_after_iter.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-06-documentacion-_tools_reduce_router_eval_fails_current.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tools_reduce_router_eval_fails_current.log",
+      "denominator": "1 files in group documentacion/_tools_reduce_router_eval_fails_current.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tools_reduce_router_eval_fails_current.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tools_reduce_router_eval_fails_current.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tools_reduce_router_eval_fails_current.log parser=log rows=89 bytes=9214 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_tools_reduce_router_eval_fails_current.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-07-documentacion-_tools_reduce_router_eval_fails_final_candidat",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tools_reduce_router_eval_fails_final_candidate.log",
+      "denominator": "1 files in group documentacion/_tools_reduce_router_eval_fails_final_candidate.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tools_reduce_router_eval_fails_final_candidate.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tools_reduce_router_eval_fails_final_candidate.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tools_reduce_router_eval_fails_final_candidate.log parser=log rows=73 bytes=7612 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_tools_reduce_router_eval_fails_final_candidate.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-08-documentacion-_tools_reduce_router_eval_fails_latest.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_tools_reduce_router_eval_fails_latest.log",
+      "denominator": "1 files in group documentacion/_tools_reduce_router_eval_fails_latest.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_tools_reduce_router_eval_fails_latest.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_tools_reduce_router_eval_fails_latest.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_tools_reduce_router_eval_fails_latest.log parser=log rows=65 bytes=6736 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/_tools_reduce_router_eval_fails_latest.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-09-documentacion-_wake_monitor_live.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_wake_monitor_live.log",
+      "denominator": "1 files in group documentacion/_wake_monitor_live.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_wake_monitor_live.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_wake_monitor_live.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_wake_monitor_live.log parser=log rows=23 bytes=2170 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "documentacion/_wake_monitor_live.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-10-documentacion-_wake_v5_overnight.log",
+      "card_kind": "metric",
+      "corpus": "documentacion/_wake_v5_overnight.log",
+      "denominator": "1 files in group documentacion/_wake_v5_overnight.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/_wake_v5_overnight.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/_wake_v5_overnight.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_wake_v5_overnight.log parser=log rows=2148 bytes=117046215 dist={\"fail_like\": 50, \"pass_like\": 82}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "documentacion/_wake_v5_overnight.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-11-documentacion-datos_crudos-carter540_consolidated_v6.json",
+      "card_kind": "run",
+      "corpus": "documentacion/datos_crudos/carter540_consolidated_v6.json",
+      "denominator": "1 files in group documentacion/datos_crudos/carter540_consolidated_v6.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/datos_crudos/carter540_consolidated_v6.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/datos_crudos/carter540_consolidated_v6.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "carter540_consolidated_v6.json parser=json rows=1 bytes=257989 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 540}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/datos_crudos/carter540_consolidated_v6.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-12-documentacion-datos_crudos-carter540_v14_GANADOR.json",
+      "card_kind": "run",
+      "corpus": "documentacion/datos_crudos/carter540_v14_GANADOR.json",
+      "denominator": "1 files in group documentacion/datos_crudos/carter540_v14_GANADOR.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/datos_crudos/carter540_v14_GANADOR.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/datos_crudos/carter540_v14_GANADOR.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "carter540_v14_GANADOR.json parser=json rows=1 bytes=239781 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 540}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/datos_crudos/carter540_v14_GANADOR.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-13-documentacion-graficos-01_fase2_22_modelos.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/01_fase2_22_modelos.png",
+      "denominator": "1 files in group documentacion/graficos/01_fase2_22_modelos.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/01_fase2_22_modelos.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/01_fase2_22_modelos.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "01_fase2_22_modelos.png parser=binary_inventory rows=0 bytes=105044 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/01_fase2_22_modelos.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-14-documentacion-graficos-02_fase2_top8_desglose.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/02_fase2_top8_desglose.png",
+      "denominator": "1 files in group documentacion/graficos/02_fase2_top8_desglose.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/02_fase2_top8_desglose.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/02_fase2_top8_desglose.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "02_fase2_top8_desglose.png parser=binary_inventory rows=0 bytes=57952 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/02_fase2_top8_desglose.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-15-documentacion-graficos-03_vram_por_modelo.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/03_vram_por_modelo.png",
+      "denominator": "1 files in group documentacion/graficos/03_vram_por_modelo.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/03_vram_por_modelo.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/03_vram_por_modelo.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "03_vram_por_modelo.png parser=binary_inventory rows=0 bytes=102808 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/03_vram_por_modelo.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-16-documentacion-graficos-04_gemma_vs_qwen_patrones.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/04_gemma_vs_qwen_patrones.png",
+      "denominator": "1 files in group documentacion/graficos/04_gemma_vs_qwen_patrones.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/04_gemma_vs_qwen_patrones.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/04_gemma_vs_qwen_patrones.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "04_gemma_vs_qwen_patrones.png parser=binary_inventory rows=0 bytes=61410 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "documentacion/graficos/04_gemma_vs_qwen_patrones.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-17-documentacion-graficos-05_latencia_categoria_540.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/05_latencia_categoria_540.png",
+      "denominator": "1 files in group documentacion/graficos/05_latencia_categoria_540.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/05_latencia_categoria_540.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/05_latencia_categoria_540.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "05_latencia_categoria_540.png parser=binary_inventory rows=0 bytes=55515 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/05_latencia_categoria_540.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-18-documentacion-graficos-06_progresion_v1_v14.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/06_progresion_v1_v14.png",
+      "denominator": "1 files in group documentacion/graficos/06_progresion_v1_v14.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/06_progresion_v1_v14.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/06_progresion_v1_v14.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "06_progresion_v1_v14.png parser=binary_inventory rows=0 bytes=81194 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/06_progresion_v1_v14.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-19-documentacion-graficos-07_categorias_v14_540.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/07_categorias_v14_540.png",
+      "denominator": "1 files in group documentacion/graficos/07_categorias_v14_540.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/07_categorias_v14_540.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/07_categorias_v14_540.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "07_categorias_v14_540.png parser=binary_inventory rows=0 bytes=32112 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/07_categorias_v14_540.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-20-documentacion-graficos-08_consolidated_vs_individual.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/08_consolidated_vs_individual.png",
+      "denominator": "1 files in group documentacion/graficos/08_consolidated_vs_individual.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/08_consolidated_vs_individual.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/08_consolidated_vs_individual.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "08_consolidated_vs_individual.png parser=binary_inventory rows=0 bytes=58368 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/08_consolidated_vs_individual.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-21-documentacion-graficos-09_escalabilidad_tools.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/09_escalabilidad_tools.png",
+      "denominator": "1 files in group documentacion/graficos/09_escalabilidad_tools.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/09_escalabilidad_tools.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/09_escalabilidad_tools.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "09_escalabilidad_tools.png parser=binary_inventory rows=0 bytes=77654 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "documentacion/graficos/09_escalabilidad_tools.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-22-documentacion-graficos-10_audio_gemma_vs_whisper.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/10_audio_gemma_vs_whisper.png",
+      "denominator": "1 files in group documentacion/graficos/10_audio_gemma_vs_whisper.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/10_audio_gemma_vs_whisper.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/10_audio_gemma_vs_whisper.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "10_audio_gemma_vs_whisper.png parser=binary_inventory rows=0 bytes=35240 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/10_audio_gemma_vs_whisper.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-23-documentacion-graficos-11_consolidated_v1_v6.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/11_consolidated_v1_v6.png",
+      "denominator": "1 files in group documentacion/graficos/11_consolidated_v1_v6.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/11_consolidated_v1_v6.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/11_consolidated_v1_v6.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "11_consolidated_v1_v6.png parser=binary_inventory rows=0 bytes=56287 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/11_consolidated_v1_v6.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-24-documentacion-graficos-12_vulkan_vs_cuda.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/12_vulkan_vs_cuda.png",
+      "denominator": "1 files in group documentacion/graficos/12_vulkan_vs_cuda.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/12_vulkan_vs_cuda.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/12_vulkan_vs_cuda.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "12_vulkan_vs_cuda.png parser=binary_inventory rows=0 bytes=33759 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/12_vulkan_vs_cuda.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-25-documentacion-graficos-13_causas_raiz_fails.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/13_causas_raiz_fails.png",
+      "denominator": "1 files in group documentacion/graficos/13_causas_raiz_fails.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/13_causas_raiz_fails.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/13_causas_raiz_fails.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "13_causas_raiz_fails.png parser=binary_inventory rows=0 bytes=47538 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/13_causas_raiz_fails.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-26-documentacion-graficos-14_cobertura_fases.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/14_cobertura_fases.png",
+      "denominator": "1 files in group documentacion/graficos/14_cobertura_fases.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/14_cobertura_fases.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/14_cobertura_fases.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "14_cobertura_fases.png parser=binary_inventory rows=0 bytes=54204 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/14_cobertura_fases.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-27-documentacion-graficos-15_selector_hardware.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/15_selector_hardware.png",
+      "denominator": "1 files in group documentacion/graficos/15_selector_hardware.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/15_selector_hardware.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/15_selector_hardware.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "15_selector_hardware.png parser=binary_inventory rows=0 bytes=56935 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/15_selector_hardware.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-28-documentacion-graficos-16_30_valores_carter.png",
+      "card_kind": "asset",
+      "corpus": "documentacion/graficos/16_30_valores_carter.png",
+      "denominator": "1 files in group documentacion/graficos/16_30_valores_carter.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:documentacion/graficos/16_30_valores_carter.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "documentacion/graficos/16_30_valores_carter.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "16_30_valores_carter.png parser=binary_inventory rows=0 bytes=36917 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "documentacion/graficos/16_30_valores_carter.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-29-gemma4_agent-logs-llama-server.err.log",
+      "card_kind": "metric",
+      "corpus": "gemma4_agent/logs/llama-server.err.log",
+      "denominator": "1 files in group gemma4_agent/logs/llama-server.err.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:gemma4_agent/logs/llama-server.err.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "gemma4_agent/logs/llama-server.err.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llama-server.err.log parser=log rows=838191 bytes=71023249 dist={\"fail_like\": 48, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "gemma4_agent/logs/llama-server.err.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-30-gemma4_agent-logs-llama-server.manual.err.log",
+      "card_kind": "metric",
+      "corpus": "gemma4_agent/logs/llama-server.manual.err.log",
+      "denominator": "1 files in group gemma4_agent/logs/llama-server.manual.err.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:gemma4_agent/logs/llama-server.manual.err.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "gemma4_agent/logs/llama-server.manual.err.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llama-server.manual.err.log parser=log rows=891 bytes=69630 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "gemma4_agent/logs/llama-server.manual.err.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-31-gemma4_agent-logs-llama-server.out.log",
+      "card_kind": "metric",
+      "corpus": "gemma4_agent/logs/llama-server.out.log",
+      "denominator": "1 files in group gemma4_agent/logs/llama-server.out.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:gemma4_agent/logs/llama-server.out.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "gemma4_agent/logs/llama-server.out.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "llama-server.out.log parser=log rows=856019 bytes=91784410 dist={\"fail_like\": 4, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "gemma4_agent/logs/llama-server.out.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-32-output-baxy_p2_de_mls-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_de_mls/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_de_mls/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_de_mls/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_de_mls/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=21 bytes=1872 dist={\"fail_like\": 0, \"pass_like\": 3}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_de_mls/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-33-output-baxy_p2_es_sharvard-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_es_sharvard/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_es_sharvard/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_es_sharvard/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_es_sharvard/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=21 bytes=1902 dist={\"fail_like\": 0, \"pass_like\": 3}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_es_sharvard/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-34-output-baxy_p2_fr_mls-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_fr_mls/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_fr_mls/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_fr_mls/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_fr_mls/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=14 bytes=1248 dist={\"fail_like\": 0, \"pass_like\": 2}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_fr_mls/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-35-output-baxy_p2_nl_pim-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_nl_pim/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_nl_pim/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_nl_pim/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_nl_pim/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=14 bytes=1248 dist={\"fail_like\": 0, \"pass_like\": 2}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_nl_pim/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-36-output-baxy_p2_pl_mc_speech-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_pl_mc_speech/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_pl_mc_speech/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_pl_mc_speech/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_pl_mc_speech/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=18 bytes=1680 dist={\"fail_like\": 0, \"pass_like\": 2}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_pl_mc_speech/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-37-output-baxy_p2_pt_cadu-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_pt_cadu/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_pt_cadu/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_pt_cadu/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_pt_cadu/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=14 bytes=1252 dist={\"fail_like\": 0, \"pass_like\": 2}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_pt_cadu/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-38-output-baxy_p2_ru_dmitri-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_ru_dmitri/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_ru_dmitri/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_ru_dmitri/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_ru_dmitri/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=14 bytes=1260 dist={\"fail_like\": 0, \"pass_like\": 2}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_ru_dmitri/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-39-output-baxy_p2_zh_xiao_ya-_pipeline.log",
+      "card_kind": "metric",
+      "corpus": "output/baxy_p2_zh_xiao_ya/_pipeline.log",
+      "denominator": "1 files in group output/baxy_p2_zh_xiao_ya/_pipeline.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:output/baxy_p2_zh_xiao_ya/_pipeline.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "output/baxy_p2_zh_xiao_ya/_pipeline.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_pipeline.log parser=log rows=14 bytes=1264 dist={\"fail_like\": 0, \"pass_like\": 2}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "output/baxy_p2_zh_xiao_ya/_pipeline.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-40-scripts-_diag-_action_reply_lang.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_action_reply_lang.log",
+      "denominator": "1 files in group scripts/_diag/_action_reply_lang.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_action_reply_lang.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_action_reply_lang.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_action_reply_lang.log parser=log rows=11 bytes=1063 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_action_reply_lang.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-41-scripts-_diag-_action_reply_lang2.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_action_reply_lang2.log",
+      "denominator": "1 files in group scripts/_diag/_action_reply_lang2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_action_reply_lang2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_action_reply_lang2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_action_reply_lang2.log parser=log rows=11 bytes=1024 dist={\"fail_like\": 0, \"pass_like\": 6}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_action_reply_lang2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-42-scripts-_diag-_batch10_tmp.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_batch10_tmp.json",
+      "denominator": "1 files in group scripts/_diag/_batch10_tmp.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_batch10_tmp.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_batch10_tmp.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_batch10_tmp.json parser=json rows=70 bytes=36636 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_batch10_tmp.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-43-scripts-_diag-_batch3_tmp.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_batch3_tmp.json",
+      "denominator": "1 files in group scripts/_diag/_batch3_tmp.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_batch3_tmp.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_batch3_tmp.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_batch3_tmp.json parser=json rows=70 bytes=34139 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_batch3_tmp.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-44-scripts-_diag-_batch4_slice.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_batch4_slice.json",
+      "denominator": "1 files in group scripts/_diag/_batch4_slice.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_batch4_slice.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_batch4_slice.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_batch4_slice.json parser=json rows=70 bytes=46358 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_batch4_slice.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-45-scripts-_diag-_batch6_350_420.json",
+      "card_kind": "run",
+      "corpus": "scripts/_diag/_batch6_350_420.json",
+      "denominator": "1 files in group scripts/_diag/_batch6_350_420.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_batch6_350_420.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_batch6_350_420.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_batch6_350_420.json parser=json rows=70 bytes=33825 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_batch6_350_420.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-46-scripts-_diag-_battery",
+      "card_kind": "asset",
+      "corpus": "scripts/_diag/_battery",
+      "denominator": "13 files in group scripts/_diag/_battery; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_battery",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_battery/abri_calc.png",
+        "scripts/_diag/_battery/calc_open.png",
+        "scripts/_diag/_battery/calc_type.png",
+        "scripts/_diag/_battery/carry_calc.png",
+        "scripts/_diag/_battery/chain3.png",
+        "scripts/_diag/_battery/chain_open_type.png",
+        "scripts/_diag/_battery/dictation.png",
+        "scripts/_diag/_battery/query.png",
+        "scripts/_diag/_battery/screenshot.png",
+        "scripts/_diag/_battery/type_calc.png",
+        "scripts/_diag/_battery/type_notepad.png",
+        "scripts/_diag/_battery/volume.png",
+        "scripts/_diag/_battery/word_type.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "abri_calc.png parser=binary_inventory rows=0 bytes=91781 dist={} | calc_open.png parser=binary_inventory rows=0 bytes=108172 dist={} | calc_type.png parser=binary_inventory rows=0 bytes=101031 dist={} | carry_calc.png parser=binary_inventory rows=0 bytes=93178 dist={} | chain3.png parser=binary_inventory rows=0 bytes=101183 dist={} | chain_open_type.png parser=binary_inventory rows=0 bytes=109128 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_battery/abri_calc.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-47-scripts-_diag-_cancelturn.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_cancelturn.log",
+      "denominator": "1 files in group scripts/_diag/_cancelturn.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_cancelturn.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_cancelturn.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_cancelturn.log parser=log rows=8 bytes=770 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_cancelturn.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-48-scripts-_diag-_capture_lat.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_capture_lat.log",
+      "denominator": "1 files in group scripts/_diag/_capture_lat.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_capture_lat.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_capture_lat.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_capture_lat.log parser=log rows=25 bytes=1413 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_capture_lat.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-49-scripts-_diag-_capture_replies.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_capture_replies.log",
+      "denominator": "1 files in group scripts/_diag/_capture_replies.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_capture_replies.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_capture_replies.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_capture_replies.log parser=log rows=29 bytes=1575 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_capture_replies.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-50-scripts-_diag-_capture_replies2.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_capture_replies2.log",
+      "denominator": "1 files in group scripts/_diag/_capture_replies2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_capture_replies2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_capture_replies2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_capture_replies2.log parser=log rows=29 bytes=1689 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_capture_replies2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-51-scripts-_diag-_capture_replies3.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_capture_replies3.log",
+      "denominator": "1 files in group scripts/_diag/_capture_replies3.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_capture_replies3.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_capture_replies3.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_capture_replies3.log parser=log rows=29 bytes=1637 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_capture_replies3.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-52-scripts-_diag-_diag_bf.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_diag_bf.log",
+      "denominator": "1 files in group scripts/_diag/_diag_bf.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_diag_bf.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_diag_bf.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_diag_bf.log parser=log rows=8 bytes=560 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_diag_bf.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-53-scripts-_diag-_dump_sysprompt.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_dump_sysprompt.log",
+      "denominator": "1 files in group scripts/_diag/_dump_sysprompt.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_dump_sysprompt.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_dump_sysprompt.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_dump_sysprompt.log parser=log rows=5 bytes=1076 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "scripts/_diag/_dump_sysprompt.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-54-scripts-_diag-_e2e_proof.png",
+      "card_kind": "asset",
+      "corpus": "scripts/_diag/_e2e_proof.png",
+      "denominator": "1 files in group scripts/_diag/_e2e_proof.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_e2e_proof.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_e2e_proof.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_e2e_proof.png parser=binary_inventory rows=0 bytes=221673 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_e2e_proof.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-55-scripts-_diag-_encoder_clean.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_encoder_clean.log",
+      "denominator": "1 files in group scripts/_diag/_encoder_clean.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_encoder_clean.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_encoder_clean.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_encoder_clean.log parser=log rows=11 bytes=31678 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_encoder_clean.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-56-scripts-_diag-_encoder_retrain.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_encoder_retrain.log",
+      "denominator": "1 files in group scripts/_diag/_encoder_retrain.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_encoder_retrain.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_encoder_retrain.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_encoder_retrain.log parser=log rows=10 bytes=22169 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_encoder_retrain.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-57-scripts-_diag-_encoder_retrain_full.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_encoder_retrain_full.log",
+      "denominator": "1 files in group scripts/_diag/_encoder_retrain_full.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_encoder_retrain_full.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_encoder_retrain_full.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_encoder_retrain_full.log parser=log rows=11 bytes=33937 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_encoder_retrain_full.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-58-scripts-_diag-_florence",
+      "card_kind": "asset",
+      "corpus": "scripts/_diag/_florence",
+      "denominator": "4 files in group scripts/_diag/_florence; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_florence",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_florence/00_screen.png",
+        "scripts/_diag/_florence/01_od.png",
+        "scripts/_diag/_florence/02_dense.png",
+        "scripts/_diag/_florence/04_ground_button.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "00_screen.png parser=binary_inventory rows=0 bytes=127403 dist={} | 01_od.png parser=binary_inventory rows=0 bytes=129304 dist={} | 02_dense.png parser=binary_inventory rows=0 bytes=129405 dist={} | 04_ground_button.png parser=binary_inventory rows=0 bytes=128947 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_florence/00_screen.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-59-scripts-_diag-_focos_balance.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_focos_balance.log",
+      "denominator": "1 files in group scripts/_diag/_focos_balance.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_focos_balance.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_focos_balance.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_focos_balance.log parser=log rows=47 bytes=3108 dist={\"fail_like\": 0, \"pass_like\": 13}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_focos_balance.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-60-scripts-_diag-_focos_balance2.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_focos_balance2.log",
+      "denominator": "1 files in group scripts/_diag/_focos_balance2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_focos_balance2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_focos_balance2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_focos_balance2.log parser=log rows=46 bytes=2940 dist={\"fail_like\": 0, \"pass_like\": 14}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_focos_balance2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-61-scripts-_diag-_focos_final.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_focos_final.log",
+      "denominator": "1 files in group scripts/_diag/_focos_final.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_focos_final.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_focos_final.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_focos_final.log parser=log rows=44 bytes=2312 dist={\"fail_like\": 0, \"pass_like\": 19}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_focos_final.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-62-scripts-_diag-_focos_final2.log",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_focos_final2.log",
+      "denominator": "1 files in group scripts/_diag/_focos_final2.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_focos_final2.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_focos_final2.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_focos_final2.log parser=log rows=44 bytes=2398 dist={\"fail_like\": 0, \"pass_like\": 19}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_focos_final2.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-63-scripts-_diag-_ftfail",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_ftfail",
+      "denominator": "10 files in group scripts/_diag/_ftfail; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_ftfail",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_ftfail/_analyses_full.json",
+        "scripts/_diag/_ftfail/_coverage_clean.json",
+        "scripts/_diag/_ftfail/_coverage_new.json",
+        "scripts/_diag/_ftfail/_coverage_raw.json",
+        "scripts/_diag/_ftfail/_failmode_idioma.json",
+        "scripts/_diag/_ftfail/_generated_ok.json",
+        "scripts/_diag/_ftfail/_generated_raw.json",
+        "scripts/_diag/_ftfail/_judge_bugs.json",
+        "scripts/_diag/_ftfail/_langbalance_ok.json",
+        "scripts/_diag/_ftfail/_seed_examples.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_analyses_full.json parser=json rows=5 bytes=55548 dist={} | _coverage_clean.json parser=json rows=451 bytes=163835 dist={} | _coverage_new.json parser=json rows=314 bytes=101374 dist={} | _coverage_raw.json parser=json rows=494 bytes=186846 dist={} | _failmode_idioma.json parser=json rows=200 bytes=42597 dist={} | _generated_ok.json parser=json rows=172 bytes=44885 dist={}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_ftfail/_analyses_full.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-64-scripts-_diag-_hunt_tanda_0.jsonl",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_hunt_tanda_0.jsonl",
+      "denominator": "1 files in group scripts/_diag/_hunt_tanda_0.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_hunt_tanda_0.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_hunt_tanda_0.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_hunt_tanda_0.jsonl parser=jsonl rows=1000 bytes=628258 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_hunt_tanda_0.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-65-scripts-_diag-_hunt_tanda_1000.jsonl",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_hunt_tanda_1000.jsonl",
+      "denominator": "1 files in group scripts/_diag/_hunt_tanda_1000.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_hunt_tanda_1000.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_hunt_tanda_1000.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_hunt_tanda_1000.jsonl parser=jsonl rows=1000 bytes=488318 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_hunt_tanda_1000.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-66-scripts-_diag-_hunt_tanda_2000.jsonl",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_hunt_tanda_2000.jsonl",
+      "denominator": "1 files in group scripts/_diag/_hunt_tanda_2000.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_hunt_tanda_2000.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_hunt_tanda_2000.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_hunt_tanda_2000.jsonl parser=jsonl rows=1000 bytes=480364 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_hunt_tanda_2000.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-67-scripts-_diag-_hunt_tanda_3000.jsonl",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_hunt_tanda_3000.jsonl",
+      "denominator": "1 files in group scripts/_diag/_hunt_tanda_3000.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_hunt_tanda_3000.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_hunt_tanda_3000.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_hunt_tanda_3000.jsonl parser=jsonl rows=1000 bytes=528213 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_hunt_tanda_3000.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    },
+    {
+      "card_id": "evidence_assets-018-probando_gemma4-68-scripts-_diag-_hunt_tanda_4000.jsonl",
+      "card_kind": "metric",
+      "corpus": "scripts/_diag/_hunt_tanda_4000.jsonl",
+      "denominator": "1 files in group scripts/_diag/_hunt_tanda_4000.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 probando_gemma4 head=72f9e5fc6597",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "probando_gemma4:scripts/_diag/_hunt_tanda_4000.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "scripts/_diag/_hunt_tanda_4000.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_hunt_tanda_4000.jsonl parser=jsonl rows=1000 bytes=521977 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "scripts/_diag/_hunt_tanda_4000.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=92 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-019-probando_gemma4-pg4_scripts",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-018-probando_gemma4.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

@@ -1,0 +1,1584 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-045-baxy-baxy_art_development",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:42:18Z",
+  "closed_utc": "2026-08-31T05:42:19Z",
+  "estimated_tokens": 295055,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 37,
+  "subsystem": "baxy_art_development",
+  "subsystems": [
+    "baxy_art_development"
+  ],
+  "files": [
+    {
+      "path": "artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl",
+      "sha256": "143a14cf648a41d49552354b37c7eab625b985b654348c7c920eda67c21cba4d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r3_failures.v1.jsonl",
+      "sha256": "1c3e7345122cb1f0beef66a410226167202e02192ea6c4f0f93cbac5c0d69406",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r3_failures.v1.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx",
+      "sha256": "a9c6d0ffc8db06b52e915ac0a265009115488d44f0d3bc5b5347190f83d5e58f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json",
+      "sha256": "ed0be6d659de823f06584f1d437d8eb43e0a69fc0272885f5d20d1b30b563771",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl",
+      "sha256": "82c31aa4bba09a83139f4caf85cf877420b901f3cfbe593d194f8a4bef7cc954",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json",
+      "sha256": "98632220de86a0f44c8327279e16fb25ee4e46b5dc8492178ef20deb65fb46f8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl",
+      "sha256": "4576e8916344a8f1bd938b848456ba564b23561518ea1f40b06d0bcab6427535",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_failures.v1.jsonl",
+      "sha256": "5fa4021f034ab13ee1e15a84484a97907373bf4daddb410d02b8c79b0ab6a4ef",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_failures.v1.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx",
+      "sha256": "ca31f42c4843a2d01fe3c13c524e2ab40758ef6739738af03f21e4d18bfb3f0a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx",
+      "sha256": "4d898a692edbea646295efb3f50d5a1f49b038e399b1138a71ad0d012636c61f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json",
+      "sha256": "2ad448dee06fd38b8eb59f0eb704d8c0f571274598b5c923f366a5e5e326b756",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl",
+      "sha256": "29f1cff63498c007f7a745333f4209fe1d358c6df27c0bdeb3ded635bc6768d5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json",
+      "sha256": "90b3aae88563b7f0374214d6f64bf7c7efe008bfe51e3b16138d8770652696bf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl",
+      "sha256": "04aba1b8f97801f2d10402da845570b5b49592fabacc1bb1e176ca45782db95f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json",
+      "sha256": "352ca253ca2b674c2874f4f2fdb1ae23324e7d81d8172e948c4873e7e00719a0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl",
+      "sha256": "79a89a46f88fa9bcc870e51bc51dab95152deac4afcf853711e85defbc6a14cd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json",
+      "sha256": "4f3a2c36a2c1472a92b5dd0081ca0163e3107004b76b541ea52354924fd2b23f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json",
+      "sha256": "af88d1d10eba58af0a8436c4a48d0a54c5084db8ea1467e7a96d6e066606df33",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl",
+      "sha256": "7c8e88cbb7a2ac9c8bc3a0f4bc2fc6db24a74384e618dbf69a8604fd50353532",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_failures.v1.jsonl",
+      "sha256": "f63d096074c83557b503c3fc91981398b77adef69a05a4229a2ab945bb747ab3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_failures.v1.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx",
+      "sha256": "b54afe706258cea809c71ca2925a8770539c0008b4b8e5ac9b8413c419ba55a1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json",
+      "sha256": "5af375d9f984c0190a030a5543afe5cf045e63e4fbb34c8ce62fcfe7652f3228",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl",
+      "sha256": "167c1cd3b55c23644d3f0695fc25c9084974275948ac1e64bdd13124e633414a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json",
+      "sha256": "82f8052fa3ff9416125d8bf3e0c8dab882f4d9cc1d33b7a38174a3e2d6a1847d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl",
+      "sha256": "36c87f65cf8f61e0338cd65d929c072a53343468f13c334e1d3a2e79e9f1e6ca",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json",
+      "sha256": "658810f671f6e7cd14561c983aeb08885a648a1a71e4ba008d8ec4adbcf6e858",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl",
+      "sha256": "d7047d67121a9b6703a9a471950ea154c73dcfc1c18bb764c5851a99f1abcb40",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json",
+      "sha256": "c5ac9ccd9f0258fdae294620680dce39d763973a130c42629ef8544171f08ae8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_failures.v1.jsonl",
+      "sha256": "03160f2c41607af5d247b055b46e43cf537e72ca9daff83c2b853b9b698559a3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_failures.v1.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx",
+      "sha256": "a8e820ccf08ead3de7a576cef6f2031a8856d765dff55cd8d145504366851932",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json",
+      "sha256": "5ce569b6572454d6c232d16334d08eb615f378113572ff8e1fddf78a7d36a89d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl",
+      "sha256": "214d34fa757654f24cf8184ad87f491035c37c7a164867903e1cc26a2e96180f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json",
+      "sha256": "77b5aa9ceae4fba7f9cc75fbb278e65c284833c58c8440d9a8a011cdc557e52a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl",
+      "sha256": "4fbe2b1002a9d605182c797b20978ee1b6477bc4f5bd3b3e3b7fa2f6152a08d9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json",
+      "sha256": "0a0d9d5c2bbdf63bd50a6e7fac0025bdfe63be245cca0d10ec4f90b290da8797",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl",
+      "sha256": "3995bdf209cb9b4c763d7fee8ff6a838f67005e81b407bd3e26ad329e512593d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl"
+    },
+    {
+      "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json",
+      "sha256": "e26b4cce9a62fdfe5e4d7d3859b4b86fd8a331574532843de1026c1d57aa140e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json#artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-01-artifacts-development-generalization_product_r2_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl parser=jsonl rows=652 bytes=743079 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r2_replay_after_systemic_fix.v3.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-02-artifacts-development-generalization_product_r3_failures.v1.",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r3_failures.v1.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r3_failures.v1.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r3_failures.v1.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r3_failures.v1.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r3_failures.v1.jsonl parser=jsonl rows=109 bytes=109440 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r3_failures.v1.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-03-artifacts-development-generalization_product_r3_memory_after",
+      "card_kind": "corpus",
+      "corpus": "artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx",
+      "denominator": "1 files in group artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r3_memory_after_systemic_fix.v1.trx parser=xml rows=64 bytes=14824 dist={\"tags\": {\"UnitTestResult\": 10, \"Execution\": 10, \"TestMethod\": 10, \"UnitTest\": 10, \"TestEntry\": 10, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r3_memory_after_systemic_fix.v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-04-artifacts-development-generalization_product_r3_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r3_replay_after_systemic_fix.v1.json parser=json rows=1 bytes=327789 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-05-artifacts-development-generalization_product_r3_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl parser=jsonl rows=657 bytes=743327 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v1.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-06-artifacts-development-generalization_product_r3_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r3_replay_after_systemic_fix.v2.json parser=json rows=1 bytes=316957 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-07-artifacts-development-generalization_product_r3_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl parser=jsonl rows=652 bytes=743247 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r3_replay_after_systemic_fix.v2.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-08-artifacts-development-generalization_product_r4_failures.v1.",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r4_failures.v1.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_failures.v1.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_failures.v1.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_failures.v1.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_failures.v1.jsonl parser=jsonl rows=275 bytes=270497 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_failures.v1.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-09-artifacts-development-generalization_product_r4_memory_after",
+      "card_kind": "corpus",
+      "corpus": "artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_memory_after_systemic_fix.v1.trx parser=xml rows=64 bytes=14824 dist={\"tags\": {\"UnitTestResult\": 10, \"Execution\": 10, \"TestMethod\": 10, \"UnitTest\": 10, \"TestEntry\": 10, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_memory_after_systemic_fix.v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-10-artifacts-development-generalization_product_r4_memory_attem",
+      "card_kind": "corpus",
+      "corpus": "artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx parser=xml rows=14 bytes=4085 dist={\"tags\": {\"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"TestLists\": 1, \"Counters\": 1, \"StdOut\": 1, \"Output\": 1, \"Text\": 1, \"RunInfo\": 1, \"RunInfos\": 1, \"ResultSu…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_memory_attempt_failed_runtime_root.v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-11-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v1.json parser=json rows=1 bytes=383568 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-12-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl parser=jsonl rows=794 bytes=877202 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v1.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-13-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v2.json parser=json rows=1 bytes=384899 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-14-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl parser=jsonl rows=787 bytes=874704 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v2.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-15-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v3.json parser=json rows=1 bytes=385778 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-16-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl parser=jsonl rows=775 bytes=876246 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v3.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-17-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v4.json parser=json rows=1 bytes=385760 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v4.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-18-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v5.json parser=json rows=1 bytes=372952 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-19-artifacts-development-generalization_product_r4_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl parser=jsonl rows=772 bytes=876635 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r4_replay_after_systemic_fix.v5.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-20-artifacts-development-generalization_product_r5_failures.v1.",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r5_failures.v1.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_failures.v1.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_failures.v1.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_failures.v1.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_failures.v1.jsonl parser=jsonl rows=249 bytes=266589 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_failures.v1.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-21-artifacts-development-generalization_product_r5_memory_after",
+      "card_kind": "corpus",
+      "corpus": "artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_memory_after_systemic_fix.v1.trx parser=xml rows=64 bytes=15706 dist={\"tags\": {\"UnitTestResult\": 10, \"Execution\": 10, \"TestMethod\": 10, \"UnitTest\": 10, \"TestEntry\": 10, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_memory_after_systemic_fix.v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-22-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v1.json parser=json rows=1 bytes=387584 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-23-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl parser=jsonl rows=790 bytes=905607 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v1.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-24-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v2.json parser=json rows=1 bytes=387735 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-25-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl parser=jsonl rows=792 bytes=888615 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v2.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-26-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v3.json parser=json rows=1 bytes=375903 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-27-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl parser=jsonl rows=772 bytes=890335 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v3.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-28-artifacts-development-generalization_product_r5_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r5_replay_after_systemic_fix.v4.json parser=json rows=1 bytes=375903 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r5_replay_after_systemic_fix.v4.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-29-artifacts-development-generalization_product_r6_failures.v1.",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r6_failures.v1.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_failures.v1.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_failures.v1.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_failures.v1.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_failures.v1.jsonl parser=jsonl rows=110 bytes=114661 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_failures.v1.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-30-artifacts-development-generalization_product_r6_memory_after",
+      "card_kind": "corpus",
+      "corpus": "artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_memory_after_systemic_fix.v1.trx parser=xml rows=74 bytes=17462 dist={\"tags\": {\"UnitTestResult\": 12, \"Execution\": 12, \"TestMethod\": 12, \"UnitTest\": 12, \"TestEntry\": 12, \"TestList\": 2, \"Times\": 1, \"Deployment\": 1, \"TestSettings\": 1, \"Results\": 1, \"T…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_memory_after_systemic_fix.v1.trx",
+        "ranges": [
+          "xml:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-31-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v1.json parser=json rows=1 bytes=592322 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-32-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl parser=jsonl rows=1170 bytes=1371703 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v1.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-33-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v2.json parser=json rows=1 bytes=592571 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-34-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl parser=jsonl rows=1167 bytes=1372018 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v2.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-35-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v3.json parser=json rows=1 bytes=592998 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-36-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "metric",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl parser=jsonl rows=1161 bytes=1372796 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v3.raw.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-045-baxy-baxy_art_development-37-artifacts-development-generalization_product_r6_replay_after",
+      "card_kind": "run",
+      "corpus": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json",
+      "denominator": "1 files in group artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "generalization_product_r6_replay_after_systemic_fix.v4.json parser=json rows=1 bytes=573245 dist={\"scalar_keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"runtime_manifest_changed\", \"schema\", \"scope\"], \"list_lengths\": {\"rows…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/generalization_product_r6_replay_after_systemic_fix.v4.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=37 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-046-baxy-baxy_art_development",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-045-baxy-baxy_art_development.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

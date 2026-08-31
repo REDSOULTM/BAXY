@@ -1,0 +1,3082 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-097-baxy",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:45:54Z",
+  "closed_utc": "2026-08-31T05:46:17Z",
+  "estimated_tokens": 299921,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 172,
+  "subsystem": "baxy_art_research",
+  "subsystems": [
+    "baxy_art_research",
+    "baxy_art_runtime",
+    "baxy_art_setup",
+    "baxy_art_technology_tournament"
+  ],
+  "files": [
+    {
+      "path": "artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json",
+      "sha256": "5c48f2ce807589bd153a8ca7073134420107764862303862fd9432fe513a4dca",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_stt_landscape_20260811.json",
+      "sha256": "2309101eca4928fc22d8785e9704160c818be05bb0a1cf45c98a30be587bf1b1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_stt_landscape_20260811.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_expanded_development_v1.v1.json",
+      "sha256": "51e4a1eea58091e69c7b7b5f896cd10d9da990f0316237b334ea976fb84cc81a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_expanded_development_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json",
+      "sha256": "3177273095ac8c7c4400a63ab5f4ddf9a6770520295ee25779fbe0f586ecb132",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log",
+      "sha256": "48bb05e486cbb8a4603676006dc065b6c54d74ffb4dff9c5f05fdfca0900fc98",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json",
+      "sha256": "8667d380691f04b41f8ec42b8f13ab12c520f4c6afb50a1bf7e6323920f51535",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json",
+      "sha256": "111e0080ad3d0a6f97ff0ec160747983a9be34b8f380a090ffe10f1e96dd13cf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json",
+      "sha256": "156af1387a521760d259a5728c5212556d42768298a80a7f2790b8589b5e19be",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json",
+      "sha256": "3ad685ddd554bb2fd8256a3176a4b53757389c7890501fbebc4005034dadc484",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json",
+      "sha256": "81838bbd6c4bb896007a5d074373bfb7b0e0caeec1e3e1a5529d760c0e6c2085",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json",
+      "sha256": "38aa0004ca49086544f164605a91802e28715fb84ff2f9c782039f47b0b51c80",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json",
+      "sha256": "68b023698985a8146ff4ba5c9405865bd286792ff8719e677b91544592ecc145",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v1.v1.json",
+      "sha256": "cbb83ee98acaf506fc302613d3835afac4cb967d7335eb217a056153fdbfb0b8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v2.v1.json",
+      "sha256": "a6a1d7917a2544a7e247d8b87c28d6450d70034c74e3b6b04c1bd52349403254",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v2.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v3.v1.json",
+      "sha256": "e1ac69749cb424f1ab32e9c14037a9ddc9023141d508f0bc6bfae1deafc15b4e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v3.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v4.v1.json",
+      "sha256": "447810af7d4bf42be560acd6571940aa74c880043565201fbc7dd6f19d0bd0d9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v4.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v5.v1.json",
+      "sha256": "efa0381c46f156e5e22853001dae3b837590c86845304015ac5b44876fbaa019",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v5.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v6.v1.json",
+      "sha256": "897e63f78776f1d6a303bb81f3085c85b6c4efa53ae006b0f8f520b2b42a200a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v6.v1.json"
+    },
+    {
+      "path": "artifacts/research/wake_verifier_product_capture_development_v7.v1.json",
+      "sha256": "1a90944356541b811353ff0656eb88f519ffcccab91d42b4e1689db61d8db6f5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wake_verifier_product_capture_development_v7.v1.json"
+    },
+    {
+      "path": "artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json",
+      "sha256": "92e9c012634ca259ad0783733673fdbcb800243650ee572414c569478169299f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json"
+    },
+    {
+      "path": "artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json",
+      "sha256": "bb3feac61f628b741250740064a87122b2c5fde1a0cb236c7ae554083d31470f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json",
+      "sha256": "1f20ea5ad75c6f1705717a58101f1ea76df5a7b7831ea498bc201eb419040b66",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json",
+      "sha256": "8e10edeb74f57cc7f1d6b6fd8f6b667032e7ca105074cb66b019d181426d47bf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json",
+      "sha256": "81a920819e714fcad3f23244bf4c1f5628c1db3aaa79e6c31dfafab0e367de48",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json"
+    },
+    {
+      "path": "artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json",
+      "sha256": "82a572dd01c6ee8c782621b44863941f7b9b92770f61cc4537c3bf684e1d2cc2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json"
+    },
+    {
+      "path": "artifacts/runtime/registered_runtime_expectation_r281.json",
+      "sha256": "2e9b417b9eb1035ea68be6a89d529d987a74eb93cc509904affdd7c2cacdd665",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/runtime/registered_runtime_expectation_r281.json"
+    },
+    {
+      "path": "artifacts/setup/baxy_1_0_8_release_attestation.json",
+      "sha256": "a8f25cf29061eaf07f7097ee317bc1901d9ff569609f0752b3c512ec1d6ea39a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/baxy_1_0_8_release_attestation.json"
+    },
+    {
+      "path": "artifacts/setup/build/final-69136ac/Baxy.Setup.exe",
+      "sha256": "bc1dcaa12dacfc9f4a21d9e0ed84828b8215a0e1f48876cec5856296e94c1af6",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-69136ac/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/final-69136ac/SHA256SUMS",
+      "sha256": "b359d76b69fd3f99e4ccbac062e8530ba0aff722c8adcab10c830fad2ac85e54",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-69136ac/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/final-69136ac/embedded-verification.json",
+      "sha256": "f107ecee0f7ce47adac1f1e93bd2f025df315c0e763d6cac23f827cba50b227a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-69136ac/embedded-verification.json"
+    },
+    {
+      "path": "artifacts/setup/build/final-69136ac/setup-manifest.json",
+      "sha256": "931b8cf75185c3c29997e5b6b330970e62074f305179759dc596d3751e12e42a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-69136ac/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/final-candidate-a-setup/Baxy.Setup.exe",
+      "sha256": "68cfc30172b5b15e72e4085fcfb243107b54931d050f111d87cfb1991930cd83",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-candidate-a-setup/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/final-candidate-a-setup/SHA256SUMS",
+      "sha256": "c3a91a50c9cbff667e2ce5046d1f0197f8440cc8534ebb4914afb7769683c4af",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-candidate-a-setup/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/final-candidate-a-setup/setup-manifest.json",
+      "sha256": "54e671340491b8fee5f48e272930faf307fcccce0450f704a071ffe24e61c59a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-candidate-a-setup/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/final-predecessor-setup/Baxy.Setup.exe",
+      "sha256": "22face7dc817f51fba6beebd3922d0b87e2cdd8b3a695cdf5ecfd8a8363553da",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-predecessor-setup/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/final-predecessor-setup/SHA256SUMS",
+      "sha256": "e9642c90d629ff61e2431fadc164c90c19f761ff89355cd7f4763cd05410cd83",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-predecessor-setup/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/final-predecessor-setup/setup-manifest.json",
+      "sha256": "1ea67fe2f53d285dd5cee5eff5ecb64e2c1e3566521ba350f0b4a8ea6edf1636",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/final-predecessor-setup/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/Baxy.Setup.exe",
+      "sha256": "c02defb9ad471cec4962c6a13f57a96edb27650e186b2cd765df8331fdf39a6b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/SHA256SUMS",
+      "sha256": "b98c41e15e0e57c1574c10fd53e05fdfa4b109ad4305594101218a80d3f65d1c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/setup-manifest.json",
+      "sha256": "ccd6c9b702cd4085f52f508b25fae5d33ae2085c0f1cf3380ca0e57299f12ca6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/Baxy.Setup.exe",
+      "sha256": "fe2b16c14a7369713cb76333ce8a248b27ede216c357a45c55d253e5ee9b5be5",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/SHA256SUMS",
+      "sha256": "7243b57c5ef038e7bb68e0c58ff496749be2166bd57fe40de2d95b14422ba990",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/setup-manifest.json",
+      "sha256": "669eebdba60ad11593d0309283d97e216945830360801ff6a2146b08443fb12b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/release-82e664057005/Baxy.Setup.exe",
+      "sha256": "ee2f342484ebdffb63388bc57fec7b9466ab240c38917d1a9fef9b85ae2053e1",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-82e664057005/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/release-82e664057005/SHA256SUMS",
+      "sha256": "9a491f3c9e0a89c9dbaf42d7059a03de50df8470db7ba9cfe0efa57f25432c34",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-82e664057005/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/release-82e664057005/embedded-verification.json",
+      "sha256": "69b525b3cdbd446765b6b5682350e195058d1a513009830e6439e3eefaf0db07",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-82e664057005/embedded-verification.json"
+    },
+    {
+      "path": "artifacts/setup/build/release-82e664057005/setup-manifest.json",
+      "sha256": "73c4f3af3e9dc2de415a0585bb17df77bbe2c9f7fb2b62f4d027b6eea72398c6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-82e664057005/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/release-9105ead/Baxy.Setup.exe",
+      "sha256": "6617a692f5e6289d2ccc4ec706d3e7752fef1d8e60ab1149c0f107d7c3b86e5b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-9105ead/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/release-9105ead/SHA256SUMS",
+      "sha256": "d395b69fd8aba8154fe01cab1f5c87ccd947512066d8df431f557ea66b8da667",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-9105ead/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/release-9105ead/embedded-verification.json",
+      "sha256": "ed9e725064bc80e8023349b0b099f252e591027a422029b868059c9e95377ce6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-9105ead/embedded-verification.json"
+    },
+    {
+      "path": "artifacts/setup/build/release-9105ead/setup-manifest.json",
+      "sha256": "514bf0fd31d364f0017255fe42e07fba85851d5cbd3be51d9b187fff1262ba74",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/release-9105ead/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/repro-3f547ef-setup-a/Baxy.Setup.exe",
+      "sha256": "3059917e1a739a1c215e313f502a2361c43c9ead2a180e2d85ba9406192f383d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/repro-3f547ef-setup-a/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/repro-3f547ef-setup-a/SHA256SUMS",
+      "sha256": "086eabf71ce5eb4830460c0b5510a3b6993fcc48e346b182f781ad526f2361a5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/repro-3f547ef-setup-a/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/repro-3f547ef-setup-a/setup-manifest.json",
+      "sha256": "97c37ac5211f2e07f8184f6049110a312201b3fdedd34445aff92ce8d183f407",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/repro-3f547ef-setup-a/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/repro-5dad02a669df-setup-a/Baxy.Setup.exe",
+      "sha256": "50b8b8d415a822efabfa8986f3ec10d8d20d940dd2feca84b97f547b65452c7a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/repro-5dad02a669df-setup-a/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/repro-5dad02a669df-setup-a/SHA256SUMS",
+      "sha256": "92f70a0b59ce699a97a5e70a3e5c2ee0e6bcfacc737d44dda8b051988850513d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/repro-5dad02a669df-setup-a/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/repro-5dad02a669df-setup-a/setup-manifest.json",
+      "sha256": "dc6ab570bee05f99a15ab193d62e0e23e6dbe6b1f48d97e60c770ee399a96ee7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/repro-5dad02a669df-setup-a/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/build/update-333702f9-win-x64/Baxy.Setup.exe",
+      "sha256": "48180876086a3888bc2efcd775fd8b367498fcfe5b4958138a27ec18e7cc0721",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/update-333702f9-win-x64/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/build/update-333702f9-win-x64/SHA256SUMS",
+      "sha256": "4283383318b92a921aa4179a291d0a6af84f441d263538445ac41de6079bb0e6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/update-333702f9-win-x64/SHA256SUMS"
+    },
+    {
+      "path": "artifacts/setup/build/update-333702f9-win-x64/setup-manifest.json",
+      "sha256": "3e5d5741a913c5a6f93828c0f4ea0e78d227dc544f869f0079f0af9831ce251b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/build/update-333702f9-win-x64/setup-manifest.json"
+    },
+    {
+      "path": "artifacts/setup/final_release_gate.json",
+      "sha256": "f616a2b4ccba1035e1a1dbe4ea5ddd5bf0567e78dedda1d1f4affd49ef71a2fa",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/final_release_gate.json"
+    },
+    {
+      "path": "artifacts/setup/gate14_lifecycle_gate.json",
+      "sha256": "5f4e7c2f753661ca95d800fbe25fc6641db1e795a48ea5745d7c74a3c824c145",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/gate14_lifecycle_gate.json"
+    },
+    {
+      "path": "artifacts/setup/runtime/minimal-uninstall-aot-dfb4d55af4ea4c4ba57d9f08cc755464/Baxy.Setup.exe",
+      "sha256": "9d80ea986de8ac4fe16f647d0f611c1a179babce1553bce3634ae487d932159f",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/runtime/minimal-uninstall-aot-dfb4d55af4ea4c4ba57d9f08cc755464/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/runtime/minimal-uninstall-aot-final-61c2003c08f5472c8dd007831d8c6f17/Baxy.Setup.exe",
+      "sha256": "37703252c4266f3e1a5bdfb96ad2a49407edf3a1d13583c177c931fa2a390644",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/runtime/minimal-uninstall-aot-final-61c2003c08f5472c8dd007831d8c6f17/Baxy.Setup.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/setup/setup_data_schema_gate.json",
+      "sha256": "863387e056d808fc68f00910ae8fde9b1756818ac117c92a5d706b986cb95ff3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/setup_data_schema_gate.json"
+    },
+    {
+      "path": "artifacts/setup/setup_package_gate.json",
+      "sha256": "824951b9359e4a8ac99f84e18b2921ff51fd2c1162303d06141c962ba2f58df4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/setup/setup_package_gate.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/dotnet/fdd-single-explicit/baxy-dotnet-slice.exe",
+      "sha256": "3adc63f103b1f813f1cfceff05f4b2d9aae235b783f9526ce58f10475a19ab8b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/dotnet/fdd-single-explicit/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/dotnet/fdd-single-v2/baxy-dotnet-slice.exe",
+      "sha256": "5d8130eadc62f829e8bea2ca8d007e4d6003dab4ae975739c623135e20b8abda",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/dotnet/fdd-single-v2/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/dotnet/fdd-single/baxy-dotnet-slice.exe",
+      "sha256": "41d59599881571294ed93b67595166664a893eae9370f89a172806f0f17ddee3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/dotnet/fdd-single/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/dotnet/native-aot-v2/baxy-dotnet-slice.exe",
+      "sha256": "1081b154c6c3634a18faab2836a4685a6a2f8c6ec0970afada0d24c8695d039a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/dotnet/native-aot-v2/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/dotnet_fdd_single/baxy-dotnet-slice.exe",
+      "sha256": "b6f5deab5cc8d7c103354771fb25c381ba8bdd93a6fc6ac330c658980f0c72f1",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/dotnet_fdd_single/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/dotnet_native_aot/baxy-dotnet-slice.exe",
+      "sha256": "854c11abe0179d7ccb3973099e967096601e5444065eec47577a614ebfcff07b",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/dotnet_native_aot/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/dotnet_sc_single/baxy-dotnet-slice.exe",
+      "sha256": "36562055e6a2e02731afa730266d5452067a8c18e1c7eeebf08614ae69ea2db3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/dotnet_sc_single/baxy-dotnet-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_asyncio.pyd",
+      "sha256": "c77de90cad749087a0c5dc5e19d78d24f6ef44e7e5ac19b8420cfc0cea62395d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_asyncio.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_bz2.pyd",
+      "sha256": "65f610646d10d5babea080e060d244b546ec52c54012e5e937dc72dcc2e2e7bc",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_bz2.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_ctypes.pyd",
+      "sha256": "0e56107a891100535f2da79d85a5ae65ff1227b4765bd108f8593ac1a1110d81",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_ctypes.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_decimal.pyd",
+      "sha256": "aeacfead2befcc0768063a037bb64bd32109ae09cb144e5f571b04dd7965db9d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_decimal.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_elementtree.pyd",
+      "sha256": "5009a9a53c03ef8387443b5cf6ce08e5c3a79727466a0b931c5bbca915bf89ca",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_elementtree.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_hashlib.pyd",
+      "sha256": "03d233dbace599168eaffec823de6ed7beec8c2a4ebfe9b8a3d8e042a59af3ba",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_hashlib.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_lzma.pyd",
+      "sha256": "e3deecc1f59a3b811c608861decd84de1e8df8bafd5e2b39188861318c5a38cf",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_lzma.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_msi.pyd",
+      "sha256": "b49332bae154ebdd8c3d5e7ddfdde336d9c47f91ba028dc67bafb2420b3dbb5c",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_msi.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_multiprocessing.pyd",
+      "sha256": "2c636df7059cb0dd7e978dd735c7c5c8ddb09cf94754cf9e232296b96c5c545a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_multiprocessing.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_overlapped.pyd",
+      "sha256": "662126ff80c3a1b4cedf74074029c12ae4743e6d3b37376e39ac70aacb7d4d3c",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_overlapped.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_queue.pyd",
+      "sha256": "48e76e0ad63f6932b4a77b5819f41c1e7595636ca8d9e824f0943a14b8bb5035",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_queue.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_socket.pyd",
+      "sha256": "3efa4636cf9e350856f6927d67a4c2564bf9bd2758a00bbf17d3aece5b60016d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_socket.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_sqlite3.pyd",
+      "sha256": "64b51df2805c58b023a875e8ae3be7ac7f61ef664f32ca6c90f6315da47ef0bc",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_sqlite3.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_ssl.pyd",
+      "sha256": "0bc527d2dbc50009f43b2ed5d5982c4f63f4b647647ffa9eda612dcda80f6040",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_ssl.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_uuid.pyd",
+      "sha256": "acce4f281d7ffb2dec0997527faf25b1df62ad7bd3032c568ddcf65c90edc867",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_uuid.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_wmi.pyd",
+      "sha256": "a980f1e7a29842bd946863fc2693fbeb555a9dc0f9e1630dfed9a2fcdef3ece2",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_wmi.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_zoneinfo.pyd",
+      "sha256": "76f1439cda82ab6976df6ba505c4079444703f6d44d8b0259ce59c0ff4279fb4",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_zoneinfo.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libcrypto-3.dll",
+      "sha256": "ccfffddcd3defb8d899026298af9af43bc186130f8483d77e97c93233d5f27d7",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libcrypto-3.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libffi-8.dll",
+      "sha256": "eff52743773eb550fcc6ce3efc37c85724502233b6b002a35496d828bd7b280a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libffi-8.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libssl-3.dll",
+      "sha256": "007142039f04d04e0ed607bda53de095e5bc6a8a10d26ecedde94ea7d2d7eefe",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libssl-3.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/pyexpat.pyd",
+      "sha256": "d615e193d1affcdbfe504e90d3621cbdcff94bf72b79d899126534507fd6d27a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/pyexpat.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python.cat",
+      "sha256": "5d85439736ae088d9680b391e2bca55ca7e9cc5b41a12ebe8e2f554506c7e72e",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python.cat",
+      "binary_format": "cat"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python.exe",
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python3.dll",
+      "sha256": "fb975a606e7fbf74f64260e3f60c3490b4f74a183c0926fd6ed1ac4c52ac7b1c",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python3.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312._pth",
+      "sha256": "2820f241bc9d6810d4db21c21cca3845799367fbdf0199620fb37c86a74b945c",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312._pth",
+      "binary_format": "_pth"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312.dll",
+      "sha256": "9a0e3435aaa680d868150f87ab3e388ad2eebc22f87e036155c7b4eda8cd2120",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312.zip",
+      "sha256": "fb131c0ef7e35cc5250a74c8cd18744bf4115fb8163710711f3758d7df3d1f88",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312.zip",
+      "binary_format": "zip"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/pythonw.exe",
+      "sha256": "d72294fb338bc2fc8896d25a7395a4db466425427e1559e77185d5135a830681",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/pythonw.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/select.pyd",
+      "sha256": "d4d7181b11db0bd22a6cd5cda6f8583d1f5c77615fd0a6ca33350619d6e0438a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/select.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/sqlite3.dll",
+      "sha256": "8daa45684bf6688fca28d956b2e8942f2fa98f656675ce68e6d61dd869848a7a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/sqlite3.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/unicodedata.pyd",
+      "sha256": "208ee1cd3cbad0828433ca7246b05be2b1ff5569983d27d296c0b38888585488",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/unicodedata.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/vcruntime140.dll",
+      "sha256": "052ad6a20d375957e82aa6a3c441ea548d89be0981516ca7eb306e063d5027f4",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/vcruntime140.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/vcruntime140_1.dll",
+      "sha256": "6a99bc0128e0c7d6cbbf615fcc26909565e17d4ca3451b97f8987f9c6acbc6c8",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/vcruntime140_1.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/winsound.pyd",
+      "sha256": "100e8d676777603c7258daf9b2f23ef001f09f1596d8708de359326fff72bddd",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/winsound.pyd",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/python-3.12.10-embed-amd64.zip",
+      "sha256": "4acbed6dd1c744b0376e3b1cf57ce906f9dc9e95e68824584c8099a63025a3c3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_embedded_runtime/python-3.12.10-embed-amd64.zip",
+      "binary_format": "zip"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-console-l1-1-0.dll",
+      "sha256": "e756f6970905657cf73ecb3f57bae55a67be29afa75ae4d16046b0f7229708eb",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-console-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-datetime-l1-1-0.dll",
+      "sha256": "4e08856ff5203592c27f943f5586d2214b7c5dacde1b1ef75c2316590ab788c9",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-datetime-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-debug-l1-1-0.dll",
+      "sha256": "e83d5e5eb772070999f34a214ebffcf0a6068ebc1c4b4f1991188448f323808d",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-debug-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-errorhandling-l1-1-0.dll",
+      "sha256": "45afaf08d1cd7e43ac5ded47ed5fd708b86e835a9470c81e8130ed6955b84db8",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-errorhandling-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-fibers-l1-1-0.dll",
+      "sha256": "83ecd4fc05c5603621ab687657b8862175025c9910f8dc1b23135d2350dd9219",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-fibers-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l1-1-0.dll",
+      "sha256": "f73000652ca7ca7468ca6134663c99cbaf7bd97740bdbdd5d1e1e23ccfd5db75",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l1-2-0.dll",
+      "sha256": "b153ff5d667c8297776f21c5f440cff28c3e3a5b1f748fd4700306e1fb283ed8",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l1-2-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l2-1-0.dll",
+      "sha256": "f957a4c261506484b53534a9be8931c02ec1a349b3f431a858f8215cecfec3f7",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l2-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-handle-l1-1-0.dll",
+      "sha256": "2783b85d98f4a92faf67a94fc04e9c2f6786627949984828d14deab1682bbe3f",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-handle-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-heap-l1-1-0.dll",
+      "sha256": "6d14b49e8e21de08b9fa778f15c259dbd4feb9b54eb628d69bd50e5c86aa65a5",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-heap-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-interlocked-l1-1-0.dll",
+      "sha256": "22cf7040d9cb3dc79d941a6bbe4cebd5beaa1355d6e424843e6970404281e61e",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-interlocked-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-libraryloader-l1-1-0.dll",
+      "sha256": "425e4ebee71347295e36776d415611d451e2a51b451df57da23ed8f8fb4664e8",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-libraryloader-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-localization-l1-2-0.dll",
+      "sha256": "e4011458af1397e26d0b233cbb2fa661faa6dae7b7a9541e9311c8af1ecb5e48",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-localization-l1-2-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-memory-l1-1-0.dll",
+      "sha256": "9c5ea7a7e943c65da3aeff4da33b47fc4a3becea2f7a0b6aa2b632cd6d8b4632",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-memory-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-namedpipe-l1-1-0.dll",
+      "sha256": "245cf5d5abc866d5ce327c4a1524ae3954ccfc9a7284c817fa15962695e6b6fa",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-namedpipe-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processenvironment-l1-1-0.dll",
+      "sha256": "3add350dcd79c64a98e47adf733f26c9fdf47df097b060f04f067cdaf32e99cc",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processenvironment-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processthreads-l1-1-0.dll",
+      "sha256": "42f88e44e488a74af796e8c2a2548879764a40e554f35d1deb8eaff5def09e20",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processthreads-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processthreads-l1-1-1.dll",
+      "sha256": "5c566535a9ac607fa99a665ab246ffb78767995dde86c4a9a5c518dd22b76e56",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processthreads-l1-1-1.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-profile-l1-1-0.dll",
+      "sha256": "cac8fb2938ed80bd7eed42e3c68dead6cb41c30cfb567f23085986422f1a2747",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-profile-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-rtlsupport-l1-1-0.dll",
+      "sha256": "02fd3b0adf86967b6fc133797c12fa9ee8d0cf64778b5ca937b56e86ac726343",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-rtlsupport-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-string-l1-1-0.dll",
+      "sha256": "c9103f6afdd8a6fea734da372911b0a3b018a84e00675a9355ea6f091e641781",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-string-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-synch-l1-1-0.dll",
+      "sha256": "882edcaa7b39dc9e330d1b3dcb2a770be2404d6358d76cf4cf5e52231bedac60",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-synch-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-synch-l1-2-0.dll",
+      "sha256": "2d04920e410d81e3a044a76724a23cf892b23a5b382fb079abd6f689199c7428",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-synch-l1-2-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-sysinfo-l1-1-0.dll",
+      "sha256": "e92ce06aa782a4e50a5bc95da5ac5ded0dc3da7e1152078002a12367aa7cc1af",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-sysinfo-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-timezone-l1-1-0.dll",
+      "sha256": "bd4e40b2f5d0f60feceeb7622166e1a61fb34ac2cd5484e1d9826c7cffa3029c",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-timezone-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-util-l1-1-0.dll",
+      "sha256": "edd387b01cb9d85a44e27e656e5ea6898b8e9604682db29cb87ee3236f3a1d9f",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-util-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-conio-l1-1-0.dll",
+      "sha256": "bf651fcd0f10dc528caa3168abd6ea528458c78aaa75b93b3c615d5a18567192",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-conio-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-convert-l1-1-0.dll",
+      "sha256": "1f818ccd44865c7c91c1ee5df7d21dc17840601d7470c0d1a486c5874304edd2",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-convert-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-environment-l1-1-0.dll",
+      "sha256": "b84f44a882b2caa6d0bc3c01e8d012e881324b800fd39e2728fecdc65315a245",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-environment-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-filesystem-l1-1-0.dll",
+      "sha256": "d9fc17ce5dd5aecac0dca2d9a17a20271a13f68cd6cfa89163d72904a72f6b8a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-filesystem-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-heap-l1-1-0.dll",
+      "sha256": "d7fab15f2d1298a11822ce5c7756da2eab1112bd3561b22db6b25a5a8acafad6",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-heap-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-locale-l1-1-0.dll",
+      "sha256": "31fc3b5665c3bb2006496b5cbb0e5667b186263a867dbe5a760a996305f4f514",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-locale-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-math-l1-1-0.dll",
+      "sha256": "98e8728908f2872819728e709291529bac39751dec7d01c03a175c4688b9c233",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-math-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-process-l1-1-0.dll",
+      "sha256": "a7433b9f8965f914da00dda4ede62d4db69f561a548cbc8d312293d0917a33c7",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-process-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-runtime-l1-1-0.dll",
+      "sha256": "1d7d6e883472eb5ddafe383adbaa5f8ed7b9d6267e7ade971bbff47ec4b47935",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-runtime-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-stdio-l1-1-0.dll",
+      "sha256": "1516552690d6a38d65a8016d889f2ce1515649be6a45ef82cbed08a73690a7b4",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-stdio-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-string-l1-1-0.dll",
+      "sha256": "9636be82c51d61dd990504d786fac0d51d41f73d22700a18d4fbbfcf6da5dff5",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-string-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-time-l1-1-0.dll",
+      "sha256": "554b506ca648507f10eeb5bae124ff91594f5fdd81d33b0171334be7ad5c7816",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-time-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-utility-l1-1-0.dll",
+      "sha256": "a7f53b76e7ea837f45bdb8712a864fb0c427c5eb863d155a72b422b96417ea10",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-utility-l1-1-0.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/base_library.zip",
+      "sha256": "96c378652a9c68c6b763c229f0d55ccfae5329e87464009f981f258b1cf9b3b3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/base_library.zip",
+      "binary_format": "zip"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/ucrtbase.dll",
+      "sha256": "c04daeba7e7c4b711d33993ab4c51a2e087f98f4211aea0dcb3a216656ba0ab7",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/ucrtbase.dll",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/baxy-python-onedir.exe",
+      "sha256": "4583c7f3056c1fa2d5b9d7ef0bce80d091232ab9ca06b4713f21de9039dd4aad",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/baxy-python-onedir.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/spec/baxy-python-onedir.spec",
+      "sha256": "a29d70b128868b89f1bb97c6ceed0c1006ffbef9a89e69332d3643da28e427c4",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/spec/baxy-python-onedir.spec",
+      "binary_format": "spec"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/Analysis-00.toc",
+      "sha256": "e969ef6717a349b8a2557709a8fe95ddb78561dcb6424e9049a2c62bb3d4abc1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/Analysis-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/COLLECT-00.toc",
+      "sha256": "e6043ce6073b2aaf5fcead049ff09a7a18d5b26f5a2d2956ddb52b3b594a403a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/COLLECT-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/EXE-00.toc",
+      "sha256": "b21752e7f677e505b0d68508ab34bf4bfd3e7d16228d5f0e3614bcae9dfc2d15",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/EXE-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PKG-00.toc",
+      "sha256": "785f616fc6389d2b9520977cc4ae7e3ff5365fd2acfdf5141cd707863786971a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PKG-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PYZ-00.pyz",
+      "sha256": "8f56553b937f8a51711ae28693e504e36edbbd6c734393e58968f591a260959a",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PYZ-00.pyz",
+      "binary_format": "pyz"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PYZ-00.toc",
+      "sha256": "0ae98082addb46a07e894d2d48c15fc3d07690dd8d0c2a28c6d0a30b12927c71",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PYZ-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/baxy-python-onedir.pkg",
+      "sha256": "1d25e4c9fe401278bf47a8e17b03a89991fd2be22a719aac15439bc9934f46f6",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/baxy-python-onedir.pkg",
+      "binary_format": "pkg"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/xref-baxy-python-onedir.html",
+      "sha256": "ad64f0e073dd803b5a76ad91442a472185260c41a8a9756aec3f832648311a6b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/xref-baxy-python-onedir.html"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/dist/baxy-python-onefile.exe",
+      "sha256": "0fb8d8fd7b67b9c5d2ee495f1d1f28b98726a28bf3a4e531743419bcc642cbd3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/dist/baxy-python-onefile.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/spec/baxy-python-onefile.spec",
+      "sha256": "b9545a3578ae0b77b0aad7c27d0ce0c86350b5747e08ed0da1e357c40cad2e67",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/spec/baxy-python-onefile.spec",
+      "binary_format": "spec"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/Analysis-00.toc",
+      "sha256": "127a78903f41cd79c35dfc98defc25e41d0349819224d76798f2cf53f95b6349",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/Analysis-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/EXE-00.toc",
+      "sha256": "196c888a09e5338e0fa0b9be61a96abb0e1263e8ba3759182ecaa6aeb7c5838b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/EXE-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/PKG-00.toc",
+      "sha256": "a40253d597544e9f9fa6cf3c2efd96e944fd65e14da797fb89ad476b19798a69",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/PKG-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/PYZ-00.toc",
+      "sha256": "ea1ee187764a50a915711e954e829c9be1f7ed066bc8716f21d24d13c4d0ac86",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/PYZ-00.toc"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/base_library.zip",
+      "sha256": "19c9fb48cf3eb1ff27766d2b3cdb9b97ffa0bab251ec644525d9e118384e1633",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/base_library.zip",
+      "binary_format": "zip"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/baxy-python-onefile.pkg",
+      "sha256": "9aae335b3eded712cf3ade657e713cb818ffa0457fc7f6196c2abea57325d935",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/baxy-python-onefile.pkg",
+      "binary_format": "pkg"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/rust_native/baxy-rust-slice.exe",
+      "sha256": "1081fe6653efe28e3ac71cbbc364079a98ae99d167986abebfe817dfb44f30e0",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/packaging/rust_native/baxy-rust-slice.exe",
+      "binary_format": "pe"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/.rustc_info.json",
+      "sha256": "72f3e7812bcd76894b3605874af7e89261487fde9259277818fd3f00387bda68",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/.rustc_info.json"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/release/baxy-rust-slice.d",
+      "sha256": "67ac92089a6e2895238524d5f2d1a954672c7f7b6bd752360cc16834484d73ea",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_depfile"
+      ],
+      "exclusion_rule": "rust_depfile"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/release/baxy_rust_slice.pdb",
+      "sha256": "a603e6171c4ace6b69a851b6db188f6351f12ea59291457be4c19d88a9539f40",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "debug_symbol"
+      ],
+      "exclusion_rule": "debug_symbol"
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/release/build/serde_core-493495480d391b30/invoked.timestamp",
+      "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3",
+      "source_id": "baxy",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json#artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/release/build/serde_core-493495480d391b30/invoked.timestamp",
+      "binary_format": "timestamp"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-097-baxy-01-artifacts-research-wake_ssl_ctc_ensemble_development_v1.v1.j",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_ssl_ctc_ensemble_development_v1.v1.json parser=json rows=1 bytes=33254 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_ssl_ctc_ensemble_development_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-02-artifacts-research-wake_stt_landscape_20260811.json",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_stt_landscape_20260811.json",
+      "denominator": "1 files in group artifacts/research/wake_stt_landscape_20260811.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_stt_landscape_20260811.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_stt_landscape_20260811.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_stt_landscape_20260811.json parser=json rows=1 bytes=3672 dist={\"scalar_keys\": [\"researched_at_utc\", \"schema\", \"scope\"], \"list_lengths\": {\"constraints\": 6, \"findings\": 5}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_stt_landscape_20260811.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-03-artifacts-research-wake_verifier_expanded_development_v1.v1.",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_expanded_development_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_expanded_development_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_expanded_development_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_expanded_development_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_expanded_development_v1.v1.json parser=json rows=1 bytes=6849 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\", \"scope\"], \"list_l…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_expanded_development_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-04-artifacts-research-wake_verifier_negative_holdout_hardnegati",
+      "card_kind": "negative",
+      "corpus": "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_negative_holdout_hardnegative_development_v5.v1.json parser=json rows=1 bytes=4614714 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"development_gate_passed\", \"effect…",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-05-artifacts-research-wake_verifier_negative_holdout_hardnegati",
+      "card_kind": "negative",
+      "corpus": "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log",
+      "denominator": "1 files in group artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log parser=log rows=680 bytes=13878 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_negative_holdout_hardnegative_development_v5.v1.json.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-06-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json parser=json rows=1 bytes=138011 dist={\"scalar_keys\": [\"preregistration_sha256\", \"scan_sha256\", \"schema\"], \"list_lengths\": {\"records\": 168}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v1.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-07-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json parser=json rows=1 bytes=46760 dist={\"scalar_keys\": [\"preregistration_sha256\", \"scan_sha256\", \"schema\"], \"list_lengths\": {\"records\": 56}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v2.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-08-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json parser=json rows=1 bytes=128722 dist={\"scalar_keys\": [\"preregistration_sha256\", \"scan_sha256\", \"schema\"], \"list_lengths\": {\"records\": 152}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v3.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-09-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json parser=json rows=1 bytes=121811 dist={\"scalar_keys\": [\"preregistration_sha256\", \"scan_sha256\", \"schema\"], \"list_lengths\": {\"records\": 144}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v4.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-10-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v5.json parser=json rows=1 bytes=1250827 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"development_gate_passed\", \"effect…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v5.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-11-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v6.json parser=json rows=1 bytes=1250827 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"development_gate_passed\", \"effect…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v6.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-12-artifacts-research-wake_verifier_openslr12_dev_clean_product",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_openslr12_dev_clean_product_policy_v7.json parser=json rows=1 bytes=1224311 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"development_gate_passed\", \"effect…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_openslr12_dev_clean_product_policy_v7.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-13-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v1.v1.json parser=json rows=1 bytes=10099 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-14-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v2.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v2.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v2.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v2.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v2.v1.json parser=json rows=1 bytes=10221 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v2.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-15-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v3.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v3.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v3.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v3.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v3.v1.json parser=json rows=1 bytes=11006 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v3.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-16-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v4.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v4.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v4.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v4.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v4.v1.json parser=json rows=1 bytes=11386 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v4.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-17-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v5.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v5.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v5.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v5.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v5.v1.json parser=json rows=1 bytes=11396 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v5.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-18-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v6.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v6.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v6.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v6.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v6.v1.json parser=json rows=1 bytes=11568 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v6.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-19-artifacts-research-wake_verifier_product_capture_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wake_verifier_product_capture_development_v7.v1.json",
+      "denominator": "1 files in group artifacts/research/wake_verifier_product_capture_development_v7.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wake_verifier_product_capture_development_v7.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wake_verifier_product_capture_development_v7.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wake_verifier_product_capture_development_v7.v1.json parser=json rows=1 bytes=11230 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\"], \"list_length…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wake_verifier_product_capture_development_v7.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-20-artifacts-research-wakeword_small_streaming_verifier_feasibi",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json",
+      "denominator": "1 files in group artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wakeword_small_streaming_verifier_feasibility.v1.json parser=json rows=1 bytes=2813 dist={\"scalar_keys\": [\"blind_human_partition_accessed\", \"decision\", \"effects_executed\", \"measured_at_utc\", \"schema\", \"scope\"], \"list_lengths\": {\"primary_research\": 2}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wakeword_small_streaming_verifier_feasibility.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-21-artifacts-research-wav2vec2_hidden_wake_expanded_development",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wav2vec2_hidden_wake_expanded_development_v1.v1.json parser=json rows=1 bytes=10299 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\", \"scope\"], \"list_l…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wav2vec2_hidden_wake_expanded_development_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-22-artifacts-research-wav2vec2_hidden_wake_expanded_layer_sweep",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json parser=json rows=1 bytes=1850991 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\", \"scope\"], \"list_l…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wav2vec2_hidden_wake_expanded_layer_sweep_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-23-artifacts-research-wav2vec2_hidden_wake_product_scan_develop",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wav2vec2_hidden_wake_product_scan_development_v1.v1.json parser=json rows=1 bytes=9707 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\", \"scope\"], \"list_l…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wav2vec2_hidden_wake_product_scan_development_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-24-artifacts-research-wav2vec2_hidden_wake_separability_develop",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json",
+      "denominator": "1 files in group artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wav2vec2_hidden_wake_separability_development_v1.v1.json parser=json rows=1 bytes=241892 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\", \"scope\"], \"list_l…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wav2vec2_hidden_wake_separability_development_v1.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-25-artifacts-research-wav2vec2_hidden_wake_separability_develop",
+      "card_kind": "run",
+      "corpus": "artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json",
+      "denominator": "1 files in group artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "wav2vec2_hidden_wake_separability_development_v2.v1.json parser=json rows=1 bytes=237193 dist={\"scalar_keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"product_operating_point\", \"runtime_seconds\", \"schema\", \"scope\"], \"list_l…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/research/wav2vec2_hidden_wake_separability_development_v2.v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-26-artifacts-runtime-registered_runtime_expectation_r281.json",
+      "card_kind": "run",
+      "corpus": "artifacts/runtime/registered_runtime_expectation_r281.json",
+      "denominator": "1 files in group artifacts/runtime/registered_runtime_expectation_r281.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/runtime/registered_runtime_expectation_r281.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/runtime/registered_runtime_expectation_r281.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "registered_runtime_expectation_r281.json parser=json rows=1 bytes=1152 dist={\"scalar_keys\": [\"authority\", \"manifestIsVersioned\", \"manifestPresent\", \"overall_goal_met\", \"schema\", \"section_7_met\", \"whyThisExists\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/runtime/registered_runtime_expectation_r281.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-27-artifacts-setup-baxy_1_0_8_release_attestation.json",
+      "card_kind": "run",
+      "corpus": "artifacts/setup/baxy_1_0_8_release_attestation.json",
+      "denominator": "1 files in group artifacts/setup/baxy_1_0_8_release_attestation.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/baxy_1_0_8_release_attestation.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/baxy_1_0_8_release_attestation.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_1_0_8_release_attestation.json parser=json rows=1 bytes=4892 dist={\"scalar_keys\": [\"completed_utc\", \"schema\", \"status\", \"version\"], \"list_lengths\": {\"lifecycle\": 3, \"limitations\": 7}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/setup/baxy_1_0_8_release_attestation.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-28-artifacts-setup-build",
+      "card_kind": "asset",
+      "corpus": "artifacts/setup/build",
+      "denominator": "33 files in group artifacts/setup/build; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/build",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/build/final-69136ac/Baxy.Setup.exe",
+        "artifacts/setup/build/final-69136ac/SHA256SUMS",
+        "artifacts/setup/build/final-69136ac/embedded-verification.json",
+        "artifacts/setup/build/final-69136ac/setup-manifest.json",
+        "artifacts/setup/build/final-candidate-a-setup/Baxy.Setup.exe",
+        "artifacts/setup/build/final-candidate-a-setup/SHA256SUMS",
+        "artifacts/setup/build/final-candidate-a-setup/setup-manifest.json",
+        "artifacts/setup/build/final-predecessor-setup/Baxy.Setup.exe",
+        "artifacts/setup/build/final-predecessor-setup/SHA256SUMS",
+        "artifacts/setup/build/final-predecessor-setup/setup-manifest.json",
+        "artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/Baxy.Setup.exe",
+        "artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/SHA256SUMS",
+        "artifacts/setup/build/gate14-d69a960226bb-1_0_0-predecessor-setup/setup-manifest.json",
+        "artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/Baxy.Setup.exe",
+        "artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/SHA256SUMS",
+        "artifacts/setup/build/gate14-d69a960226bb-1_0_1-candidate-a-setup/setup-manifest.json",
+        "artifacts/setup/build/release-82e664057005/Baxy.Setup.exe",
+        "artifacts/setup/build/release-82e664057005/SHA256SUMS",
+        "artifacts/setup/build/release-82e664057005/embedded-verification.json",
+        "artifacts/setup/build/release-82e664057005/setup-manifest.json",
+        "artifacts/setup/build/release-9105ead/Baxy.Setup.exe",
+        "artifacts/setup/build/release-9105ead/SHA256SUMS",
+        "artifacts/setup/build/release-9105ead/embedded-verification.json",
+        "artifacts/setup/build/release-9105ead/setup-manifest.json",
+        "artifacts/setup/build/repro-3f547ef-setup-a/Baxy.Setup.exe",
+        "artifacts/setup/build/repro-3f547ef-setup-a/SHA256SUMS",
+        "artifacts/setup/build/repro-3f547ef-setup-a/setup-manifest.json",
+        "artifacts/setup/build/repro-5dad02a669df-setup-a/Baxy.Setup.exe",
+        "artifacts/setup/build/repro-5dad02a669df-setup-a/SHA256SUMS",
+        "artifacts/setup/build/repro-5dad02a669df-setup-a/setup-manifest.json",
+        "artifacts/setup/build/update-333702f9-win-x64/Baxy.Setup.exe",
+        "artifacts/setup/build/update-333702f9-win-x64/SHA256SUMS",
+        "artifacts/setup/build/update-333702f9-win-x64/setup-manifest.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Baxy.Setup.exe parser=binary_inventory rows=0 bytes=90110976 dist={} | SHA256SUMS parser=log rows=2 bytes=167 dist={\"fail_like\": 0, \"pass_like\": 0} | embedded-verification.json parser=json rows=1 bytes=458 dist={\"scalar_keys\": [\"commit\", \"content_id\", \"data_schema\", \"manifest_sha256\", \"package_bytes\", \"package_sha256\", \"schema\", \"source_date_epoch\", \"status\", \"version\"], \"list_lengths\":… | setup-manifest.json parser=json rows=1 bytes=1084 dist={\"scalar_keys\": [\"authenticity\", \"authenticode\", \"configuration\", \"data_schema\", \"product\", \"runtime\", \"schema\", \"target_framework\", \"version\"], \"list_lengths\": {}} | Baxy.Setup.exe parser=binary_inventory rows=0 bytes=87040000 dist={} | SHA256SUMS parser=log rows=2 bytes=167 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/setup/build/final-69136ac/Baxy.Setup.exe",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-29-artifacts-setup-final_release_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/setup/final_release_gate.json",
+      "denominator": "1 files in group artifacts/setup/final_release_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/final_release_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/final_release_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "final_release_gate.json parser=json rows=1 bytes=7567 dist={\"scalar_keys\": [\"observed_utc\", \"schema\", \"scope\", \"status\", \"tree_ledger_contract\"], \"list_lengths\": {\"deferred_by_environment\": 2, \"limitations\": 5}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/setup/final_release_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-30-artifacts-setup-gate14_lifecycle_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/setup/gate14_lifecycle_gate.json",
+      "denominator": "1 files in group artifacts/setup/gate14_lifecycle_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/gate14_lifecycle_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/gate14_lifecycle_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "gate14_lifecycle_gate.json parser=json rows=1 bytes=5013 dist={\"scalar_keys\": [\"schema\", \"scope\", \"status\"], \"list_lengths\": {\"limitations\": 5}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/setup/gate14_lifecycle_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-31-artifacts-setup-runtime",
+      "card_kind": "asset",
+      "corpus": "artifacts/setup/runtime",
+      "denominator": "2 files in group artifacts/setup/runtime; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/runtime",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/runtime/minimal-uninstall-aot-dfb4d55af4ea4c4ba57d9f08cc755464/Baxy.Setup.exe",
+        "artifacts/setup/runtime/minimal-uninstall-aot-final-61c2003c08f5472c8dd007831d8c6f17/Baxy.Setup.exe"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Baxy.Setup.exe parser=binary_inventory rows=0 bytes=3916800 dist={} | Baxy.Setup.exe parser=binary_inventory rows=0 bytes=3917824 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/setup/runtime/minimal-uninstall-aot-dfb4d55af4ea4c4ba57d9f08cc755464/Baxy.Setup.exe",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-32-artifacts-setup-setup_data_schema_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/setup/setup_data_schema_gate.json",
+      "denominator": "1 files in group artifacts/setup/setup_data_schema_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/setup_data_schema_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/setup_data_schema_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "setup_data_schema_gate.json parser=json rows=1 bytes=3218 dist={\"scalar_keys\": [\"schema\", \"scope\", \"status\"], \"list_lengths\": {\"limitations\": 4}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "artifacts/setup/setup_data_schema_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-33-artifacts-setup-setup_package_gate.json",
+      "card_kind": "run",
+      "corpus": "artifacts/setup/setup_package_gate.json",
+      "denominator": "1 files in group artifacts/setup/setup_package_gate.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/setup/setup_package_gate.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/setup/setup_package_gate.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "setup_package_gate.json parser=json rows=1 bytes=6997 dist={\"scalar_keys\": [\"schema\", \"scope\", \"status\"], \"list_lengths\": {\"limitations\": 6}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/setup/setup_package_gate.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-097-baxy-34-artifacts-technology_tournament-build",
+      "card_kind": "asset",
+      "corpus": "artifacts/technology_tournament/build",
+      "denominator": "104 files in group artifacts/technology_tournament/build; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/technology_tournament/build",
+      "consumers": "technology tournament experiment (not product runtime)",
+      "associated_benchmark": "technology_tournament round artifacts",
+      "source_files": [
+        "artifacts/technology_tournament/build/dotnet/fdd-single-explicit/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/dotnet/fdd-single-v2/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/dotnet/fdd-single/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/dotnet/native-aot-v2/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/packaging/dotnet_fdd_single/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/packaging/dotnet_native_aot/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/packaging/dotnet_sc_single/baxy-dotnet-slice.exe",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_asyncio.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_bz2.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_ctypes.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_decimal.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_elementtree.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_hashlib.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_lzma.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_msi.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_multiprocessing.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_overlapped.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_queue.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_socket.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_sqlite3.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_ssl.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_uuid.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_wmi.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/_zoneinfo.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libcrypto-3.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libffi-8.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/libssl-3.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/pyexpat.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python.cat",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python.exe",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python3.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312._pth",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/python312.zip",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/pythonw.exe",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/select.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/sqlite3.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/unicodedata.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/vcruntime140.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/vcruntime140_1.dll",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/winsound.pyd",
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/python-3.12.10-embed-amd64.zip",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-console-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-datetime-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-debug-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-errorhandling-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-fibers-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l1-2-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-file-l2-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-handle-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-heap-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-interlocked-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-libraryloader-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-localization-l1-2-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-memory-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-namedpipe-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processenvironment-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processthreads-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-processthreads-l1-1-1.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-profile-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-rtlsupport-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-string-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-synch-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-synch-l1-2-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-sysinfo-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-timezone-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-core-util-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-conio-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-convert-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-environment-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-filesystem-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-heap-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-locale-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-math-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-process-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-runtime-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-stdio-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-string-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-time-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/api-ms-win-crt-utility-l1-1-0.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/base_library.zip",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/_internal/ucrtbase.dll",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/dist/baxy-python-onedir/baxy-python-onedir.exe",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/spec/baxy-python-onedir.spec",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/Analysis-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/COLLECT-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/EXE-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PKG-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PYZ-00.pyz",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/PYZ-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/baxy-python-onedir.pkg",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/xref-baxy-python-onedir.html",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/dist/baxy-python-onefile.exe",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/spec/baxy-python-onefile.spec",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/Analysis-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/EXE-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/PKG-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/PYZ-00.toc",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/base_library.zip",
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onefile/work/baxy-python-onefile/baxy-python-onefile.pkg",
+        "artifacts/technology_tournament/build/packaging/rust_native/baxy-rust-slice.exe",
+        "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/.rustc_info.json",
+        "artifacts/technology_tournament/build/rb/a/artifacts/technology_tournament/build/o/rust_target/release/build/serde_core-493495480d391b30/invoked.timestamp"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy-dotnet-slice.exe parser=binary_inventory rows=0 bytes=73500550 dist={} | baxy-dotnet-slice.exe parser=binary_inventory rows=0 bytes=186460 dist={} | baxy-dotnet-slice.exe parser=binary_inventory rows=0 bytes=73500550 dist={} | baxy-dotnet-slice.exe parser=binary_inventory rows=0 bytes=1851392 dist={} | baxy-dotnet-slice.exe parser=binary_inventory rows=0 bytes=186460 dist={} | baxy-dotnet-slice.exe parser=binary_inventory rows=0 bytes=1851392 dist={}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/technology_tournament/build/dotnet/fdd-single-explicit/baxy-dotnet-slice.exe",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=172 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-098-baxy-baxy_art_technology_tournament",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-097-baxy.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

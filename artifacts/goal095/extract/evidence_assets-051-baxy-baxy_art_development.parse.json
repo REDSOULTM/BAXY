@@ -1,0 +1,2769 @@
+{
+  "batch_id": "evidence_assets-051-baxy-baxy_art_development",
+  "source_id": "baxy",
+  "file_count": 45,
+  "hash_ok": 45,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/stt_audio_arena_parakeet_greedy_development_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18256,
+      "sha256": "e987fe7224e2a6940de2431cca328506ef4e7808e74e9e81897ae4ba8137b7e6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18255,
+        "elapsedSeconds": {
+          "min": 5.77537,
+          "max": 5.77537
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_audio_arena_product_parakeet_development_v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19067,
+      "sha256": "7111a53a12d4f33ff0a6f39a707f1ac5c093daad55f977e803ee04abbba9c549",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19066,
+        "elapsedSeconds": {
+          "min": 7.219696,
+          "max": 7.219696
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_audio_arena_qwen3_asr_onnx_cpu_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19447,
+      "sha256": "70bc670175f969e5f09b1ea5835b6f4dc0f406f4eca56e1211ab2edfc57204b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "blindHoldoutOpened",
+          "candidatePromoted",
+          "cases",
+          "contract",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "frozenEvaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "model",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status",
+          "wakeProgramTree"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutOpened",
+          "candidatePromoted",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19446,
+        "elapsedSeconds": {
+          "min": 29.156729,
+          "max": 29.156729
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"blindHoldoutOpened\", \"candidatePromoted\", \"cases\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"frozenEvaluator\", \"intentOracle\", \"measuredAtUtc\", \"model\", \"partiti…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"blindHoldoutOpened\", \"candidatePromoted\", \"cases\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"frozenEvaluator\", \"intentOracle\", \"measuredAtUtc\", \"model\", \"partiti…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_bangor_miami_development_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44918,
+      "sha256": "f999d8348a98f94a02e904a78daef75c77181e72b077f6e1e61cbdc80ec82d46",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "evaluator",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 48
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44917,
+        "elapsedSeconds": {
+          "min": 34.65299,
+          "max": 34.65299
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"evaluator\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"evaluator\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_canary180m_onnx_cpu_development_verdict_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2791,
+      "sha256": "af8f36de442453142070f9a9a0c31e7390f95a39e1a71e63a96686896a01a68c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutOpened",
+          "candidate",
+          "decision",
+          "developmentOnly",
+          "effectsExecuted",
+          "evidence",
+          "publishedAtUtc",
+          "results",
+          "schema",
+          "status",
+          "thresholdsChanged",
+          "wakeProgramTreeSha256"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutOpened",
+          "developmentOnly",
+          "effectsExecuted",
+          "publishedAtUtc",
+          "schema",
+          "status",
+          "thresholdsChanged",
+          "wakeProgramTreeSha256"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2790,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutOpened\", \"candidate\", \"decision\", \"developmentOnly\", \"effectsExecuted\", \"evidence\", \"publishedAtUtc\", \"results\", \"schema\", \"status\", \"thresholdsChanged\", \"wakeProgramTreeSha256\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutOpened\", \"candidate\", \"decision\", \"developmentOnly\", \"effectsExecuted\", \"evidence\", \"publishedAtUtc\", \"results\", \"schema\", \"status\", \"thresholdsChanged\", \"wakeProgramTreeSha256\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_bounded_fusion_development_v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 87078,
+      "sha256": "b5c3fcdaea01d4c6993fd35fb634c89d97d7fbe2c702cfd743ec3495e302d68d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "effectsExecuted",
+          "fusionEvaluator",
+          "inputs",
+          "measuredAtUtc",
+          "partition",
+          "policy",
+          "schema",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 87077,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_canary180m_onnx_cpu_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 142130,
+      "sha256": "12bf7dfa0b938af103c5a7c74067fbdd5c77c5aa54d11085644ce5d5e87ce8a2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "automaticLanguageSelectionClaimSupported",
+          "blindHoldoutOpened",
+          "candidatePromoted",
+          "cases",
+          "codeSwitchClaimSupported",
+          "contract",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "explicitLanguageUpperBound",
+          "frozenEvaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "model",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status",
+          "wakeProgramTree"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "automaticLanguageSelectionClaimSupported",
+          "blindHoldoutOpened",
+          "candidatePromoted",
+          "codeSwitchClaimSupported",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "explicitLanguageUpperBound",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 142129,
+        "elapsedSeconds": {
+          "min": 108.297379,
+          "max": 108.297379
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"automaticLanguageSelectionClaimSupported\", \"blindHoldoutOpened\", \"candidatePromoted\", \"cases\", \"codeSwitchClaimSupported\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"automaticLanguageSelectionClaimSupported\", \"blindHoldoutOpened\", \"candidatePromoted\", \"cases\", \"codeSwitchClaimSupported\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 110826,
+      "sha256": "c6f588cd370c5a4e54f8bf4572ae10d5c7bc52b5feb8d9de2bb3e919eb8ffc8e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "evaluator",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 110825,
+        "elapsedSeconds": {
+          "min": 95.630653,
+          "max": 95.630653
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"evaluator\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"evaluator\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_empty_parakeet_nemotron_auto_fusion_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 83099,
+      "sha256": "ea28b92fa120c81f2915b3882cc3ddc36d4178c83c33745ed3f1ef0e20962664",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "effectsExecuted",
+          "fusionEvaluator",
+          "inputs",
+          "measuredAtUtc",
+          "partition",
+          "policy",
+          "schema",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 83098,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_greedy_parakeet_nemotron_auto_fusion_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 83098,
+      "sha256": "c1fa17e880c5408dc3badb8e08f1058996c6fa4bd71b1e72adb6174cf0df0771",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "effectsExecuted",
+          "fusionEvaluator",
+          "inputs",
+          "measuredAtUtc",
+          "partition",
+          "policy",
+          "schema",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 83097,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_greedy_parakeet_nemotron_auto_fusion_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 87101,
+      "sha256": "9ef0a438f99b91bfcf7b12f684072e923930914cbfc337b8fdb9f08bc0900a10",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "effectsExecuted",
+          "fusionEvaluator",
+          "inputs",
+          "measuredAtUtc",
+          "partition",
+          "policy",
+          "schema",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 87100,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"effectsExecuted\", \"fusionEvaluator\", \"inputs\", \"measuredAtUtc\", \"partition\", \"policy\", \"schema\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_nemotron_auto_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 143456,
+      "sha256": "a1863f0629a8de1913a1ef283335a73d73822328a819042c13d8c23140f3a03a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 143455,
+        "elapsedSeconds": {
+          "min": 240.625484,
+          "max": 240.625484
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_nemotron_auto_development_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 143468,
+      "sha256": "327dab5f47b054f30187f66c0472b9f6e75dafb47f62ad4d3bf7e9f6794b3740",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 143467,
+        "elapsedSeconds": {
+          "min": 233.302174,
+          "max": 233.302174
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_nemotron_auto_development_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 143451,
+      "sha256": "a41bc2d2f6de29e8b33dd17086b340ce1a8cf3e854a9b9e4b9ef8f5408715cbd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 143450,
+        "elapsedSeconds": {
+          "min": 234.365325,
+          "max": 234.365325
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_nemotron_explicit_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 120172,
+      "sha256": "4ace9bae303870962b7caaec013b9d990adf91de69f27266b144163b5c3aa0b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "evaluator",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 120171,
+        "elapsedSeconds": {
+          "min": 234.034834,
+          "max": 234.034834
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"evaluator\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"evaluator\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_parakeet_greedy_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 141759,
+      "sha256": "c2e828f892e5ee68e5c2ade6e57a036028aa939e1981c4b6536a1aea2a193861",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 141758,
+        "elapsedSeconds": {
+          "min": 66.557802,
+          "max": 66.557802
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_parakeet_greedy_development_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 141751,
+      "sha256": "05e99f99ff6f7ee129a083acd11a6ad6c3a4fef13b701cc696851a55471651d8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 141750,
+        "elapsedSeconds": {
+          "min": 67.446514,
+          "max": 67.446514
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_product_parakeet_development_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 141844,
+      "sha256": "044ff110727862af47082bc27bb0ac4cfbdf4b5ec4073b000d139e36268aea3a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "cases",
+          "contract",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "evaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "partition",
+          "runtime",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 141843,
+        "elapsedSeconds": {
+          "min": 88.5989,
+          "max": 88.5989
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"cases\", \"contract\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"evaluator\", \"intentOracle\", \"measuredAtUtc\", \"partition\", \"runtime\", \"schema\", \"scoringNormalization\", \"source\", \"status\"], \"n_key…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_minds14_qwen3_asr_onnx_cpu_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 142545,
+      "sha256": "1c218b74f8aeccae98166c98237a8be147e7b2fd89a845387337a700ec9b4131",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "blindHoldoutOpened",
+          "candidatePromoted",
+          "cases",
+          "contract",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "engineRuntime",
+          "frozenEvaluator",
+          "intentOracle",
+          "measuredAtUtc",
+          "model",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status",
+          "wakeProgramTree"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutOpened",
+          "candidatePromoted",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "engine",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "scoringNormalization",
+          "source",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 142544,
+        "elapsedSeconds": {
+          "min": 347.742602,
+          "max": 347.742602
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"blindHoldoutOpened\", \"candidatePromoted\", \"cases\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"frozenEvaluator\", \"intentOracle\", \"measuredAtUtc\", \"model\", \"partiti…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"blindHoldoutOpened\", \"candidatePromoted\", \"cases\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"engine\", \"engineRuntime\", \"frozenEvaluator\", \"intentOracle\", \"measuredAtUtc\", \"model\", \"partiti…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/stt_qwen3_asr_onnx_cpu_development_verdict_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2705,
+      "sha256": "92229b668d2412c2957ba9a8f17723fd7a8ad3e87c810b1e25dbd8f3e58f9048",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutOpened",
+          "candidate",
+          "decision",
+          "developmentOnly",
+          "effectsExecuted",
+          "evidence",
+          "publishedAtUtc",
+          "results",
+          "schema",
+          "status",
+          "thresholdsChanged",
+          "wakeProgramTreeSha256"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutOpened",
+          "developmentOnly",
+          "effectsExecuted",
+          "publishedAtUtc",
+          "schema",
+          "status",
+          "thresholdsChanged",
+          "wakeProgramTreeSha256"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2704,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutOpened\", \"candidate\", \"decision\", \"developmentOnly\", \"effectsExecuted\", \"evidence\", \"publishedAtUtc\", \"results\", \"schema\", \"status\", \"thresholdsChanged\", \"wakeProgramTreeSha256\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutOpened\", \"candidate\", \"decision\", \"developmentOnly\", \"effectsExecuted\", \"evidence\", \"publishedAtUtc\", \"results\", \"schema\", \"status\", \"thresholdsChanged\", \"wakeProgramTreeSha256\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/supervised_reranker_domain_r242.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2202,
+      "sha256": "e2306a7e33e0b3656549208b2ddc0ede41f26cb084f62e7a66b60ad1534bfca7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "development_evaluation",
+          "hypothesis",
+          "identities",
+          "schema",
+          "training"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2201
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"training\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"training\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/supervised_reranker_domain_r243.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2259,
+      "sha256": "26ba75a58ae6c49556454cb8125860daace15d78a65d81a48d1dca19096a5485",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "next_requirement",
+          "observed",
+          "schema",
+          "training",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2258
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\", \"training\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\", \"training\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_call_decomposition_20260812.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9770,
+      "sha256": "13e68588a9ff5b32d53ece0c5cd5216803c9e21289194ed06a71244ef038ea19",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "rows",
+          "schema",
+          "summary"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9769,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"rows\", \"schema\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"rows\", \"schema\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_call_decomposition_20260813.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13486,
+      "sha256": "82e9a644ea804e183504e681b0bf9a2a920f95db0de644bcb879a777c6f1f5cd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "rows",
+          "schema",
+          "summary"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13485,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"rows\", \"schema\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"rows\", \"schema\", \"summary\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_kind_safety_boundary_20260812.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 128438,
+      "sha256": "fed779a8d8ee561382228da6b1e552512677ae0342db36176b3d3d70ea799e1a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "catalogue_operations",
+          "rows",
+          "schema",
+          "summary"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "catalogue_operations",
+          "schema"
+        ],
+        "list_lengths": {
+          "rows": 170
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 128437,
+        "catalogue_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalogue_operations\", \"rows\", \"schema\", \"summary\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalogue_operations\", \"rows\", \"schema\", \"summary\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_development.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 346708,
+      "sha256": "0cc671ea5a2b3094d033814462a9e5cf8e0bb489cdb2e002104421a29ee5cc5a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog",
+          "conformal",
+          "constraints",
+          "encoder",
+          "exclusions",
+          "groups",
+          "heads",
+          "integrity",
+          "metrics",
+          "privacy",
+          "protocol",
+          "schema",
+          "sources",
+          "status",
+          "training"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "sources": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 346707
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"conformal\", \"constraints\", \"encoder\", \"exclusions\", \"groups\", \"heads\", \"integrity\", \"metrics\", \"privacy\", \"protocol\", \"schema\", \"sources\", \"status\", \"training\"], \"n_keys\": 15, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"conformal\", \"constraints\", \"encoder\", \"exclusions\", \"groups\", \"heads\", \"integrity\", \"metrics\", \"privacy\", \"protocol\", \"schema\", \"sources\", \"status\", \"training\"], \"n_keys\": 15, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_development.rejection.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1187,
+      "sha256": "685c1c012f4ba8b0587b32aeaa7d83279cd4c5267f6ef817de4566e1f27fd2f4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "artifact",
+          "constraints",
+          "observed_metrics",
+          "reasons",
+          "schema",
+          "status"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "reasons": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1186
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"artifact\", \"constraints\", \"observed_metrics\", \"reasons\", \"schema\", \"status\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"artifact\", \"constraints\", \"observed_metrics\", \"reasons\", \"schema\", \"status\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_development.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 374059,
+      "sha256": "04a1bb100b5182eee866d0eff8374c7c49a1b04db26c997e52eec19b60f9ea46",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog",
+          "conformal",
+          "constraints",
+          "encoder",
+          "exclusions",
+          "groups",
+          "heads",
+          "integrity",
+          "metrics",
+          "privacy",
+          "protocol",
+          "schema",
+          "selective_guards",
+          "sources",
+          "status",
+          "training"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "sources": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 374058
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"conformal\", \"constraints\", \"encoder\", \"exclusions\", \"groups\", \"heads\", \"integrity\", \"metrics\", \"privacy\", \"protocol\", \"schema\", \"selective_guards\", \"sources\", \"status\", \"training\"], \"n_keys\": 16, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"conformal\", \"constraints\", \"encoder\", \"exclusions\", \"groups\", \"heads\", \"integrity\", \"metrics\", \"privacy\", \"protocol\", \"schema\", \"selective_guards\", \"sources\", \"status\", \"training\"], \"n_keys\": 16, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10865,
+      "sha256": "c172ba76e05b8721fd010dfd2e52cd64916eb503d02d084858f3b0c7815af3ef",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "chain",
+          "checks",
+          "decision",
+          "declared_repository_files",
+          "internal_integrity",
+          "observed",
+          "preregistered_evaluation",
+          "privacy",
+          "promotion_boundary",
+          "schema",
+          "source_bindings",
+          "status",
+          "verifier"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10864
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"chain\", \"checks\", \"decision\", \"declared_repository_files\", \"internal_integrity\", \"observed\", \"preregistered_evaluation\", \"privacy\", \"promotion_boundary\", \"schema\", \"source_bindings\", \"status\", \"verifier\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"chain\", \"checks\", \"decision\", \"declared_repository_files\", \"internal_integrity\", \"observed\", \"preregistered_evaluation\", \"privacy\", \"promotion_boundary\", \"schema\", \"source_bindings\", \"status\", \"verifier\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4581,
+      "sha256": "1264e6feec0ca4b5a0fa5f0dc61d48510e4db35da779b913722d0dd92f7a9bf0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "architecture",
+          "frozen_inputs",
+          "iteration_control",
+          "output",
+          "run_id",
+          "schema",
+          "scope",
+          "state"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "run_id",
+          "schema",
+          "scope",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4580
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"architecture\", \"frozen_inputs\", \"iteration_control\", \"output\", \"run_id\", \"schema\", \"scope\", \"state\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"architecture\", \"frozen_inputs\", \"iteration_control\", \"output\", \"run_id\", \"schema\", \"scope\", \"state\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_v3_development.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 374059,
+      "sha256": "920fd8cdf1fab2b70f095f0b399c70fc207f19f62504e6e8f42d4e5a77b20484",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog",
+          "conformal",
+          "constraints",
+          "encoder",
+          "exclusions",
+          "groups",
+          "heads",
+          "integrity",
+          "metrics",
+          "privacy",
+          "protocol",
+          "schema",
+          "selective_guards",
+          "sources",
+          "status",
+          "training"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "sources": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 374058
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"conformal\", \"constraints\", \"encoder\", \"exclusions\", \"groups\", \"heads\", \"integrity\", \"metrics\", \"privacy\", \"protocol\", \"schema\", \"selective_guards\", \"sources\", \"status\", \"training\"], \"n_keys\": 16, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"conformal\", \"constraints\", \"encoder\", \"exclusions\", \"groups\", \"heads\", \"integrity\", \"metrics\", \"privacy\", \"protocol\", \"schema\", \"selective_guards\", \"sources\", \"status\", \"training\"], \"n_keys\": 16, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_v3_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11203,
+      "sha256": "c58c204286adc9b05035b44d46cf8a7283618f7f31997976abba047a4d3ca6ec",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "chain",
+          "checks",
+          "decision",
+          "declared_repository_files",
+          "internal_integrity",
+          "observed",
+          "preregistered_evaluation",
+          "privacy",
+          "promotion_boundary",
+          "schema",
+          "source_bindings",
+          "status",
+          "verifier"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11202
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"chain\", \"checks\", \"decision\", \"declared_repository_files\", \"internal_integrity\", \"observed\", \"preregistered_evaluation\", \"privacy\", \"promotion_boundary\", \"schema\", \"source_bindings\", \"status\", \"verifier\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"chain\", \"checks\", \"decision\", \"declared_repository_files\", \"internal_integrity\", \"observed\", \"preregistered_evaluation\", \"privacy\", \"promotion_boundary\", \"schema\", \"source_bindings\", \"status\", \"verifier\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_v3_mtop_manifest.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4690,
+      "sha256": "856bda3430530825af8288793cdee23fd23f3b9ae25fbe0d7cd0cc0a0019d99a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog",
+          "constraints",
+          "counts",
+          "development_sources",
+          "output",
+          "schema",
+          "source",
+          "test_seal"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema"
+        ],
+        "list_lengths": {
+          "development_sources": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4689
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"constraints\", \"counts\", \"development_sources\", \"output\", \"schema\", \"source\", \"test_seal\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog\", \"constraints\", \"counts\", \"development_sources\", \"output\", \"schema\", \"source\", \"test_seal\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_e5_selective_v3_preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4721,
+      "sha256": "8422e33cccf5608089e051d1356e23c811f056a0730260f60d0716cf013fec16",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "architecture",
+          "frozen_inputs",
+          "iteration_control",
+          "output",
+          "run_id",
+          "schema",
+          "scope",
+          "state"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "run_id",
+          "schema",
+          "scope",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4720
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"architecture\", \"frozen_inputs\", \"iteration_control\", \"output\", \"run_id\", \"schema\", \"scope\", \"state\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"architecture\", \"frozen_inputs\", \"iteration_control\", \"output\", \"run_id\", \"schema\", \"scope\", \"state\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_evidence_safety_probe_r47_after_systemic_fix.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6190,
+      "sha256": "b42171418199edc2462687a29c08b3d17a5750d7cd4b03f4cc42b274f9787e6e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "audit",
+          "cases",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status",
+          "summary"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm",
+          "effects_executed",
+          "measured_at",
+          "schema",
+          "scope",
+          "status"
+        ],
+        "list_lengths": {
+          "cases": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6189,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"audit\", \"cases\", \"effects_executed\", \"measured_at\", \"schema\", \"scope\", \"status\", \"summary\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_evidence_safety_probe_r47_after_systemic_fix.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 23362,
+      "sha256": "d18548605f1d52474a48bc99c3e265f6bd62a8ca34b62310efdea51cc0426bb8",
+      "rows": 18,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 18,
+          "phase": 18,
+          "raw_decision": 18,
+          "request_id": 18,
+          "schema": 18,
+          "stages": 18,
+          "final": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20993,
+        "min_line_bytes": 338,
+        "max_line_bytes": 2369,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 338,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20096,
+            "line": 17,
+            "text": "{\"candidate_operations\":[\"ocr.read\",\"message.recipient.resolve\",\"message.send\",\"web.search\",\"email.latest.reply\",\"email.latest.read\",\"package.install.commit\",\"package.install.prepare\",\"calendar.event.create\",\"calendar.event.list\",\"capture.…"
+          },
+          {
+            "offset": 20993,
+            "line": 18,
+            "text": "{\"candidate_operations\":[\"ocr.read\",\"message.recipient.resolve\",\"message.send\",\"web.search\",\"email.latest.reply\",\"email.latest.read\",\"package.install.commit\",\"package.install.prepare\",\"calendar.event.create\",\"calendar.event.list\",\"capture.…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_evidence_safety_probe_r47_after_systemic_fix.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 225,
+      "sha256": "55ce3a924d7a1ec44b9a8fe3c1255c3a9fae3c8eadfaff93f6f26a432cd6ad4b",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94,
+        "min_line_bytes": 3,
+        "max_line_bytes": 131
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 8,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 91,
+            "line": 6,
+            "text": "}"
+          },
+          {
+            "offset": 94,
+            "line": 7,
+            "text": "status=diagnostic_completed -> D:\\BAXY\\source\\artifacts\\development\\turn_policy_evidence_safety_probe_r47_after_systemic_fix.json"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v10.rejected-early-recovery-budget.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 27797,
+      "sha256": "e3eb3a6a3296fa396efd898d1ed0fff4665f27eec63216ec713db3a11a07cf8d",
+      "rows": 349,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27682,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 27618,
+            "line": 348,
+            "text": "baseline 348/860 holdout:massive-v1.1:es-ES:9577: conversation"
+          },
+          {
+            "offset": 27682,
+            "line": 349,
+            "text": "baseline 349/860 holdout:presto-v1:es-ES:821768ff10e58693054084297d2923034940c027a1d082d2dc5324306e71ec55: action"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v11.rejected-early-recovery-and-unsafe.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 23881,
+      "sha256": "a4bdb827b3fab44df9cb1a2a957237b402f4cd5f30e283643e27c1a170644b01",
+      "rows": 302,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23760,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 23645,
+            "line": 301,
+            "text": "baseline 301/860 holdout:presto-v1:es-ES:ff4d48c28a996be10400978d354a7d9b57ac87b92ae4028f1199569ef1418af3: action"
+          },
+          {
+            "offset": 23760,
+            "line": 302,
+            "text": "baseline 302/860 holdout:presto-v1:en-US:c5a51c303fb72fd54913b04a3b1051adf4ff0b6d03226c684e82c4d41aede66b: conversation"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v12.rejected-early-recovery-and-unsafe.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 35706,
+      "sha256": "fb8d82d941e94b9b06b31488fd88c86e55e87fdb83a050d11abb0531126d297c",
+      "rows": 442,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35641,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 35525,
+            "line": 441,
+            "text": "baseline 441/860 holdout:presto-v1:en-US:b8c57ddbb3c48debcecfae960ffab108aa58981eec90a38a1689017f948b9601: clarify"
+          },
+          {
+            "offset": 35641,
+            "line": 442,
+            "text": "baseline 442/860 holdout:massive-v1.1:en-US:11685: conversation"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v13.rejected-early-recovery-budget.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 36586,
+      "sha256": "85f283da394d4f687d054e0d688a2f43876b60a56ce7cfea97b36c4cdb692d34",
+      "rows": 453,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36465,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36400,
+            "line": 452,
+            "text": "baseline 452/860 holdout:massive-v1.1:es-ES:11767: conversation"
+          },
+          {
+            "offset": 36465,
+            "line": 453,
+            "text": "baseline 453/860 holdout:presto-v1:es-ES:cab46a6d1f9d9ef2b221b33aeae95af6acb507f5d01ebccbdf003e52314a94a0: conversation"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v14.rejected-early-recovery-budget.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 18189,
+      "sha256": "0a9eacefd04885c207ff602caad075d1020152f321767ffe5c413c0793f79c40",
+      "rows": 233,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18076,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18017,
+            "line": 232,
+            "text": "baseline 232/860 holdout:massive-v1.1:en-US:11368: action"
+          },
+          {
+            "offset": 18076,
+            "line": 233,
+            "text": "baseline 233/860 holdout:presto-v1:en-US:b427b5005176b7d7657e3158de093ed8abb281319f4b1116ba4c91237e5edc63: plan"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v15.rejected-early-recovery-budget.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 34790,
+      "sha256": "117866db8f00bcc30e935178b984671f16864220155aacbfb5e3c43fff9add5e",
+      "rows": 432,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34669,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34605,
+            "line": 431,
+            "text": "baseline 431/860 holdout:massive-v1.1:en-US:5996: conversation"
+          },
+          {
+            "offset": 34669,
+            "line": 432,
+            "text": "baseline 432/860 holdout:presto-v1:es-ES:e5b2327849d810ffa2477331e53af8da7288cf0ed1f4eea6ea431416a0924df1: conversation"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v16.rejected-early-recovery-and-unsafe.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 40509,
+      "sha256": "5daf68a41dd8a9689d61429a4f010944d0dac47cdf3ba60996b7b1723bc6ad9d",
+      "rows": 499,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40388,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40267,
+            "line": 498,
+            "text": "baseline 498/860 holdout:presto-v1:es-ES:9bfc231edb600a9f996cde1cb74dfaa6fd0cc7f75c457d42e167a98a060ac977: conversation"
+          },
+          {
+            "offset": 40388,
+            "line": 499,
+            "text": "baseline 499/860 holdout:presto-v1:es-ES:466ec15c0e511810c51e1a64d92bb2b9f04ac30416f358e6ba39ae0998af5a86: conversation"
+          }
+        ]
+      }
+    },
+    "artifacts/development/turn_policy_gate.r47-nativeaot.corrected-v17.rejected-early-recovery-budget.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 45883,
+      "sha256": "413fe73efdcdc4d6f296048bbf194d128ff5c89721b31ce2985a652a6e8434fd",
+      "rows": 566,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45818,
+        "min_line_bytes": 50,
+        "max_line_bytes": 121
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "baseline 1/860 critical:greeting_es: conversation"
+          },
+          {
+            "offset": 51,
+            "line": 2,
+            "text": "baseline 2/860 critical:why_after_failure: conversation"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 45703,
+            "line": 565,
+            "text": "baseline 565/860 holdout:presto-v1:en-US:bf337399df07abb773337082da02d9afa0d7430bc5954533bcf7210a32b09415: action"
+          },
+          {
+            "offset": 45818,
+            "line": 566,
+            "text": "baseline 566/860 holdout:massive-v1.1:en-US:12736: conversation"
+          }
+        ]
+      }
+    }
+  }
+}

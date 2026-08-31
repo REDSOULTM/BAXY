@@ -1,0 +1,2676 @@
+{
+  "batch_id": "evidence_assets-031-functiongemma",
+  "source_id": "functiongemma",
+  "file_count": 37,
+  "hash_ok": 37,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "finetune_llm/curated/multistep/ms_productivity.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27828,
+      "sha256": "855893010af530e7c14582dc9ca3395d18e200b5b7be6124bb14283a7e8d7587",
+      "rows": 48,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "prev_text",
+          "also_valid",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "user_text",
+          "lang",
+          "correct_tools",
+          "n_steps",
+          "correct_reply_style",
+          "step_actions"
+        ],
+        "key_freq": {
+          "prev_text": 48,
+          "also_valid": 48,
+          "reply_is_template": 48,
+          "category": 48,
+          "personality_applies": 48,
+          "original_was_correct": 48,
+          "confidence": 48,
+          "source": 48,
+          "project": 48,
+          "dataset_part": 48,
+          "mode": 48,
+          "user_text": 48,
+          "lang": 48,
+          "correct_tools": 48,
+          "n_steps": 48,
+          "correct_reply_style": 48,
+          "step_actions": 48
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27255,
+        "min_line_bytes": 534,
+        "max_line_bytes": 647,
+        "numeric": {
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          },
+          "n_steps": {
+            "min": 2.0,
+            "max": 4.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"prev_text\": \"\", \"also_valid\": [], \"reply_is_template\": false, \"category\": \"encadenamiento\", \"personality_applies\": false, \"original_was_correct\": true, \"confidence\": 0.9, \"source\": \"synthetic_multistep\", \"project\": \"gemma4\", \"dataset_par…"
+          },
+          {
+            "offset": 622,
+            "line": 2,
+            "text": "{\"prev_text\": \"\", \"also_valid\": [], \"reply_is_template\": false, \"category\": \"encadenamiento\", \"personality_applies\": false, \"original_was_correct\": true, \"confidence\": 0.9, \"source\": \"synthetic_multistep\", \"project\": \"gemma4\", \"dataset_par…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26650,
+            "line": 47,
+            "text": "{\"prev_text\": \"\", \"also_valid\": [], \"reply_is_template\": false, \"category\": \"encadenamiento\", \"personality_applies\": false, \"original_was_correct\": true, \"confidence\": 0.9, \"source\": \"synthetic_multistep\", \"project\": \"gemma4\", \"dataset_par…"
+          },
+          {
+            "offset": 27255,
+            "line": 48,
+            "text": "{\"prev_text\": \"\", \"also_valid\": [], \"reply_is_template\": false, \"category\": \"encadenamiento\", \"personality_applies\": false, \"original_was_correct\": true, \"confidence\": 0.9, \"source\": \"synthetic_multistep\", \"project\": \"gemma4\", \"dataset_par…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/multistep/ms_techmedia.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28703,
+      "sha256": "3a136faae837b81f527ba3879900ba3ca3d1053a77fdc8e66a3db72143ace1f2",
+      "rows": 48,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "step_actions"
+        ],
+        "key_freq": {
+          "user_text": 48,
+          "prev_text": 48,
+          "lang": 48,
+          "correct_tools": 48,
+          "also_valid": 48,
+          "n_steps": 48,
+          "correct_reply_style": 48,
+          "reply_is_template": 48,
+          "category": 48,
+          "personality_applies": 48,
+          "original_was_correct": 48,
+          "confidence": 48,
+          "source": 48,
+          "project": 48,
+          "dataset_part": 48,
+          "mode": 48,
+          "step_actions": 48
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28135,
+        "min_line_bytes": 551,
+        "max_line_bytes": 711,
+        "numeric": {
+          "n_steps": {
+            "min": 2.0,
+            "max": 3.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"recortá el video del minuto 1 al 3 y sacale el audio\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"media_edit\", \"media_edit\"], \"also_valid\": [], \"n_steps\": 2, \"correct_reply_style\": \"Dale: recorto el video del minuto 1…"
+          },
+          {
+            "offset": 590,
+            "line": 2,
+            "text": "{\"user_text\": \"trim the clip from 0:30 to 1:15 and then pull out the audio track\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"media_edit\", \"media_edit\"], \"also_valid\": [], \"n_steps\": 2, \"correct_reply_style\": \"On it: I'll trim the c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 27513,
+            "line": 47,
+            "text": "{\"user_text\": \"lade dieses Installationsprogramm herunter und prüf seinen Hash\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [\"download\", \"download\"], \"also_valid\": [], \"n_steps\": 2, \"correct_reply_style\": \"Mach ich: Ich lade das Insta…"
+          },
+          {
+            "offset": 28135,
+            "line": 48,
+            "text": "{\"user_text\": \"scarica questo installer e verifica il suo hash\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"download\", \"download\"], \"also_valid\": [], \"n_steps\": 2, \"correct_reply_style\": \"Va bene: scarico l'installer e poi ne calcol…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/personality_examples.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 20114,
+      "sha256": "144d29a10a2f92c3681f39b145f3899e235f92bd05a6b2b08306b191fcec3efc",
+      "rows": 30,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "n_steps",
+          "context",
+          "personality_applies",
+          "gate_reason",
+          "correct_reply_style",
+          "honest_core",
+          "commentary",
+          "reply_is_template",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 30,
+          "user_text": 30,
+          "prev_text": 30,
+          "lang": 30,
+          "correct_tools": 30,
+          "n_steps": 30,
+          "context": 30,
+          "personality_applies": 30,
+          "gate_reason": 30,
+          "correct_reply_style": 30,
+          "honest_core": 30,
+          "commentary": 30,
+          "reply_is_template": 30,
+          "category": 30,
+          "source": 30,
+          "project": 30
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19413,
+        "min_line_bytes": 536,
+        "max_line_bytes": 839,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"pers_es_game_1\", \"user_text\": \"abrí el Elden Ring\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"game_launcher\"], \"n_steps\": 1, \"context\": {\"action\": \"launched_game\", \"entity\": \"Elden Ring\", \"outcome\": \"success_confirmed\"}, \"p…"
+          },
+          {
+            "offset": 623,
+            "line": 2,
+            "text": "{\"id\": \"pers_en_game_2\", \"user_text\": \"launch Hollow Knight\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"game_launcher\"], \"n_steps\": 1, \"context\": {\"action\": \"launched_game\", \"entity\": \"Hollow Knight\", \"outcome\": \"success_confirmed\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18792,
+            "line": 29,
+            "text": "{\"id\": \"pers_es_game_2_variant_29\", \"user_text\": \"abrime el FIFA\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"game_launcher\"], \"n_steps\": 1, \"context\": {\"action\": \"launched_game\", \"entity\": \"FIFA\", \"outcome\": \"success_confirmed\"}, \"…"
+          },
+          {
+            "offset": 19413,
+            "line": 30,
+            "text": "{\"id\": \"pers_en_music_famous_30\", \"user_text\": \"put on some Bob Marley\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"media\"], \"n_steps\": 1, \"context\": {\"action\": \"played_music\", \"entity\": \"Bob Marley\", \"fact_known\": true, \"outcome\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/synthetic_chains.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 49059,
+      "sha256": "3cd76b92e85f2516b5cfc14c263c771b91142c275124e76786c2df7d6509039f",
+      "rows": 119,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "correct_tools",
+          "n_steps",
+          "correct_reply_style",
+          "original_was_correct",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 119,
+          "user_text": 119,
+          "lang": 119,
+          "correct_tools": 119,
+          "n_steps": 119,
+          "correct_reply_style": 119,
+          "original_was_correct": 119,
+          "confidence": 119,
+          "category": 119,
+          "source": 119,
+          "project": 119
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 48480,
+        "min_line_bytes": 329,
+        "max_line_bytes": 608,
+        "numeric": {
+          "n_steps": {
+            "min": 2.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"synth_chain_1\", \"user_text\": \"abre Spotify y baja el volumen\", \"lang\": \"es\", \"correct_tools\": [\"app\", \"audio\"], \"n_steps\": 2, \"correct_reply_style\": \"Listo: abri Spotify y baje el volumen.\", \"original_was_correct\": true, \"confidenc…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"id\": \"synth_chain_2\", \"user_text\": \"abri el navegador y busca recetas de lasana\", \"lang\": \"es\", \"correct_tools\": [\"browser\", \"web\"], \"n_steps\": 2, \"correct_reply_style\": \"Hecho: abri el navegador y busque recetas de lasana.\", \"original_w…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 47941,
+            "line": 118,
+            "text": "{\"id\": \"synth_chain_118\", \"user_text\": \"apri Spotify, metti una playlist, abbassa il volume, apri il browser, vai su Google Docs e crea un nuovo documento\", \"lang\": \"it\", \"correct_tools\": [\"app\", \"media\", \"audio\", \"browser\", \"web\", \"comput…"
+          },
+          {
+            "offset": 48480,
+            "line": 119,
+            "text": "{\"id\": \"synth_chain_119\", \"user_text\": \"verbinde das WLAN, oeffne die Mail, lies die letzte Nachricht, oeffne den Browser, such die Adresse und trag sie in den Kalender ein\", \"lang\": \"de\", \"correct_tools\": [\"network\", \"email\", \"email\", \"br…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/train.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3516240,
+      "sha256": "3da15dc4a11a552d6f8571b54da995099bd49896c012d69c0ae8ff1c6f171fa3",
+      "rows": 6656,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "tool_args",
+          "sample_weight"
+        ],
+        "key_freq": {
+          "user_text": 6656,
+          "prev_text": 6656,
+          "lang": 6656,
+          "correct_tools": 6656,
+          "also_valid": 6656,
+          "n_steps": 6656,
+          "correct_reply_style": 6656,
+          "reply_is_template": 6656,
+          "category": 6656,
+          "personality_applies": 6656,
+          "original_was_correct": 6656,
+          "confidence": 6656,
+          "source": 6656,
+          "project": 6656,
+          "dataset_part": 6656,
+          "mode": 6656,
+          "tool_args": 6656,
+          "sample_weight": 6656
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3515800,
+        "min_line_bytes": 409,
+        "max_line_bytes": 1235,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.25,
+            "max": 0.99
+          },
+          "sample_weight": {
+            "min": 0.763,
+            "max": 3.443
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"hola\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola, soy Baxy. ¿En qué te ayudo?\", \"reply_is_template\": false, \"category\": \"conversacion\", \"personality_appl…"
+          },
+          {
+            "offset": 446,
+            "line": 2,
+            "text": "{\"user_text\": \"hola Carter\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola. Por cierto, me llamo Baxy, no Carter. ¿En qué te doy una mano?\", \"reply_is_template\": false, \"ca…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3515345,
+            "line": 6655,
+            "text": "{\"user_text\": \"open Microsoft Teams\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Teams is open now.\", \"reply_is_template\": false, \"category\": \"app_open\", \"personality_ap…"
+          },
+          {
+            "offset": 3515800,
+            "line": 6656,
+            "text": "{\"user_text\": \"open OBS\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"OBS is running.\", \"reply_is_template\": false, \"category\": \"app_open\", \"personality_applies\": false,…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/train_v3.bak_pre_es_refine.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5402482,
+      "sha256": "6ccf110a23090ce274695d24a7c7956f2ea36e91b51fe001509be4a9abd01643",
+      "rows": 6905,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "tool_args",
+          "sample_weight",
+          "final_reply",
+          "tool_results",
+          "tool_args_list",
+          "history",
+          "rounds"
+        ],
+        "key_freq": {
+          "user_text": 6905,
+          "prev_text": 6905,
+          "lang": 6905,
+          "correct_tools": 6905,
+          "also_valid": 6905,
+          "n_steps": 6905,
+          "correct_reply_style": 6905,
+          "reply_is_template": 6905,
+          "category": 6905,
+          "personality_applies": 6905,
+          "original_was_correct": 6905,
+          "confidence": 6905,
+          "source": 6905,
+          "project": 6905,
+          "dataset_part": 6905,
+          "mode": 6905,
+          "tool_args": 6905,
+          "sample_weight": 6905,
+          "final_reply": 6905,
+          "tool_results": 6905,
+          "tool_args_list": 4826,
+          "history": 66,
+          "rounds": 12
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5401703,
+        "min_line_bytes": 451,
+        "max_line_bytes": 2319,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.25,
+            "max": 0.99
+          },
+          "sample_weight": {
+            "min": 0.763,
+            "max": 3.443
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"hola\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola, soy Baxy. ¿En qué te ayudo?\", \"reply_is_template\": false, \"category\": \"conversacion\", \"personality_appl…"
+          },
+          {
+            "offset": 520,
+            "line": 2,
+            "text": "{\"user_text\": \"hola Carter\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola. Por cierto, me llamo Baxy, no Carter. ¿En qué te doy una mano?\", \"reply_is_template\": false, \"ca…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5400899,
+            "line": 6904,
+            "text": "{\"user_text\": \"qué me escribió mamá\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"\", \"reply_is_template\": false, \"category\": \"mensajeria\", \"personality_applies\": fal…"
+          },
+          {
+            "offset": 5401703,
+            "line": 6905,
+            "text": "{\"user_text\": \"what did mom text me\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"\", \"reply_is_template\": false, \"category\": \"mensajeria\", \"personality_applies\": fal…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/train_v3_es_refined.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2595010,
+      "sha256": "ae71808a0494a281293c451d2b26a22e8b3717dacc64fdc222a42d4c4691f6a2",
+      "rows": 3327,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "tool_args",
+          "sample_weight",
+          "final_reply",
+          "tool_results",
+          "tool_args_list",
+          "history",
+          "rounds"
+        ],
+        "key_freq": {
+          "user_text": 3327,
+          "prev_text": 3327,
+          "lang": 3327,
+          "correct_tools": 3327,
+          "also_valid": 3327,
+          "n_steps": 3327,
+          "correct_reply_style": 3327,
+          "reply_is_template": 3327,
+          "category": 3327,
+          "personality_applies": 3327,
+          "original_was_correct": 3327,
+          "confidence": 3327,
+          "source": 3327,
+          "project": 3327,
+          "dataset_part": 3327,
+          "mode": 3327,
+          "tool_args": 3327,
+          "sample_weight": 3327,
+          "final_reply": 3327,
+          "tool_results": 3327,
+          "tool_args_list": 2345,
+          "history": 12,
+          "rounds": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2594206,
+        "min_line_bytes": 451,
+        "max_line_bytes": 2136,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.25,
+            "max": 0.99
+          },
+          "sample_weight": {
+            "min": 1.0,
+            "max": 3.621
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"hola\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola, soy Baxy. ¿En qué te ayudo?\", \"reply_is_template\": false, \"category\": \"conversacion\", \"personality_appl…"
+          },
+          {
+            "offset": 520,
+            "line": 2,
+            "text": "{\"user_text\": \"hola Carter\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola. Por cierto, me llamo Baxy, no Carter. ¿En qué te doy una mano?\", \"reply_is_template\": false, \"ca…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2593621,
+            "line": 3326,
+            "text": "{\"user_text\": \"contame un dato curioso sobre los pulpos\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"\", \"reply_is_template\": false, \"category\": \"info\", \"personality_applies\":…"
+          },
+          {
+            "offset": 2594206,
+            "line": 3327,
+            "text": "{\"user_text\": \"qué me escribió mamá\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"\", \"reply_is_template\": false, \"category\": \"mensajeria\", \"personality_applies\": fal…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/train_v3_es_refined_v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5402482,
+      "sha256": "8c70ba2ae94988dd6daccb5d448c456aa72985245e28e38221aa32aa86b3ea4c",
+      "rows": 6905,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "tool_args",
+          "sample_weight",
+          "final_reply",
+          "tool_results",
+          "tool_args_list",
+          "history",
+          "rounds"
+        ],
+        "key_freq": {
+          "user_text": 6905,
+          "prev_text": 6905,
+          "lang": 6905,
+          "correct_tools": 6905,
+          "also_valid": 6905,
+          "n_steps": 6905,
+          "correct_reply_style": 6905,
+          "reply_is_template": 6905,
+          "category": 6905,
+          "personality_applies": 6905,
+          "original_was_correct": 6905,
+          "confidence": 6905,
+          "source": 6905,
+          "project": 6905,
+          "dataset_part": 6905,
+          "mode": 6905,
+          "tool_args": 6905,
+          "sample_weight": 6905,
+          "final_reply": 6905,
+          "tool_results": 6905,
+          "tool_args_list": 4826,
+          "history": 66,
+          "rounds": 12
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5401703,
+        "min_line_bytes": 451,
+        "max_line_bytes": 2319,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.25,
+            "max": 0.99
+          },
+          "sample_weight": {
+            "min": 0.763,
+            "max": 3.443
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"hola\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola, soy Baxy. ¿En qué te ayudo?\", \"reply_is_template\": false, \"category\": \"conversacion\", \"personality_appl…"
+          },
+          {
+            "offset": 520,
+            "line": 2,
+            "text": "{\"user_text\": \"hola Carter\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hola. Por cierto, me llamo Baxy, no Carter. ¿En qué te doy una mano?\", \"reply_is_template\": false, \"ca…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5400899,
+            "line": 6904,
+            "text": "{\"user_text\": \"qué me escribió mamá\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"\", \"reply_is_template\": false, \"category\": \"mensajeria\", \"personality_applies\": fal…"
+          },
+          {
+            "offset": 5401703,
+            "line": 6905,
+            "text": "{\"user_text\": \"what did mom text me\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"\", \"reply_is_template\": false, \"category\": \"mensajeria\", \"personality_applies\": fal…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_de.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 44901,
+      "sha256": "a0b846b3e3caaf53a129e9b53c85ed3259265058dfca7fc1d1940af050345392",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44495,
+        "min_line_bytes": 379,
+        "max_line_bytes": 747,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 6.0
+          },
+          "confidence": {
+            "min": 0.5,
+            "max": 0.98
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"buenas, phrase_hook_test_1778723404 y dime la hora\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Son las HH:MM.\", \"reply_is_template\": true, \"category\":…"
+          },
+          {
+            "offset": 415,
+            "line": 2,
+            "text": "{\"user_text\": \"busca Carter OS AI en Google\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"web\"], \"also_valid\": [\"browser\"], \"n_steps\": 1, \"correct_reply_style\": \"Busqué 'Carter OS AI' en Google, acá están los resultados.\", \"reply_is_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44007,
+            "line": 99,
+            "text": "{\"user_text\": \"Sub zero le gana a kunk lao?\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"web\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Depende del juego y el jugador; en lore están bastante parejos. Lo busco si quer…"
+          },
+          {
+            "offset": 44495,
+            "line": 100,
+            "text": "{\"user_text\": \"leé la pantalla\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"vision\"], \"also_valid\": [\"uia\"], \"n_steps\": 1, \"correct_reply_style\": \"Leí la pantalla: [contenido visible].\", \"reply_is_template\": true, \"category\": \"gui\",…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_de_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 52047,
+      "sha256": "bd5347a60db942d83008e69a3e681b282a2563ff3f4e48aeea7bcfdee4a1c604",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "orig_id"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100,
+          "orig_id": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51588,
+        "min_line_bytes": 417,
+        "max_line_bytes": 1000,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 6.0
+          },
+          "confidence": {
+            "min": 0.5,
+            "max": 0.98
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"hallo, phrase_hook_test_1778723404 und sag mir die Uhrzeit\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Es ist HH:MM Uhr.\", \"reply_is_template\": true,…"
+          },
+          {
+            "offset": 495,
+            "line": 2,
+            "text": "{\"user_text\": \"such Carter OS AI bei Google\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [\"web\"], \"also_valid\": [\"browser\"], \"n_steps\": 1, \"correct_reply_style\": \"Ich habe 'Carter OS AI' bei Google gesucht, hier sind die Ergebnisse.\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 51037,
+            "line": 99,
+            "text": "{\"user_text\": \"Schlagt Sub Zero den Kung Lao?\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [\"web\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Kommt aufs Spiel und den Spieler an; in der Lore sind sie ziemlich ebenburtig.…"
+          },
+          {
+            "offset": 51588,
+            "line": 100,
+            "text": "{\"user_text\": \"lies den Bildschirm\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [\"vision\"], \"also_valid\": [\"uia\"], \"n_steps\": 1, \"correct_reply_style\": \"Ich habe den Bildschirm gelesen: [sichtbarer Inhalt].\", \"reply_is_template\": true…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_en.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 45183,
+      "sha256": "a734322065ca9e79954b951822c7c8434c971228a5e1d92b0854eca7965e24b5",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44601,
+        "min_line_bytes": 385,
+        "max_line_bytes": 676,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Quiero ver daredevil en disney\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"media\"], \"also_valid\": [\"computer_use\"], \"n_steps\": 1, \"correct_reply_style\": \"Puse Daredevil en Disney+.\", \"reply_is_template\": false, \"cate…"
+          },
+          {
+            "offset": 424,
+            "line": 2,
+            "text": "{\"user_text\": \"Mutear mi micrófono en Discord\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Muteo tu microfono en Discord.\", \"reply_is_template\": false, \"categor…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44184,
+            "line": 99,
+            "text": "{\"user_text\": \"en opera entrá a python.org\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"browser\"], \"also_valid\": [\"browser_real\"], \"n_steps\": 1, \"correct_reply_style\": \"Abro python.org en Opera.\", \"reply_is_template\": false, \"catego…"
+          },
+          {
+            "offset": 44601,
+            "line": 100,
+            "text": "{\"user_text\": \"abre Spotify, pon una playlist de estudio, baja el volumen y abre el navegador en Google Docs\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"app\", \"media\", \"audio\", \"browser\"], \"also_valid\": [], \"n_steps\": 4, \"correct_r…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_en_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 50443,
+      "sha256": "0458e61e12a58c1ca47e2beea962c264b4ae17faf05ed17cb38adaf07ee59903",
+      "rows": 99,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "orig_id"
+        ],
+        "key_freq": {
+          "user_text": 99,
+          "prev_text": 99,
+          "lang": 99,
+          "correct_tools": 99,
+          "also_valid": 99,
+          "n_steps": 99,
+          "correct_reply_style": 99,
+          "reply_is_template": 99,
+          "category": 99,
+          "personality_applies": 99,
+          "original_was_correct": 99,
+          "confidence": 99,
+          "source": 99,
+          "project": 99,
+          "dataset_part": 99,
+          "orig_id": 99
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 49743,
+        "min_line_bytes": 415,
+        "max_line_bytes": 837,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 7.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"I wanna watch Daredevil on Disney\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"media\"], \"also_valid\": [\"computer_use\"], \"n_steps\": 1, \"correct_reply_style\": \"Playing Daredevil on Disney+.\", \"reply_is_template\": false,…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"user_text\": \"mute my mic in Discord\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Muting your mic in Discord.\", \"reply_is_template\": false, \"category\": \"accion…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 49280,
+            "line": 98,
+            "text": "{\"user_text\": \"open python.org in opera\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"browser\"], \"also_valid\": [\"browser_real\"], \"n_steps\": 1, \"correct_reply_style\": \"Opening python.org in Opera.\", \"reply_is_template\": false, \"catego…"
+          },
+          {
+            "offset": 49743,
+            "line": 99,
+            "text": "{\"user_text\": \"open Spotify, put on a study playlist, turn the volume down and open the browser to Google Docs\", \"prev_text\": \"\", \"lang\": \"en\", \"correct_tools\": [\"app\", \"media\", \"audio\", \"browser\"], \"also_valid\": [], \"n_steps\": 4, \"correct…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_fr.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 43902,
+      "sha256": "84ab375ec65b2f28e14a59a6e5b816d3f1712e4d277f53ecaa048cdd77336b78",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43524,
+        "min_line_bytes": 371,
+        "max_line_bytes": 547,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"buenas, phrase_hook_test_1778869142 y dime la hora\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Son las 2:19 PM.\", \"reply_is_template\": true, \"category…"
+          },
+          {
+            "offset": 418,
+            "line": 2,
+            "text": "{\"user_text\": \"poné el video en pantalla completa\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"media\"], \"also_valid\": [\"computer_use\", \"input\"], \"n_steps\": 1, \"correct_reply_style\": \"Listo, puse el video en pantalla completa.\", \"rep…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 43067,
+            "line": 99,
+            "text": "{\"user_text\": \"busca flash\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"web\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Busco 'flash': ¿te refage al héroe de DC, el reproductor o algo puntual? Te paso lo más relevante…"
+          },
+          {
+            "offset": 43524,
+            "line": 100,
+            "text": "{\"user_text\": \"abre paint\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"app\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Listo, abrí Paint.\", \"reply_is_template\": false, \"category\": \"accion_app\", \"personality_applies\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_fr_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 50240,
+      "sha256": "bbeab27aed74882499d43f0cadb85ea381ccdaaf594e6558d5848363f6f10471",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "orig_id"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100,
+          "orig_id": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 49821,
+        "min_line_bytes": 409,
+        "max_line_bytes": 660,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"salut, phrase_hook_test_1778869142 et dis-moi l'heure\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Il est 14h19.\", \"reply_is_template\": true, \"category…"
+          },
+          {
+            "offset": 487,
+            "line": 2,
+            "text": "{\"user_text\": \"mets la vidéo en plein écran\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [\"media\"], \"also_valid\": [\"computer_use\", \"input\"], \"n_steps\": 1, \"correct_reply_style\": \"Voilà, j'ai mis la vidéo en plein écran.\", \"reply_is_te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 49311,
+            "line": 99,
+            "text": "{\"user_text\": \"cherche flash\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [\"web\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Je cherche 'flash' : tu parles du héros de DC, du lecteur ou de quelque chose de précis ? Je te…"
+          },
+          {
+            "offset": 49821,
+            "line": 100,
+            "text": "{\"user_text\": \"ouvre paint\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [\"app\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Voilà, j'ai ouvert Paint.\", \"reply_is_template\": false, \"category\": \"accion_app\", \"personality_ap…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_it.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 45241,
+      "sha256": "5b9112ff9aca6e83148c7b7a2a006384fc112fa74e7e992d6f73025e8321656a",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44841,
+        "min_line_bytes": 371,
+        "max_line_bytes": 626,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 6.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"habla en inglés a partir de ahora\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"memory\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Sure, I'll speak in English from now on.\", \"reply_is_template\": false, \"…"
+          },
+          {
+            "offset": 427,
+            "line": 2,
+            "text": "{\"user_text\": \"Escribe a vicente u que es un crack en wsp\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Dejo listo el mensaje a Pedro en WhatsApp; lo mando cuando…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44412,
+            "line": 99,
+            "text": "{\"user_text\": \"en discord abrí el chat de juanpi\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Voy al chat de juanpi en Discord.\", \"reply_is_template\": false, \"c…"
+          },
+          {
+            "offset": 44841,
+            "line": 100,
+            "text": "{\"user_text\": \"vicente\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"memory\"], \"also_valid\": [\"state\"], \"n_steps\": 1, \"correct_reply_style\": \"Listo, guardo tu nombre como Pedro.\", \"reply_is_template\": false, \"category\": \"otro\", \"pe…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_it_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 51317,
+      "sha256": "c0188e269e564cff29400a9d25b3aa632417b5aa5afba7402280ee7896744bdf",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "orig_id"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100,
+          "orig_id": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50888,
+        "min_line_bytes": 400,
+        "max_line_bytes": 783,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 6.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"parla in inglese da adesso in poi\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"memory\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Sure, I'll speak in English from now on.\", \"reply_is_template\": false, \"…"
+          },
+          {
+            "offset": 483,
+            "line": 2,
+            "text": "{\"user_text\": \"Scrivi a Vincenzo su WhatsApp che è un grande\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Ho preparato il messaggio per Vincenzo su WhatsApp; lo inv…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 50406,
+            "line": 99,
+            "text": "{\"user_text\": \"su Discord apri il chat di juanpi\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Vado al chat di juanpi su Discord.\", \"reply_is_template\": false, \"…"
+          },
+          {
+            "offset": 50888,
+            "line": 100,
+            "text": "{\"user_text\": \"vincenzo\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"memory\"], \"also_valid\": [\"state\"], \"n_steps\": 1, \"correct_reply_style\": \"Fatto, salvo il tuo nome come Vincenzo.\", \"reply_is_template\": false, \"category\": \"otro\",…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_pt.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 45185,
+      "sha256": "972f7abcbca4e52069e02da6e5c064e261e1c38d892514bd2e16c32eb7cc2b01",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44720,
+        "min_line_bytes": 381,
+        "max_line_bytes": 577,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 4.0
+          },
+          "confidence": {
+            "min": 0.35,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"abre dos apps y ponlas lado a lado\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"app\", \"window\"], \"also_valid\": [\"['computer_use']\", \"['desktop_layout']\"], \"n_steps\": 2, \"correct_reply_style\": \"Decime qué dos apps abro…"
+          },
+          {
+            "offset": 489,
+            "line": 2,
+            "text": "{\"user_text\": \"mandale a mi amiga que la quiero mucho\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Listo, mensaje enviado. Suerte en el amor. 😉\", \"reply_is_template…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 44298,
+            "line": 99,
+            "text": "{\"user_text\": \"escribí 2 más 2\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"gui\"], \"also_valid\": [\"input\", \"computer_use\"], \"n_steps\": 1, \"correct_reply_style\": \"Tecleé 2+2 en la calculadora.\", \"reply_is_template\": false, \"category\"…"
+          },
+          {
+            "offset": 44720,
+            "line": 100,
+            "text": "{\"user_text\": \"mandale a mi amiga que la amo\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"No pude enviarlo: no logré abrir el chat. ¿Querés que reintente?\", \"reply_…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/translate/_tr_pt_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 50713,
+      "sha256": "a5affa19c644223b11aaee4d09d66a187459a37ac8b99d45d3e5f1f9e91ef4e5",
+      "rows": 100,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "orig_id"
+        ],
+        "key_freq": {
+          "user_text": 100,
+          "prev_text": 100,
+          "lang": 100,
+          "correct_tools": 100,
+          "also_valid": 100,
+          "n_steps": 100,
+          "correct_reply_style": 100,
+          "reply_is_template": 100,
+          "category": 100,
+          "personality_applies": 100,
+          "original_was_correct": 100,
+          "confidence": 100,
+          "source": 100,
+          "project": 100,
+          "dataset_part": 100,
+          "orig_id": 100
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50185,
+        "min_line_bytes": 406,
+        "max_line_bytes": 694,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 4.0
+          },
+          "confidence": {
+            "min": 0.35,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"abre dois aplicativos e coloca eles lado a lado\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"app\", \"window\"], \"also_valid\": [\"['computer_use']\", \"['desktop_layout']\"], \"n_steps\": 2, \"correct_reply_style\": \"Me diz quai…"
+          },
+          {
+            "offset": 571,
+            "line": 2,
+            "text": "{\"user_text\": \"manda pra minha namorada que eu amo muito ela\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Pronto, mensagem enviada. Boa sorte no amor. 😉\", \"reply_is…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 49731,
+            "line": 99,
+            "text": "{\"user_text\": \"escreve 2 mais 2\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"gui\"], \"also_valid\": [\"input\", \"computer_use\"], \"n_steps\": 1, \"correct_reply_style\": \"Digitei 2+2 na calculadora.\", \"reply_is_template\": false, \"category\":…"
+          },
+          {
+            "offset": 50185,
+            "line": 100,
+            "text": "{\"user_text\": \"manda pra minha namorada que eu amo ela\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Não consegui enviar: não consegui abrir o chat. Quer que eu tent…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_challenger_es.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 186031,
+      "sha256": "b9b59f9037ddc29e07fd98a7f2c28542e698a7db2bcca84c9b08e3c65f0cf686",
+      "rows": 764,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185972,
+        "min_line_bytes": 2,
+        "max_line_bytes": 252
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 77,
+            "line": 2,
+            "text": "W0619 05:55:28.835000 17024 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 185905,
+            "line": 763,
+            "text": "[window_restore] 'restaurá la calculadora' -> GOT:window_close"
+          },
+          {
+            "offset": 185972,
+            "line": 764,
+            "text": "[task_list] 'qué tengo anotado para hoy?' -> GOT:notes"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_champion_es.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 186050,
+      "sha256": "71fcbedcd80e7f1c0e9697ea295cfd426944c3096ee2040170a6babf1aa46f59",
+      "rows": 764,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185983,
+        "min_line_bytes": 2,
+        "max_line_bytes": 327
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 77,
+            "line": 2,
+            "text": "W0619 06:02:53.879000 22400 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 185904,
+            "line": 763,
+            "text": "[tasks] 'creá un recordatorio en tareas para pagar el ' -> GOT:create_task"
+          },
+          {
+            "offset": 185983,
+            "line": 764,
+            "text": "[gui_screenshot] 'Haz una captura de pantalla' -> GOT:gui_click"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_ep6.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 159792,
+      "sha256": "328343472cb5028124ff127ef5cd6c9b1f059c5d877ca35baaa065d7b8887725",
+      "rows": 947,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 159660,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿python.exe : W0616 07:38:10.070000 29180 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29]"
+          },
+          {
+            "offset": 242,
+            "line": 2,
+            "text": "NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 159484,
+            "line": 946,
+            "text": "[browser_search] 'abre el navegador, busca recetas de pasta y a' -> GOT:browser_open"
+          },
+          {
+            "offset": 159660,
+            "line": 947,
+            "text": "[whatsapp_status] \"let me see Tom's story\" -> GOT:read_message"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_ep7.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 159862,
+      "sha256": "d72ebd14f84829d7e6569127170587bee75d40efd26bc768c46965258aa00f5a",
+      "rows": 947,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 159680,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿python.exe : W0616 07:35:20.703000 12264 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29]"
+          },
+          {
+            "offset": 242,
+            "line": 2,
+            "text": "NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 159522,
+            "line": 946,
+            "text": "[recall] '¿tengo guardado algo sobre el código del cand' -> GOT:memory_save"
+          },
+          {
+            "offset": 159680,
+            "line": 947,
+            "text": "[database_query] 'quantos usuários estão registrados no postgre' -> GOT:database_status"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_ep8.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 159350,
+      "sha256": "a6f2c62cbe99efc4aa5d14a9bbd731f82572951be7e87a76f4e99543961c68bc",
+      "rows": 945,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 159218,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿python.exe : W0616 07:32:27.951000 38948 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29]"
+          },
+          {
+            "offset": 242,
+            "line": 2,
+            "text": "NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 159042,
+            "line": 944,
+            "text": "[browser_search] 'abre el navegador, busca recetas de pasta y a' -> GOT:browser_open"
+          },
+          {
+            "offset": 159218,
+            "line": 945,
+            "text": "[whatsapp_status] \"let me see Tom's story\" -> GOT:read_message"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_full_ep7.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 953722,
+      "sha256": "f10f307d10c0752dce4e772326e8da262ff472c0c2ccf8b504a4476dbf08a45e",
+      "rows": 5598,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 953540,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿python.exe : W0616 08:15:04.879000 25548 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29]"
+          },
+          {
+            "offset": 242,
+            "line": 2,
+            "text": "NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 953382,
+            "line": 5597,
+            "text": "[recall] '¿tengo guardado algo sobre el código del cand' -> GOT:memory_save"
+          },
+          {
+            "offset": 953540,
+            "line": 5598,
+            "text": "[database_query] 'quantos usuários estão registrados no postgre' -> GOT:database_status"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_full_ep8.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 953480,
+      "sha256": "b0903b407747a4138be3c33c319d205dcd11e7d88fe5e118a7ecf0ec26cf6ad1",
+      "rows": 5598,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 953348,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿python.exe : W0616 07:59:09.868000 12832 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29]"
+          },
+          {
+            "offset": 242,
+            "line": 2,
+            "text": "NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 953172,
+            "line": 5597,
+            "text": "[browser_search] 'abre el navegador, busca recetas de pasta y a' -> GOT:browser_open"
+          },
+          {
+            "offset": 953348,
+            "line": 5598,
+            "text": "[whatsapp_status] \"let me see Tom's story\" -> GOT:read_message"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_full_run6.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 953836,
+      "sha256": "139be07620fb714eb0d77e12d6426596c1fda5f330309aec8e753c16bad5e2ed",
+      "rows": 5600,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 953680,
+        "min_line_bytes": 4,
+        "max_line_bytes": 254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿python.exe : W0616 07:43:07.757000 22268 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29]"
+          },
+          {
+            "offset": 242,
+            "line": 2,
+            "text": "NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 953554,
+            "line": 5599,
+            "text": "[whatsapp_status] \"let me see Tom's story\" -> GOT:read_chat"
+          },
+          {
+            "offset": 953680,
+            "line": 5600,
+            "text": "[web_open] 'open this url and read it: https://news.ycomb' -> GOT:web_read"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_reduce2_holdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 124557,
+      "sha256": "364e7db409295829ed46e364642e0167f59e18bf4414c28c1190ba713573f8e4",
+      "rows": 520,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 124512,
+        "min_line_bytes": 2,
+        "max_line_bytes": 252
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0624 19:43:39.358000 43612 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 124418,
+            "line": 519,
+            "text": "[device_settings_brightness_set] 'increase the brightness by 5' -> INVENTED:brightness_set"
+          },
+          {
+            "offset": 124512,
+            "line": 520,
+            "text": "[get_volume] 'mute the sound' -> GOT:mute"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_reduce_ep4.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 122767,
+      "sha256": "8fb2608a862a5f4d4ca0a67cb2ea88acf48377da0af22e6075da7569b949a47b",
+      "rows": 512,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 122677,
+        "min_line_bytes": 2,
+        "max_line_bytes": 395
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0624 15:44:20.352000 14768 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 122589,
+            "line": 511,
+            "text": "[browser_search] 'find documentation for the React useEffect ho' -> GOT:browser_open"
+          },
+          {
+            "offset": 122677,
+            "line": 512,
+            "text": "[click_button] 'hacé clic en el botón de la imagen icon_ok.pn' -> GOT:gui_click_text"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_reduce_ep5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 122638,
+      "sha256": "736e0425f55c16a3030ce8eb0d6adbb3119fc22a5e262d4783a0372077690487",
+      "rows": 512,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 122592,
+        "min_line_bytes": 2,
+        "max_line_bytes": 395
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "W0624 15:33:49.093000 41784 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          },
+          {
+            "offset": 171,
+            "line": 2,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 122538,
+            "line": 511,
+            "text": "[uia_click] 'acha o botão OK' -> GOT:click_button"
+          },
+          {
+            "offset": 122592,
+            "line": 512,
+            "text": "[no_tool] 'abre o console' -> GOT:app_open"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_reduced_ep5_gate.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 21200,
+      "sha256": "dc7127744d3b030eb3f5347acd165ec11de19eecbc4c9661416992054c9f2f45",
+      "rows": 96,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21105,
+        "min_line_bytes": 2,
+        "max_line_bytes": 395
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.7.0+cu126)."
+          },
+          {
+            "offset": 125,
+            "line": 2,
+            "text": "W0624 15:41:38.057000 43844 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21084,
+            "line": 95,
+            "text": "--- FAILS (1) ---"
+          },
+          {
+            "offset": 21105,
+            "line": 96,
+            "text": "[abstain/es] 'arreglá solo un bug real y agregá regresió' gold=no_tool got=create_note"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_run.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 77608,
+      "sha256": "b6854be81f066aba30607102f9a88df89fe56f29b51ddb2c0a32172776df133e",
+      "rows": 326,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77498,
+        "min_line_bytes": 2,
+        "max_line_bytes": 338
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 72,
+            "line": 2,
+            "text": "W0615 03:18:09.851000 16348 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 77430,
+            "line": 325,
+            "text": "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+          },
+          {
+            "offset": 77498,
+            "line": 326,
+            "text": "UnicodeEncodeError: 'charmap' codec can't encode characters in position 92-95: character maps to <undefined>"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_run2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 78812,
+      "sha256": "755c64cbe4d8f9e602131243a872a685042d1e4bd860dfa0bd4a997e28f4abaf",
+      "rows": 336,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 78682,
+        "min_line_bytes": 2,
+        "max_line_bytes": 338
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 77,
+            "line": 2,
+            "text": "W0615 05:15:17.096000 1388 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 78592,
+            "line": 335,
+            "text": "[no_tool] '?puedes mutear el PC?' -> MALFORMED raw=[<start_function_call>call:no<eos>]"
+          },
+          {
+            "offset": 78682,
+            "line": 336,
+            "text": "[printers_list] 'mostre a lista de impressoras na rede' -> MALFORMED raw=[<start_function_call>call:ПРторы_Список<"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_run3.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 78975,
+      "sha256": "bcd65830601480f0db5c0376ed366dfc5f6a6a653d2dee8c8b9eddcd2b830c7f",
+      "rows": 336,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 78848,
+        "min_line_bytes": 2,
+        "max_line_bytes": 338
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 77,
+            "line": 2,
+            "text": "W0615 07:51:06.365000 32448 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 78745,
+            "line": 335,
+            "text": "[fill] 'haz clic en el primer resultado' -> MALFORMED raw=[<start_function_call>call:checkmark<eos>"
+          },
+          {
+            "offset": 78848,
+            "line": 336,
+            "text": "[web_research] 'investigá bien cómo funcionan los paneles sol' -> MALFORMED raw=[<start_function_call>call:web_open{query"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_run4.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 78884,
+      "sha256": "d8ad86b712ed2fe649bf3ce365ceb6ed6b7350756c699bd96ab8da3ab3262a6e",
+      "rows": 336,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 78770,
+        "min_line_bytes": 2,
+        "max_line_bytes": 338
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 77,
+            "line": 2,
+            "text": "W0615 10:27:42.790000 22928 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 78676,
+            "line": 335,
+            "text": "[audio_media_stop] 'arrête la musique' -> MALFORMED raw=[<start_function_call>call:<eos>]"
+          },
+          {
+            "offset": 78770,
+            "line": 336,
+            "text": "[cast_lan] 'joga esse link no Chromecast do quarto' -> MALFORMED raw=[<start_function_call>call:cast_lan{url:<"
+          }
+        ]
+      }
+    },
+    "finetune_llm/eval_run6_5ep.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 78158,
+      "sha256": "8beb667817bcf19a212eb3ccbe5c36d4a1a50b55b789950820aac6eb10e47123",
+      "rows": 335,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 78080,
+        "min_line_bytes": 2,
+        "max_line_bytes": 252
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "🦥 Unsloth: Will patch your computer to enable 2x faster free finetuning."
+          },
+          {
+            "offset": 77,
+            "line": 2,
+            "text": "W0615 20:29:38.958000 31124 Lib\\site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 78017,
+            "line": 334,
+            "text": "[whatsapp_status] \"let me see Tom's story\" -> GOT:read_chat"
+          },
+          {
+            "offset": 78080,
+            "line": 335,
+            "text": "[web_open] 'open this url and read it: https://news.ycomb' -> GOT:web_read"
+          }
+        ]
+      }
+    },
+    "finetune_llm/fresh_challenger.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 10881,
+      "sha256": "bb80f1d500126d0e8ece737d259d46ff491ebe0dcde853f8648e2f00fc1e3a49",
+      "rows": 52,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10810,
+        "min_line_bytes": 2,
+        "max_line_bytes": 252
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[schemas: tool_schemas_slim.json]"
+          },
+          {
+            "offset": 35,
+            "line": 2,
+            "text": "[filas frescas construidas: 39]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10742,
+            "line": 51,
+            "text": "[window_list] 'qué aplicaciones tengo abiertas' -> window_close"
+          },
+          {
+            "offset": 10810,
+            "line": 52,
+            "text": "[clipboard_read] 'qué tengo en el portapapeles' -> clipboard_write"
+          }
+        ]
+      }
+    },
+    "finetune_llm/fresh_champion.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 10885,
+      "sha256": "437483b64e38c8945c76ac831213fcd3742ce58875f99ee1abe61f5f53d9fec6",
+      "rows": 52,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10806,
+        "min_line_bytes": 2,
+        "max_line_bytes": 252
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[schemas: tool_schemas_slim.json]"
+          },
+          {
+            "offset": 35,
+            "line": 2,
+            "text": "[filas frescas construidas: 39]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10734,
+            "line": 51,
+            "text": "[web_search] 'buscá en internet la receta de la tarta ' -> web_open"
+          },
+          {
+            "offset": 10806,
+            "line": 52,
+            "text": "[whatsapp_send] 'mandale un mensaje a Sofía por whatsapp ' -> send_message"
+          }
+        ]
+      }
+    }
+  }
+}

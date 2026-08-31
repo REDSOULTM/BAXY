@@ -1,0 +1,389 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-119-baxy-baxy_exp_technology_tournament",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:47:57Z",
+  "closed_utc": "2026-08-31T05:47:57Z",
+  "estimated_tokens": 294912,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 36,
+  "subsystem": "baxy_exp_technology_tournament",
+  "subsystems": [
+    "baxy_exp_technology_tournament"
+  ],
+  "files": [
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtauri_winres-032e7f0455b89daf.rmeta",
+      "sha256": "ce11cf21706bc65164a1b9c5ae33eec7288148459bd3eb77573e23b2ee405320",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtendril-1bcdc5919649ebda.rlib",
+      "sha256": "4ae3870648c1e520bfc88ca0f3f894573c0d6b7676cc918477882c0848285fb9",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtendril-1bcdc5919649ebda.rmeta",
+      "sha256": "a69e10ca010b4fee7660822310c847f521a9b7feb4fbbcc135af9bd4cd120561",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-0ad30f773792e4ec.rlib",
+      "sha256": "8a185786e10b462b1afdca45e5ec1ae16ab7950efdbe56d307cbe672de98d0da",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-0ad30f773792e4ec.rmeta",
+      "sha256": "88bff59a7171c47ae79e94fc89fc03170c10357c9349c8945c4ff6c81c27dba6",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-9ecf4b8eb0d3a8aa.rlib",
+      "sha256": "1b08c1b32d91e09f79839e1e7522db4e1a873c1bf6fd566ae89e04c15f5be26e",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-9ecf4b8eb0d3a8aa.rmeta",
+      "sha256": "f39af70d24b15967fbfc42b3aeccaaa15dbe84c5b34a9c7a6885e38ab7749299",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-acc8e17046bfe522.rlib",
+      "sha256": "0cbbea0b381f9dbb87c128939dbe4f4fce62db8495986784942c3fd5a36471e8",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-acc8e17046bfe522.rmeta",
+      "sha256": "83f68e15e7f57d41bcaba8e0591784e6c8cc343393b6f06df0bfabc056c6359a",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-c099bf26899011a1.rlib",
+      "sha256": "bd13228810bb6733d9565e6e374d464df51303484c1d8d6527b9e4ad4e1b960c",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libthiserror-c099bf26899011a1.rmeta",
+      "sha256": "da4da0026dadb3eefbe774742ccab4bb36ebe486f0a283020b920b114eda2a2a",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime-87a74f5f42ba0b41.rlib",
+      "sha256": "ce6ce26bf08761e30b6bcbeb343d958b5feb085fe7235a07f90155007e20e007",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime-87a74f5f42ba0b41.rmeta",
+      "sha256": "4fedfe670ce285de804b78217d55739392c808b4bd803a23479c7e1226bcce74",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime-e63b6ed98c9c2947.rlib",
+      "sha256": "10dd2818f264befae8787e5c1a6edd0c9c4efdb4adc5e4ba805039bf76020b42",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime-e63b6ed98c9c2947.rmeta",
+      "sha256": "e0a5cfd6cf8f32f6dfd0d5da31f4cf2214f64c01e38468e000d1f7866e19e549",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime_core-623ccd34aedcf838.rlib",
+      "sha256": "b64515aa43b14dfdad4262373a0b9b01224705dc26fe56fbcb9a2285caffa63f",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime_core-623ccd34aedcf838.rmeta",
+      "sha256": "fe17d3622d43863b7a5759d08f5ecf76d613d520ddc50b61f18e683bd7883a7d",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime_core-c63710e68767d476.rlib",
+      "sha256": "5afb288543955e040fd654521695ab172f2f965717dfc5664d526c4c0aea8f90",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtime_core-c63710e68767d476.rmeta",
+      "sha256": "9e714a2e090f152564e76d4954c2669c28221da7e996917bdcc2819bc6cff742",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtinystr-3781d8fe172ceca8.rlib",
+      "sha256": "7fa7fc048a734d1ab9d8d84336c8149ee5e25239add6b029af8647315d269dc5",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtinystr-3781d8fe172ceca8.rmeta",
+      "sha256": "ae7420bbe1f8bea5d4b43a1fba17833ad0b38b72845ee9dc29c59ced957668cb",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtinystr-53edf32380413b94.rlib",
+      "sha256": "cfe2b52e8369f752d113e61fd8350c50e51aa80511e4632a980f5b4a012666f8",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtinystr-53edf32380413b94.rmeta",
+      "sha256": "f66bab31f5ad763f46c14e96f18b0ac1b3bb821374e334cb7112f9ae0a479031",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtokio-dfafc6ae4ec95e09.rlib",
+      "sha256": "5482f6690b5a4388fef1248413b7411d46c87085abfcdfd4fb12e0a2534485d4",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtokio-dfafc6ae4ec95e09.rmeta",
+      "sha256": "3d7216b71d8664487a49026892f94d1121fabdf45e63386f37c753a756561e7c",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml-9569090e97f1f3ee.rlib",
+      "sha256": "6ebab89ce6d0a5b5ab6d202945972f07a497b42cfd8a4fd70be85e590f13c065",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml-9569090e97f1f3ee.rmeta",
+      "sha256": "7f588bb8c63455f3a67a0ada506512fc8bcbff1a176b689eff12102a5cc64c28",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml-9e7768f754f2f44c.rlib",
+      "sha256": "ba30d20d350face83f35cb76be7cb3d57bbec0a7749ba1ad06b3a5291dbc9909",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml-9e7768f754f2f44c.rmeta",
+      "sha256": "e2bbd8adeb44ef2fc58aa0670e0134dadde4cd97c45f446ac4d07b74cb5c2afd",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml-c6abd23ae21afdb5.rlib",
+      "sha256": "6fb76cb59a31d78abe8ddaf842af02d9978dd0afbc904e79e58806a00ce34a75",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml-c6abd23ae21afdb5.rmeta",
+      "sha256": "0963c2b948685e7f1a377a1824fd2e80eecd2639885ab02dc9e530812fff6af2",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml_datetime-0e1ec20d147b1f78.rlib",
+      "sha256": "d0c2052b2517d3ab1e35e25ad8f576efcb557c079e3a4eb861718b4af059c1b8",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml_datetime-0e1ec20d147b1f78.rmeta",
+      "sha256": "1173edc9b4766dbc808fdff284f755576977040a3eb9221df744407fdb12999a",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml_datetime-8111ddf9bf06570e.rlib",
+      "sha256": "cae3bb1c82baa3988a5726d28d3f0863a13a4467c21a3abcae7b78fc08e64dcc",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml_datetime-8111ddf9bf06570e.rmeta",
+      "sha256": "625f9491db5a213ea60a3bf5060f388b54eff466e90013460885e915652c88fd",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/src-tauri/target/release/deps/libtoml_datetime-fca0b05233b203e2.rlib",
+      "sha256": "5bdaac234f4974148a3f1d3859dd8bccacc2f3825e7a2d5065bcfd271802dffd",
+      "source_id": "baxy",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "rust_build_artifact"
+      ],
+      "exclusion_rule": "rust_build_artifact"
+    }
+  ],
+  "cards": [],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=36 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-120-baxy-baxy_exp_technology_tournament",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-119-baxy-baxy_exp_technology_tournament.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

@@ -1,0 +1,597 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-004-carter-carter_legacy_Carter_v3",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:38:27Z",
+  "closed_utc": "2026-08-31T05:38:28Z",
+  "estimated_tokens": 296495,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 48,
+  "subsystem": "carter_legacy_Carter_v3",
+  "subsystems": [
+    "carter_legacy_Carter_v3"
+  ],
+  "files": [
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_hermes3_8b.json",
+      "sha256": "59b9da24fd92d28fd37470c80744c30463b8576d9a3a038a66fcc2de531ab1fa",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_hermes3_8b.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_hermes3_8b.log",
+      "sha256": "55257fe358b5fbd5407b0fe9a36830ffab04b4200f244790e695d6b7e18fbae0",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_hermes3_8b.log"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_mistral-small_24b.json",
+      "sha256": "c2562a4ff52550a5106dfa0eb2aa4d0d8f0bf3f0ae8c5d150d3aa427f313f178",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_mistral-small_24b.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_mistral-small_24b.log",
+      "sha256": "0a50bd069000ec0fd740295355164417411cbf6a51a52fcc14136387f0c300e1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_mistral-small_24b.log"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_phi4_latest.json",
+      "sha256": "dc3a8e76f544dc96d556f24a738ad272a9f0985706e3791a098ba98305dd61e3",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_phi4_latest.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_phi4_latest.log",
+      "sha256": "2b1a4abe35e5b64dc453ae0471f5d5d0ca3b63cd7165c1da96fb58c7af9ff79a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_phi4_latest.log"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_qwen3_8b.json",
+      "sha256": "fb5346fad610dfa2415f7bf62a25753400c939b07b39a8a6f7fdfcdebeb6b370",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_qwen3_8b.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/compare_qwen3_8b.log",
+      "sha256": "2a446427b0c71853efc2dc6c3ab3a38a7da61b565a877aadaa03c1adb2cf6534",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/compare_qwen3_8b.log"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/d60460b5a1fa_screenshot.png",
+      "sha256": "fc605aef209f9b2450fdde51e4702ccb2651247ab89596617b6e07f9750e936c",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/d60460b5a1fa_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/df89ee694fd3_screenshot.png",
+      "sha256": "1b57981332f4abf0d7bc8f01d0b3c7550fcd4e18d41d0e997d2f5f8e1749a9d2",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/df89ee694fd3_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/e2427da3cbaf_screenshot.png",
+      "sha256": "781ee5934ef75b22633e41e00d2e7713c0691c10809258b76a7c5e0454623407",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/e2427da3cbaf_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/ef30cb31cdbc_screenshot.png",
+      "sha256": "a99322d4dd12b30cae9266469ea7b7993814230e91a1a81a77ab4d63d4430779",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/ef30cb31cdbc_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/f015f8228eed_screenshot.png",
+      "sha256": "03f4a87b3f9136bdf6442e48851cec6dfdf13754faeb00e958a68197307d8295",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/f015f8228eed_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/f4bce88cfc0d_screenshot.png",
+      "sha256": "0cafc4f0812b126c8dc89b414e0c37bb3b08c7785345a0acc7ecaabb582a8f63",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/f4bce88cfc0d_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/f883ba50eb2f_screenshot.png",
+      "sha256": "30f6f9445da7cc780fe6ca54b3b73ac55779125bcd36af3f29d845d33326ee40",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/f883ba50eb2f_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fa561d8cfe68_screenshot.png",
+      "sha256": "c99dba342ac55a4835d4f1ae267c4bc84c206372c11c1b995e91169844243a44",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fa561d8cfe68_screenshot.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fallback_fix.json",
+      "sha256": "5e0e259348a59dc2de4a91005cb021b365cd3a73881cab2e617add60ca5d0185",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fallback_fix.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fallback_fix_v2.json",
+      "sha256": "b052a34641a155dad011e9f734094d090ef2d2d764b8c53ea772fd2ee8fbf382",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fallback_fix_v2.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe.json",
+      "sha256": "883e46712fe176af7677c327da4402b65424d0a12d63ccbd9239b729cc2f83fc",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fase2_minimum_live_safe.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_final.json",
+      "sha256": "62bb853a355ede4bdd10f487d13cbace16dcef476399b14ae8b62e367c6c022b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_final.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_rerun.json",
+      "sha256": "671445a19ae90416a3feff7b04c245f56e0118e711308cb4e6984bcc2f23cb3e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_rerun.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_rerun2.json",
+      "sha256": "6ed77771acc4493809c603112e3098a12917f6238d3e86834aa328a40284ef03",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_rerun2.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/final_fixes.json",
+      "sha256": "6415703ce05eeea02017293e2f5cf6528ca2288c4cdcff0571b965fd16a6b51b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/final_fixes.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/final_fixes_v2.json",
+      "sha256": "6c002843ea98a87c9a46a82f82b0d63ac51263633bc23dc4c000cb6db0442e27",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/final_fixes_v2.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1.json",
+      "sha256": "a45fe6012ad7542c238c93608d4cd5c1be34a5a0000b67a79e2ea320a4b9613f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v10.json",
+      "sha256": "7556eafd7dc72e9a45eb76bcc57cf7d23aaa7398ba6991feb00924eea1721d10",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v10.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v11.json",
+      "sha256": "06fbe026f5b8ee247e4dc52325b3f67a31a365b44d293ed870a347a91507db43",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v11.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v12.json",
+      "sha256": "1932b52db1732cfbd77074e994273e0492af056bddbc61721bd5aebe5d2e97c4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v12.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v13.json",
+      "sha256": "6d47b5b6a17a789424d96859eb3d053a7776d8f764fa42e1e4834e95440fdfbe",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v13.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v13.log",
+      "sha256": "c117a1fa7ffe8095c0eda27fcc1b6086741221852915bdaca3ab7d8f4d6e68b4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v13.log"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v14.json",
+      "sha256": "eb5ec6a8aff1aca8891540b037a85da1be4f518cf5081772f56fd10132217efa",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v14.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v14.log",
+      "sha256": "122f0ef73d7c9bfd06b4c1610a9349869649bfc4b9ae50917a8fbcd9d8c07412",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v14.log"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v2.json",
+      "sha256": "dceb2fdc5f48452b967b6788c6b593a5e6eaab06c4d177c37f4cd3e9a8eedf1d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v2.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v3.json",
+      "sha256": "ebe8ac6c38a650366c029daf41e1812b64126846c258a83d5a1137c505b11310",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v3.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v4.json",
+      "sha256": "fe9ffaf650e2324aafc09669726046fc50d6d122f62ffd5af76af916339d287b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v4.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v5.json",
+      "sha256": "42ad37b98e7cb9def1b1a86ed48dbbd85d3c09d30f093ce21bcc5762c2c696a3",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v5.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v6.json",
+      "sha256": "cebc81d45e122694cd33c0bd9f4258f2a23dd39f4c3d4fccbf400a7564c817c8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v6.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v7.json",
+      "sha256": "5e6cb59254e5a972613258806880579630ce877e987e6553bf7fb85f02bf504e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v7.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v8.json",
+      "sha256": "a651af7418dc8c932c7f616c3cdfcfdfeb46481c30ce49e6ea579a9cf6fbc6f7",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v8.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_chat_cat1_v9.json",
+      "sha256": "c908b0ad922d0c536a04029e393f328aab9d5d1a7a7676f08a4e3ba8c56c3851",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_chat_cat1_v9.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_cycle1.json",
+      "sha256": "d7c00771e830c8b931f59d4c483b2d33bb55e832cfe6de7a3041c983670fd86a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_cycle1.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_cycle2.json",
+      "sha256": "ebbf9bfd8dd01272dee801cd2430e5eab0d1e4eedd17242eb5bade8a61151b2d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_cycle2.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_cycle3.json",
+      "sha256": "3cd277150adfb468e19d76f52c37e1a244aa0f65928205003b7f01d29501901e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_cycle3.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_cycle4.json",
+      "sha256": "963577d0263d4c218a44f662b6ca32d9291c13266c098ade20c1d99a902f7aef",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_cycle4.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_cycle5.json",
+      "sha256": "69e1a59316e58e128230113920b68a36d87caf85a31c0d9dcb7a1698ba8a5e2f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_cycle5.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_route_cat14.json",
+      "sha256": "246bfbc9074fca3b004e2410d71536cb105a203f2c9d3693e16d395e044b4b61",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_route_cat14.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_route_cat14_v2.json",
+      "sha256": "2764b77193faaa7ff15421e3dcce6291b375f450f493ed6366ebd309ab918a04",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_route_cat14_v2.json"
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/fix_route_cat17.json",
+      "sha256": "04ed518aae8a48f5bc1f81d9d43aac9ef245607db506e08b783cc0a0110ff93f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json#legacy/Carter_v3/audit/runs/fix_route_cat17.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-004-carter-carter_legacy_Carter_v3-01-legacy-Carter_v3-audit",
+      "card_kind": "asset",
+      "corpus": "legacy/Carter_v3/audit",
+      "denominator": "48 files in group legacy/Carter_v3/audit; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:legacy/Carter_v3/audit",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/Carter_v3/audit/runs/compare_hermes3_8b.json",
+        "legacy/Carter_v3/audit/runs/compare_hermes3_8b.log",
+        "legacy/Carter_v3/audit/runs/compare_mistral-small_24b.json",
+        "legacy/Carter_v3/audit/runs/compare_mistral-small_24b.log",
+        "legacy/Carter_v3/audit/runs/compare_phi4_latest.json",
+        "legacy/Carter_v3/audit/runs/compare_phi4_latest.log",
+        "legacy/Carter_v3/audit/runs/compare_qwen3_8b.json",
+        "legacy/Carter_v3/audit/runs/compare_qwen3_8b.log",
+        "legacy/Carter_v3/audit/runs/d60460b5a1fa_screenshot.png",
+        "legacy/Carter_v3/audit/runs/df89ee694fd3_screenshot.png",
+        "legacy/Carter_v3/audit/runs/e2427da3cbaf_screenshot.png",
+        "legacy/Carter_v3/audit/runs/ef30cb31cdbc_screenshot.png",
+        "legacy/Carter_v3/audit/runs/f015f8228eed_screenshot.png",
+        "legacy/Carter_v3/audit/runs/f4bce88cfc0d_screenshot.png",
+        "legacy/Carter_v3/audit/runs/f883ba50eb2f_screenshot.png",
+        "legacy/Carter_v3/audit/runs/fa561d8cfe68_screenshot.png",
+        "legacy/Carter_v3/audit/runs/fallback_fix.json",
+        "legacy/Carter_v3/audit/runs/fallback_fix_v2.json",
+        "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe.json",
+        "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_final.json",
+        "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_rerun.json",
+        "legacy/Carter_v3/audit/runs/fase2_minimum_live_safe_rerun2.json",
+        "legacy/Carter_v3/audit/runs/final_fixes.json",
+        "legacy/Carter_v3/audit/runs/final_fixes_v2.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v10.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v11.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v12.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v13.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v13.log",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v14.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v14.log",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v2.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v3.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v4.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v5.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v6.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v7.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v8.json",
+        "legacy/Carter_v3/audit/runs/fix_chat_cat1_v9.json",
+        "legacy/Carter_v3/audit/runs/fix_cycle1.json",
+        "legacy/Carter_v3/audit/runs/fix_cycle2.json",
+        "legacy/Carter_v3/audit/runs/fix_cycle3.json",
+        "legacy/Carter_v3/audit/runs/fix_cycle4.json",
+        "legacy/Carter_v3/audit/runs/fix_cycle5.json",
+        "legacy/Carter_v3/audit/runs/fix_route_cat14.json",
+        "legacy/Carter_v3/audit/runs/fix_route_cat14_v2.json",
+        "legacy/Carter_v3/audit/runs/fix_route_cat17.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "compare_hermes3_8b.json parser=json rows=1 bytes=140231 dist={\"scalar_keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"mode\", \"model\", \"verdict\"], \"list_lengths\": {\"results\": 30}} | compare_hermes3_8b.log parser=log rows=97 bytes=8404 dist={\"fail_like\": 0, \"pass_like\": 1} | compare_mistral-small_24b.json parser=json rows=1 bytes=143450 dist={\"scalar_keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"mode\", \"model\", \"verdict\"], \"list_lengths\": {\"results\": 30}} | compare_mistral-small_24b.log parser=log rows=93 bytes=7890 dist={\"fail_like\": 2, \"pass_like\": 1} | compare_phi4_latest.json parser=json rows=1 bytes=143569 dist={\"scalar_keys\": [\"elapsed_s\", \"label\", \"live_evidence\", \"mode\", \"model\", \"verdict\"], \"list_lengths\": {\"results\": 30}} | compare_phi4_latest.log parser=log rows=103 bytes=8329…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "legacy/Carter_v3/audit/runs/compare_hermes3_8b.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=48 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-005-carter-carter_legacy_Carter_v3",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-004-carter-carter_legacy_Carter_v3.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

@@ -1,0 +1,3636 @@
+{
+  "batch_id": "evidence_assets-036-baxy",
+  "source_id": "baxy",
+  "file_count": 57,
+  "hash_ok": 57,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/audit/generalization_product_holdout_r3_mind.invalid_orphan_continuation.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 96124,
+      "sha256": "1b093f08e6bc1b60d636a7c6870bc4f5fc898da165e08412a4126127caee2526",
+      "rows": 86,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 86,
+          "phase": 86,
+          "raw_decision": 86,
+          "request_id": 86,
+          "schema": 86,
+          "stages": 86,
+          "final": 40,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94211,
+        "min_line_bytes": 227,
+        "max_line_bytes": 2389,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"vision.describe\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"vision.describe\"],\"effect_verification\":\"grounding_required\",\"intent_operations\":[\"vision.d…"
+          },
+          {
+            "offset": 436,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"vision.describe\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"vision.describe\"],\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 93817,
+            "line": 85,
+            "text": "{\"candidate_operations\":[\"game.catalog.list\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"game.catalog.list\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"game.c…"
+          },
+          {
+            "offset": 94211,
+            "line": 86,
+            "text": "{\"candidate_operations\":[\"game.catalog.list\"],\"final\":{\"effect_operations\":[\"game.catalog.list\"],\"intent_operations\":[\"game.catalog.list\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/generalization_product_holdout_r3_mind.invalid_parallel_partial.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 152359,
+      "sha256": "0dd51cacd336043cddd8d6ad03141f7c4e5765cd52b5f1ff5df855e0a948298d",
+      "rows": 132,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 132,
+          "phase": 132,
+          "raw_decision": 132,
+          "request_id": 132,
+          "schema": 132,
+          "stages": 132,
+          "final": 63,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 150438,
+        "min_line_bytes": 227,
+        "max_line_bytes": 2639,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 352,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 149959,
+            "line": 131,
+            "text": "{\"candidate_operations\":[\"vision.describe\",\"app.close\",\"app.installed\",\"app.open\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"vision.describe\"],\"effect_verification\":\"grounding_r…"
+          },
+          {
+            "offset": 150438,
+            "line": 132,
+            "text": "{\"candidate_operations\":[\"vision.describe\",\"app.close\",\"app.installed\",\"app.open\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"e…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_entry_path_r274.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14270,
+      "sha256": "3c4f08a021c2584986dd34f3c6268e13bf60a57f40eac547ff1e4f9327183db0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "interpretation",
+          "next_requirement",
+          "observed",
+          "population",
+          "recogniser_surface",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14269
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"observed\", \"population\", \"recogniser_surface\", \"schema\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"observed\", \"population\", \"recogniser_surface\", \"schema\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_model_path_r276.consumed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 824,
+      "sha256": "3e4ff674a6e6b2a175dcc2ac1856dc3ee1325af84e0683407145a2bad6fcb87b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "hashes",
+          "measurement_status",
+          "opened_exactly_once",
+          "providers_enabled",
+          "retry_allowed",
+          "schema",
+          "status"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measurement_status",
+          "opened_exactly_once",
+          "providers_enabled",
+          "retry_allowed",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 823,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"hashes\", \"measurement_status\", \"opened_exactly_once\", \"providers_enabled\", \"retry_allowed\", \"schema\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"hashes\", \"measurement_status\", \"opened_exactly_once\", \"providers_enabled\", \"retry_allowed\", \"schema\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_model_path_r276.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33467,
+      "sha256": "ed365ad0725d9541553fdd7275da6f033b96908b8e387dad82874b3d38881726",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "diagnostic_summary",
+          "execution",
+          "failed_thresholds",
+          "identities",
+          "measurement_status",
+          "observed",
+          "pre_model_deterministic_effect_rows",
+          "runtime",
+          "schema",
+          "scoring",
+          "status",
+          "threshold_results",
+          "whole_cut_can_not_close"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measurement_status",
+          "pre_model_deterministic_effect_rows",
+          "schema",
+          "status",
+          "whole_cut_can_not_close"
+        ],
+        "list_lengths": {
+          "failed_thresholds": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33466,
+        "pre_model_deterministic_effect_rows": {
+          "min": 14,
+          "max": 14
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"diagnostic_summary\", \"execution\", \"failed_thresholds\", \"identities\", \"measurement_status\", \"observed\", \"pre_model_deterministic_effect_rows\", \"runtime\", \"schema\", \"scoring\", \"status\", \"threshold_results\", \"whole_cut_can_not_clos…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"diagnostic_summary\", \"execution\", \"failed_thresholds\", \"identities\", \"measurement_status\", \"observed\", \"pre_model_deterministic_effect_rows\", \"runtime\", \"schema\", \"scoring\", \"status\", \"threshold_results\", \"whole_cut_can_not_clos…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_model_path_r276.raw-replies.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 29033,
+      "sha256": "f59a9d067550643a626f3e3c81c1f7974f466f047a9cc950a28e11f8911fb5dc",
+      "rows": 72,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "stage",
+          "attempt",
+          "request_sha256",
+          "conversation_kind",
+          "presentation_shape",
+          "raw_reply",
+          "raw_reply_chars",
+          "raw_reply_sha256"
+        ],
+        "key_freq": {
+          "schema": 72,
+          "stage": 72,
+          "attempt": 72,
+          "request_sha256": 72,
+          "conversation_kind": 72,
+          "presentation_shape": 72,
+          "raw_reply": 72,
+          "raw_reply_chars": 72,
+          "raw_reply_sha256": 72
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28619,
+        "min_line_bytes": 368,
+        "max_line_bytes": 587,
+        "numeric": {
+          "attempt": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "raw_reply_chars": {
+            "min": 31.0,
+            "max": 244.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"53176cca881d4f16bfbf6bbe137141f9c2ba262b5a2357194a43731fd5a423a5\",\"conversation_kind\":\"unsupported\",\"presentation_shape\":\"\",\"raw_reply\":\"I cannot s…"
+          },
+          {
+            "offset": 392,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"590bd927657071a88c1594d2b884eb74cdad3c09ec5b119f70f732245b7ad860\",\"conversation_kind\":\"unsupported\",\"presentation_shape\":\"\",\"raw_reply\":\"No puedo p…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28210,
+            "line": 71,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"2b0b00eb1df5b22db6c30d236db6322aa7897f07128189c9b0f17ef1001e345a\",\"conversation_kind\":\"unsupported\",\"presentation_shape\":\"\",\"raw_reply\":\"No puedo m…"
+          },
+          {
+            "offset": 28619,
+            "line": 72,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":2,\"request_sha256\":\"2b0b00eb1df5b22db6c30d236db6322aa7897f07128189c9b0f17ef1001e345a\",\"conversation_kind\":\"unsupported\",\"presentation_shape\":\"\",\"raw_reply\":\"{\\n \\\"answ…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_model_path_r276.telemetry.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 249114,
+      "sha256": "848a2f8f36a84e58c1b7450517dd5daf513c139ea97f0bd6f75d995902df26fa",
+      "rows": 93,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "effect_operations",
+          "entry_path",
+          "external_effect_executed",
+          "family",
+          "intended_operations",
+          "intent_operations",
+          "kind",
+          "language",
+          "missing_facts",
+          "operation",
+          "provider_dispatch_enabled",
+          "question",
+          "raw_proposal",
+          "raw_visible_proposals",
+          "reply",
+          "request_sha256",
+          "seconds",
+          "stages"
+        ],
+        "key_freq": {
+          "candidate_operations": 93,
+          "effect_operations": 93,
+          "entry_path": 93,
+          "external_effect_executed": 93,
+          "family": 93,
+          "intended_operations": 93,
+          "intent_operations": 93,
+          "kind": 93,
+          "language": 93,
+          "missing_facts": 93,
+          "operation": 93,
+          "provider_dispatch_enabled": 93,
+          "question": 93,
+          "raw_proposal": 93,
+          "raw_visible_proposals": 93,
+          "reply": 93,
+          "request_sha256": 93,
+          "seconds": 93,
+          "stages": 93
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 247585,
+        "min_line_bytes": 1427,
+        "max_line_bytes": 3142,
+        "numeric": {
+          "seconds": {
+            "min": 0.004306,
+            "max": 5.612819
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\": [\"app.close\"], \"effect_operations\": [\"app.close\"], \"entry_path\": \"explicit_effect\", \"external_effect_executed\": false, \"family\": \"app\", \"intended_operations\": [\"app.close\"], \"intent_operations\": [\"app.close\"], \"kin…"
+          },
+          {
+            "offset": 2067,
+            "line": 2,
+            "text": "{\"candidate_operations\": [\"app.close\"], \"effect_operations\": [\"app.close\"], \"entry_path\": \"explicit_effect\", \"external_effect_executed\": false, \"family\": \"app\", \"intended_operations\": [\"app.close\"], \"intent_operations\": [\"app.close\"], \"kin…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 244949,
+            "line": 92,
+            "text": "{\"candidate_operations\": [\"window.minimize\", \"window.active\", \"window.maximize\", \"notification.list.due\", \"notification.cancel.latest\", \"system.recyclebin.empty\", \"input.select.all\", \"input.keyboard.open\", \"input.keyboard.status\", \"capture…"
+          },
+          {
+            "offset": 247585,
+            "line": 93,
+            "text": "{\"candidate_operations\": [\"window.minimize\", \"window.active\", \"window.maximize\", \"system.recyclebin.empty\", \"notification.list.due\", \"notification.cancel.latest\", \"capture.active.window\", \"routine.restore\", \"input.select.all\", \"input.keybo…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_model_path_r276.turn-audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 283741,
+      "sha256": "ca100245ed4452efe7fbb717c4a5f1a6e3a58732391a65dac0bc7bd2c953336d",
+      "rows": 201,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "failure_reason",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 201,
+          "phase": 201,
+          "raw_decision": 201,
+          "request_id": 201,
+          "schema": 201,
+          "stages": 201,
+          "final": 93,
+          "error_type": 10,
+          "failure_kind": 10,
+          "failure_stage": 10,
+          "failure_reason": 6,
+          "recovery": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 283254,
+        "min_line_bytes": 251,
+        "max_line_bytes": 2638,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.close\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"app.close\",\"question\":…"
+          },
+          {
+            "offset": 361,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"app.close\"],\"final\":{\"effect_operations\":[\"app.close\"],\"intent_operations\":[\"app.close\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"app.close\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 282934,
+            "line": 200,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ConversationReplyContractError\",\"failure_kind\":\"runtime\",\"failure_reason\":\"unsupported_missing_anchor\",\"failure_stage\":\"conversation_reply\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\"…"
+          },
+          {
+            "offset": 283254,
+            "line": 201,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"prot…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_clarification_cut_b_recogniser_r272.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12942,
+      "sha256": "a42e60993d56dcf1e6354b49f4a476403f2fc95589600b75dc453eebe729ddc6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "interpretation",
+          "next_requirement",
+          "observed",
+          "population",
+          "recogniser_surface",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12941
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"observed\", \"population\", \"recogniser_surface\", \"schema\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"observed\", \"population\", \"recogniser_surface\", \"schema\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/independent_cut_b_r213_recogniser_reach_r214.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55563,
+      "sha256": "fec6591441f2d3e3a3713fab4d838790d2b1c42c8eea361b26e72909b6641cbb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "execution",
+          "identities",
+          "next_step",
+          "outcomes",
+          "population",
+          "recogniser",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_step",
+          "schema"
+        ],
+        "list_lengths": {
+          "outcomes": 93
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55562
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"execution\", \"identities\", \"next_step\", \"outcomes\", \"population\", \"recogniser\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"execution\", \"identities\", \"next_step\", \"outcomes\", \"population\", \"recogniser\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/line_ending_seal_damage_r278.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13601,
+      "sha256": "7d21d41bfaec3750c505dec8c5800ef923dbe291e7e29fd09f8a0f8613578604",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "overall_goal_met",
+          "publishedConstants",
+          "restorable",
+          "restorableCount",
+          "rule",
+          "schema",
+          "sealedAsCrlf",
+          "sealedAsCrlfCount",
+          "section_7_met",
+          "unreferencedCrlfCount"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "overall_goal_met",
+          "publishedConstants",
+          "restorableCount",
+          "rule",
+          "schema",
+          "sealedAsCrlfCount",
+          "section_7_met",
+          "unreferencedCrlfCount"
+        ],
+        "list_lengths": {
+          "restorable": 0,
+          "sealedAsCrlf": 173
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13600,
+        "publishedConstants": {
+          "min": 299317,
+          "max": 299317
+        },
+        "restorableCount": {
+          "min": 0,
+          "max": 0
+        },
+        "sealedAsCrlfCount": {
+          "min": 173,
+          "max": 173
+        },
+        "unreferencedCrlfCount": {
+          "min": 1953,
+          "max": 1953
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"overall_goal_met\", \"publishedConstants\", \"restorable\", \"restorableCount\", \"rule\", \"schema\", \"sealedAsCrlf\", \"sealedAsCrlfCount\", \"section_7_met\", \"unreferencedCrlfCount\"], \"n_keys\": 12, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"overall_goal_met\", \"publishedConstants\", \"restorable\", \"restorableCount\", \"rule\", \"schema\", \"sealedAsCrlf\", \"sealedAsCrlfCount\", \"section_7_met\", \"unreferencedCrlfCount\"], \"n_keys\": 12, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/mtop_family_recovery_loss_criterion_20260813.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6350,
+      "sha256": "4cca3b16272940cd60f9d2fa3059a6167b77efff6e0db85c2965206487f4844b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "additive",
+          "authority",
+          "corrected_additive_verdict",
+          "effects_executed",
+          "mechanism_reading",
+          "opened_v8",
+          "published_artifact",
+          "published_verdict",
+          "replacement",
+          "runtime_modified",
+          "schema",
+          "v1_v7_serviceable_baseline_misses",
+          "v9_reserved"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "corrected_additive_verdict",
+          "effects_executed",
+          "mechanism_reading",
+          "opened_v8",
+          "published_artifact",
+          "published_verdict",
+          "runtime_modified",
+          "schema",
+          "v9_reserved"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6349,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"additive\", \"authority\", \"corrected_additive_verdict\", \"effects_executed\", \"mechanism_reading\", \"opened_v8\", \"published_artifact\", \"published_verdict\", \"replacement\", \"runtime_modified\", \"schema\", \"v1_v7_serviceable_baseline_miss…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"additive\", \"authority\", \"corrected_additive_verdict\", \"effects_executed\", \"mechanism_reading\", \"opened_v8\", \"published_artifact\", \"published_verdict\", \"replacement\", \"runtime_modified\", \"schema\", \"v1_v7_serviceable_baseline_miss…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/officebench_word_source_r259.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3519,
+      "sha256": "6ca54d83a24e7aa0a6e62c5e26e36b54217aae43d59e231059289be08abdfd0e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed_surface",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3518
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/omegause_officeval_word_source_r261.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3074,
+      "sha256": "56a7d8f6d643f89e3bfb8752702eadd26188dd4de20df6215154fdd5058cabde",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed_surface",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3073
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/pc_eval_word_source_r269.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3317,
+      "sha256": "f92b2baacb1b4b6bb8c6b12ff1cc9e15f747c041a1305535b715b67fa73564ad",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed_surface",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3316
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/policy-clarify-rendezvous-barrier-first-20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 65248,
+      "sha256": "da0c3cf68893367ac9916c7f2daa963bb60dc1374ec1bae8c74996014521e1d2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "control",
+          "exact_outputs",
+          "latency_delta_rendezvous_minus_barrier",
+          "model",
+          "observed_short_circuit",
+          "promotion_rule",
+          "quality_and_shape_pass",
+          "rendezvous_guard_cancellations",
+          "rendezvous_policy_first_cancellations",
+          "rendezvous_returns_before_guard_retired",
+          "repetitions",
+          "safety",
+          "schema",
+          "server"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "exact_outputs",
+          "model",
+          "observed_short_circuit",
+          "promotion_rule",
+          "quality_and_shape_pass",
+          "rendezvous_guard_cancellations",
+          "rendezvous_policy_first_cancellations",
+          "rendezvous_returns_before_guard_retired",
+          "repetitions",
+          "schema",
+          "server"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65247,
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        },
+        "rendezvous_guard_cancellations": {
+          "min": 0,
+          "max": 0
+        },
+        "rendezvous_policy_first_cancellations": {
+          "min": 0,
+          "max": 0
+        },
+        "rendezvous_returns_before_guard_retired": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"control\", \"exact_outputs\", \"latency_delta_rendezvous_minus_barrier\", \"model\", \"observed_short_circuit\", \"promotion_rule\", \"quality_and_shape_pass\", \"rendezvous_guard_cancellations\", \"rendezvous_policy_first_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"control\", \"exact_outputs\", \"latency_delta_rendezvous_minus_barrier\", \"model\", \"observed_short_circuit\", \"promotion_rule\", \"quality_and_shape_pass\", \"rendezvous_guard_cancellations\", \"rendezvous_policy_first_…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/policy-clarify-rendezvous-preflight-20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16375,
+      "sha256": "a89a796142152e0912243a4049a20d68d822117401583e575750303c7b6326d4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm",
+          "model",
+          "passed",
+          "policy_clarifications",
+          "policy_first_cancellations",
+          "profile",
+          "repetitions",
+          "required_policy_clarifications",
+          "safety",
+          "schema",
+          "server"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "model",
+          "passed",
+          "policy_clarifications",
+          "policy_first_cancellations",
+          "profile",
+          "repetitions",
+          "required_policy_clarifications",
+          "schema",
+          "server"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16374,
+        "repetitions": {
+          "min": 3,
+          "max": 3
+        },
+        "policy_clarifications": {
+          "min": 0,
+          "max": 0
+        },
+        "required_policy_clarifications": {
+          "min": 3,
+          "max": 3
+        },
+        "policy_first_cancellations": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"model\", \"passed\", \"policy_clarifications\", \"policy_first_cancellations\", \"profile\", \"repetitions\", \"required_policy_clarifications\", \"safety\", \"schema\", \"server\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm\", \"model\", \"passed\", \"policy_clarifications\", \"policy_first_cancellations\", \"profile\", \"repetitions\", \"required_policy_clarifications\", \"safety\", \"schema\", \"server\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/r207_catalog_provenance_drift_r263.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3277,
+      "sha256": "cef5c1e86eb254a0c5687adea6d83ae44f79fdc881ed5893916d4c8882e5d92f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "catalogue_delta",
+          "constraints",
+          "identities",
+          "interpretation",
+          "next_requirement",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3276
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalogue_delta\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalogue_delta\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/r207_cross_encoder_pairs_admission.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 924,
+      "sha256": "c196dc5f256b9c6cb61659abda5035d851c2482e8067598461280fce478b3950",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "counts",
+          "identities",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 923
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"counts\", \"identities\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"counts\", \"identities\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/recogniser_alias_catalogue_drift_r267.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2447,
+      "sha256": "06d20c1e3b6be68bdb96a088a472dd4d62fc9dcfca3d667a74166071917fe7cd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "catalogue_binding",
+          "constraints",
+          "identities",
+          "interpretation",
+          "schema",
+          "unaliased_current_operations",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2446
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalogue_binding\", \"constraints\", \"identities\", \"interpretation\", \"schema\", \"unaliased_current_operations\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalogue_binding\", \"constraints\", \"identities\", \"interpretation\", \"schema\", \"unaliased_current_operations\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/recogniser_grammar_reach_r28_vs_v8_20260813.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10278,
+      "sha256": "d57296be3282dc9199ed5d5fe893d1721681eecdc29e56531d364ec44a147105",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "consequence",
+          "decider_invoked",
+          "effects_executed",
+          "finding",
+          "identities",
+          "limits",
+          "measured_on",
+          "populations",
+          "product_started",
+          "providers_enabled",
+          "reads_only_published_artifacts",
+          "schema",
+          "voice_stt_wake_exercised",
+          "why_the_gate_looks_harmless_on_cut_b"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "consequence",
+          "decider_invoked",
+          "effects_executed",
+          "finding",
+          "measured_on",
+          "product_started",
+          "providers_enabled",
+          "reads_only_published_artifacts",
+          "schema",
+          "voice_stt_wake_exercised",
+          "why_the_gate_looks_harmless_on_cut_b"
+        ],
+        "list_lengths": {
+          "limits": 3,
+          "populations": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10277,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"consequence\", \"decider_invoked\", \"effects_executed\", \"finding\", \"identities\", \"limits\", \"measured_on\", \"populations\", \"product_started\", \"providers_enabled\", \"reads_only_published_artifacts\", \"schema\", \"voice_stt_wake_exercised\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"consequence\", \"decider_invoked\", \"effects_executed\", \"finding\", \"identities\", \"limits\", \"measured_on\", \"populations\", \"product_started\", \"providers_enabled\", \"reads_only_published_artifacts\", \"schema\", \"voice_stt_wake_exercised\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/retrieval_candidate_inventory_r227.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1986,
+      "sha256": "20ef9bb14ceb55837eb0a39963414ce561ae65b96fc82c5651a6be002f714027",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "available_locally",
+          "constraints",
+          "existing_qwen_development_evidence",
+          "identities",
+          "schema",
+          "state_of_art_sources",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {
+          "state_of_art_sources": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1985
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"available_locally\", \"constraints\", \"existing_qwen_development_evidence\", \"identities\", \"schema\", \"state_of_art_sources\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"available_locally\", \"constraints\", \"existing_qwen_development_evidence\", \"identities\", \"schema\", \"state_of_art_sources\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/runtime_manifest_preflight_r222.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 940,
+      "sha256": "88af435f9a19884c6a8eefe3d4bc26c383346a2fd5f3b65c2a74d9d6f5cf9f43",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "manifest",
+          "outcome",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 939
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"manifest\", \"outcome\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"manifest\", \"outcome\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/runtime_manifest_preflight_r223.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1216,
+      "sha256": "09006b8b691699bbc7acd0db269e6b4389d3b08e520ac990b1d45960d676e394",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "correction",
+          "identities",
+          "manifest",
+          "outcome",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1215
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"correction\", \"identities\", \"manifest\", \"outcome\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"correction\", \"identities\", \"manifest\", \"outcome\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_model_path_r225.consumed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 824,
+      "sha256": "3c3c95700d77390b9f3d96fa0c570aa1297f35b6d542b49d77527eda21480122",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "hashes",
+          "measurement_status",
+          "opened_exactly_once",
+          "providers_enabled",
+          "retry_allowed",
+          "schema",
+          "status"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measurement_status",
+          "opened_exactly_once",
+          "providers_enabled",
+          "retry_allowed",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 823,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"hashes\", \"measurement_status\", \"opened_exactly_once\", \"providers_enabled\", \"retry_allowed\", \"schema\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"hashes\", \"measurement_status\", \"opened_exactly_once\", \"providers_enabled\", \"retry_allowed\", \"schema\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_model_path_r225.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15036,
+      "sha256": "13cbe4154c5ed9e8ac95a6e5e4c1b99e53107d458172d1e3acfc410a741b05d7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "diagnostic_summary",
+          "execution",
+          "failed_thresholds",
+          "identities",
+          "measurement_status",
+          "observed",
+          "runtime",
+          "schema",
+          "scoring",
+          "status",
+          "threshold_results"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measurement_status",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "failed_thresholds": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15035
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"diagnostic_summary\", \"execution\", \"failed_thresholds\", \"identities\", \"measurement_status\", \"observed\", \"runtime\", \"schema\", \"scoring\", \"status\", \"threshold_results\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"diagnostic_summary\", \"execution\", \"failed_thresholds\", \"identities\", \"measurement_status\", \"observed\", \"runtime\", \"schema\", \"scoring\", \"status\", \"threshold_results\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_model_path_r225.raw-replies.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 53829,
+      "sha256": "80282b219272fc66ea303b8b190a2c23fa8b198376363c429e0ac6b62d2adc48",
+      "rows": 122,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "stage",
+          "attempt",
+          "request_sha256",
+          "conversation_kind",
+          "presentation_shape",
+          "raw_reply",
+          "raw_reply_chars",
+          "raw_reply_sha256"
+        ],
+        "key_freq": {
+          "schema": 122,
+          "stage": 122,
+          "attempt": 122,
+          "request_sha256": 122,
+          "conversation_kind": 122,
+          "presentation_shape": 122,
+          "raw_reply": 122,
+          "raw_reply_chars": 122,
+          "raw_reply_sha256": 122
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 53250,
+        "min_line_bytes": 351,
+        "max_line_bytes": 654,
+        "numeric": {
+          "attempt": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "raw_reply_chars": {
+            "min": 0.0,
+            "max": 315.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"fcf35ca749bed7f1c1a7e1734de9c7d13dfc243c4bef2d5c0d1e51fad7090c50\",\"conversation_kind\":\"unsupported\",\"presentation_shape\":\"\",\"raw_reply\":\"I cannot p…"
+          },
+          {
+            "offset": 430,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"5d388a763d34500810d1ee32c542a737b6f54a90e113a518bbda8de9ec8e1153\",\"conversation_kind\":\"unsupported\",\"presentation_shape\":\"\",\"raw_reply\":\"No puedo v…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 52775,
+            "line": 121,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"7686178f85d6c3c4e2acc196b571055a87062a5677d173856740a9bed3584102\",\"conversation_kind\":\"knowledge\",\"presentation_shape\":\"\",\"raw_reply\":\"¿Podrías dec…"
+          },
+          {
+            "offset": 53250,
+            "line": 122,
+            "text": "{\"schema\":\"baxy.raw-conversation-reply.v1\",\"stage\":\"pre_veto\",\"attempt\":1,\"request_sha256\":\"35046fed7f3c14adb7a9e844d69c6ca440b5701de155d74ebf7e0bedef47e829\",\"conversation_kind\":\"knowledge\",\"presentation_shape\":\"\",\"raw_reply\":\"I don't have…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_model_path_r225.telemetry.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 257567,
+      "sha256": "837293a404225b16455afc2942b7a75b9531e0c8973069bdf5b24b3184cf108c",
+      "rows": 93,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "candidate_operations",
+          "case_id",
+          "effect_operations",
+          "execution_authority",
+          "expected_operations",
+          "external_effect_executed",
+          "family",
+          "intent_operations",
+          "kind",
+          "language",
+          "operation",
+          "oracle_origin",
+          "provider_dispatch_enabled",
+          "question",
+          "raw_proposal",
+          "raw_visible_proposals",
+          "reply_text",
+          "schema",
+          "seconds",
+          "stages",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 93,
+          "candidate_operations": 93,
+          "case_id": 93,
+          "effect_operations": 93,
+          "execution_authority": 93,
+          "expected_operations": 93,
+          "external_effect_executed": 93,
+          "family": 93,
+          "intent_operations": 93,
+          "kind": 93,
+          "language": 93,
+          "operation": 93,
+          "oracle_origin": 93,
+          "provider_dispatch_enabled": 93,
+          "question": 93,
+          "raw_proposal": 93,
+          "raw_visible_proposals": 93,
+          "reply_text": 93,
+          "schema": 93,
+          "seconds": 93,
+          "stages": 93,
+          "text": 93
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 254839,
+        "min_line_bytes": 1268,
+        "max_line_bytes": 3362,
+        "numeric": {
+          "seconds": {
+            "min": 0.007114,
+            "max": 8.805797
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"candidate_operations\": [\"window.active\", \"window.restore\", \"window.resolve\", \"window.minimize\", \"window.maximize\", \"window.focus\", \"window.application.status\", \"window.resize\", \"window.move\", \"wifi.status\", \"wifi.p…"
+          },
+          {
+            "offset": 2918,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"candidate_operations\": [\"app.installed\", \"app.close\", \"app.open\", \"system.application.crash.diagnose\", \"system.status\", \"system.process.list\", \"system.settings.status\", \"system.process.terminate.named\", \"system.ide…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 252322,
+            "line": 92,
+            "text": "{\"blind_holdout\": true, \"candidate_operations\": [], \"case_id\": \"situated-r215-window-es\", \"effect_operations\": [], \"execution_authority\": false, \"expected_operations\": [\"window.active\"], \"external_effect_executed\": false, \"family\": \"window…"
+          },
+          {
+            "offset": 254839,
+            "line": 93,
+            "text": "{\"blind_holdout\": true, \"candidate_operations\": [], \"case_id\": \"situated-r215-window-spanglish\", \"effect_operations\": [], \"execution_authority\": false, \"expected_operations\": [\"window.active\"], \"external_effect_executed\": false, \"family\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_model_path_r225.turn-audit.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 259573,
+      "sha256": "2e6f9a0c7c9ea0f61dd0dc0445306429aa530d0a3d31cb9c5ce07b5d56226ea3",
+      "rows": 200,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "failure_reason",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 200,
+          "phase": 200,
+          "raw_decision": 200,
+          "request_id": 200,
+          "schema": 200,
+          "stages": 200,
+          "final": 93,
+          "error_type": 10,
+          "failure_kind": 10,
+          "failure_stage": 10,
+          "failure_reason": 9,
+          "recovery": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 257820,
+        "min_line_bytes": 246,
+        "max_line_bytes": 2442,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",\"wifi.profile.list\",\"wifi.ensure.connecte…"
+          },
+          {
+            "offset": 816,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.restore\",\"window.resolve\",\"window.minimize\",\"window.maximize\",\"window.focus\",\"window.application.status\",\"window.resize\",\"window.move\",\"wifi.status\",\"wifi.profile.list\",\"wifi.ensure.connecte…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 257456,
+            "line": 199,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 257820,
+            "line": 200,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_model_path_r225.visible-text-r226.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1387,
+      "sha256": "e80331e48542bbe66cd888505cc35180f25cfb5fab1ea9df15c862e2aaa3b946",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "conclusion",
+          "constraints",
+          "identities",
+          "review",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1386
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"conclusion\", \"constraints\", \"identities\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"conclusion\", \"constraints\", \"identities\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r215_recogniser_reach_r216.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56170,
+      "sha256": "e3ce3a246bcfc5f4f624b9bfad4716e6c050ba829d9bc6287d2360463f3acd0b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "execution",
+          "identities",
+          "next_step",
+          "outcomes",
+          "population",
+          "recogniser",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_step",
+          "schema"
+        ],
+        "list_lengths": {
+          "outcomes": 93
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56169
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"execution\", \"identities\", \"next_step\", \"outcomes\", \"population\", \"recogniser\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"execution\", \"identities\", \"next_step\", \"outcomes\", \"population\", \"recogniser\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/situated_cut_b_r228_recogniser_reach_r229.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58417,
+      "sha256": "2b8917700bb444f9d13077d64f9f1d6ada97165a93c4f4ac2d5bba09b569e817",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "execution",
+          "identities",
+          "next_step",
+          "outcomes",
+          "population",
+          "recogniser",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_step",
+          "schema"
+        ],
+        "list_lengths": {
+          "outcomes": 93
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58416
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"execution\", \"identities\", \"next_step\", \"outcomes\", \"population\", \"recogniser\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"execution\", \"identities\", \"next_step\", \"outcomes\", \"population\", \"recogniser\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/supervised_reranker_domain_r243_nonfinite_rejection_r244.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1392,
+      "sha256": "d7bffc3a13ff0f2546d89a15efcd99269dc96d5128132fcaf56309c4ed227c26",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "nonfinite_fields",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {
+          "nonfinite_fields": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1391
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"nonfinite_fields\", \"reason\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"nonfinite_fields\", \"reason\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/turn_evidence_restoration_r234.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1364,
+      "sha256": "10ebd512df812aacc1db458ef4c7771076b861af26810a9568e8f9ef4c8f2bab",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "public_holdout",
+          "runtime_corpus",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1363
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"public_holdout\", \"runtime_corpus\", \"schema\", \"sources\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"public_holdout\", \"runtime_corpus\", \"schema\", \"sources\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/ufo_dataflow_word_source_r260.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3012,
+      "sha256": "0f06e343c6809b27e54ee58f93d58a7e192aec44f7708fd51166554704fd4fa6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed_surface",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3011
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/veto_reach_v8_serviceability_manual_audit_20260813.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15284,
+      "sha256": "2348029c1a228bff69150cb1c7ef40494a1fcd189bd1f79427716206c1e99d5b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audited_at_local",
+          "criteria",
+          "measurement_status",
+          "rows",
+          "schema",
+          "scope",
+          "sources",
+          "summary",
+          "v8_verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audited_at_local",
+          "measurement_status",
+          "schema",
+          "scope",
+          "v8_verdict"
+        ],
+        "list_lengths": {
+          "rows": 21
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15283
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audited_at_local\", \"criteria\", \"measurement_status\", \"rows\", \"schema\", \"scope\", \"sources\", \"summary\", \"v8_verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audited_at_local\", \"criteria\", \"measurement_status\", \"rows\", \"schema\", \"scope\", \"sources\", \"summary\", \"v8_verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/veto_reach_v8_veto_damage_by_cause_20260813.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 46296,
+      "sha256": "7e50409f620bc4fdc9b76a32def14e52d418adee2a4cb461d5ad0796846b25c7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "integrity",
+          "measured_on",
+          "priced_relaxation",
+          "providers_enabled",
+          "question_1_vetos_by_what_they_retired",
+          "question_2_damage_attribution",
+          "question_2b_guard_contradiction",
+          "question_3_clarifications",
+          "question_4_honest_ceiling",
+          "reads_only_published_artifacts",
+          "schema",
+          "v8_reopened",
+          "v8_rescored",
+          "voice_stt_wake_exercised"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_on",
+          "providers_enabled",
+          "reads_only_published_artifacts",
+          "schema",
+          "v8_reopened",
+          "v8_rescored",
+          "voice_stt_wake_exercised"
+        ],
+        "list_lengths": {
+          "question_2_damage_attribution": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 46295,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"integrity\", \"measured_on\", \"priced_relaxation\", \"providers_enabled\", \"question_1_vetos_by_what_they_retired\", \"question_2_damage_attribution\", \"question_2b_guard_contradiction\", \"question_3_clarifications\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"integrity\", \"measured_on\", \"priced_relaxation\", \"providers_enabled\", \"question_1_vetos_by_what_they_retired\", \"question_2_damage_attribution\", \"question_2b_guard_contradiction\", \"question_3_clarifications\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/white_collar_word_trace_source_r262.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3873,
+      "sha256": "d61fe38b8be8d4fafe94844ec65ea356a044f5b5f62dc9ef326603559a485d59",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed_surface",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3872
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/windows_agent_arena_office_source_r258.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2346,
+      "sha256": "40d66c9f66e2f859d6d4e7434af54fe1d3ea8fe3bbafde91e46320a8960bfd7e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2345
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/windowsworld_word_source_r268.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3683,
+      "sha256": "5696425f7386a039f36d1a5bd0374598a847e7ee1322c6287087d4b8dc7c848b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "admission",
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed_surface",
+          "schema",
+          "source",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3682
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"admission\", \"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed_surface\", \"schema\", \"source\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/blind/servicenow_codeswitch_blind_extraction_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 57265,
+      "sha256": "d7d5d6d32f97a65861fe8500e04ca96b79bc6725d8593afd2ab2983223687191",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidatePreregistration",
+          "contract",
+          "createdAtUtc",
+          "effectsExecuted",
+          "extraction",
+          "extractionRuntime",
+          "generator",
+          "schema",
+          "source",
+          "sourcePreregistration"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "effectsExecuted",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 57264,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidatePreregistration\", \"contract\", \"createdAtUtc\", \"effectsExecuted\", \"extraction\", \"extractionRuntime\", \"generator\", \"schema\", \"source\", \"sourcePreregistration\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidatePreregistration\", \"contract\", \"createdAtUtc\", \"effectsExecuted\", \"extraction\", \"extractionRuntime\", \"generator\", \"schema\", \"source\", \"sourcePreregistration\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/blind/servicenow_semantic_fusion_blind_failure_analysis_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2905,
+      "sha256": "5d7a0e749e623866a0cd54278579b42e40cc2d513622d43b19f770dafbaa75a3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "analyzedAtUtc",
+          "decision",
+          "effectsExecuted",
+          "evidence",
+          "failureMechanism",
+          "gate",
+          "generator",
+          "schema",
+          "status",
+          "wakeProgramTree"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "analyzedAtUtc",
+          "effectsExecuted",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2904,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"analyzedAtUtc\", \"decision\", \"effectsExecuted\", \"evidence\", \"failureMechanism\", \"gate\", \"generator\", \"schema\", \"status\", \"wakeProgramTree\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"analyzedAtUtc\", \"decision\", \"effectsExecuted\", \"evidence\", \"failureMechanism\", \"gate\", \"generator\", \"schema\", \"status\", \"wakeProgramTree\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/blind/servicenow_semantic_fusion_blind_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77148,
+      "sha256": "6480df05fceefca870f65af4afb580365299bce855013e34c0cc6d5b36b27bbc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindRowGroupsOpened",
+          "candidatePromoted",
+          "caseCommitments",
+          "checks",
+          "detail",
+          "effectsExecuted",
+          "evaluator",
+          "extraction",
+          "finalPhysicalCertificationEligible",
+          "measuredAtUtc",
+          "metrics",
+          "modelRuntime",
+          "partition",
+          "preregistration",
+          "schema",
+          "status",
+          "supplementalOnly",
+          "syntheticAudio",
+          "thresholds",
+          "wakeProgramTree"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidatePromoted",
+          "effectsExecuted",
+          "finalPhysicalCertificationEligible",
+          "measuredAtUtc",
+          "partition",
+          "schema",
+          "status",
+          "supplementalOnly",
+          "syntheticAudio"
+        ],
+        "list_lengths": {
+          "caseCommitments": 200,
+          "blindRowGroupsOpened": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77147,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindRowGroupsOpened\", \"candidatePromoted\", \"caseCommitments\", \"checks\", \"detail\", \"effectsExecuted\", \"evaluator\", \"extraction\", \"finalPhysicalCertificationEligible\", \"measuredAtUtc\", \"metrics\", \"modelRuntime\", \"partition\", \"pre…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindRowGroupsOpened\", \"candidatePromoted\", \"caseCommitments\", \"checks\", \"detail\", \"effectsExecuted\", \"evaluator\", \"extraction\", \"finalPhysicalCertificationEligible\", \"measuredAtUtc\", \"metrics\", \"modelRuntime\", \"partition\", \"pre…"
+          }
+        ]
+      }
+    },
+    "artifacts/corpus_cutoff/extraction_report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4740,
+      "sha256": "5c195fbf6c3be475675b4d3218dd47bbe5a6efa6a294c074718f4c660241a7ca",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance_scope_oracle",
+          "by_acceptance_scope",
+          "by_class",
+          "by_denied_operation",
+          "by_language",
+          "by_operation",
+          "by_origin",
+          "by_source_family",
+          "canonical_missions",
+          "cutoff_state_sha256",
+          "cutoff_utc",
+          "dynamic_unclassified_missions",
+          "exact_duplicates",
+          "mapping_sha256",
+          "messages_sha256",
+          "messages_with_denied_operations",
+          "missions_sha256",
+          "non_target_language_history_policy",
+          "operation_catalog_size",
+          "product_language_scope",
+          "raw_messages",
+          "redacted_messages",
+          "schema_version",
+          "semantic_revision",
+          "source_occurrences",
+          "unique_literal_normalized",
+          "unique_scope_literal_contracts"
+        ],
+        "n_keys": 27,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "canonical_missions",
+          "cutoff_state_sha256",
+          "cutoff_utc",
+          "dynamic_unclassified_missions",
+          "exact_duplicates",
+          "mapping_sha256",
+          "messages_sha256",
+          "messages_with_denied_operations",
+          "missions_sha256",
+          "non_target_language_history_policy",
+          "operation_catalog_size",
+          "raw_messages",
+          "redacted_messages",
+          "schema_version",
+          "semantic_revision",
+          "source_occurrences",
+          "unique_literal_normalized",
+          "unique_scope_literal_contracts"
+        ],
+        "list_lengths": {
+          "product_language_scope": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4739,
+        "canonical_missions": {
+          "min": 2084,
+          "max": 2084
+        },
+        "dynamic_unclassified_missions": {
+          "min": 0,
+          "max": 0
+        },
+        "exact_duplicates": {
+          "min": 3969,
+          "max": 3969
+        },
+        "messages_with_denied_operations": {
+          "min": 98,
+          "max": 98
+        },
+        "operation_catalog_size": {
+          "min": 43,
+          "max": 43
+        },
+        "raw_messages": {
+          "min": 14836,
+          "max": 14836
+        },
+        "redacted_messages": {
+          "min": 656,
+          "max": 656
+        },
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        },
+        "source_occurrences": {
+          "min": 122744,
+          "max": 122744
+        },
+        "unique_literal_normalized": {
+          "min": 10864,
+          "max": 10864
+        },
+        "unique_scope_literal_contracts": {
+          "min": 10867,
+          "max": 10867
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance_scope_oracle\", \"by_acceptance_scope\", \"by_class\", \"by_denied_operation\", \"by_language\", \"by_operation\", \"by_origin\", \"by_source_family\", \"canonical_missions\", \"cutoff_state_sha256\", \"cutoff_utc\", \"dynamic_unclassified…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance_scope_oracle\", \"by_acceptance_scope\", \"by_class\", \"by_denied_operation\", \"by_language\", \"by_operation\", \"by_origin\", \"by_source_family\", \"canonical_missions\", \"cutoff_state_sha256\", \"cutoff_utc\", \"dynamic_unclassified…"
+          }
+        ]
+      }
+    },
+    "artifacts/corpus_cutoff/semantic_amendment.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11710,
+      "sha256": "9665410628b83061a47838c1dcb5aef7a9bd9d91810eff3f243b967f77b642d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "amendment_id",
+          "amendment_schema_version",
+          "artifact_schema_transition",
+          "authority",
+          "canonical_digests",
+          "file_sha256",
+          "language_contract",
+          "metrics",
+          "operation_oracles",
+          "release_status",
+          "reproduction",
+          "semantic_changes",
+          "verification"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "amendment_id",
+          "amendment_schema_version"
+        ],
+        "list_lengths": {
+          "semantic_changes": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11709,
+        "amendment_schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"amendment_id\", \"amendment_schema_version\", \"artifact_schema_transition\", \"authority\", \"canonical_digests\", \"file_sha256\", \"language_contract\", \"metrics\", \"operation_oracles\", \"release_status\", \"reproduction\", \"semantic_changes\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"amendment_id\", \"amendment_schema_version\", \"artifact_schema_transition\", \"authority\", \"canonical_digests\", \"file_sha256\", \"language_contract\", \"metrics\", \"operation_oracles\", \"release_status\", \"reproduction\", \"semantic_changes\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/corpus_cutoff/source_manifest.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17042213,
+      "sha256": "9da873e4b30dd81d1cc85d6e9bf4b19fb13aa96e8fcc5ce3b1f8265012ca59b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cutoff_utc",
+          "generated_at",
+          "hash_algorithm",
+          "manifest_payload_sha256",
+          "policy",
+          "schema_version",
+          "source_roots_are_logical",
+          "sources"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cutoff_utc",
+          "generated_at",
+          "hash_algorithm",
+          "manifest_payload_sha256",
+          "schema_version",
+          "source_roots_are_logical"
+        ],
+        "list_lengths": {
+          "sources": 17
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17042212,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cutoff_utc\", \"generated_at\", \"hash_algorithm\", \"manifest_payload_sha256\", \"policy\", \"schema_version\", \"source_roots_are_logical\", \"sources\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cutoff_utc\", \"generated_at\", \"hash_algorithm\", \"manifest_payload_sha256\", \"policy\", \"schema_version\", \"source_roots_are_logical\", \"sources\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_cascade_endpoint_scoregated_human_v14_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38094,
+      "sha256": "34d173a7c4a68152d0616360c5052d99f6120963b241f14c981f48f4efb0bb73",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope",
+          "sourceReports"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38093,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_cascade_endpoint_v24a_opened_endpoint_suffix_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77173,
+      "sha256": "9d845177c7ca9ec69ba17c39d63f682a67ec4f24604f0a895ffd7c957e8f05f4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope",
+          "sourceReports"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77172,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_cascade_endpoint_v24a_opened_physical_v16_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39292,
+      "sha256": "411867817583536e027dba2ebe7e61acabafdd45415a8dc4652df4a8bc6b16b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope",
+          "sourceReports"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39291,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_cascade_endpoint_voice_runtime_v25a_human_v14_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38094,
+      "sha256": "fe0524905d79ccf85bbabd00508781bd16ab0d8fdf1617c2df94a00ab752af69",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope",
+          "sourceReports"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38093,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_direct_logmel_lexical_opened_physical_v17_v18a_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 104593,
+      "sha256": "d14000b96183f2032be92f65f43b5861692f403c2e4e970cbbcf09fa67e54c4c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 104592,
+        "elapsedWallSeconds": {
+          "min": 100.88671839999733,
+          "max": 100.88671839999733
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_direct_logmel_lexical_sapi_physical_v16_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 104621,
+      "sha256": "d4d08421804af50b9d3d018c7be71fcee9ab7333d5f1c7d871ff4b1c2066603d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 104620,
+        "elapsedWallSeconds": {
+          "min": 80.23363719999907,
+          "max": 80.23363719999907
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_direct_logmel_v18a_openslr100h_full_negative_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40887,
+      "sha256": "c73546895c5fc6dc8e99d46d375474528ca6b0d0d38a5ef50004eacc533f2b0c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "contract",
+          "developmentOnly",
+          "directProposalIsWakeAuthority",
+          "effectsExecuted",
+          "exactRecords",
+          "lexicalGuardMeasured",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "promotable",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources",
+          "transcriptsOrFilenamesRetained"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentOnly",
+          "directProposalIsWakeAuthority",
+          "effectsExecuted",
+          "lexicalGuardMeasured",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "promotable",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "transcriptsOrFilenamesRetained"
+        ],
+        "list_lengths": {
+          "exactRecords": 186
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40886,
+        "runtimeSeconds": {
+          "min": 915.8533925999945,
+          "max": 915.8533925999945
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateFrozen\", \"contract\", \"developmentOnly\", \"directProposalIsWakeAuthority\", \"effectsExecuted\", \"exactRecords\", \"lexicalGuardMeasured\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccesse…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateFrozen\", \"contract\", \"developmentOnly\", \"directProposalIsWakeAuthority\", \"effectsExecuted\", \"exactRecords\", \"lexicalGuardMeasured\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccesse…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_direct_logmel_v24a_openslr100h_full_negative_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 70070,
+      "sha256": "5ee117dca1bc01885f6f687bd9b07daa12fbb01c46e21d060643b4e3a7895695",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "contract",
+          "developmentOnly",
+          "directProposalIsWakeAuthority",
+          "effectsExecuted",
+          "exactRecords",
+          "lexicalGuardMeasured",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "promotable",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources",
+          "transcriptsOrFilenamesRetained"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentOnly",
+          "directProposalIsWakeAuthority",
+          "effectsExecuted",
+          "lexicalGuardMeasured",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "promotable",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "transcriptsOrFilenamesRetained"
+        ],
+        "list_lengths": {
+          "exactRecords": 324
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70069,
+        "runtimeSeconds": {
+          "min": 902.4216970999842,
+          "max": 902.4216970999842
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateFrozen\", \"contract\", \"developmentOnly\", \"directProposalIsWakeAuthority\", \"effectsExecuted\", \"exactRecords\", \"lexicalGuardMeasured\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccesse…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateFrozen\", \"contract\", \"developmentOnly\", \"directProposalIsWakeAuthority\", \"effectsExecuted\", \"exactRecords\", \"lexicalGuardMeasured\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccesse…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_bounded_v24a_opened_endpoint_confusable_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58971,
+      "sha256": "e21468bd31c79a9be6339c631be38bb67421c6fcd25515bb97428202710e72df",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58970,
+        "elapsedWallSeconds": {
+          "min": 81.81703480001306,
+          "max": 81.81703480001306
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_candidate_v25a_opened_verdict_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2942,
+      "sha256": "f93d363bca35fc84fee31c08aa5a2a8e31fc7cb5c578cd923747fc61562eff88",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acousticBaselineByteParity",
+          "baselineManifestSha256",
+          "candidateFrozen",
+          "candidateManifestSha256",
+          "contract",
+          "developmentOnly",
+          "effectsExecuted",
+          "freshBlindPhysicalRequired",
+          "measuredAtUtc",
+          "metrics",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baselineManifestSha256",
+          "candidateFrozen",
+          "candidateManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "freshBlindPhysicalRequired",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2941,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acousticBaselineByteParity\", \"baselineManifestSha256\", \"candidateFrozen\", \"candidateManifestSha256\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"freshBlindPhysicalRequired\", \"measuredAtUtc\", \"metrics\", \"openedDevelopmentP…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acousticBaselineByteParity\", \"baselineManifestSha256\", \"candidateFrozen\", \"candidateManifestSha256\", \"contract\", \"developmentOnly\", \"effectsExecuted\", \"freshBlindPhysicalRequired\", \"measuredAtUtc\", \"metrics\", \"openedDevelopmentP…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_confusable_physical_capture_v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 146,
+      "sha256": "2d4ae04fff465339fd12211b0dd95eb6f3304a3478b7104f482cd3b7f675c738",
+      "rows": 8,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 112,
+        "min_line_bytes": 16,
+        "max_line_bytes": 34
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "positive:20/24"
+          },
+          {
+            "offset": 16,
+            "line": 2,
+            "text": "positive:24/24"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 96,
+            "line": 7,
+            "text": "negative:96/96"
+          },
+          {
+            "offset": 112,
+            "line": 8,
+            "text": "{\"negative\": 96, \"positive\": 24}"
+          }
+        ]
+      }
+    }
+  }
+}

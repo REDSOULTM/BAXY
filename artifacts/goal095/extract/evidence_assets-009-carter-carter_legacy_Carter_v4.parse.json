@@ -1,0 +1,1666 @@
+{
+  "batch_id": "evidence_assets-009-carter-carter_legacy_Carter_v4",
+  "source_id": "carter",
+  "file_count": 36,
+  "hash_ok": 36,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "legacy/Carter_v4/audit/runs/iter0_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50157,
+      "sha256": "897e634e074729e3db8d2118e17305923f111b54cc9b06bac34c46c462e7f07a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50156
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter0_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 19962,
+      "sha256": "5b726458b63a26adac1278948a9df3759ecd3e4778a53870aee5f2925eb4bfda",
+      "rows": 360,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 6,
+        "pass_like": 91
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19894,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19822,
+            "line": 359,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 19894,
+            "line": 360,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter0_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter10_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54246,
+      "sha256": "463d6962c35490eb37897ef8724a4b7ae3b605eabf7a4a69d009f8cbd1476891",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54245
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter10_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20833,
+      "sha256": "e3731af34586384fccc798f3298ad19f5f96bea2e7ad302eb56a14d7597865bd",
+      "rows": 365,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 93
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20764,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20692,
+            "line": 364,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20764,
+            "line": 365,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter10_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter11_stability.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 56908,
+      "sha256": "0ab75fc561bdc8c7200a72be51b77efae47fd477336b7cd4a769f6d576d881a8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 56907
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter11_stability.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 21498,
+      "sha256": "dac2eea41b11b31fc46da1424f1b0b59b357ba157ce789ea9f4d7ba80f259399",
+      "rows": 367,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 93
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21430,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21358,
+            "line": 366,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 21430,
+            "line": 367,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter11_stability.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter12_stability2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51899,
+      "sha256": "ab8b529dda29d8ea4adba67e66e7b772f242f5ffc92d9cca4e47070dc2d04cec",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51898
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter12_stability2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20803,
+      "sha256": "cf2e1b1db019791270cda57ada57893cc704e1c0f51ad1b4872f59766db9623e",
+      "rows": 364,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 95
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20734,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20662,
+            "line": 363,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20734,
+            "line": 364,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter12_stability2.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter13_confirm100.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 53032,
+      "sha256": "7d3ea031be5157bbac798f4cb05d59559a3093b64fac02644320f897a80d9ba1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 53031
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter13_confirm100.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20738,
+      "sha256": "d9900300b39061cb8f7341570b57d37541070f0f7115705ed85879d375b4d4c6",
+      "rows": 364,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 92
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20669,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20597,
+            "line": 363,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20669,
+            "line": 364,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter13_confirm100.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter1_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54464,
+      "sha256": "c8e4246005dcb317a48b9c2018223c8ab4734c4630d5b78ec74c37ba9d87ae67",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54463
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter1_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20957,
+      "sha256": "c7803e501fe04917fc5017aabd50ec29ce780159345c20deb7db38c3693b5c18",
+      "rows": 369,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 91
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20889,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20817,
+            "line": 368,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20889,
+            "line": 369,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter1_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter2_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54366,
+      "sha256": "28be12ee6775335f62b76475f2e2466c00e413a8617d2e35448749d2789ec952",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54365
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter2_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 21227,
+      "sha256": "36ae88bfecf831e674e4512d049c5075bfd64137356517f5fc15a9751ca10095",
+      "rows": 362,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 5,
+        "pass_like": 92
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21159,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21087,
+            "line": 361,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 21159,
+            "line": 362,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter2_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter3_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50884,
+      "sha256": "5a85bbb872db585367ebddde37d130d222723b79cea9aa1ec9ddbed2689b8c72",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50883
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter3_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20390,
+      "sha256": "9a0e885a97fadda4442efc23cd22c4c489e2cf64f14d234f8028cbc83b2a07f5",
+      "rows": 361,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 5,
+        "pass_like": 92
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20322,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20250,
+            "line": 360,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20322,
+            "line": 361,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter3_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter4_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54606,
+      "sha256": "2252c96888b6aa793d976d099f030282e23c04fb06f55f00217e196bff10dd7d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54605
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter4_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20738,
+      "sha256": "0d1c9dc8f2a2d8d8dd15953a11d075894a20be697dcad5ec26072cdecec32258",
+      "rows": 364,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 94
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20670,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20598,
+            "line": 363,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20670,
+            "line": 364,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter4_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter5_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 55136,
+      "sha256": "f75c3e8cf3870c09d4650ed44c554e383bc34647ad4dde6096bd632cd8b07d31",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 55135
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter5_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20578,
+      "sha256": "5a37c47f00ef43593c4b0a0d5a20ee299052fe02f808fd7a460b27a7880c8fb4",
+      "rows": 368,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 93
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20510,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20438,
+            "line": 367,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20510,
+            "line": 368,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter5_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter6_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54973,
+      "sha256": "d0f89442b759faf3912cbfb137384f50d72be05fdb8d9d60a52710ccc4153b3c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54972
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter6_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20893,
+      "sha256": "9332ae9919568833c18074469ad3a2e3cfd7742472f105c4e8abf870ae25b33f",
+      "rows": 368,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 93
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20825,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20753,
+            "line": 367,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20825,
+            "line": 368,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter6_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter7_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 53491,
+      "sha256": "d143d059b222781f295aec10bd4a3771cfcc3d9a917ef28c14c10892647b5cff",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 53490
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter7_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 20490,
+      "sha256": "6ea8c1a2be3f99d26d0ce330a26b96c962506a10be0acebfce8a48d4e4f55f38",
+      "rows": 364,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 93
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20422,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20350,
+            "line": 363,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 20422,
+            "line": 364,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter7_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter8_gemma_per5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54396,
+      "sha256": "0a1ba3e50c792de00ba95b4f3c4186c93aba98ef1bce04a8f69f0ee8f132b2d2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54395
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter8_gemma_per5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 21343,
+      "sha256": "09d9d8c9364e3f45449636bbe54f02af39dbf1ae07a18a69d691decc3a0bc4c8",
+      "rows": 362,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 94
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21275,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21203,
+            "line": 361,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 21275,
+            "line": 362,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter8_gemma_per5.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter9_confirm.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 58398,
+      "sha256": "b0b63b5c89011e9483dd041599980371dd4bb35e67cc31407199d32f52fd502c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 58397
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iter9_confirm.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 21504,
+      "sha256": "49851c3ecdb4f7e62e4a523c4c4ec2e580e8119b108659fff104ccd4e87afb80",
+      "rows": 375,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 8,
+        "pass_like": 84
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21439,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 90"
+          },
+          {
+            "offset": 34,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21367,
+            "line": 374,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 21439,
+            "line": 375,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iter9_confirm.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterA_full540.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 317093,
+      "sha256": "42da3581bf10bd856df26b649022cc17cede397471f81df256166fe1add287fb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 317092
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterA_full540.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 115004,
+      "sha256": "7c2c1178880d06522ec4db1e9f8c8838a7e922e1b1437e2f342e0f81b50c67f7",
+      "rows": 1867,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 38,
+        "pass_like": 522
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 114939,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 540"
+          },
+          {
+            "offset": 35,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 114867,
+            "line": 1866,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 114939,
+            "line": 1867,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iterA_full540.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterB_full540.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 304613,
+      "sha256": "1c5e4f2c72d9e911b10225be5c21cb7a2c22924550935d386413fc1b8718f7cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 540
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 304612
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterB_full540.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 114498,
+      "sha256": "9125a4415e602cfe8a728d375eead9dc70da3ced087ba4508448b42b127358b1",
+      "rows": 1845,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 32,
+        "pass_like": 531
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 114433,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 540"
+          },
+          {
+            "offset": 35,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 114361,
+            "line": 1844,
+            "text": "======================================================================"
+          },
+          {
+            "offset": 114433,
+            "line": 1845,
+            "text": "[runner v4] resultados escritos a audit\\runs\\iterB_full540.json"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterC2_full540.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 267361,
+      "sha256": "20b6cf9e464c17477e44ead20aafb68781b377c140beeb353fd0a89334ac8a27",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 450
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 267360
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterC2_full540.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 98452,
+      "sha256": "fe176cf9e953b33544b8039855650eccb9d2e28777af32cc61e14adec3d38f36",
+      "rows": 1560,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 34,
+        "pass_like": 441
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 98450,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 540"
+          },
+          {
+            "offset": 35,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 98422,
+            "line": 1559,
+            "text": "[spawn_llama] READY in 3s"
+          },
+          {
+            "offset": 98450,
+            "line": 1560,
+            "text": ""
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterC_full540.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 37682,
+      "sha256": "80e906600bf3f00c93d2cdd57f75cb25218662c15bf05b3ffe25e575ab57d56a",
+      "rows": 625,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 9,
+        "pass_like": 178
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37680,
+        "min_line_bytes": 2,
+        "max_line_bytes": 531
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[runner v4] casos a ejecutar: 540"
+          },
+          {
+            "offset": 35,
+            "line": 2,
+            "text": "[runner v4] perfil=gemma4_e4b modelo=gemma-4-E4B-it-UD-IQ2_M host=http://127.0.0.1:8080"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 37652,
+            "line": 624,
+            "text": "[spawn_llama] READY in 8s"
+          },
+          {
+            "offset": 37680,
+            "line": 625,
+            "text": ""
+          }
+        ]
+      }
+    },
+    "legacy/Carter_v4/audit/runs/iterC_retry_full540.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 106851,
+      "sha256": "94600e440ede4e0561a66b7fbc0324e641b3c61c1c06497077e70996f6044678",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "results",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "results": 200
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 106850
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"results\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

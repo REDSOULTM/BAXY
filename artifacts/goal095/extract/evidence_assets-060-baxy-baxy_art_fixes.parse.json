@@ -1,0 +1,3260 @@
+{
+  "batch_id": "evidence_assets-060-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 49,
+  "hash_ok": 49,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/compound_conservation_preflight_r21_metamorphic.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 142494,
+      "sha256": "b5f98fb5e798eb1b8ef5d630565d528435bc6912dd08d76ec6d92458283ff094",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 10,
+          "rows": 44
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 142493,
+        "cases": {
+          "min": 44,
+          "max": 44
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r21_metamorphic.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 102477,
+      "sha256": "31b8f2db7ad58bdbbfe3ddb0c02ef34a16836eadb08f271152807159c7929f6b",
+      "rows": 102,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 102,
+          "phase": 102,
+          "raw_decision": 102,
+          "request_id": 102,
+          "schema": 102,
+          "stages": 102,
+          "final": 45,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 101979,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2278,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 101756,
+            "line": 101,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"r21-metamorphic-deferred-whole-plan\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 101979,
+            "line": 102,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r22_ordinal.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 975,
+      "sha256": "fb5c8504ccae8a1c5ef4cf51750459fd4e99c35c5b972bf03a6ccb1a0e9c3293",
+      "rows": 9,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 9,
+          "operation": 9,
+          "compatible": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 863,
+        "min_line_bytes": 94,
+        "max_line_bytes": 114,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 751,
+            "line": 8,
+            "text": "{\"clause\": \"Either connect Wi-Fi or read the latest email.\", \"operation\": \"wifi.connect\", \"compatible\": false}"
+          },
+          {
+            "offset": 863,
+            "line": 9,
+            "text": "{\"clause\": \"Open Notepad and type hello--actually, do neither.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r22_ordinal.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 145119,
+      "sha256": "15a135235892dc09ffc503dcdbdd32093f466191508b6715bab424b5a399dc95",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 9,
+          "rows": 46
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 145118,
+        "cases": {
+          "min": 46,
+          "max": 46
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r22_ordinal.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 107899,
+      "sha256": "2ea661f499a86d575981f2a434d24eccbee0d83e6a4b9a9d542a9244e2a6ee55",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 106,
+          "phase": 106,
+          "raw_decision": 106,
+          "request_id": 106,
+          "schema": 106,
+          "stages": 106,
+          "final": 47,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 107401,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2335,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 107178,
+            "line": 105,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"r21-metamorphic-deferred-whole-plan\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 107401,
+            "line": 106,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r23_pairwise_final.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1003,
+      "sha256": "3a1f117e43a1458c99ce3968ca8339b0912790d8a07e405c2a9abd8d7f17636f",
+      "rows": 9,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 9,
+          "operation": 9,
+          "compatible": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 891,
+        "min_line_bytes": 94,
+        "max_line_bytes": 128,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 763,
+            "line": 8,
+            "text": "{\"clause\": \"Either create a task called Report or a reminder called Report.\", \"operation\": \"task.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 891,
+            "line": 9,
+            "text": "{\"clause\": \"Open Notepad and type hello--actually, do neither.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r23_pairwise_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 149684,
+      "sha256": "71e6416e6ff278f05ae6a891f333da278e05e63099f52e6c611ee8b8c2e872dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 9,
+          "rows": 46
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 149683,
+        "cases": {
+          "min": 46,
+          "max": 46
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r23_pairwise_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 106950,
+      "sha256": "4a41eca59df4d85b286c6f09e31593bd766fcb9bfba932e15f43f680df2250e6",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 106,
+          "phase": 106,
+          "raw_decision": 106,
+          "request_id": 106,
+          "schema": 106,
+          "stages": 106,
+          "final": 47,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 106452,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2278,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 106229,
+            "line": 105,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"r21-metamorphic-deferred-whole-plan\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 106452,
+            "line": 106,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r24_extended_families.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1375,
+      "sha256": "2b47ee576e5978b3a5858127e316229d90c610cd5a855fe3cea0a4b972b1e2f4",
+      "rows": 12,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 12,
+          "operation": 12,
+          "compatible": 12
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1244,
+        "min_line_bytes": 94,
+        "max_line_bytes": 141,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1103,
+            "line": 11,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": true}"
+          },
+          {
+            "offset": 1244,
+            "line": 12,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r24_extended_families.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 181709,
+      "sha256": "a9e1a38486c583e8cc432f3c420eaf7b3073509731154fbaa157bc451ca0a993",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 12,
+          "rows": 54
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 181708,
+        "cases": {
+          "min": 54,
+          "max": 54
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r24_extended_families.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 127853,
+      "sha256": "cbdc3022952931b8fdde605b3ef26d934142edc0a145c54935842db5df94cc9b",
+      "rows": 116,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 116,
+          "phase": 116,
+          "raw_decision": 116,
+          "request_id": 116,
+          "schema": 116,
+          "stages": 116,
+          "final": 55,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 126261,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2375,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 125893,
+            "line": 115,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 126261,
+            "line": 116,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r25_extended_final.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1248,
+      "sha256": "b47cdb2adc31649057ff3142bb5367cacd53f0def65e618c4658c44576c22e07",
+      "rows": 11,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 11,
+          "operation": 11,
+          "compatible": 11
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1117,
+        "min_line_bytes": 94,
+        "max_line_bytes": 142,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 975,
+            "line": 10,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 1117,
+            "line": 11,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r25_extended_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 181358,
+      "sha256": "e5d906b74f38956395b0f4d57461f6cc149411baaed338da88c1d23b02fa37be",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 11,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 181357,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r25_extended_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 131998,
+      "sha256": "bd6ba098806c7f41d0d0ee8a0fc544ce1c364d6884d42037908216a295401d2f",
+      "rows": 120,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 120,
+          "phase": 120,
+          "raw_decision": 120,
+          "request_id": 120,
+          "schema": 120,
+          "stages": 120,
+          "final": 57,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130411,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 130048,
+            "line": 119,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 130411,
+            "line": 120,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r26_cross_tail_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 182022,
+      "sha256": "e298f2ffce1d03a7c7059877d64233df72df246b181a617a1eea5384da12f05a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 11,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 182021,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r26_cross_tail_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 133044,
+      "sha256": "a218154a1508a133219202eb1f0c844f1722e297612fffba6bcc494a178237c9",
+      "rows": 120,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 120,
+          "phase": 120,
+          "raw_decision": 120,
+          "request_id": 120,
+          "schema": 120,
+          "stages": 120,
+          "final": 57,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 131457,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 131094,
+            "line": 119,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 131457,
+            "line": 120,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r27_action_tail_final.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1020,
+      "sha256": "2ed812dc12989fc0c6c01083d80f941401db7043d9a59634d52066cc5e380286",
+      "rows": 9,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 9,
+          "operation": 9,
+          "compatible": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 889,
+        "min_line_bytes": 94,
+        "max_line_bytes": 142,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 747,
+            "line": 8,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 889,
+            "line": 9,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r27_action_tail_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 178010,
+      "sha256": "5428b08da70700c09fa8a8f40192719edf0192d612df87483a4c147a397db3b4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 9,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 178009,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r27_action_tail_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 131616,
+      "sha256": "bf3837fba8f4e66c434086a9b28596523fd8084bc2913066428f9343ef61fddd",
+      "rows": 126,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 126,
+          "phase": 126,
+          "raw_decision": 126,
+          "request_id": 126,
+          "schema": 126,
+          "stages": 126,
+          "final": 57,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130029,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129666,
+            "line": 125,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 130029,
+            "line": 126,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r28_surface_final.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1412,
+      "sha256": "cf2a548907a8350c773dd6321ddc734c375788cf145a41231e07e655a189e517",
+      "rows": 12,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 12,
+          "operation": 12,
+          "compatible": 12
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1281,
+        "min_line_bytes": 94,
+        "max_line_bytes": 142,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"lucas should receive a whatsapp saying hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1139,
+            "line": 11,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 1281,
+            "line": 12,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r28_surface_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 180439,
+      "sha256": "6c2621b9bb55d5d904c0c10f73a62e3d9596592ff40accb285bc2ba88e655373",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 12,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 180438,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r28_surface_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 128677,
+      "sha256": "89751a0f461640ce0ffd84f667c086c97aee33111756d3832756755857bac51a",
+      "rows": 130,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 130,
+          "phase": 130,
+          "raw_decision": 130,
+          "request_id": 130,
+          "schema": 130,
+          "stages": 130,
+          "final": 57,
+          "error_type": 12,
+          "failure_kind": 12,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 127090,
+        "min_line_bytes": 216,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 126727,
+            "line": 129,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 127090,
+            "line": 130,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r29_clean_server.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1504,
+      "sha256": "fa463f7e622b10be2ec6233d89e37b31386e8da5a590a3b2280d072d3e044039",
+      "rows": 13,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 13,
+          "operation": 13,
+          "compatible": 13
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1373,
+        "min_line_bytes": 94,
+        "max_line_bytes": 142,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1231,
+            "line": 12,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 1373,
+            "line": 13,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r29_clean_server.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 181692,
+      "sha256": "94f36f5873744e9254f7f680a29c868bbda6f361dbedbdca25c3c48c1c327d43",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 13,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 181691,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r29_clean_server.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 132102,
+      "sha256": "b5f0aaea6cdf6d9ca86e53cf5537e3c38c2a34884e5e18f565a6aedd9464ba65",
+      "rows": 120,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 120,
+          "phase": 120,
+          "raw_decision": 120,
+          "request_id": 120,
+          "schema": 120,
+          "stages": 120,
+          "final": 57,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130515,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 130152,
+            "line": 119,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 130515,
+            "line": 120,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44645,
+      "sha256": "8e3d1d57ec256fc51f45d0656d7ad32267cfb753c2949ee4427d6eeb320ae8bd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44644,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r30_lexical_final.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1615,
+      "sha256": "d0101a4d276740572275d81101425acfbe7dcec49bf24993deab2da46f5ffe1b",
+      "rows": 14,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 14,
+          "operation": 14,
+          "compatible": 14
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1484,
+        "min_line_bytes": 94,
+        "max_line_bytes": 142,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1342,
+            "line": 13,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 1484,
+            "line": 14,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r30_lexical_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 180196,
+      "sha256": "09f2d71f818284e9cf7f6fa4211a766e4fb4764ca071800a82bad8703503bbf2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 14,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 180195,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r30_lexical_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 131777,
+      "sha256": "ef2ba56a5c7f6651da7ffd43dcbe7d0bfe2e2e94b58f9f4976f038882483aaf0",
+      "rows": 123,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 123,
+          "phase": 123,
+          "raw_decision": 123,
+          "request_id": 123,
+          "schema": 123,
+          "stages": 123,
+          "final": 57,
+          "error_type": 6,
+          "failure_kind": 6,
+          "recovery": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130190,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129827,
+            "line": 122,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 130190,
+            "line": 123,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r31_surface_lexical_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 178534,
+      "sha256": "87420ea93d8efedff20deddc96a3a3807ee3afb5d7a4cc4b30e6a5e2c1a85a61",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 13,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 178533,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r31_surface_lexical_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 131521,
+      "sha256": "fe386febd27570b795cd323d7d9b9e6899b6df817fae202b2f8cd45ed89df482",
+      "rows": 126,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 126,
+          "phase": 126,
+          "raw_decision": 126,
+          "request_id": 126,
+          "schema": 126,
+          "stages": 126,
+          "final": 57,
+          "error_type": 8,
+          "failure_kind": 8,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 129934,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129571,
+            "line": 125,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 129934,
+            "line": 126,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r32_long_dependency.compatibility.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1376,
+      "sha256": "ed575c77bad897b3190b933c7b32e136555ba30920579339a2b84c44adfdc291",
+      "rows": 12,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 12,
+          "operation": 12,
+          "compatible": 12
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1245,
+        "min_line_bytes": 94,
+        "max_line_bytes": 142,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          },
+          {
+            "offset": 94,
+            "line": 2,
+            "text": "{\"clause\": \"tell lucas hello on whatsapp.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1103,
+            "line": 11,
+            "text": "{\"clause\": \"Crea un documento Word llamado Informe, pero no leas el documento.\", \"operation\": \"office.document.create\", \"compatible\": false}"
+          },
+          {
+            "offset": 1245,
+            "line": 12,
+            "text": "{\"clause\": \"Busca OpenAI Codex en la web, pero no navegues a ningún resultado.\", \"operation\": \"web.search\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r32_long_dependency.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 181550,
+      "sha256": "39e52bc592f1eef1ee09e5a53622ea880b2ea0c28a20f9181faf8da637365865",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 12,
+          "rows": 56
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 181549,
+        "cases": {
+          "min": 56,
+          "max": 56
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r32_long_dependency.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 132050,
+      "sha256": "9e3f2d3c772fb8e1e125a1da951e300c2c5f5c8f00f3be7b7f916a8bc6e6836b",
+      "rows": 120,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 120,
+          "phase": 120,
+          "raw_decision": 120,
+          "request_id": 120,
+          "schema": 120,
+          "stages": 120,
+          "final": 57,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130463,
+        "min_line_bytes": 213,
+        "max_line_bytes": 2423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 130100,
+            "line": 119,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 130463,
+            "line": 120,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r4.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 494,
+      "sha256": "27d7a9b7313c434a6aeb614a8c9ce6aebf39417f09956e43beedace1e6646de2",
+      "rows": 5,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 5,
+          "operation": 5,
+          "compatible": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 380,
+        "min_line_bytes": 86,
+        "max_line_bytes": 118,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"i need you to open spotify\", \"operation\": \"app.open\", \"compatible\": false}"
+          },
+          {
+            "offset": 88,
+            "line": 2,
+            "text": "{\"clause\": \"spotify needs to be open\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 262,
+            "line": 4,
+            "text": "{\"clause\": \"Either open Spotify or send Lucas hello on WhatsApp.\", \"operation\": \"message.send\", \"compatible\": false}"
+          },
+          {
+            "offset": 380,
+            "line": 5,
+            "text": "{\"clause\": \"I need you to open Spotify, then do the other thing.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 45538,
+      "sha256": "1eff5b44a42e69828e4297fb6cb4018777132b85c46d9563fede92c118d256c7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 5,
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45537,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 45378,
+      "sha256": "e7b5fd808f1327940ad354151280fca94fa3c4812555af3018050416c8ae4eb7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 5,
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45377,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 36395,
+      "sha256": "f512bdc33886a072cd59464712e286b2ba51650b5120fa8cec8da16ea5bc4275",
+      "rows": 31,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 31,
+          "phase": 31,
+          "raw_decision": 31,
+          "request_id": 31,
+          "schema": 31,
+          "stages": 31,
+          "final": 14,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34838,
+        "min_line_bytes": 216,
+        "max_line_bytes": 2307,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34491,
+            "line": 30,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 34838,
+            "line": 31,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r6.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 575,
+      "sha256": "892649e8ff658540ae8d847a0736c0eafb6e0f29c6c3a283ebc02e62f70f14de",
+      "rows": 6,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 6,
+          "operation": 6,
+          "compatible": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 461,
+        "min_line_bytes": 81,
+        "max_line_bytes": 118,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"i need you to open spotify\", \"operation\": \"app.open\", \"compatible\": false}"
+          },
+          {
+            "offset": 88,
+            "line": 2,
+            "text": "{\"clause\": \"get spotify running\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 343,
+            "line": 5,
+            "text": "{\"clause\": \"Either open Spotify or send Lucas hello on WhatsApp.\", \"operation\": \"message.send\", \"compatible\": false}"
+          },
+          {
+            "offset": 461,
+            "line": 6,
+            "text": "{\"clause\": \"I need you to open Spotify, then do the other thing.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 45571,
+      "sha256": "813eb102fab25c3af6738e5ca65f85c38d4480e623236ac2dc7f00e0584ce720",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 6,
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 45570,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r6.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 36409,
+      "sha256": "5b9ec25efa29bde660a84038b860f63aa3afc07f418c0166bacf0629c53cfabf",
+      "rows": 31,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 31,
+          "phase": 31,
+          "raw_decision": 31,
+          "request_id": 31,
+          "schema": 31,
+          "stages": 31,
+          "final": 14,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34852,
+        "min_line_bytes": 216,
+        "max_line_bytes": 2307,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34505,
+            "line": 30,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 34852,
+            "line": 31,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r7.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 991,
+      "sha256": "6f56472b812b06f3ac08c9c2e05a096574e4566bd2617314371f068f14952b69",
+      "rows": 10,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 10,
+          "operation": 10,
+          "compatible": 10
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 877,
+        "min_line_bytes": 80,
+        "max_line_bytes": 122,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"i need you to open spotify\", \"operation\": \"app.open\", \"compatible\": true}"
+          },
+          {
+            "offset": 87,
+            "line": 2,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 759,
+            "line": 9,
+            "text": "{\"clause\": \"Either open Spotify or send Lucas hello on WhatsApp.\", \"operation\": \"message.send\", \"compatible\": false}"
+          },
+          {
+            "offset": 877,
+            "line": 10,
+            "text": "{\"clause\": \"I need you to open Spotify, then do the other thing.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 46866,
+      "sha256": "47093e25014a36427df13f0dcda0f5b0b4a8690d2121bda903d3938c986ff5fd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 10,
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 46865,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r7.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 36555,
+      "sha256": "6201d289824af964108d108d678f6e2aabdec9da2b3b68ba42df825201478377",
+      "rows": 31,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 31,
+          "phase": 31,
+          "raw_decision": 31,
+          "request_id": 31,
+          "schema": 31,
+          "stages": 31,
+          "final": 14,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34998,
+        "min_line_bytes": 216,
+        "max_line_bytes": 2323,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34651,
+            "line": 30,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 34998,
+            "line": 31,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r8.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 869,
+      "sha256": "2ea056ca1bea2b2b78658a69e5165fdcfed4941f50bfef456cdf881f3966991f",
+      "rows": 9,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 9,
+          "operation": 9,
+          "compatible": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 755,
+        "min_line_bytes": 80,
+        "max_line_bytes": 118,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"i need you to open spotify\", \"operation\": \"app.open\", \"compatible\": true}"
+          },
+          {
+            "offset": 87,
+            "line": 2,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"compatible\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 637,
+            "line": 8,
+            "text": "{\"clause\": \"Either open Spotify or send Lucas hello on WhatsApp.\", \"operation\": \"message.send\", \"compatible\": false}"
+          },
+          {
+            "offset": 755,
+            "line": 9,
+            "text": "{\"clause\": \"I need you to open Spotify, then do the other thing.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r8.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 48353,
+      "sha256": "5a5946a61049ec95af0a8e016c88dda9743d78c43742fce965cf32ed64f177ae",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 9,
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 48352,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r8.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 36775,
+      "sha256": "41afe1f14b3c46d6bc27e929e479a93fe5067852d06ee39d58b7e52d7c78b451",
+      "rows": 28,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 28,
+          "phase": 28,
+          "raw_decision": 28,
+          "request_id": 28,
+          "schema": 28,
+          "stages": 28,
+          "final": 14
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35218,
+        "min_line_bytes": 329,
+        "max_line_bytes": 2323,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 34871,
+            "line": 27,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 35218,
+            "line": 28,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r9.compatibility.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 970,
+      "sha256": "c4658403a67fb950f4ac0be41e3de6e6dbc7a24f23640f0af885a003bfad2b60",
+      "rows": 9,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "clause",
+          "operation",
+          "batch_all_compatible",
+          "compatible"
+        ],
+        "key_freq": {
+          "clause": 9,
+          "operation": 9,
+          "batch_all_compatible": 6,
+          "compatible": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 856,
+        "min_line_bytes": 91,
+        "max_line_bytes": 122,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"clause\": \"i need you to open spotify\", \"operation\": \"app.open\", \"batch_all_compatible\": false}"
+          },
+          {
+            "offset": 98,
+            "line": 2,
+            "text": "{\"clause\": \"send lucas the message hello.\", \"operation\": \"message.send\", \"batch_all_compatible\": false}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 738,
+            "line": 8,
+            "text": "{\"clause\": \"Either open Spotify or send Lucas hello on WhatsApp.\", \"operation\": \"message.send\", \"compatible\": false}"
+          },
+          {
+            "offset": 856,
+            "line": 9,
+            "text": "{\"clause\": \"I need you to open Spotify, then do the other thing.\", \"operation\": \"app.open\", \"compatible\": false}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/compound_conservation_preflight_r9.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 46122,
+      "sha256": "7525e6647c6636d428e07608b3d2ae191a19a31f78706982c67c5bd0922af7b1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "cases",
+          "compatibility_calls",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "cases",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "compatibility_calls": 9,
+          "rows": 13
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 46121,
+        "cases": {
+          "min": 13,
+          "max": 13
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"cases\", \"compatibility_calls\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

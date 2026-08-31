@@ -1,0 +1,5305 @@
+{
+  "batch_id": "evidence_assets-020-probando_gemma4-pg4_scripts",
+  "source_id": "probando_gemma4",
+  "file_count": 100,
+  "hash_ok": 100,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "scripts/_diag/_judge_input_2000.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 304011,
+      "sha256": "00d56c6a61d5afd1e6f0fef85b9713071a75e7e44d794adbdb0964a1b0324a64",
+      "rows": 1000,
+      "schema": {
+        "root": "array",
+        "n": 1000,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 304010
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 2000, \"cat\": \"encadenamiento\", \"lang\": \"es\", \"user\": \"abre stean y luego ciérralo\", \"prev\": \"\", \"reply\": \"Listo, abrí stean. ¿Qué juego o aplicación querés que abra? Decime el nombre y lo abro y cierro.\", \"tools\": [{\"n\": \"app\", \"a\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 304010,
+            "line": 1000,
+            "text": "{\"i\": 2999, \"cat\": \"conversacion\", \"lang\": \"es\", \"user\": \"holoa\", \"prev\": \"\", \"reply\": \"Hola, ¿en qué te puedo ayudar?\", \"tools\": [], \"dt\": 1.62, \"passes\": 1, \"gt_tools\": [], \"signals\": []}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_input_3000.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 322927,
+      "sha256": "890c1c874fe207a7b74daa6c20a28cab3ccfbc1b57c31b4d1bc340c7c38d10a8",
+      "rows": 1000,
+      "schema": {
+        "root": "array",
+        "n": 1000,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 322926
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 3000, \"cat\": \"conversacion\", \"lang\": \"es\", \"user\": \"Quiero saber quien eres\", \"prev\": \"\", \"reply\": \"Todavía no aprendí lo suficiente sobre vos (necesito observar tu uso unos días). No tengo un perfil armado aún.\", \"tools\": [], \"dt\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 322926,
+            "line": 1000,
+            "text": "{\"i\": 3999, \"cat\": \"web\", \"lang\": \"fr\", \"user\": \"va sur netflix\", \"prev\": \"\", \"reply\": \"Listo, abrí Netflix y estoy reproduciendo Stranger Things.\", \"tools\": [{\"n\": \"media\", \"a\": \"play\"}], \"dt\": 3.06, \"passes\": 2, \"gt_tools\": [\"browser\"],…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_input_4000.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 322212,
+      "sha256": "828f1f89fcba350298460e2adf2c51c6342e10bb3ad5359ec3e193f34c07dd94",
+      "rows": 1000,
+      "schema": {
+        "root": "array",
+        "n": 1000,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 322211
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 4000, \"cat\": \"multimedia\", \"lang\": \"fr\", \"user\": \"mets du rock\", \"prev\": \"\", \"reply\": \"Listo, 'rock' está reproduciéndose en Spotify.\", \"tools\": [{\"n\": \"media\", \"a\": \"play\"}], \"dt\": 4.17, \"passes\": 2, \"gt_tools\": [\"media\"], \"signals\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 322211,
+            "line": 1000,
+            "text": "{\"i\": 4999, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user\": \"apri il browser, cerca un hotel a Firenze e copia il link\", \"prev\": \"\", \"reply\": \"Listo, abrí Chrome, busqué un hotel en Florencia y copié el enlace al portapapeles.\", \"tools\": [{…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_lote11_extract.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 40876,
+      "sha256": "c97cd4379b502f1aaf3bf75637a454e753070c5d6cc603b343416d5aba245200",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40875
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 815, \"cat\": \"accion_app\", \"lang\": \"es\", \"user\": \"abre Word\", \"prev\": \"\", \"reply\": \"Listo, abrí Word.\", \"tools\": [{\"n\": \"app\", \"a\": \"open\"}], \"dt\": 0.01, \"passes\": 0, \"gt_tools\": [\"app\"], \"signals\": []}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 40875,
+            "line": 70,
+            "text": "{\"i\": 887, \"cat\": \"info\", \"lang\": \"es\", \"user\": \"Que hora es?\", \"prev\": \"\", \"reply\": \"La hora actual es 15:48.\", \"tools\": [{\"n\": \"system\", \"a\": \"time\"}], \"dt\": 2.57, \"passes\": 2, \"gt_tools\": [\"system\"], \"signals\": []}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_lote14_tanda0.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33302,
+      "sha256": "cc7b34f1934fccaf9af796a71aba8a371e07f2e008ecfa7a7845c81440dea520",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "also",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33301
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 910, \"cat\": \"accion_app\", \"lang\": \"es\", \"user\": \"ve a la pagina de marvel rivals en steam\", \"prev\": \"\", \"reply\": \"Listo.\", \"tools\": [{\"n\": \"computer_use\", \"a\": null, \"args\": {\"goal\": \"ve a la pagina de marvel rivals en steam\"}}], \"dt…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33301,
+            "line": 70,
+            "text": "{\"i\": 979, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"silenciá el sonido\", \"prev\": \"\", \"reply\": \"Listo, el sonido está silenciado.\", \"tools\": [{\"n\": \"audio\", \"a\": \"mute\", \"args\": {\"state\": \"True\"}}], \"dt\": 3.61, \"passes\": 2, \"gt_tools\": [\"au…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_tanda1_input.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 342400,
+      "sha256": "2bf50f847ec662918220503662d276b1c44f8ea8497acf695fd4fff6efa23b09",
+      "rows": 910,
+      "schema": {
+        "root": "array",
+        "n": 910,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 342399
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1, \"cat\": \"conversacion\", \"lang\": \"es\", \"user\": \"hola Carter\", \"prev\": \"\", \"reply\": \"Hola, soy Baxy, tu asistente de voz local. ¿En qué te puedo ayudar ahora?\", \"tools\": [{\"n\": \"session\", \"a\": \"cancel_turn\"}], \"dt\": 4.3, \"passes\": 3,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 342399,
+            "line": 910,
+            "text": "{\"i\": 946, \"cat\": \"info\", \"lang\": \"es\", \"user\": \"que es mortal kombat?\", \"prev\": \"\", \"reply\": \"Mortal Kombat es una serie de videojuegos de lucha muy conocida por su violencia gráfica y personajes icónicos como Scorpion y Sub-Zero.\", \"tool…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_tanda1_input_trim.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 342226,
+      "sha256": "8ff8b5db695fb4c210b986eb71aeacec98bec4dfe1c52518c81df246c51bc26a",
+      "rows": 910,
+      "schema": {
+        "root": "array",
+        "n": 910,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 342225
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1, \"cat\": \"conversacion\", \"lang\": \"es\", \"user\": \"hola Carter\", \"prev\": \"\", \"reply\": \"Hola, soy Baxy, tu asistente de voz local. ¿En qué te puedo ayudar ahora?\", \"tools\": [{\"n\": \"session\", \"a\": \"cancel_turn\"}], \"dt\": 4.3, \"passes\": 3,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 342225,
+            "line": 910,
+            "text": "{\"i\": 946, \"cat\": \"info\", \"lang\": \"es\", \"user\": \"que es mortal kombat?\", \"prev\": \"\", \"reply\": \"Mortal Kombat es una serie de videojuegos de lucha muy conocida por su violencia gráfica y personajes icónicos como Scorpion y Sub-Zero.\", \"tool…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_tanda1_verdicts.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 185163,
+      "sha256": "d6e403b5a463f22913ed261d0a6fe0e36b3bba6336cb38748ca9c737e2bf67f0",
+      "rows": 910,
+      "schema": {
+        "root": "array",
+        "n": 910,
+        "elem_keys": [
+          "axes",
+          "i",
+          "note",
+          "root_cause",
+          "severity",
+          "verdict"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185162
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1, \"verdict\": \"OK\", \"axes\": [], \"severity\": \"ninguna\", \"root_cause\": \"\", \"note\": \"Saludo correcto como Baxy; cancel_turn es ruido inocuo pero el reply responde bien.\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 185162,
+            "line": 910,
+            "text": "{\"i\": 946, \"verdict\": \"OK\", \"axes\": [], \"severity\": \"ninguna\", \"root_cause\": \"\", \"note\": \"Describe Mortal Kombat correctamente de su saber; sin tool innecesaria.\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_verdicts_1000.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 206274,
+      "sha256": "1d22e1475fb2133caf5df0d5331702f9dbd1a8c8db7101081ab17054c25f436f",
+      "rows": 1000,
+      "schema": {
+        "root": "array",
+        "n": 1000,
+        "elem_keys": [
+          "axes",
+          "i",
+          "note",
+          "root_cause",
+          "severity",
+          "verdict"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 206273
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1000, \"verdict\": \"OK\", \"axes\": [], \"severity\": \"ninguna\", \"root_cause\": \"\", \"note\": \"mute -> audio/mute, reply correcto.\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 206273,
+            "line": 1000,
+            "text": "{\"i\": 1999, \"verdict\": \"DUDOSO\", \"axes\": [\"responde\"], \"severity\": \"baja\", \"root_cause\": \"Reply en futuro/promesa ('te muestro... te digo cuál es el más pesado') sin nombrar el proceso; posible por lista vacía del mock pero no entrega resp…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_judge_verdicts_2000.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 204839,
+      "sha256": "968a80ea68fd122d33501ccf89ceffa084561e16e7c86a4fcf6e0b5ac4c80eac",
+      "rows": 1000,
+      "schema": {
+        "root": "array",
+        "n": 1000,
+        "elem_keys": [
+          "axes",
+          "i",
+          "note",
+          "root_cause",
+          "severity",
+          "verdict"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 204838
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"verdict\": \"OK\", \"axes\": [], \"severity\": \"ninguna\", \"root_cause\": \"\", \"note\": \"Saludo simple, respuesta correcta y rapida.\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 204838,
+            "line": 1000,
+            "text": "{\"i\": 1999, \"verdict\": \"DUDOSO\", \"axes\": [\"responde\"], \"severity\": \"baja\", \"root_cause\": \"promete 'te digo cuál es el más pesado' pero no nombra ningún proceso ni dato concreto - respuesta incompleta (posible que el listado real se renderi…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_lang_replies.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2190,
+      "sha256": "4412a342f96b25133d4879e122af77b993b4ea6abe220c7576df548651c8fa12",
+      "rows": 24,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "expected",
+          "msg",
+          "reply",
+          "dt"
+        ],
+        "key_freq": {
+          "expected": 24,
+          "msg": 24,
+          "reply": 24,
+          "dt": 24
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2077,
+        "min_line_bytes": 81,
+        "max_line_bytes": 113,
+        "numeric": {
+          "dt": {
+            "min": 0.06,
+            "max": 2.91
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"expected\": \"en\", \"msg\": \"open spotify\", \"reply\": \"Spotify is open.\", \"dt\": 0.07}"
+          },
+          {
+            "offset": 84,
+            "line": 2,
+            "text": "{\"expected\": \"en\", \"msg\": \"close chrome\", \"reply\": \"Closed Chrome.\", \"dt\": 2.7}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1987,
+            "line": 23,
+            "text": "{\"expected\": \"es\", \"msg\": \"cerrá chrome\", \"reply\": \"Listo, cerré Chrome.\", \"dt\": 2.08}"
+          },
+          {
+            "offset": 2077,
+            "line": 24,
+            "text": "{\"expected\": \"es\", \"msg\": \"subí el volumen\", \"reply\": \"Listo, subí el volumen al 80 por ciento.\", \"dt\": 1.94}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/battery/brightness.png": {
+      "parser": "binary_inventory",
+      "bytes": 94925,
+      "sha256": "b2c87794fe70c0b9bc3476650098b612e94e625f537c7e69723ecc616000f706",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/battery/brightness.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94924
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 94924,
+            "line": 0,
+            "text": "eof bytes=94925"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/battery/chain_media.png": {
+      "parser": "binary_inventory",
+      "bytes": 468296,
+      "sha256": "c9044af19bdba2bf0b1de531c2eac248bb9eb15299e066fa8bce384a59bc3e16",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/battery/chain_media.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 468295
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 468295,
+            "line": 0,
+            "text": "eof bytes=468296"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/battery/open_calc.png": {
+      "parser": "binary_inventory",
+      "bytes": 94894,
+      "sha256": "d8aeb41570372d610c1930fd2c54446c046bbb0d6ec145cdce8e57b4e1bd276a",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/battery/open_calc.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94893
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 94893,
+            "line": 0,
+            "text": "eof bytes=94894"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/battery/volume.png": {
+      "parser": "binary_inventory",
+      "bytes": 94893,
+      "sha256": "e41d3ad132d04b78765143245af7de0ed8f2f106da4f2861798d12bcaa92d7ac",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/battery/volume.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94892
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 94892,
+            "line": 0,
+            "text": "eof bytes=94893"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/c2_nav.png": {
+      "parser": "binary_inventory",
+      "bytes": 526222,
+      "sha256": "c7b94229c754d124f0f48d4947befcfc06b3ee7368a9a0385c0aa93aa8207b56",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/c2_nav.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 526221
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 526221,
+            "line": 0,
+            "text": "eof bytes=526222"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/canvas.png": {
+      "parser": "binary_inventory",
+      "bytes": 305909,
+      "sha256": "6f05a778915d82e02a9b856dbe8c142118e9f3b8c646734611d45ddb8228a773",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/canvas.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 305908
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 305908,
+            "line": 0,
+            "text": "eof bytes=305909"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/discord.png": {
+      "parser": "binary_inventory",
+      "bytes": 269670,
+      "sha256": "246be625bc6b23428139953ba6c0708212911199009631c75ade839dead49273",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/discord.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 269669
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 269669,
+            "line": 0,
+            "text": "eof bytes=269670"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/now.png": {
+      "parser": "binary_inventory",
+      "bytes": 135958,
+      "sha256": "45748b560d335301d7a7f76404f3834bca6d9c6a0edd1b8d68e668603371ffa7",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/now.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 135957
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 135957,
+            "line": 0,
+            "text": "eof bytes=135958"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/typefix.png": {
+      "parser": "binary_inventory",
+      "bytes": 153687,
+      "sha256": "8f1fe2a657158c371423383f621732c31e42c894301dabf2cbc9c8fa8d89f097",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/typefix.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 153686
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 153686,
+            "line": 0,
+            "text": "eof bytes=153687"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live/wsp.png": {
+      "parser": "binary_inventory",
+      "bytes": 276255,
+      "sha256": "aba768fdcd66a4778b8f8f8dd49dac59b39fa63e7ccb26d6567dc06d7864a049",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_live/wsp.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 276254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 276254,
+            "line": 0,
+            "text": "eof bytes=276255"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_live_tools_reduce.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1837,
+      "sha256": "5a824a3534ab1938a8939ab548c1588f427a7fbd011b5bc15f43d45544d763f0",
+      "rows": 13,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "msg",
+          "lang",
+          "exp",
+          "emit",
+          "reply"
+        ],
+        "key_freq": {
+          "msg": 13,
+          "lang": 13,
+          "exp": 13,
+          "emit": 13,
+          "reply": 13
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1701,
+        "min_line_bytes": 113,
+        "max_line_bytes": 177,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"msg\": \"crea una nota que diga comprar pan\", \"lang\": \"es\", \"exp\": \"notes_tasks\", \"emit\": [\"notes_tasks.create_note\"], \"reply\": \"Listo, se creó la nota \\\"comprar pan\\\".\"}"
+          },
+          {
+            "offset": 173,
+            "line": 2,
+            "text": "{\"msg\": \"create a note saying buy milk\", \"lang\": \"en\", \"exp\": \"notes_tasks\", \"emit\": [\"notes_tasks.create_note\"], \"reply\": \"Done, I have created a note saying buy milk.\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1524,
+            "line": 12,
+            "text": "{\"msg\": \"conéctate al wifi de casa\", \"lang\": \"es\", \"exp\": \"device_settings\", \"emit\": [\"device_settings.wifi_connect\"], \"reply\": \"Listo, se está conectando al wifi de casa.\"}"
+          },
+          {
+            "offset": 1701,
+            "line": 13,
+            "text": "{\"msg\": \"lee lo que hay en la pantalla\", \"lang\": \"es\", \"exp\": \"vision\", \"emit\": [\"vision.describe_screen\"], \"reply\": \"listo, lo dejo\"}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_lote6_slice.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50981,
+      "sha256": "12e5adddb86caf147ed5d227985fdf763f782bce55b4ab4e6cd7b8c11e000daf",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "also_valid",
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50980
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 350, \"cat\": \"gui\", \"lang\": \"es\", \"user\": \"busca el campo de búsqueda visible\", \"prev\": \"\", \"reply\": \"Listo, encontré el campo de búsqueda visible con el ID 36660944, así que puedes empezar a escribir ahí.\", \"tools\": [{\"n\": \"uia\", \"a\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 50980,
+            "line": 70,
+            "text": "{\"i\": 419, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"cancela misión si supera límite de tiempo configurado\", \"prev\": \"\", \"reply\": \"Cancelé la misión porque el tiempo de espera configurado se excedió.\", \"tools\": [{\"n\": \"media\", \"a\": \"play_pa…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ocr/annotated.png": {
+      "parser": "binary_inventory",
+      "bytes": 129388,
+      "sha256": "5af4b2c06ff9c971f88aba482603931b730e0ea5d4e358df9427495ee92bd4d7",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_ocr/annotated.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 129387
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129387,
+            "line": 0,
+            "text": "eof bytes=129388"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ocr/screen.png": {
+      "parser": "binary_inventory",
+      "bytes": 126311,
+      "sha256": "6fc47686847d699255e7224dd981aa0111a06fa9dedeaefa51962ba4963d809b",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_ocr/screen.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 126310
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 126310,
+            "line": 0,
+            "text": "eof bytes=126311"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ocr_click/click_7.png": {
+      "parser": "binary_inventory",
+      "bytes": 93359,
+      "sha256": "b10df10f0aa9619b5977543b62d4c0e748c01e29813d81ae07ea4ef16190293e",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_ocr_click/click_7.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 93358
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 93358,
+            "line": 0,
+            "text": "eof bytes=93359"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ocr_click/click_9.png": {
+      "parser": "binary_inventory",
+      "bytes": 92927,
+      "sha256": "9af1ad23ba1a52553acfd09e40dec4537781de49147f44aad9787a3ffbeb6dcc",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_ocr_click/click_9.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 92926
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 92926,
+            "line": 0,
+            "text": "eof bytes=92927"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ocr_click/click_final.png": {
+      "parser": "binary_inventory",
+      "bytes": 94329,
+      "sha256": "65386fab259a7dc4165724ad1ff79bf79761824b639ea54d4d82f9c287339625",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_ocr_click/click_final.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 94328
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 94328,
+            "line": 0,
+            "text": "eof bytes=94329"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_ocr_click/uia_shot.png": {
+      "parser": "binary_inventory",
+      "bytes": 93133,
+      "sha256": "106cf0361f4e362c750f6dc40ef762270c69aff190b84489b5b3f1f5771ac167",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_ocr_click/uia_shot.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 93132
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 93132,
+            "line": 0,
+            "text": "eof bytes=93133"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_open_browser.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 470,
+      "sha256": "51b4e5cc3fe2d302cc39b0e2b8a2d7069372b997b3d59ab9b98cbb3f21cf596f",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 444,
+        "min_line_bytes": 11,
+        "max_line_bytes": 183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "[boot] OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 347,
+            "line": 6,
+            "text": "exec=[('app', 'open')] | reply='Listo, estoy abriendo pivigames; puede tardar unos segundos.'"
+          },
+          {
+            "offset": 444,
+            "line": 7,
+            "text": ">>> XX NO usó browser"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_open_browser2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 472,
+      "sha256": "4a60b2fafa66566b47b87e269c5508cb3286ba32b698179e9d5f95813f7b4ca7",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 2
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 442,
+        "min_line_bytes": 11,
+        "max_line_bytes": 183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "[boot] OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 345,
+            "line": 6,
+            "text": "exec=[('web_open', 'https://pivigames.blog/')] | reply='Opened pivigames in the web browser.'"
+          },
+          {
+            "offset": 442,
+            "line": 7,
+            "text": ">>> OK abrió en navegador"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_out_traces_turns.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 542791,
+      "sha256": "97c52fd8c4933dd83c2c9856d229f975324c2f7ff6b4b5cade4caf378bb3835d",
+      "rows": 332,
+      "schema": {
+        "root": "array",
+        "n": 332,
+        "elem_keys": [
+          "events",
+          "ts",
+          "turn_id"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 542790
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"turn_id\": \"20260603_083659_e979422b\", \"ts\": \"2026-06-03T08:37:00-0400\", \"events\": [{\"ts\": \"2026-06-03T08:37:00-0400\", \"kind\": \"persona_active\", \"persona\": \"default\", \"tone\": \"neutral\"}, {\"ts\": \"2026-06-03T08:37:00-0400\", \"kind\": \"experie…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 542790,
+            "line": 332,
+            "text": "{\"turn_id\": \"20260604_051059_70c783e1\", \"ts\": \"2026-06-04T05:10:59-0400\", \"events\": [{\"ts\": \"2026-06-04T05:10:59-0400\", \"kind\": \"app_action_shortcircuit\", \"pattern\": \"in_app_act\", \"app_hint\": \"Discord\"}]}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_out_user_turns.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 36217,
+      "sha256": "e0e2f2aa537bd47335489438681ef15e1aefcb2ad72b128e33cfceed6fe4952d",
+      "rows": 85,
+      "schema": {
+        "root": "array",
+        "n": 85,
+        "elem_keys": [
+          "fail_signals",
+          "is_my_test",
+          "reply",
+          "shortcircuits",
+          "subset",
+          "tool_calls",
+          "ts",
+          "turn_id",
+          "user_text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36216
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"turn_id\": \"20260603_083659_e979422b\", \"ts\": \"2026-06-03T08:37:00-0400\", \"user_text\": \"busca teclados\", \"subset\": [\"browser_real\", \"browser\", \"web\", \"knowledge\", \"session\"], \"tool_calls\": [\"web\"], \"shortcircuits\": [], \"fail_signals\": [\"er…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36216,
+            "line": 85,
+            "text": "{\"turn_id\": \"20260604_033222_0c758704\", \"ts\": \"2026-06-04T03:32:22-0400\", \"user_text\": \"Yeah.\", \"subset\": [\"session\"], \"tool_calls\": [], \"shortcircuits\": [], \"fail_signals\": [], \"reply\": \"¿Qué necesitas?\", \"is_my_test\": false}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_pipeline_clean.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6885,
+      "sha256": "2ca81c68d4a923e37a21675a3bef056cc5c91d0dca0738ad5166cf5d9e9662be",
+      "rows": 126,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6770,
+        "min_line_bytes": 2,
+        "max_line_bytes": 428
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6768,
+            "line": 125,
+            "text": ""
+          },
+          {
+            "offset": 6770,
+            "line": 126,
+            "text": "DONE. To make the FT encoder the runtime default, set GEMMA4_SEMANTIC_MODEL to the ft dir (or wire it in config)."
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_pivigames_live.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 512,
+      "sha256": "ad2eb6e613cb4d0be84756913943509537ed2a29062102dfdbed953c99e1b66a",
+      "rows": 5,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 412,
+        "min_line_bytes": 11,
+        "max_line_bytes": 183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "[boot] OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 307,
+            "line": 4,
+            "text": "[real?] 'andá a pivigames' -> 'https://pivigames.wordpress.com/' reply='Abrindo pivigames agora.'"
+          },
+          {
+            "offset": 412,
+            "line": 5,
+            "text": "[real?] 'abrí pivigames' -> '(no abrió)' reply='Listo, estoy buscando Pivigames en tu bi'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_remeasure_console.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1808,
+      "sha256": "5e7c1c1e60cacfb7c6fb2af399adb73b168292523df5c2f083fb057e26e756b2",
+      "rows": 21,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 14
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1774,
+        "min_line_bytes": 11,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[remeasure] 15 casos: [74, 158, 288, 301, 513, 514, 538, 540, 602, 646, 727, 837, 862, 892, 945]"
+          },
+          {
+            "offset": 98,
+            "line": 2,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1718,
+            "line": 20,
+            "text": "[B3] i=945 dt=2.2s ntools=1 ok '*LE SIGUE PEGANDO*'"
+          },
+          {
+            "offset": 1774,
+            "line": 21,
+            "text": "[done] -> _remeasure_loops.jsonl"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_remeasure_loops.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9977,
+      "sha256": "febf7675295a603b8671af014c608e2354f3b418d0d478f102d05da246dbac88",
+      "rows": 15,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "group",
+          "user_text",
+          "prev_text",
+          "dt",
+          "passes",
+          "ntools",
+          "tools",
+          "reply",
+          "err"
+        ],
+        "key_freq": {
+          "i": 15,
+          "group": 15,
+          "user_text": 15,
+          "prev_text": 15,
+          "dt": 15,
+          "passes": 15,
+          "ntools": 15,
+          "tools": 15,
+          "reply": 15,
+          "err": 15
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9729,
+        "min_line_bytes": 211,
+        "max_line_bytes": 3156,
+        "numeric": {
+          "i": {
+            "min": 74.0,
+            "max": 945.0
+          },
+          "dt": {
+            "min": 0.58,
+            "max": 30.81
+          },
+          "passes": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "ntools": {
+            "min": 0.0,
+            "max": 72.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 74, \"group\": \"C1\", \"user_text\": \"qué es un regression test\", \"prev_text\": \"\", \"dt\": 2.04, \"passes\": 1, \"ntools\": 0, \"tools\": [], \"reply\": \"Un regression test es un conjunto de pruebas automatizadas que se ejecutan repetidamente contr…"
+          },
+          {
+            "offset": 385,
+            "line": 2,
+            "text": "{\"i\": 158, \"group\": \"C2\", \"user_text\": \"copia el título de la página actual\", \"prev_text\": \"\", \"dt\": 3.28, \"passes\": 3, \"ntools\": 2, \"tools\": [{\"name\": \"browser_real\", \"action\": \"extract\"}, {\"name\": \"filesystem\", \"action\": \"clipboard.write…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9326,
+            "line": 14,
+            "text": "{\"i\": 892, \"group\": \"C1\", \"user_text\": \"de que trata Dune\", \"prev_text\": \"\", \"dt\": 2.79, \"passes\": 2, \"ntools\": 1, \"tools\": [{\"name\": \"knowledge\", \"action\": \"search\"}], \"reply\": \"Dune trata sobre la saga de ciencia ficción ambientada en un…"
+          },
+          {
+            "offset": 9729,
+            "line": 15,
+            "text": "{\"i\": 945, \"group\": \"B3\", \"user_text\": \"*LE SIGUE PEGANDO*\", \"prev_text\": \"\", \"dt\": 2.22, \"passes\": 2, \"ntools\": 1, \"tools\": [{\"name\": \"media\", \"action\": \"play\"}], \"reply\": \"Listo, Stranger Things está reproduciéndose en Netflix.\", \"err\":…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_rerun_tanda_0.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 505101,
+      "sha256": "47040663c205d457a0f3b2e2539554703dce7ed959152b78a7faa60822d10387",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 504738,
+        "min_line_bytes": 241,
+        "max_line_bytes": 2679,
+        "numeric": {
+          "i": {
+            "min": 0.0,
+            "max": 999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 45.2
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 9.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"hola\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola, soy Gemma 4. ¿En qué te ayudo?\", \"dt\": 0.31, \"passes\": 1, \"tools\": [], \"reply\": \"Hola,…"
+          },
+          {
+            "offset": 335,
+            "line": 2,
+            "text": "{\"i\": 1, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"hola Carter\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola. Por cierto, me llamo Gemma 4, no Carter. ¿En qué te doy una mano?\", \"dt\": 6.68,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 504351,
+            "line": 999,
+            "text": "{\"i\": 998, \"cat\": \"sistema\", \"lang\": \"pt\", \"user_text\": \"coloca o volume em 100\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Pronto, volume em 100.\", \"dt\": 1.99, \"passes\": 2, \"tools\": [{\"name\": \"…"
+          },
+          {
+            "offset": 504738,
+            "line": 1000,
+            "text": "{\"i\": 999, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"muteá\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, silencié el sonido.\", \"dt\": 2.73, \"passes\": 2, \"tools\": [{\"name\": \"audio\", \"acti…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_rerun_tanda_1000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 483665,
+      "sha256": "bdc3ff2d392faa85e29646754053ac662de4e5087a8e023e32bab118ebb59651",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 483177,
+        "min_line_bytes": 243,
+        "max_line_bytes": 3625,
+        "numeric": {
+          "i": {
+            "min": 1000.0,
+            "max": 1999.0
+          },
+          "dt": {
+            "min": 0.01,
+            "max": 69.8
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 8.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1000, \"cat\": \"sistema\", \"lang\": \"en\", \"user_text\": \"mute the sound\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Done, sound muted.\", \"dt\": 3.81, \"passes\": 2, \"tools\": [{\"name\": \"audio\", \"ac…"
+          },
+          {
+            "offset": 344,
+            "line": 2,
+            "text": "{\"i\": 1001, \"cat\": \"sistema\", \"lang\": \"pt\", \"user_text\": \"silencia o som\", \"prev_text\": \"\", \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Pronto, som silenciado.\", \"dt\": 1.88, \"passes\": 2, \"tools\": [{\"name\": \"audio\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 482699,
+            "line": 999,
+            "text": "{\"i\": 1998, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"lista procesos y dime el más pesado\", \"prev_text\": \"\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"El proceso mas pesado es {nombre} con {mem}; aca esta l…"
+          },
+          {
+            "offset": 483177,
+            "line": 1000,
+            "text": "{\"i\": 1999, \"cat\": \"sistema\", \"lang\": \"en\", \"user_text\": \"list processes and tell me the heaviest\", \"prev_text\": \"\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"The heaviest process is {name} using {mem}; here's…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_rerun_tanda_2000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 477420,
+      "sha256": "7e56011efb4dbe90d9827ad12786d6bc631a85c3161a501f959b900e9f9a4169",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 477124,
+        "min_line_bytes": 250,
+        "max_line_bytes": 2153,
+        "numeric": {
+          "i": {
+            "min": 2000.0,
+            "max": 2999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 65.63
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 8.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 2000, \"cat\": \"encadenamiento\", \"lang\": \"es\", \"user_text\": \"abre stean y luego ciérralo\", \"prev_text\": \"\", \"correct_tools\": [\"steam\", \"app\"], \"also_valid\": [\"app\"], \"correct_reply_style\": \"Abri Steam y despues lo cerre.\", \"dt\": 7.63,…"
+          },
+          {
+            "offset": 517,
+            "line": 2,
+            "text": "{\"i\": 2001, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"qué ventana está activa\", \"prev_text\": \"\", \"correct_tools\": [\"window\"], \"also_valid\": [], \"correct_reply_style\": \"La ventana activa es {titulo}.\", \"dt\": 1.93, \"passes\": 2, \"tools\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 476732,
+            "line": 999,
+            "text": "{\"i\": 2998, \"cat\": \"sistema\", \"lang\": \"es\", \"user_text\": \"buenas, phrase_hook_test_1779048944 y dime la hora\", \"prev_text\": \"\", \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 16:15.\", \"dt\": 2.97, \"passes\": 2…"
+          },
+          {
+            "offset": 477124,
+            "line": 1000,
+            "text": "{\"i\": 2999, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"holoa\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola, en que puedo ayudarte hoy?\", \"dt\": 1.83, \"passes\": 1, \"tools\": [], \"reply\": \"Hola,…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_rerun_tanda_3000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 525004,
+      "sha256": "96897cce9663721e1da2dc3622d754f19bcf13c4eaaff76e7c1dd4d378054406",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 524574,
+        "min_line_bytes": 250,
+        "max_line_bytes": 3826,
+        "numeric": {
+          "i": {
+            "min": 3000.0,
+            "max": 3999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 68.34
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 10.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 3000, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"Quiero saber quien eres\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Soy tu agente de voz local para Windows, impulsado por Gemma 4. Te ayu…"
+          },
+          {
+            "offset": 419,
+            "line": 2,
+            "text": "{\"i\": 3001, \"cat\": \"conversacion\", \"lang\": \"es\", \"user_text\": \"Que es gemma 4?\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [\"web\"], \"correct_reply_style\": \"Gemma 4 es un modelo de lenguaje de Google DeepMind; es el cerebro que me…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 524141,
+            "line": 999,
+            "text": "{\"i\": 3998, \"cat\": \"sistema\", \"lang\": \"fr\", \"user_text\": \"lance python -m pytest -q\", \"prev_text\": \"\", \"correct_tools\": [\"terminal\"], \"also_valid\": [], \"correct_reply_style\": \"C'est fait, j'ai lancé pytest -q ; je te donne le résumé des ré…"
+          },
+          {
+            "offset": 524574,
+            "line": 1000,
+            "text": "{\"i\": 3999, \"cat\": \"web\", \"lang\": \"fr\", \"user_text\": \"va sur netflix\", \"prev_text\": \"\", \"correct_tools\": [\"browser\"], \"also_valid\": [\"media\", \"app\"], \"correct_reply_style\": \"J'ouvre Netflix.\", \"dt\": 5.45, \"passes\": 2, \"tools\": [{\"name\": \"m…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_rerun_tanda_4000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 522592,
+      "sha256": "688186e169e5ce45477dc3d720c1c07bf01f995df05cb790395efa44ec4bb33f",
+      "rows": 1000,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1000,
+          "cat": 1000,
+          "lang": 1000,
+          "user_text": 1000,
+          "prev_text": 1000,
+          "correct_tools": 1000,
+          "also_valid": 1000,
+          "correct_reply_style": 1000,
+          "dt": 1000,
+          "passes": 1000,
+          "tools": 1000,
+          "reply": 1000,
+          "hard_signals": 1000
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 521964,
+        "min_line_bytes": 267,
+        "max_line_bytes": 1462,
+        "numeric": {
+          "i": {
+            "min": 4000.0,
+            "max": 4999.0
+          },
+          "dt": {
+            "min": 0.0,
+            "max": 51.28
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 11.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 4000, \"cat\": \"multimedia\", \"lang\": \"fr\", \"user_text\": \"mets du rock\", \"prev_text\": \"\", \"correct_tools\": [\"media\"], \"also_valid\": [], \"correct_reply_style\": \"Je mets du rock sur Spotify.\", \"dt\": 6.89, \"passes\": 2, \"tools\": [{\"name\": \"…"
+          },
+          {
+            "offset": 390,
+            "line": 2,
+            "text": "{\"i\": 4001, \"cat\": \"encadenamiento\", \"lang\": \"fr\", \"user_text\": \"efface et calcule 11 fois 11\", \"prev_text\": \"\", \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"J'efface l'écran et je fais 11 fois 11 sur la cal…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 521318,
+            "line": 999,
+            "text": "{\"i\": 4998, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user_text\": \"leggi l'ultimo messaggio di mamma e rispondile che sto arrivando\", \"prev_text\": \"\", \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"correct_reply_style\": \"Ho letto il messa…"
+          },
+          {
+            "offset": 521964,
+            "line": 1000,
+            "text": "{\"i\": 4999, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user_text\": \"apri il browser, cerca un hotel a Firenze e copia il link\", \"prev_text\": \"\", \"correct_tools\": [\"browser\", \"web\", \"clipboard\"], \"also_valid\": [], \"correct_reply_style\": \"Ho ap…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_rerun_tanda_5000.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 912431,
+      "sha256": "da82cf16288f55001469534e40f2cb65968117142236655118af2c3b18721d3f",
+      "rows": 1162,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "cat",
+          "lang",
+          "user_text",
+          "prev_text",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "dt",
+          "passes",
+          "tools",
+          "reply",
+          "hard_signals"
+        ],
+        "key_freq": {
+          "i": 1162,
+          "cat": 1162,
+          "lang": 1162,
+          "user_text": 1162,
+          "prev_text": 1162,
+          "correct_tools": 1162,
+          "also_valid": 1162,
+          "correct_reply_style": 1162,
+          "dt": 1162,
+          "passes": 1162,
+          "tools": 1162,
+          "reply": 1162,
+          "hard_signals": 1162
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 911889,
+        "min_line_bytes": 284,
+        "max_line_bytes": 2979,
+        "numeric": {
+          "i": {
+            "min": 5000.0,
+            "max": 6161.0
+          },
+          "dt": {
+            "min": 0.01,
+            "max": 63.06
+          },
+          "passes": {
+            "min": 0.0,
+            "max": 16.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 5000, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user_text\": \"cerca l'indirizzo della farmacia e mandalo a mio fratello su WhatsApp\", \"prev_text\": \"\", \"correct_tools\": [\"web\", \"whatsapp\"], \"also_valid\": [], \"correct_reply_style\": \"Ho tr…"
+          },
+          {
+            "offset": 1001,
+            "line": 2,
+            "text": "{\"i\": 5001, \"cat\": \"encadenamiento\", \"lang\": \"it\", \"user_text\": \"apri Steam e installa Cuphead\", \"prev_text\": \"\", \"correct_tools\": [\"app\", \"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Ho aperto Steam e avviato l'installazione di Cup…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 911179,
+            "line": 1161,
+            "text": "{\"i\": 6160, \"cat\": \"conversacion\", \"lang\": \"de\", \"user_text\": \"Wie sieht es aus wenn Zinderdonks ins Spiel kommen?\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Die Beziehung der Zinderdonks zu den Schlu…"
+          },
+          {
+            "offset": 911889,
+            "line": 1162,
+            "text": "{\"i\": 6161, \"cat\": \"conversacion\", \"lang\": \"de\", \"user_text\": \"Das ist so nicht richtig, bitte korrigiere deine Antwort.\", \"prev_text\": \"\", \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Du hast Recht, bitte entschuldige me…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_router_pipeline.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6872,
+      "sha256": "78591391eb9db8f4da03cf65885d9a66ab2f5b8338ff1d13cad81d7762ec6d78",
+      "rows": 126,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6757,
+        "min_line_bytes": 2,
+        "max_line_bytes": 428
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6755,
+            "line": 125,
+            "text": ""
+          },
+          {
+            "offset": 6757,
+            "line": 126,
+            "text": "DONE. To make the FT encoder the runtime default, set GEMMA4_SEMANTIC_MODEL to the ft dir (or wire it in config)."
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_router_pipeline_full.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 6885,
+      "sha256": "dae1432084777746cbce603a8cf145215870082009df44f0c3b34efb2bd782e1",
+      "rows": 126,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6770,
+        "min_line_bytes": 2,
+        "max_line_bytes": 428
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\.venv_router_train\\Lib\\site-packages\\transformers\\tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavi…"
+          },
+          {
+            "offset": 428,
+            "line": 2,
+            "text": "warnings.warn("
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6768,
+            "line": 125,
+            "text": ""
+          },
+          {
+            "offset": 6770,
+            "line": 126,
+            "text": "DONE. To make the FT encoder the runtime default, set GEMMA4_SEMANTIC_MODEL to the ft dir (or wire it in config)."
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_routing.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1175,
+      "sha256": "dfe99310808bf34d59faf70c1b9b4d6d41b9b3eccf5bad48ccbf213b8863b243",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 7
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1019,
+        "min_line_bytes": 11,
+        "max_line_bytes": 337
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "[OK] estado: 'está Steam abierto?' -> exec=[('system', {'action': 'time'}), ('system', {'action': 'battery'}), ('system', {'action': 'cpu_ram_gpu'}), ('system', {'action': 'disk'}), ('system', {'action': 'processes'}), ('window', {'action'…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 757,
+            "line": 6,
+            "text": "[OK] estado2: 'está abierto Chrome?' -> exec=[('system', {'action': 'time'}), ('system', {'action': 'battery'}), ('system', {'action': 'cpu_ram_gpu'}), ('system', {'action': 'disk'}), ('system', {'action': 'processes'})] reply='Listo, Chro…"
+          },
+          {
+            "offset": 1019,
+            "line": 7,
+            "text": "[OK] howto2: 'cómo elimino una carpeta?' -> exec=[('session', {'action': 'cancel_turn'})] reply='Listo, cancelé la acción de eliminar la carpeta. ¿'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_routing2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1060,
+      "sha256": "169a5d9fff6a24841d85273fafca1ad2cdd044c4263429416ced4fadf2a6eec8",
+      "rows": 7,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 7
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 907,
+        "min_line_bytes": 11,
+        "max_line_bytes": 286
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "[OK] estado: 'está Steam abierto?' -> exec=[('system', {'action': 'time'}), ('system', {'action': 'disk'}), ('system', {'action': 'cpu_ram_gpu'}), ('system', {'action': 'battery'}), ('system', {'action': 'processes'})] reply='Sí, Steam est…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 621,
+            "line": 6,
+            "text": "[OK] estado2: 'está abierto Chrome?' -> exec=[('system', {'action': 'time'}), ('system', {'action': 'disk'}), ('system', {'action': 'cpu_ram_gpu'}), ('system', {'action': 'battery'}), ('system', {'action': 'processes'})] reply='Listo, veri…"
+          },
+          {
+            "offset": 907,
+            "line": 7,
+            "text": "[OK] howto2: 'cómo elimino una carpeta?' -> exec=[('session', {'action': 'cancel_turn'})] reply='listo, no hice nada porque no tengo acceso a la ca'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_screen_clean.png": {
+      "parser": "binary_inventory",
+      "bytes": 278606,
+      "sha256": "36136cba757c07391e27e31ea8aae56faf4589aea6b92c532aa992b0e2be46fc",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_screen_clean.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1890,
+        "height": 1260
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 278605
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 278605,
+            "line": 0,
+            "text": "eof bytes=278606"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_screen_final.png": {
+      "parser": "binary_inventory",
+      "bytes": 276642,
+      "sha256": "82a1737817b6c7c21c12cbb44d07f3e5ac1cb09db7ba7b03d6b708b110d3b024",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_screen_final.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1890,
+        "height": 1260
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 276641
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 276641,
+            "line": 0,
+            "text": "eof bytes=276642"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_screen_now.png": {
+      "parser": "binary_inventory",
+      "bytes": 275879,
+      "sha256": "aa5bdcf008ae2905da46fc2f110eb65f7548ec973ff768118cee18c0e72f2598",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_screen_now.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1890,
+        "height": 1260
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 275878
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 275878,
+            "line": 0,
+            "text": "eof bytes=275879"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_site_resolve.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 292,
+      "sha256": "fbedad38891fbda533e189b2e36f3a773d1f04e2fddf5ce4b7156e9b9fcee668",
+      "rows": 4,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 187,
+        "min_line_bytes": 26,
+        "max_line_bytes": 125
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Traceback (most recent call last):"
+          },
+          {
+            "offset": 36,
+            "line": 2,
+            "text": "File \"<home>\\Desktop\\ETC\\Programacion\\Probando Gemma 4\\scripts\\_diag\\_test_site_resolve.py\", line 11, in <module>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 161,
+            "line": 3,
+            "text": "reg = ToolRegistry()"
+          },
+          {
+            "offset": 187,
+            "line": 4,
+            "text": "TypeError: ToolRegistry.__init__() missing 2 required positional arguments: 'memory' and 'captures_dir'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_slice_420_490.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 33220,
+      "sha256": "4ca2b500a57dee69fd1d68e1d1370b15a3281235dbebd4910fae000ef07df0b4",
+      "rows": 70,
+      "schema": {
+        "root": "array",
+        "n": 70,
+        "elem_keys": [
+          "cat",
+          "dt",
+          "gt_tools",
+          "i",
+          "lang",
+          "passes",
+          "prev",
+          "reply",
+          "signals",
+          "tools",
+          "user"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33219
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1420, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"subí el volumen al 40 por ciento\", \"prev\": \"\", \"reply\": \"Listo, subí el volumen del sistema al 40 por ciento.\", \"tools\": [{\"n\": \"audio\", \"a\": \"set_volume\"}], \"dt\": 4.12, \"passes\": 3, \"gt…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33219,
+            "line": 70,
+            "text": "{\"i\": 1489, \"cat\": \"sistema\", \"lang\": \"es\", \"user\": \"subí el brillo\", \"prev\": \"\", \"reply\": \"Listo, subí el brillo de la pantalla.\", \"tools\": [{\"n\": \"device_settings\", \"a\": \"brightness_up\"}], \"dt\": 2.13, \"passes\": 2, \"gt_tools\": [\"device_se…"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_srv8081.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 14689,
+      "sha256": "8ee16bb4d1d17d807cfe4692f061d93b4671d961241180e8d4fd168026c66b6a",
+      "rows": 217,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14650,
+        "min_line_bytes": 3,
+        "max_line_bytes": 287
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "ggml_cuda_init: found 1 CUDA devices (Total VRAM: 16379 MiB):"
+          },
+          {
+            "offset": 63,
+            "line": 2,
+            "text": "Device 0: NVIDIA GeForce RTX 4060 Ti, compute capability 8.9, VMM: yes, VRAM: 16379 MiB"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14617,
+            "line": 216,
+            "text": "main: starting the main loop..."
+          },
+          {
+            "offset": 14650,
+            "line": 217,
+            "text": "srv update_slots: all slots are idle"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2064,
+      "sha256": "24fb756b848af0b456ff7eb0874a217cb7761b88d258a4698e9e22aa829508b7",
+      "rows": 28,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 7
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2047,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:28:54.229000 44108 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2045,
+            "line": 27,
+            "text": ""
+          },
+          {
+            "offset": 2047,
+            "line": 28,
+            "text": "LEAKS ES: 15/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 2056,
+      "sha256": "63fcf136a94e66007eac123cb74c066ce228eeec18499bd1d308291524138c19",
+      "rows": 28,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 10
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2039,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:53:55.934000 44352 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2037,
+            "line": 27,
+            "text": ""
+          },
+          {
+            "offset": 2039,
+            "line": 28,
+            "text": "LEAKS ES: 12/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs3.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1384,
+      "sha256": "b09e370034eb37623f545d36488e530cd8f98094bc41909c0f74c914f893ef43",
+      "rows": 26,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 15
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1368,
+        "min_line_bytes": 2,
+        "max_line_bytes": 90
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1366,
+            "line": 25,
+            "text": ""
+          },
+          {
+            "offset": 1368,
+            "line": 26,
+            "text": "LEAKS ES: 7/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs4.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1547,
+      "sha256": "6ae15cdcac8bbdeaf06e21a34cb816ea454c8cc490358eb0c140b7629518775c",
+      "rows": 26,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 16
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1512,
+        "min_line_bytes": 2,
+        "max_line_bytes": 97
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1510,
+            "line": 25,
+            "text": ""
+          },
+          {
+            "offset": 1512,
+            "line": 26,
+            "text": "LEAKS (reply≠idioma user): 6/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs5.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1461,
+      "sha256": "efc04cfd721726fcd81eea763fb4d42fafe9238fb945d421ec86069bfd20944f",
+      "rows": 26,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 17
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1426,
+        "min_line_bytes": 2,
+        "max_line_bytes": 81
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1424,
+            "line": 25,
+            "text": ""
+          },
+          {
+            "offset": 1426,
+            "line": 26,
+            "text": "LEAKS (reply≠idioma user): 5/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs6.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1481,
+      "sha256": "4669cb43b56954ee699dbe75a2db33a7d9e71939646d5dbd820fab485ee4718d",
+      "rows": 26,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 19
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1446,
+        "min_line_bytes": 2,
+        "max_line_bytes": 97
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1444,
+            "line": 25,
+            "text": ""
+          },
+          {
+            "offset": 1446,
+            "line": 26,
+            "text": "LEAKS (reply≠idioma user): 3/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_sweep_action_langs7.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1430,
+      "sha256": "3efec6cc02f12cc72ffd3a3abf3b561407f117b7aee9bb03a0a1d22d4101be2a",
+      "rows": 26,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 21
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1395,
+        "min_line_bytes": 2,
+        "max_line_bytes": 79
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1393,
+            "line": 25,
+            "text": ""
+          },
+          {
+            "offset": 1395,
+            "line": 26,
+            "text": "LEAKS (reply≠idioma user): 1/21"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_trace_close.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 978,
+      "sha256": "da66f608ef915dde95f688d184c6fec5591f98e15369238608eab087387f19ee",
+      "rows": 16,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 938,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:31:28.901000 43064 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 895,
+            "line": 15,
+            "text": "TOOL: session {'action': 'cancel_turn'}"
+          },
+          {
+            "offset": 938,
+            "line": 16,
+            "text": "REPLY: 'Listo, silencié el sonido.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_trace_helper_inner.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5073,
+      "sha256": "fd8417c38357a37d5d9ddc9765e54e147064b5ccab38abbe3cf84605cc98525b",
+      "rows": 64,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 22,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4946,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:27:15.008000 15636 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4873,
+            "line": 63,
+            "text": "raise RuntimeError(f\"llm_http_error {exc.code}: {detail}\") from exc"
+          },
+          {
+            "offset": 4946,
+            "line": 64,
+            "text": "RuntimeError: llm_http_error 400: {\"error\":{\"code\":400,\"message\":\"model 'gemma-4' not found\",\"type\":\"invalid_request_error\"}}"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_trace_notepad.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 911,
+      "sha256": "e329e5d169e4d737b46e55853da34bcb2c493e1bb58f27e8d0198c389dd66e94",
+      "rows": 11,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 873,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "W0606 16:26:34.469000 16288 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 825,
+            "line": 10,
+            "text": "_llm_action_reply -> 'Listo, abrí notepad.'"
+          },
+          {
+            "offset": 873,
+            "line": 11,
+            "text": "FINAL REPLY: 'Listo, abrí notepad.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_trace_repair.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1037,
+      "sha256": "8c310037c8b3fd9e1a9c427dfe504d8dbbf6bd30acf655807f17dcee4b7d9721",
+      "rows": 20,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 997,
+        "min_line_bytes": 2,
+        "max_line_bytes": 412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "=== _guess_lang de inputs que leakean ==="
+          },
+          {
+            "offset": 43,
+            "line": 2,
+            "text": "'close chrome' -> 'es'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 975,
+            "line": 19,
+            "text": "=== 'play music' ==="
+          },
+          {
+            "offset": 997,
+            "line": 20,
+            "text": "REPLY: 'Listo, puse lo que pediste.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_trace_repair2.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 279,
+      "sha256": "d1c28372fa9821b68018152507e88002ec39faffeb1ec17a69ed474c72faaddf",
+      "rows": 11,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 245,
+        "min_line_bytes": 2,
+        "max_line_bytes": 45
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "_finalize_turn REACHED"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 200,
+            "line": 10,
+            "text": "detect_lang('Listo, cerré Chrome.')=fr"
+          },
+          {
+            "offset": 245,
+            "line": 11,
+            "text": "REPLY: 'Listo, cerré Chrome.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_trace_ss.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 78,
+      "sha256": "420ec12cc13c8c3cc60a0b7afd8d20371d9fdab14acfc32ca3eb1f9233a89462",
+      "rows": 4,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 40,
+        "min_line_bytes": 2,
+        "max_line_bytes": 38
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] OK"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": ""
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13,
+            "line": 3,
+            "text": "=== take a screenshot ==="
+          },
+          {
+            "offset": 40,
+            "line": 4,
+            "text": "REPLY: 'Listo, saqué la captura.'"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_type_proof.png": {
+      "parser": "binary_inventory",
+      "bytes": 221206,
+      "sha256": "d270feeafc4ecde541385152df850efa676ca6958ff8e538ed2170e38d8237d0",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_type_proof.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1890,
+        "height": 1260
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 221205
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 221205,
+            "line": 0,
+            "text": "eof bytes=221206"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/after_undo.png": {
+      "parser": "binary_inventory",
+      "bytes": 277826,
+      "sha256": "bd7fc6d16a30521a1430263c0fb7d694ff4f48e2eb47f1a04a24173da91885cf",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/after_undo.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 277825
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 277825,
+            "line": 0,
+            "text": "eof bytes=277826"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/compose_zoom.png": {
+      "parser": "binary_inventory",
+      "bytes": 81607,
+      "sha256": "29fb9cf8261c09712dadefb668cf5e3bcd00cd0fad816f922b225a7ddb653fb8",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/compose_zoom.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 2880,
+        "height": 270
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 81606
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 81606,
+            "line": 0,
+            "text": "eof bytes=81607"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/explore_state.png": {
+      "parser": "binary_inventory",
+      "bytes": 403451,
+      "sha256": "9566d020dee7e8db705f64650c5115f404c789779711e766e3956a07a0bc58b2",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/explore_state.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 403450
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 403450,
+            "line": 0,
+            "text": "eof bytes=403451"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/ms_0_before.png": {
+      "parser": "binary_inventory",
+      "bytes": 333039,
+      "sha256": "02456bc84e87ec5787d790b2d87ca509427df9ef89bb4401cfdd67fde5d33a27",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/ms_0_before.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 333038
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 333038,
+            "line": 0,
+            "text": "eof bytes=333039"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/ms_1_typed_letras.png": {
+      "parser": "binary_inventory",
+      "bytes": 308221,
+      "sha256": "f5b1ca4692d4efb81287ac4bfa816fc2c1253331514a06ac00332bc6248b5d38",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/ms_1_typed_letras.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 308220
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 308220,
+            "line": 0,
+            "text": "eof bytes=308221"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/ms_2_opened.png": {
+      "parser": "binary_inventory",
+      "bytes": 281965,
+      "sha256": "540cdfdc3f2a5fa9ecfa8d524bbacf00dae719df3256b6094d961a0a6a7940d9",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/ms_2_opened.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 281964
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 281964,
+            "line": 0,
+            "text": "eof bytes=281965"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/ms_header_crop.png": {
+      "parser": "binary_inventory",
+      "bytes": 2894,
+      "sha256": "25a0321a8bdd0223d83c4b808e24f55e9938d4e06f0c0bd06f1b1e9ca2897e5f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/ms_header_crop.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 649,
+        "height": 75
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2893
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2893,
+            "line": 0,
+            "text": "eof bytes=2894"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/presend.png": {
+      "parser": "binary_inventory",
+      "bytes": 263330,
+      "sha256": "667dfa3e038ded51b894ccbb0817fc4330b7588c69a3dc3a6f606bbe03a3664e",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/presend.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 263329
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 263329,
+            "line": 0,
+            "text": "eof bytes=263330"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/sent.png": {
+      "parser": "binary_inventory",
+      "bytes": 276225,
+      "sha256": "c8d66c396d4bb868fd12607543d37daab61c96339b706eeee9f0bf8e9602a888",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/sent.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 276224
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 276224,
+            "line": 0,
+            "text": "eof bytes=276225"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/snd_0.png": {
+      "parser": "binary_inventory",
+      "bytes": 279018,
+      "sha256": "047259aafa70afe4b4f05707929a039b32b792ba36ee02ffb5d61b5f060466ae",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/snd_0.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 279017
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 279017,
+            "line": 0,
+            "text": "eof bytes=279018"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/snd_draft.png": {
+      "parser": "binary_inventory",
+      "bytes": 282981,
+      "sha256": "4b1d3e844bc6917bf6419b37ee25575af7cf23abc47495fc840cadf1e4fb3fa4",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/snd_draft.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 282980
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 282980,
+            "line": 0,
+            "text": "eof bytes=282981"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/snd_noconfirm.png": {
+      "parser": "binary_inventory",
+      "bytes": 303228,
+      "sha256": "290a5f0f01d817c22d82db1562894cc66731c2222a3a59ee0f9dc11b17f08297",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/snd_noconfirm.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 303227
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 303227,
+            "line": 0,
+            "text": "eof bytes=303228"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/step1_draft.png": {
+      "parser": "binary_inventory",
+      "bytes": 292201,
+      "sha256": "6b3a50a6ab6ceb2489af0357df69bb550e4e0343c75cd9270534a4029cc43709",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/step1_draft.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 292200
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 292200,
+            "line": 0,
+            "text": "eof bytes=292201"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/tool_musica_draft.png": {
+      "parser": "binary_inventory",
+      "bytes": 263255,
+      "sha256": "7fe50abdbeac414855855791b002beb8c9c74e3c50c41f66b56bd2723e90efe1",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/tool_musica_draft.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 263254
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 263254,
+            "line": 0,
+            "text": "eof bytes=263255"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/vec_0.png": {
+      "parser": "binary_inventory",
+      "bytes": 290040,
+      "sha256": "4c8492a66e104120646b35145691b362edcdd4d1891c72ba7f4e42506fe77027",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/vec_0.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 290039
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 290039,
+            "line": 0,
+            "text": "eof bytes=290040"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/vec_cleared.png": {
+      "parser": "binary_inventory",
+      "bytes": 381668,
+      "sha256": "2fd7fe04c59c5630963294c6934b5f34ea4308792fec578699168d7f5cf7555d",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/vec_cleared.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 381667
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 381667,
+            "line": 0,
+            "text": "eof bytes=381668"
+          }
+        ]
+      }
+    },
+    "scripts/_diag/_wsp/vec_opened.png": {
+      "parser": "binary_inventory",
+      "bytes": 381609,
+      "sha256": "297e0c750a509e753dd790ce5f17ee95c1b98db338dc8a18d7111bc8d6c421e7",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/_diag/_wsp/vec_opened.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1366,
+        "height": 768
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 381608
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 381608,
+            "line": 0,
+            "text": "eof bytes=381609"
+          }
+        ]
+      }
+    },
+    "scripts/_out_fileroute_on.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 3067,
+      "sha256": "920c3163479a2d461d5f2180d7179509e059dabca5b3ac70dc1b37e0a39bf9da",
+      "rows": 40,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 5,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2980,
+        "min_line_bytes": 6,
+        "max_line_bytes": 147
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "........................................................................ [ 3%]"
+          },
+          {
+            "offset": 81,
+            "line": 2,
+            "text": "........................................................................ [ 7%]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2862,
+            "line": 39,
+            "text": "FAILED gemma4_agent/tests/test_scripts_inventory.py::TestScriptsInventory::test_index_mentions_all_top_level_scripts"
+          },
+          {
+            "offset": 2980,
+            "line": 40,
+            "text": "1 failed, 1953 passed, 5 skipped, 4 xfailed, 163 subtests passed in 234.18s (0:03:54)"
+          }
+        ]
+      }
+    },
+    "scripts/_out_flags_on.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5517,
+      "sha256": "b1b214f3bcceae4ed1579935ab10bb9ed77dfccccea0b5a8d1ecc3d3f65a9f05",
+      "rows": 76,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 11,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5430,
+        "min_line_bytes": 2,
+        "max_line_bytes": 174
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "........................................................................ [ 3%]"
+          },
+          {
+            "offset": 81,
+            "line": 2,
+            "text": "........................................................................ [ 7%]"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5310,
+            "line": 75,
+            "text": "FAILED gemma4_agent/tests/test_whatsapp.py::TestWhatsappContactResolution::test_send_by_contact_name_uses_stored_phone"
+          },
+          {
+            "offset": 5430,
+            "line": 76,
+            "text": "1 failed, 1953 passed, 5 skipped, 4 xfailed, 163 subtests passed in 223.68s (0:03:43)"
+          }
+        ]
+      }
+    },
+    "scripts/_out_harness_stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 726,
+      "sha256": "a3db56e31164c17c3164976a42e3476e01db194dfd5f1a6f98e680a12d78253b",
+      "rows": 6,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 660,
+        "min_line_bytes": 61,
+        "max_line_bytes": 183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "External llama-server detected on :8080. NOT killing or reconfiguring it. Profile flags will NOT be applied to it. Stop the external server manually if you want Gemma4 to manage it."
+          },
+          {
+            "offset": 183,
+            "line": 2,
+            "text": "W0529 05:56:43.854000 26352 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 599,
+            "line": 5,
+            "text": "ROUTING: 43/60 pedidos rutearon a una tool aceptable (207s)"
+          },
+          {
+            "offset": 660,
+            "line": 6,
+            "text": "================================================================"
+          }
+        ]
+      }
+    },
+    "scripts/_out_wa_debug.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 19899,
+      "sha256": "63048a93149543bbcd29588dfecf8535b3b5ae9c9b0e27de436a079168e61d51",
+      "rows": 271,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 10,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19818,
+        "min_line_bytes": 2,
+        "max_line_bytes": 126
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "============================= test session starts ============================="
+          },
+          {
+            "offset": 81,
+            "line": 2,
+            "text": "platform win32 -- Python 3.10.11, pytest-9.0.2, pluggy-1.6.0"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19700,
+            "line": 270,
+            "text": "FAILED gemma4_agent/tests/test_scripts_inventory.py::TestScriptsInventory::test_index_mentions_all_top_level_scripts"
+          },
+          {
+            "offset": 19818,
+            "line": 271,
+            "text": "====== 2 failed, 1952 passed, 5 skipped, 4 xfailed in 236.06s (0:03:56) ======="
+          }
+        ]
+      }
+    },
+    "scripts/battery_all_caps.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 10808,
+      "sha256": "77fcbe3c47ca40ecc549d77bbc6f8f4db7a8f537db2222bdc0fc20fe2b2a800a",
+      "rows": 102,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 53
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10662,
+        "min_line_bytes": 2,
+        "max_line_bytes": 177
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "[boot] started"
+          },
+          {
+            "offset": 16,
+            "line": 2,
+            "text": "W0527 22:36:00.770000 8244 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE: Redirects are currently not supported in Windows or MacOs."
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10518,
+            "line": 101,
+            "text": "[wa_read] 'qu� me escribi� mam�': sin tool de dominio; reply='No tengo acceso a tus mensajes personales. Solo puedo responder preguntas g'"
+          },
+          {
+            "offset": 10662,
+            "line": 102,
+            "text": "[wifi] 'conectate al wifi de casa': sin tool de dominio; reply='Necesito el nombre de la red y la contrase�a para conectarte al wifi de cas'"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/_exhaustive_run1.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 773,
+      "sha256": "13801ef6bbd385d30e25dc267a8729f550a7479a1ed99d124887cd16ca71ca49",
+      "rows": 10,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 651,
+        "min_line_bytes": 28,
+        "max_line_bytes": 132
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "=== CALC type_into x10 ==="
+          },
+          {
+            "offset": 28,
+            "line": 2,
+            "text": "2+2=4: 'Se muestra 4' OK"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 580,
+            "line": 9,
+            "text": "return self.Element.CurrentName or '' # CurrentName may be None"
+          },
+          {
+            "offset": 651,
+            "line": 10,
+            "text": "_ctypes.COMError: (-2147220991, 'Un evento no pudo invocar a ninguno de los subscriptores', (None, None, None, 0, None))"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/_marathon_cu.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 23537,
+      "sha256": "51e3a4bfbd1cf6ad2b23183a223bc0905d30598fbbdef282a0929f77824c9696",
+      "rows": 180,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "kind",
+          "app",
+          "cmd",
+          "ok",
+          "reply",
+          "lat"
+        ],
+        "key_freq": {
+          "i": 180,
+          "kind": 180,
+          "app": 180,
+          "cmd": 180,
+          "ok": 180,
+          "reply": 180,
+          "lat": 180
+        }
+      },
+      "distribution": {
+        "status": {
+          "ok=False": 131,
+          "ok=True": 49
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23430,
+        "min_line_bytes": 106,
+        "max_line_bytes": 176,
+        "numeric": {
+          "i": {
+            "min": 1.0,
+            "max": 180.0
+          },
+          "lat": {
+            "min": 2.4,
+            "max": 11.3
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 1, \"kind\": \"calc_type\", \"app\": \"calc\", \"cmd\": \"calculá 2+2 en la calculadora\", \"ok\": true, \"reply\": \"Listo, escribí «2+2» en Calculadora.\", \"lat\": 6.0}"
+          },
+          {
+            "offset": 163,
+            "line": 2,
+            "text": "{\"i\": 2, \"kind\": \"calc_type\", \"app\": \"calc\", \"cmd\": \"calculá 5*5 en la calculadora\", \"ok\": true, \"reply\": \"Listo, escribí «5*5» en Calculadora.\", \"lat\": 2.5}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 23319,
+            "line": 179,
+            "text": "{\"i\": 179, \"kind\": \"open_app\", \"app\": \"spotify\", \"cmd\": \"abrí spotify\", \"ok\": true, \"reply\": \"\", \"lat\": 4.1}"
+          },
+          {
+            "offset": 23430,
+            "line": 180,
+            "text": "{\"i\": 180, \"kind\": \"open_app\", \"app\": \"steam\", \"cmd\": \"abrí steam\", \"ok\": true, \"reply\": \"\", \"lat\": 4.0}"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/_marathon_llm.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 130601,
+      "sha256": "195918bc5727034fc4843124ac50d0f8cca536e578e6facb5ae6b11fbdb5c61b",
+      "rows": 567,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "app",
+          "kind",
+          "lang",
+          "cmd",
+          "exp",
+          "ops",
+          "parseable",
+          "correct",
+          "lat"
+        ],
+        "key_freq": {
+          "i": 567,
+          "app": 567,
+          "kind": 567,
+          "lang": 567,
+          "cmd": 567,
+          "exp": 567,
+          "ops": 567,
+          "parseable": 567,
+          "correct": 567,
+          "lat": 567
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130428,
+        "min_line_bytes": 173,
+        "max_line_bytes": 276,
+        "numeric": {
+          "i": {
+            "min": 0.0,
+            "max": 566.0
+          },
+          "lat": {
+            "min": 0.21,
+            "max": 1.1
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"app\": \"discord\", \"kind\": \"open_chat\", \"lang\": \"es\", \"cmd\": \"andá a discord al chat de juan\", \"exp\": [\"focus_app\", \"open_chat\"], \"ops\": [\"focus_app\", \"open_chat\"], \"parseable\": true, \"correct\": true, \"lat\": 0.44}"
+          },
+          {
+            "offset": 224,
+            "line": 2,
+            "text": "{\"i\": 1, \"app\": \"discord\", \"kind\": \"open_chat\", \"lang\": \"es\", \"cmd\": \"entrá a discord y abrí el chat de juan\", \"exp\": [\"focus_app\", \"open_chat\"], \"ops\": [\"focus_app\", \"open_chat\"], \"parseable\": true, \"correct\": true, \"lat\": 0.36}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 130255,
+            "line": 566,
+            "text": "{\"i\": 565, \"app\": \"obs\", \"kind\": \"focus_app\", \"lang\": \"en\", \"cmd\": \"open obs\", \"exp\": [\"focus_app\"], \"ops\": [\"focus_app\"], \"parseable\": true, \"correct\": true, \"lat\": 0.23}"
+          },
+          {
+            "offset": 130428,
+            "line": 567,
+            "text": "{\"i\": 566, \"app\": \"obs\", \"kind\": \"focus_app\", \"lang\": \"pt\", \"cmd\": \"abre obs\", \"exp\": [\"focus_app\"], \"ops\": [\"focus_app\"], \"parseable\": true, \"correct\": true, \"lat\": 0.21}"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/_marathon_p3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17612,
+      "sha256": "15703da7550d7ed4ae9eecd1de6b888aad2216235183bf312c6f0d5909258ca8",
+      "rows": 88,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "i",
+          "kind",
+          "lang",
+          "cmd",
+          "exp",
+          "ops",
+          "parseable",
+          "correct"
+        ],
+        "key_freq": {
+          "i": 88,
+          "kind": 88,
+          "lang": 88,
+          "cmd": 88,
+          "exp": 88,
+          "ops": 88,
+          "parseable": 88,
+          "correct": 88
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17399,
+        "min_line_bytes": 152,
+        "max_line_bytes": 241,
+        "numeric": {
+          "i": {
+            "min": 0.0,
+            "max": 87.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"i\": 0, \"kind\": \"multi\", \"lang\": \"fr\", \"cmd\": \"ouvre la calculatrice et tape 2+2\", \"exp\": [\"focus_app\", \"type\"], \"ops\": [\"focus_app\", \"type\", \"keypress\"], \"parseable\": true, \"correct\": true}"
+          },
+          {
+            "offset": 193,
+            "line": 2,
+            "text": "{\"i\": 1, \"kind\": \"multi\", \"lang\": \"fr\", \"cmd\": \"ouvre la calculatrice et tape 2+2\", \"exp\": [\"focus_app\", \"type\"], \"ops\": [\"focus_app\", \"type\", \"keypress\"], \"parseable\": true, \"correct\": true}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17186,
+            "line": 87,
+            "text": "{\"i\": 86, \"kind\": \"adversarial\", \"lang\": \"en\", \"cmd\": \"disc msg juan hi\", \"exp\": [\"focus_app\", \"open_chat\", \"type\", \"send\"], \"ops\": [\"focus_app\", \"open_chat\", \"type\", \"send\"], \"parseable\": true, \"correct\": true}"
+          },
+          {
+            "offset": 17399,
+            "line": 88,
+            "text": "{\"i\": 87, \"kind\": \"adversarial\", \"lang\": \"en\", \"cmd\": \"disc msg juan hi\", \"exp\": [\"focus_app\", \"open_chat\", \"type\", \"send\"], \"ops\": [\"focus_app\", \"open_chat\", \"type\", \"send\"], \"parseable\": true, \"correct\": true}"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/fixtures/ocr_dark_on_light.png": {
+      "parser": "binary_inventory",
+      "bytes": 14069,
+      "sha256": "5a109bf613300dc8f454159e00d55e97d5051e60296ea830f1f57dcd3cf0d310",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/gui_eval/fixtures/ocr_dark_on_light.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "historical gate/eval beside this file, if any",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 900,
+        "height": 400
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14068
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14068,
+            "line": 0,
+            "text": "eof bytes=14069"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/fixtures/ocr_white_on_blue.png": {
+      "parser": "binary_inventory",
+      "bytes": 15434,
+      "sha256": "5456111494da852a2c1dab8acf398c6f691c5f407ea92c7c6e80f968c888e5b2",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "probando_gemma4",
+        "path": "scripts/gui_eval/fixtures/ocr_white_on_blue.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "historical gate/eval beside this file, if any",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 900,
+        "height": 400
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15433
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15433,
+            "line": 0,
+            "text": "eof bytes=15434"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/results_106_run1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39276,
+      "sha256": "c06c9fa07bed721d3e8b64ef043a9ab4248f8423be5031d5a8cb0dafc1d8c5fd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 106
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39275
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/results_106_run1.progress.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 29574,
+      "sha256": "2525756cd07ab9cf224637580ac21d49666180f23e599caf2b51acb1050050e0",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "tier",
+          "utterance",
+          "pass",
+          "evidence",
+          "steps",
+          "latency_s",
+          "agent_thinks_ok",
+          "false_pass",
+          "reply",
+          "error"
+        ],
+        "key_freq": {
+          "id": 106,
+          "tier": 106,
+          "utterance": 106,
+          "pass": 106,
+          "evidence": 106,
+          "steps": 106,
+          "latency_s": 106,
+          "agent_thinks_ok": 106,
+          "false_pass": 106,
+          "reply": 106,
+          "error": 106
+        }
+      },
+      "distribution": {
+        "status": {
+          "pass=True": 79,
+          "pass=False": 27
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29317,
+        "min_line_bytes": 225,
+        "max_line_bytes": 407,
+        "numeric": {
+          "tier": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "latency_s": {
+            "min": 0.46,
+            "max": 12.77
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"t1_vol_30\", \"tier\": 1, \"utterance\": \"subí el volumen al 30\", \"pass\": true, \"evidence\": \"volumen=30 (target 30±4)\", \"steps\": 1, \"latency_s\": 10.76, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, subí el volumen al 30…"
+          },
+          {
+            "offset": 262,
+            "line": 2,
+            "text": "{\"id\": \"t1_vol_50_en\", \"tier\": 1, \"utterance\": \"set the volume to 50\", \"pass\": true, \"evidence\": \"volumen=50 (target 50±4)\", \"steps\": 1, \"latency_s\": 2.08, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, ajusté el volumen a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 29041,
+            "line": 105,
+            "text": "{\"id\": \"t1_vol2_68_de\", \"tier\": 1, \"utterance\": \"lautstärke 68 prozent\", \"pass\": true, \"evidence\": \"volumen=68 (target 68±4)\", \"steps\": 1, \"latency_s\": 6.09, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, el volumen está al…"
+          },
+          {
+            "offset": 29317,
+            "line": 106,
+            "text": "{\"id\": \"t1_vol2_78_it\", \"tier\": 1, \"utterance\": \"volume al 78\", \"pass\": true, \"evidence\": \"volumen=78 (target 78±4)\", \"steps\": 1, \"latency_s\": 2.53, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, ajusté el volumen al 77.\",…"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/results_106_run2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38623,
+      "sha256": "010a96f9189066c9db4b1db5f1c7faba1cd90e47abd1b1f970179966975a9016",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 106
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38622
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/results_106_run2.progress.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 29033,
+      "sha256": "fcd1c6cfb51e9ee218ccca0906f567b9c9cec31ead6ee1c0a72f3711276daecc",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "tier",
+          "utterance",
+          "pass",
+          "evidence",
+          "steps",
+          "latency_s",
+          "agent_thinks_ok",
+          "false_pass",
+          "reply",
+          "error",
+          "skipped"
+        ],
+        "key_freq": {
+          "id": 106,
+          "tier": 106,
+          "utterance": 104,
+          "pass": 104,
+          "evidence": 104,
+          "steps": 104,
+          "latency_s": 104,
+          "agent_thinks_ok": 104,
+          "false_pass": 104,
+          "reply": 104,
+          "error": 104,
+          "skipped": 2
+        }
+      },
+      "distribution": {
+        "status": {
+          "pass=True": 80,
+          "pass=False": 24
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28776,
+        "min_line_bytes": 69,
+        "max_line_bytes": 386,
+        "numeric": {
+          "tier": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "latency_s": {
+            "min": 1.53,
+            "max": 12.83
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"t1_vol_30\", \"tier\": 1, \"utterance\": \"subí el volumen al 30\", \"pass\": true, \"evidence\": \"volumen=30 (target 30±4)\", \"steps\": 1, \"latency_s\": 11.6, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, subí el volumen al 30.…"
+          },
+          {
+            "offset": 261,
+            "line": 2,
+            "text": "{\"id\": \"t1_vol_50_en\", \"tier\": 1, \"utterance\": \"set the volume to 50\", \"pass\": true, \"evidence\": \"volumen=50 (target 50±4)\", \"steps\": 1, \"latency_s\": 2.19, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, el volumen está conf…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28500,
+            "line": 105,
+            "text": "{\"id\": \"t1_vol2_68_de\", \"tier\": 1, \"utterance\": \"lautstärke 68 prozent\", \"pass\": true, \"evidence\": \"volumen=68 (target 68±4)\", \"steps\": 1, \"latency_s\": 6.38, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, el volumen está al…"
+          },
+          {
+            "offset": 28776,
+            "line": 106,
+            "text": "{\"id\": \"t1_vol2_78_it\", \"tier\": 1, \"utterance\": \"volume al 78\", \"pass\": true, \"evidence\": \"volumen=78 (target 78±4)\", \"steps\": 1, \"latency_s\": 2.52, \"agent_thinks_ok\": true, \"false_pass\": false, \"reply\": \"Listo, ajusté el volumen al 78.\",…"
+          }
+        ]
+      }
+    },
+    "scripts/gui_eval/results_106_run3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38631,
+      "sha256": "0bc80613320615b64ddd544e7b1c138f3db037fe98a525318711ac03d50dd180",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summary"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 104
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38630
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summary\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,2638 @@
+{
+  "batch_id": "evidence_assets-048-baxy-baxy_art_development",
+  "source_id": "baxy",
+  "file_count": 38,
+  "hash_ok": 38,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/qwen_gpu_q4_kv_abba.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 62909,
+      "sha256": "20a5492abc608591d44de3d4540e0c719c8da9e31f462bc50a30db236e39e9ad",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 62908,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q4_kv_batch1024_abba.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 130034,
+      "sha256": "9fef2d5614506b6a55e118403a60ebe599b51d06cfb517d93deec4bf7fca2669",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130033,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q4_kv_ngl35_abba.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 130044,
+      "sha256": "3fc3c2a8efbd57a736a46e35b7382f1bc24311cb3d18004097b9d593f794ad39",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130043,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q4_kv_ngl36_abba.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 129906,
+      "sha256": "deea1de7abd8c68d5b135135e2c87e318b9d33aa41acb8a1538ee3f58400c3f5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 129905,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q4_kv_ubatch256_abba.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 129982,
+      "sha256": "7e893b8c1820f5cf16b07f3caac646478f151b7c1917c2ba9c54b4151704079a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 129981,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q4_kv_ubatch256_semantic_abba.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 133116,
+      "sha256": "63cb97819d9710b9a2c4f16140f5f281f310eadaa3e46e33d4af45a8a3d21511",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 133115,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q4_kv_ubatch256_semantic_abba.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 131525,
+      "sha256": "acda808611cfe580510c17b412c77b3240edc43fde019ad7dbf0be1aaa9cf514",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 131524,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/qwen_gpu_q8_ngl29_abba.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 130120,
+      "sha256": "f5badc3a9888927e20c2e423657642f3f99e6cf7d7259e1f78ae4f14238d9286",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "checks",
+          "comparison",
+          "measured_at_utc",
+          "profiles",
+          "runs",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130119,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"checks\", \"comparison\", \"measured_at_utc\", \"profiles\", \"runs\", \"runtime\", \"schema\", \"scope\", \"source\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_clause_retrieval_pilot_v3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 6654,
+      "sha256": "42c81bc57b5ff503c594b164c8098318f0758dada287a59f5f31d7f7d756d143",
+      "rows": 17,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "error_type",
+          "failure_kind",
+          "final",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 17,
+          "phase": 17,
+          "raw_decision": 17,
+          "request_id": 17,
+          "schema": 17,
+          "stages": 17,
+          "error_type": 10,
+          "failure_kind": 10,
+          "final": 6,
+          "recovery": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6160,
+        "min_line_bytes": 218,
+        "max_line_bytes": 1680,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5942,
+            "line": 16,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"TypeError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"p3-r16-composition-93-01-plain\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 6160,
+            "line": 17,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_clause_retrieval_pilot_v4.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 18564,
+      "sha256": "a271cb68a5c92137478ed8ae08309ff6e8f538cfee131536912831c68d0d75b0",
+      "rows": 15,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 15,
+          "phase": 15,
+          "raw_decision": 15,
+          "request_id": 15,
+          "schema": 15,
+          "stages": 15,
+          "final": 6,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16317,
+        "min_line_bytes": 219,
+        "max_line_bytes": 2737,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15605,
+            "line": 14,
+            "text": "{\"candidate_operations\":[\"media.status\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"task.list\",\"task.search\",\"task.resolve.exact\",\"task.create\",\"task.complete\",\"task.delete\",\"task.reopen\",\"task.restore\",\"task.update\"],\"phas…"
+          },
+          {
+            "offset": 16317,
+            "line": 15,
+            "text": "{\"candidate_operations\":[\"media.status\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"task.list\",\"task.search\",\"task.resolve.exact\",\"task.create\",\"task.complete\",\"task.delete\",\"task.reopen\",\"task.restore\",\"task.update\"],\"fina…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_clause_retrieval_pilot_v5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 15692,
+      "sha256": "4115346f30cfa9d18bf0114807b526ede42659effc7158aca8596b47c4d354bc",
+      "rows": 16,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 16,
+          "phase": 16,
+          "raw_decision": 16,
+          "request_id": 16,
+          "schema": 16,
+          "stages": 16,
+          "final": 6,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13536,
+        "min_line_bytes": 219,
+        "max_line_bytes": 2735,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12840,
+            "line": 15,
+            "text": "{\"candidate_operations\":[\"media.status\",\"reminder.list\",\"reminder.delete\",\"media.play.exact\",\"media.play.query\",\"clipboard.write.text\",\"clipboard.read.text\",\"task.list\",\"task.search\",\"task.complete\",\"task.create\",\"task.delete\",\"task.reopen…"
+          },
+          {
+            "offset": 13536,
+            "line": 16,
+            "text": "{\"candidate_operations\":[\"media.status\",\"reminder.list\",\"reminder.delete\",\"media.play.exact\",\"media.play.query\",\"clipboard.write.text\",\"clipboard.read.text\",\"task.list\",\"task.search\",\"task.complete\",\"task.create\",\"task.delete\",\"task.reopen…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_clause_retrieval_pilot_v6.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 15682,
+      "sha256": "4344835d735e4a9ab729bbadc197f7fd5e234c3468e2323ce8f390a93a3b544e",
+      "rows": 16,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 16,
+          "phase": 16,
+          "raw_decision": 16,
+          "request_id": 16,
+          "schema": 16,
+          "stages": 16,
+          "final": 6,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13526,
+        "min_line_bytes": 219,
+        "max_line_bytes": 2660,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 12830,
+            "line": 15,
+            "text": "{\"candidate_operations\":[\"media.status\",\"clipboard.read.text\",\"reminder.list\",\"reminder.delete\",\"media.play.exact\",\"media.play.query\",\"clipboard.write.text\",\"task.list\",\"task.search\",\"task.complete\",\"task.create\",\"task.delete\",\"task.reopen…"
+          },
+          {
+            "offset": 13526,
+            "line": 16,
+            "text": "{\"candidate_operations\":[\"media.status\",\"clipboard.read.text\",\"reminder.list\",\"reminder.delete\",\"media.play.exact\",\"media.play.query\",\"clipboard.write.text\",\"task.list\",\"task.search\",\"task.complete\",\"task.create\",\"task.delete\",\"task.reopen…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_comp03_trace_development_v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4191,
+      "sha256": "c3404050ecc75be93ebca5e4f08e910b665c52ae25caced1fd73d9ce998eef25",
+      "rows": 7,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 7,
+          "phase": 7,
+          "raw_decision": 7,
+          "request_id": 7,
+          "schema": 7,
+          "stages": 7,
+          "final": 2,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3715,
+        "min_line_bytes": 201,
+        "max_line_bytes": 1683,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 332,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3514,
+            "line": 6,
+            "text": "{\"candidate_operations\":[],\"error_type\":\"ValueError\",\"failure_kind\":\"runtime\",\"phase\":\"attempt_failure\",\"raw_decision\":null,\"request_id\":\"trace-comp03\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[]}"
+          },
+          {
+            "offset": 3715,
+            "line": 7,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_corpus_v3.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 239643,
+      "sha256": "ee4040bc6fcb2d05697edf4cfae52acea86185d8cf7cb6b10119c028b63ec5ea",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 239044,
+        "min_line_bytes": 559,
+        "max_line_bytes": 1250,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 605,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 238455,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 239044,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v10.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351606,
+      "sha256": "7b299d140352022a9542e56539bc1a61f19050a2ced7dc8fcc960d13bff84d18",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351605,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v10.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 842586,
+      "sha256": "7f5e5dde6031c50326cf595b31560b1872b92ae68f6c174db3b6dd3affe8615e",
+      "rows": 666,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 666,
+          "phase": 666,
+          "raw_decision": 666,
+          "request_id": 666,
+          "schema": 666,
+          "stages": 666,
+          "final": 338
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 840606,
+        "min_line_bytes": 382,
+        "max_line_bytes": 3396,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 382,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 840001,
+            "line": 665,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 840606,
+            "line": 666,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v6.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 327357,
+      "sha256": "7228a495de9d4efad10c76febb5c2cd3d226e3d1d2b303768f14f722493e8a2f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 327356,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v6.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 841534,
+      "sha256": "0e4b1b4fd77d22eab66aa2004adc06c404d796e6748f4af8d6b15eced1f34ab7",
+      "rows": 703,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 703,
+          "phase": 703,
+          "raw_decision": 703,
+          "request_id": 703,
+          "schema": 703,
+          "stages": 703,
+          "final": 338,
+          "error_type": 37,
+          "failure_kind": 37,
+          "recovery": 16
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 839555,
+        "min_line_bytes": 247,
+        "max_line_bytes": 3284,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 381,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 838951,
+            "line": 702,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 839555,
+            "line": 703,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 342087,
+      "sha256": "8f4ec70a3caf42a53487ae92b71af3de460798438b52eb1cb54022a4065593c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 342086,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v7.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 850078,
+      "sha256": "fe290d71bf16d429ce0725c6e7ddee8ce49e4d0cc53ce9779e4c2152df38a681",
+      "rows": 694,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 694,
+          "phase": 694,
+          "raw_decision": 694,
+          "request_id": 694,
+          "schema": 694,
+          "stages": 694,
+          "final": 338,
+          "error_type": 23,
+          "failure_kind": 23,
+          "recovery": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 848099,
+        "min_line_bytes": 247,
+        "max_line_bytes": 3332,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 381,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 847495,
+            "line": 693,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 848099,
+            "line": 694,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v8.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 349773,
+      "sha256": "920b469a9393fc58bb48dfd8b36b8ee30bce2d611c0cea871cc24e76800fa938",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 349772,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v8.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 844803,
+      "sha256": "0b1f13a10818d8775079427dfb9adcf2eb35bbb9dce04743c160e25809c73eec",
+      "rows": 682,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 682,
+          "phase": 682,
+          "raw_decision": 682,
+          "request_id": 682,
+          "schema": 682,
+          "stages": 682,
+          "final": 338,
+          "error_type": 10,
+          "failure_kind": 10,
+          "recovery": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 842824,
+        "min_line_bytes": 254,
+        "max_line_bytes": 3395,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 381,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 842220,
+            "line": 681,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 842824,
+            "line": 682,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v9.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351520,
+      "sha256": "9b44401be272d2365e1cedea883fda9ff4c447962f87c3698224945d5a1e5466",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351519,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_product_route_development_v9.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 844110,
+      "sha256": "659d193e95b40380c280b86b4a85a368805c0311375e9bc753304032b9af6038",
+      "rows": 669,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 669,
+          "phase": 669,
+          "raw_decision": 669,
+          "request_id": 669,
+          "schema": 669,
+          "stages": 669,
+          "final": 338,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 842131,
+        "min_line_bytes": 254,
+        "max_line_bytes": 3395,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 381,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 841527,
+            "line": 668,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 842131,
+            "line": 669,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_dual_asr_runtime_trace_development_v2.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 15757,
+      "sha256": "a1aaf47f54b2dd004758b3848f564087d625ecfa50bfdcb8dc4671b6b1d3a4d5",
+      "rows": 15,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 15,
+          "phase": 15,
+          "raw_decision": 15,
+          "request_id": 15,
+          "schema": 15,
+          "stages": 15,
+          "final": 6,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13825,
+        "min_line_bytes": 224,
+        "max_line_bytes": 2646,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 333,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 13335,
+            "line": 14,
+            "text": "{\"candidate_operations\":[\"bluetooth.device.list\",\"bluetooth.device.pair\",\"bluetooth.radio.set\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"bluetooth.device.list\"],\"effect_verific…"
+          },
+          {
+            "offset": 13825,
+            "line": 15,
+            "text": "{\"candidate_operations\":[\"bluetooth.device.list\",\"bluetooth.device.pair\",\"bluetooth.radio.set\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_co…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_all_semantics_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 153194,
+      "sha256": "c7df48285e87b21ab578cd15f2824f6d03b9725731ce0bca729cc53973345cae",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 153193,
+        "runtimeSeconds": {
+          "min": 572.4814743000316,
+          "max": 572.4814743000316
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_all_semantics_vad095_trim070_development_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 153588,
+      "sha256": "59707d8dee595ba1df0a449866ee38f04c5884c7edb26eafa857b29b49388d50",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources",
+          "vad"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 153587,
+        "runtimeSeconds": {
+          "min": 579.4470446000341,
+          "max": 579.4470446000341
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_all_transcript_corpus_v1.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 249765,
+      "sha256": "ed559d3f2e81c751b6e18ae3a4c245e803023abdb3af3ea679fedd882b8c3f56",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 249130,
+        "min_line_bytes": 593,
+        "max_line_bytes": 1268,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 639,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 248507,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 249130,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_all_transcript_corpus_vad095_trim070_v2.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 246602,
+      "sha256": "426681fd087d2558e7d44adb0e05a2843f0768289137962167b577ce940bf066",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 245977,
+        "min_line_bytes": 583,
+        "max_line_bytes": 1258,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 629,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 245364,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 245977,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_failures_development_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 77421,
+      "sha256": "6665d94ca9fb602496bb707fc8b5710299dcc2a62915ea0648e26d962e2f4236",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 88
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 77420,
+        "runtimeSeconds": {
+          "min": 178.8749545000028,
+          "max": 178.8749545000028
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_hotword_failures_development_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75957,
+      "sha256": "03377c7445ab7fd7f05ef3dcedde5d810fb8f6eeaa72f10407fa88554203d893",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 88
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75956,
+        "runtimeSeconds": {
+          "min": 171.30423569993582,
+          "max": 171.30423569993582
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_medium_product_route_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 333464,
+      "sha256": "a95e00dd3e48c61862179e0d0d7ca6039166090b1cf5eebe81d47c36def00725",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 333463,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_medium_product_route_development_v1.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 839794,
+      "sha256": "74f8a9149a1260656c8b7a213fdd2a9f667c5cdf40ef7b7495c1d4ffae06def0",
+      "rows": 711,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 711,
+          "phase": 711,
+          "raw_decision": 711,
+          "request_id": 711,
+          "schema": 711,
+          "stages": 711,
+          "final": 338,
+          "error_type": 47,
+          "failure_kind": 47,
+          "recovery": 21
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 838016,
+        "min_line_bytes": 260,
+        "max_line_bytes": 3345,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 394,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 837613,
+            "line": 710,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 838016,
+            "line": 711,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_medium_semantics_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 148828,
+      "sha256": "b067dc72db56e7e465d34dc617debbf4a55fc90bf2f1709e1bf02160f824c1c1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 148827,
+        "runtimeSeconds": {
+          "min": 386.8319979000371,
+          "max": 386.8319979000371
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_medium_transcript_corpus_v1.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 245225,
+      "sha256": "5d2afe93a90d3b1ead2c0db04067461dd110ba079bb9914a4f306272fa45f574",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 244605,
+        "min_line_bytes": 581,
+        "max_line_bytes": 1249,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 627,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 243997,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 244605,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_product_route_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351487,
+      "sha256": "b214014566ce15acd596793db1892c6b2566940075d3877cda6ebefcc1a0cb33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351486,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_product_route_development_v1.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 852313,
+      "sha256": "0397dc394517a02a66fbea512a2e42d10f5bb6974ac3677d3460e0b8ace29fef",
+      "rows": 670,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 670,
+          "phase": 670,
+          "raw_decision": 670,
+          "request_id": 670,
+          "schema": 670,
+          "stages": 670,
+          "final": 338,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 850538,
+        "min_line_bytes": 267,
+        "max_line_bytes": 3405,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 391,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 850138,
+            "line": 669,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 850538,
+            "line": 670,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_faster_whisper_turbo_pilot_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5390,
+      "sha256": "09f139fc6858bea7240fd08358b944896ec63cc67939791d17fcb7ce558ec473",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio",
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "case",
+          "decoding",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "promotion",
+          "results",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "results": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5389,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"blindHoldoutClaimSupported\", \"candidateFrozen\", \"case\", \"decoding\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"measuredAtUtc\", \"productOperatingPoint\", \"promotion\", \"results\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"blindHoldoutClaimSupported\", \"candidateFrozen\", \"case\", \"decoding\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"measuredAtUtc\", \"productOperatingPoint\", \"promotion\", \"results\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    }
+  }
+}

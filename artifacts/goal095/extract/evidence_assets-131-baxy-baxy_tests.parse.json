@@ -1,0 +1,1063 @@
+{
+  "batch_id": "evidence_assets-131-baxy-baxy_tests",
+  "source_id": "baxy",
+  "file_count": 15,
+  "hash_ok": 15,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "tests/data/historical_message_mapping.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16378953,
+      "sha256": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+      "rows": 14836,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "acceptance_scope",
+          "acceptance_scope_bases",
+          "acceptance_scope_basis",
+          "acceptance_scope_source_labels",
+          "acceptance_test_id",
+          "canonical_mission_id",
+          "denied_operations",
+          "historical_operations",
+          "historical_risk",
+          "message_id",
+          "natural_response",
+          "operations",
+          "outcome_type",
+          "plan",
+          "provider_roles",
+          "risk",
+          "status",
+          "verification"
+        ],
+        "key_freq": {
+          "acceptance_scope": 14836,
+          "acceptance_scope_bases": 14836,
+          "acceptance_scope_basis": 14836,
+          "acceptance_scope_source_labels": 14836,
+          "acceptance_test_id": 14836,
+          "canonical_mission_id": 14836,
+          "denied_operations": 14836,
+          "historical_operations": 14836,
+          "historical_risk": 14836,
+          "message_id": 14836,
+          "natural_response": 14836,
+          "operations": 14836,
+          "outcome_type": 14836,
+          "plan": 14836,
+          "provider_roles": 14836,
+          "risk": 14836,
+          "status": 14836,
+          "verification": 14836
+        }
+      },
+      "distribution": {
+        "status": {
+          "status=specified_pending_implementation": 12036,
+          "status=trace_only_not_acceptance_commitment": 2800
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16377762,
+        "min_line_bytes": 1015,
+        "max_line_bytes": 3195,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_basis\": \"not_in_audited_non_target_oracle\", \"acceptance_scope_source_labels\": [], \"acceptance_test_id\": \"hist_dcf22d241df…"
+          },
+          {
+            "offset": 1050,
+            "line": 2,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_basis\": \"not_in_audited_non_target_oracle\", \"acceptance_scope_source_labels\": [], \"acceptance_test_id\": \"hist_dcf22d241df…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16376571,
+            "line": 14835,
+            "text": "{\"acceptance_scope\": \"trace_only_not_acceptance_commitment\", \"acceptance_scope_bases\": [\"train_v3_non_target_language_label\"], \"acceptance_scope_basis\": \"train_v3_non_target_language_label\", \"acceptance_scope_source_labels\": [\"pt\"], \"accep…"
+          },
+          {
+            "offset": 16377762,
+            "line": 14836,
+            "text": "{\"acceptance_scope\": \"trace_only_not_acceptance_commitment\", \"acceptance_scope_bases\": [\"train_v3_non_target_language_label\"], \"acceptance_scope_basis\": \"train_v3_non_target_language_label\", \"acceptance_scope_source_labels\": [\"pt\"], \"accep…"
+          }
+        ]
+      }
+    },
+    "tests/data/historical_messages.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 70707425,
+      "sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+      "rows": 14836,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "acceptance_scope",
+          "acceptance_scope_bases",
+          "acceptance_scope_basis",
+          "acceptance_scope_source_labels",
+          "canonical_mission_id",
+          "canonical_signature",
+          "class",
+          "cutoff_state_sha256",
+          "data_or_preferences",
+          "dedup_status",
+          "denied_operations",
+          "duplicate_of",
+          "expected_state",
+          "fallback",
+          "intent",
+          "language",
+          "message_id",
+          "natural_response",
+          "operations",
+          "origin",
+          "paraphrase",
+          "possible_chain",
+          "redacted",
+          "requirement_tags",
+          "risk",
+          "source",
+          "source_hints",
+          "source_location",
+          "source_sha256",
+          "success_evidence",
+          "text_literal",
+          "text_sha256",
+          "timestamp",
+          "provenance_occurrence_count",
+          "provenance_occurrences",
+          "source_hints_variants"
+        ],
+        "key_freq": {
+          "acceptance_scope": 14836,
+          "acceptance_scope_bases": 14836,
+          "acceptance_scope_basis": 14836,
+          "acceptance_scope_source_labels": 14836,
+          "canonical_mission_id": 14836,
+          "canonical_signature": 14836,
+          "class": 14836,
+          "cutoff_state_sha256": 14836,
+          "data_or_preferences": 14836,
+          "dedup_status": 14836,
+          "denied_operations": 14836,
+          "duplicate_of": 14836,
+          "expected_state": 14836,
+          "fallback": 14836,
+          "intent": 14836,
+          "language": 14836,
+          "message_id": 14836,
+          "natural_response": 14836,
+          "operations": 14836,
+          "origin": 14836,
+          "paraphrase": 14836,
+          "possible_chain": 14836,
+          "redacted": 14836,
+          "requirement_tags": 14836,
+          "risk": 14836,
+          "source": 14836,
+          "source_hints": 14836,
+          "source_location": 14836,
+          "source_sha256": 14836,
+          "success_evidence": 14836,
+          "text_literal": 14836,
+          "text_sha256": 14836,
+          "timestamp": 14836,
+          "provenance_occurrence_count": 10935,
+          "provenance_occurrences": 10935,
+          "source_hints_variants": 10935
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70705612,
+        "min_line_bytes": 1531,
+        "max_line_bytes": 331019,
+        "numeric": {
+          "provenance_occurrence_count": {
+            "min": 1.0,
+            "max": 1008.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_basis\": \"not_in_audited_non_target_oracle\", \"acceptance_scope_source_labels\": [], \"canonical_mission_id\": \"mission_user_m…"
+          },
+          {
+            "offset": 1556,
+            "line": 2,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_basis\": \"not_in_audited_non_target_oracle\", \"acceptance_scope_source_labels\": [], \"canonical_mission_id\": \"mission_user_m…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 70704030,
+            "line": 14835,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_basis\": \"not_in_audited_non_target_oracle\", \"acceptance_scope_source_labels\": [], \"canonical_mission_id\": \"mission_user_m…"
+          },
+          {
+            "offset": 70705612,
+            "line": 14836,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_basis\": \"not_in_audited_non_target_oracle\", \"acceptance_scope_source_labels\": [], \"canonical_mission_id\": \"mission_no_act…"
+          }
+        ]
+      }
+    },
+    "tests/data/historical_missions.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 5165445,
+      "sha256": "96e4f50566b657ec2f0dea89ddf6655dce2dc2ac63f17d0593ae05e9cc0c86d1",
+      "rows": 2084,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "acceptance_scope",
+          "acceptance_scope_bases",
+          "acceptance_scope_source_labels",
+          "acceptance_test_id",
+          "canonical_mission_id",
+          "class",
+          "denied_operations",
+          "examples",
+          "expected_state",
+          "fallback",
+          "historical_operations",
+          "implementation_status",
+          "languages",
+          "message_count",
+          "message_ids",
+          "natural_response",
+          "operations",
+          "outcome_type",
+          "plan",
+          "provider_roles",
+          "risk",
+          "signature",
+          "source_count",
+          "verification"
+        ],
+        "key_freq": {
+          "acceptance_scope": 2084,
+          "acceptance_scope_bases": 2084,
+          "acceptance_scope_source_labels": 2084,
+          "acceptance_test_id": 2084,
+          "canonical_mission_id": 2084,
+          "class": 2084,
+          "denied_operations": 2084,
+          "examples": 2084,
+          "expected_state": 2084,
+          "fallback": 2084,
+          "historical_operations": 2084,
+          "implementation_status": 2084,
+          "languages": 2084,
+          "message_count": 2084,
+          "message_ids": 2084,
+          "natural_response": 2084,
+          "operations": 2084,
+          "outcome_type": 2084,
+          "plan": 2084,
+          "provider_roles": 2084,
+          "risk": 2084,
+          "signature": 2084,
+          "source_count": 2084,
+          "verification": 2084
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5163568,
+        "min_line_bytes": 1151,
+        "max_line_bytes": 211256,
+        "numeric": {
+          "message_count": {
+            "min": 1.0,
+            "max": 3241.0
+          },
+          "source_count": {
+            "min": 1.0,
+            "max": 520.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_source_labels\": [\"en\", \"es\", \"it\", \"otro\"], \"acceptance_test_id\": \"hist_dcf22d241df3da\", \"canonical_mission_id\": \"mission…"
+          },
+          {
+            "offset": 74764,
+            "line": 2,
+            "text": "{\"acceptance_scope\": \"trace_only_not_acceptance_commitment\", \"acceptance_scope_bases\": [\"audited_exact_non_target_exception\", \"audited_router_eval_non_target_block\", \"cross_source_exact_non_target_literal\", \"cross_source_normalized_non_tar…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5159268,
+            "line": 2083,
+            "text": "{\"acceptance_scope\": \"product_1_0\", \"acceptance_scope_bases\": [\"not_in_audited_non_target_oracle\"], \"acceptance_scope_source_labels\": [\"en\", \"es\"], \"acceptance_test_id\": \"hist_d05486872a26f5\", \"canonical_mission_id\": \"mission_user_mission_…"
+          },
+          {
+            "offset": 5163568,
+            "line": 2084,
+            "text": "{\"acceptance_scope\": \"trace_only_not_acceptance_commitment\", \"acceptance_scope_bases\": [\"train_v3_non_target_language_label\"], \"acceptance_scope_source_labels\": [\"pt\"], \"acceptance_test_id\": \"hist_c0f2c5ac77673f\", \"canonical_mission_id\": \"…"
+          }
+        ]
+      }
+    },
+    "tests/data/memory_corpus_oracle.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 25336,
+      "sha256": "9f4107221115bcf36b2bbb3985e9cc856c4236554b380959dbe3ec7d78a63c99",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "behavioral_contracts",
+          "canonical_cases",
+          "corpus",
+          "digest_contract",
+          "groups",
+          "hard_negative_cases",
+          "normalization",
+          "oracle_id",
+          "schema_version"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "oracle_id",
+          "schema_version"
+        ],
+        "list_lengths": {
+          "canonical_cases": 44,
+          "hard_negative_cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25335,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"behavioral_contracts\", \"canonical_cases\", \"corpus\", \"digest_contract\", \"groups\", \"hard_negative_cases\", \"normalization\", \"oracle_id\", \"schema_version\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"behavioral_contracts\", \"canonical_cases\", \"corpus\", \"digest_contract\", \"groups\", \"hard_negative_cases\", \"normalization\", \"oracle_id\", \"schema_version\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "tests/data/mtop_test_seal.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1597,
+      "sha256": "4a2c239f9097e67958d4a2a06cee051c1b666e65b8550ade7790af3e084bef90",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "members",
+          "protocol",
+          "record_ids_aggregate_sha256",
+          "rows",
+          "schema",
+          "source"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "record_ids_aggregate_sha256",
+          "rows",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1596,
+        "rows": {
+          "min": 7384,
+          "max": 7384
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"members\", \"protocol\", \"record_ids_aggregate_sha256\", \"rows\", \"schema\", \"source\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"members\", \"protocol\", \"record_ids_aggregate_sha256\", \"rows\", \"schema\", \"source\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_final_seal.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 140843,
+      "sha256": "5807f731af5b2d36a670f31c4a876d22b9b8ff5027ef7ab9b53d7d18d5804754",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "contains_text_or_labels",
+          "exploratory_complement",
+          "final",
+          "holdout",
+          "partition_source_ids_sha256",
+          "rule",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "contains_text_or_labels",
+          "partition_source_ids_sha256",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 140842
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contains_text_or_labels\", \"exploratory_complement\", \"final\", \"holdout\", \"partition_source_ids_sha256\", \"rule\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contains_text_or_labels\", \"exploratory_complement\", \"final\", \"holdout\", \"partition_source_ids_sha256\", \"rule\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_final_seal.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 146129,
+      "sha256": "58a693e684c1ca643c940620871ce07728e9548c80dc4193ff40895f6546d572",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audit",
+          "blind_reserve",
+          "contains_text_or_labels",
+          "contamination",
+          "eligible_pool",
+          "evaluation",
+          "final",
+          "generator",
+          "holdout",
+          "predecessor",
+          "rule",
+          "rule_declaration_sha256",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "contains_text_or_labels",
+          "generator",
+          "rule_declaration_sha256",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 146128
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audit\", \"blind_reserve\", \"contains_text_or_labels\", \"contamination\", \"eligible_pool\", \"evaluation\", \"final\", \"generator\", \"holdout\", \"predecessor\", \"rule\", \"rule_declaration_sha256\", \"schema\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audit\", \"blind_reserve\", \"contains_text_or_labels\", \"contamination\", \"eligible_pool\", \"evaluation\", \"final\", \"generator\", \"holdout\", \"predecessor\", \"rule\", \"rule_declaration_sha256\", \"schema\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_final_seal.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 47942,
+      "sha256": "ba5c9c488286295607aaaaafab9e99dc9b192fa7e8e9ccb71a05c6eec0e5788e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audit",
+          "blind_reserve",
+          "contains_text_or_labels",
+          "eligible_pool",
+          "evaluation",
+          "failed_attempt",
+          "final",
+          "generator",
+          "holdout",
+          "predecessor",
+          "rule",
+          "rule_declaration_sha256",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "contains_text_or_labels",
+          "generator",
+          "rule_declaration_sha256",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 47941
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audit\", \"blind_reserve\", \"contains_text_or_labels\", \"eligible_pool\", \"evaluation\", \"failed_attempt\", \"final\", \"generator\", \"holdout\", \"predecessor\", \"rule\", \"rule_declaration_sha256\", \"schema\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audit\", \"blind_reserve\", \"contains_text_or_labels\", \"eligible_pool\", \"evaluation\", \"failed_attempt\", \"final\", \"generator\", \"holdout\", \"predecessor\", \"rule\", \"rule_declaration_sha256\", \"schema\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_final_seal.v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 49940,
+      "sha256": "b63c72d80d8261c964e79204f009444c692a933b6c8712f13a1456682f691d70",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audit",
+          "blind_reserve",
+          "contains_text_or_labels",
+          "eligible_pool",
+          "evaluation",
+          "failed_attempt",
+          "final",
+          "generator",
+          "holdout",
+          "policy_calibration",
+          "predecessor",
+          "rule",
+          "rule_declaration_sha256",
+          "schema"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "contains_text_or_labels",
+          "generator",
+          "rule_declaration_sha256",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 49939
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audit\", \"blind_reserve\", \"contains_text_or_labels\", \"eligible_pool\", \"evaluation\", \"failed_attempt\", \"final\", \"generator\", \"holdout\", \"policy_calibration\", \"predecessor\", \"rule\", \"rule_declaration_sha256\", \"schema\"], \"n_keys\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audit\", \"blind_reserve\", \"contains_text_or_labels\", \"eligible_pool\", \"evaluation\", \"failed_attempt\", \"final\", \"generator\", \"holdout\", \"policy_calibration\", \"predecessor\", \"rule\", \"rule_declaration_sha256\", \"schema\"], \"n_keys\": 1…"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_public_holdout.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3159727,
+      "sha256": "e1ee1746a3cb110799997367490def6199e09fa3bc9f900b2d2dd99dc9c174be",
+      "rows": 9172,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "text",
+          "mode",
+          "families",
+          "mission_id",
+          "source_id",
+          "split",
+          "provenance"
+        ],
+        "key_freq": {
+          "schema": 9172,
+          "text": 9172,
+          "mode": 9172,
+          "families": 9172,
+          "mission_id": 9172,
+          "source_id": 9172,
+          "split": 9172,
+          "provenance": 9172
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3159265,
+        "min_line_bytes": 268,
+        "max_line_bytes": 643,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"wake me up at five am this week\",\"mode\":\"action\",\"families\":[\"notification\"],\"mission_id\":\"massive-v1.1:0\",\"source_id\":\"massive-v1.1:en-US:0\",\"split\":\"test\",\"provenance\":{\"dataset\":\"MASSIVE…"
+          },
+          {
+            "offset": 298,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"what's the week's forecast\",\"mode\":\"action\",\"families\":[\"web\"],\"mission_id\":\"massive-v1.1:100\",\"source_id\":\"massive-v1.1:en-US:100\",\"split\":\"test\",\"provenance\":{\"dataset\":\"MASSIVE v1.1\",\"lic…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3158815,
+            "line": 9171,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Crear una nota en Outlook bueno no mejor en la app de Notas.\",\"mode\":\"action\",\"families\":[\"note\"],\"mission_id\":\"presto-v1:es-ES:fdd8ec5eec26a751250829e71266c689e762c48c8c302a4b7318a819feb1d8…"
+          },
+          {
+            "offset": 3159265,
+            "line": 9172,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"¿Puedes encontrar aparcamientos cerca de la Plaza de Toros en Córdoba?\",\"mode\":\"action\",\"families\":[\"web\"],\"mission_id\":\"presto-v1:es-ES:fef884e53835dd31f18501ea5f23a42eb5618023a06d5326fb340…"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_public_manifest.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9425,
+      "sha256": "1e07d87a50fa7af6fa45246a0151a99042600aaf94690fecb9ce3780c9c25d26",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "constraints",
+          "historical",
+          "massive",
+          "outputs",
+          "presto",
+          "public_after_cross_split_dedup",
+          "runtime_families",
+          "runtime_modes",
+          "runtime_schema",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "public_after_cross_split_dedup",
+          "runtime_schema",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9424,
+        "public_after_cross_split_dedup": {
+          "min": 26998,
+          "max": 26998
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"constraints\", \"historical\", \"massive\", \"outputs\", \"presto\", \"public_after_cross_split_dedup\", \"runtime_families\", \"runtime_modes\", \"runtime_schema\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"constraints\", \"historical\", \"massive\", \"outputs\", \"presto\", \"public_after_cross_split_dedup\", \"runtime_families\", \"runtime_modes\", \"runtime_schema\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "tests/data/turn_evidence_runtime.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 8421417,
+      "sha256": "8abff5805a93615c6f5a655b9af5559063e34226cfc0db58c5547d97a70ee680",
+      "rows": 25156,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "text",
+          "mode",
+          "families",
+          "mission_id",
+          "source_id",
+          "split",
+          "provenance"
+        ],
+        "key_freq": {
+          "schema": 25156,
+          "text": 25156,
+          "mode": 25156,
+          "families": 25156,
+          "mission_id": 25156,
+          "source_id": 25156,
+          "split": 25156,
+          "provenance": 25156
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8420979,
+        "min_line_bytes": 270,
+        "max_line_bytes": 1543,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"wake me up at nine am on friday\",\"mode\":\"action\",\"families\":[\"notification\"],\"mission_id\":\"massive-v1.1:1\",\"source_id\":\"massive-v1.1:en-US:1\",\"split\":\"train\",\"provenance\":{\"dataset\":\"MASSIVE…"
+          },
+          {
+            "offset": 299,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"despiértame a las nueve de la mañana el viernes\",\"mode\":\"action\",\"families\":[\"notification\"],\"mission_id\":\"massive-v1.1:1\",\"source_id\":\"massive-v1.1:es-ES:1\",\"split\":\"train\",\"provenance\":{\"d…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8420534,
+            "line": 25155,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Enumera mis aplicaciones descargadas, si, sólo las descargadas.\",\"mode\":\"action\",\"families\":[\"app\"],\"mission_id\":\"presto-v1:es-ES:ffb0f55413f6a0cd82271045edeb60aabace19c8a9f6d7eff44edfd1cf44…"
+          },
+          {
+            "offset": 8420979,
+            "line": 25156,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Necesitamos dos docenas de huevos de huevos para casa.\",\"mode\":\"action\",\"families\":[\"web\"],\"mission_id\":\"presto-v1:es-ES:ffd5344df03918f3d9cfa90ebb75acb87bc3626878f9e241b6af7a532188a006\",\"so…"
+          }
+        ]
+      }
+    },
+    "tests/fixtures/turn_policy_e5_development/mtop_development.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 11015,
+      "sha256": "ce2036ad702f5347976fee310b24b6f93c13080235944c25f6616114792edcef",
+      "rows": 20,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "text",
+          "locale",
+          "split",
+          "mission_id",
+          "source_id",
+          "semantic",
+          "projection"
+        ],
+        "key_freq": {
+          "schema": 20,
+          "text": 20,
+          "locale": 20,
+          "split": 20,
+          "mission_id": 20,
+          "source_id": 20,
+          "semantic": 20,
+          "projection": 20
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10494,
+        "min_line_bytes": 500,
+        "max_line_bytes": 718,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.mtop-development-row.v1\",\"text\":\"Abre la calculadora\",\"locale\":\"es\",\"split\":\"train\",\"mission_id\":\"synthetic-mtop-train-open\",\"source_id\":\"synthetic-mtop-train-open-es\",\"semantic\":{\"domain\":\"app\",\"intent\":\"IN:OPEN_APP\",\"slot…"
+          },
+          {
+            "offset": 519,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.mtop-development-row.v1\",\"text\":\"Open the calculator\",\"locale\":\"en\",\"split\":\"train\",\"mission_id\":\"synthetic-mtop-train-open\",\"source_id\":\"synthetic-mtop-train-open-en\",\"semantic\":{\"domain\":\"app\",\"intent\":\"IN:OPEN_APP\",\"slot…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9961,
+            "line": 19,
+            "text": "{\"schema\":\"baxy.mtop-development-row.v1\",\"text\":\"Haz que participemos en un videojuego\",\"locale\":\"es\",\"split\":\"validation\",\"mission_id\":\"synthetic-mtop-validation-ood\",\"source_id\":\"synthetic-mtop-validation-ood-es\",\"semantic\":{\"domain\":\"ga…"
+          },
+          {
+            "offset": 10494,
+            "line": 20,
+            "text": "{\"schema\":\"baxy.mtop-development-row.v1\",\"text\":\"Have us join a video game\",\"locale\":\"en\",\"split\":\"validation\",\"mission_id\":\"synthetic-mtop-validation-ood\",\"source_id\":\"synthetic-mtop-validation-ood-en\",\"semantic\":{\"domain\":\"games\",\"intent…"
+          }
+        ]
+      }
+    },
+    "tests/fixtures/turn_policy_e5_development/runtime_train.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1326,
+      "sha256": "358272d9f6a81ddff1fc478061483e7fefb21b2397cefb4e52f83ffb77cad8d0",
+      "rows": 5,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "text",
+          "mode",
+          "families",
+          "mission_id",
+          "source_id",
+          "split",
+          "provenance"
+        ],
+        "key_freq": {
+          "schema": 5,
+          "text": 5,
+          "mode": 5,
+          "families": 5,
+          "mission_id": 5,
+          "source_id": 5,
+          "split": 5,
+          "provenance": 5
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1051,
+        "min_line_bytes": 257,
+        "max_line_bytes": 275,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"¿Qué hora es?\",\"mode\":\"action\",\"families\":[\"system\"],\"mission_id\":\"synthetic-runtime-train-time\",\"source_id\":\"synthetic-runtime-train-time-es\",\"split\":\"train\",\"provenance\":{\"locale\":\"es\",\"sy…"
+          },
+          {
+            "offset": 257,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"What time is it?\",\"mode\":\"action\",\"families\":[\"system\"],\"mission_id\":\"synthetic-runtime-train-time\",\"source_id\":\"synthetic-runtime-train-time-en\",\"split\":\"train\",\"provenance\":{\"locale\":\"en\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 784,
+            "line": 4,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Hello, how are you?\",\"mode\":\"conversation\",\"families\":[],\"mission_id\":\"synthetic-runtime-train-greeting\",\"source_id\":\"synthetic-runtime-train-greeting-en\",\"split\":\"train\",\"provenance\":{\"loca…"
+          },
+          {
+            "offset": 1051,
+            "line": 5,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Recuérdame eso después\",\"mode\":\"clarify\",\"families\":[\"reminder\"],\"mission_id\":\"synthetic-runtime-train-clarify\",\"source_id\":\"synthetic-runtime-train-clarify-es\",\"split\":\"train\",\"provenance\":…"
+          }
+        ]
+      }
+    },
+    "tests/fixtures/turn_policy_e5_development/runtime_validation.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 2291,
+      "sha256": "fef086a262e752caad8e9065cc51430501569f7aa6493289100e9264b6f8fc59",
+      "rows": 8,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "schema",
+          "text",
+          "mode",
+          "families",
+          "mission_id",
+          "source_id",
+          "split",
+          "provenance"
+        ],
+        "key_freq": {
+          "schema": 8,
+          "text": 8,
+          "mode": 8,
+          "families": 8,
+          "mission_id": 8,
+          "source_id": 8,
+          "split": 8,
+          "provenance": 8
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2005,
+        "min_line_bytes": 278,
+        "max_line_bytes": 292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Muéstrame el estado del equipo\",\"mode\":\"action\",\"families\":[\"system\"],\"mission_id\":\"synthetic-runtime-validation-status\",\"source_id\":\"synthetic-runtime-validation-status-es\",\"split\":\"validat…"
+          },
+          {
+            "offset": 292,
+            "line": 2,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Show me this computer's status\",\"mode\":\"action\",\"families\":[\"system\"],\"mission_id\":\"synthetic-runtime-validation-status\",\"source_id\":\"synthetic-runtime-validation-status-en\",\"split\":\"validat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1722,
+            "line": 7,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Gracias por tu ayuda\",\"mode\":\"conversation\",\"families\":[],\"mission_id\":\"synthetic-runtime-validation-chat-two\",\"source_id\":\"synthetic-runtime-validation-chat-two-es\",\"split\":\"validation\",\"pr…"
+          },
+          {
+            "offset": 2005,
+            "line": 8,
+            "text": "{\"schema\":\"baxy.turn-evidence-record.v1\",\"text\":\"Thank you for your help\",\"mode\":\"conversation\",\"families\":[],\"mission_id\":\"synthetic-runtime-validation-chat-two\",\"source_id\":\"synthetic-runtime-validation-chat-two-en\",\"split\":\"validation\",…"
+          }
+        ]
+      }
+    }
+  }
+}

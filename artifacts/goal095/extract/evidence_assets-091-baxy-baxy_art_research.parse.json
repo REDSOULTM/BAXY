@@ -1,0 +1,5641 @@
+{
+  "batch_id": "evidence_assets-091-baxy-baxy_art_research",
+  "source_id": "baxy",
+  "file_count": 85,
+  "hash_ok": 85,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/research/audio_arena_assistant_bench_stt_preregistration_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 24564,
+      "sha256": "9d444afcb95c041b270b5c095aba4c0186975c77e8fbf5af42507eb51c56f12f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationContract",
+          "evaluationStatus",
+          "generator",
+          "modelAudioDecoded",
+          "modelContaminationAudit",
+          "preregisteredAtUtc",
+          "referenceTranscriptsReadForReservedTurns",
+          "role",
+          "schema",
+          "selection",
+          "source",
+          "speakerAndEnvironmentMetadata",
+          "structuralAudit",
+          "wakeProgramTree"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "modelAudioDecoded",
+          "preregisteredAtUtc",
+          "referenceTranscriptsReadForReservedTurns",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24563,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationContract\", \"evaluationStatus\", \"generator\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"preregisteredAtUtc\", \"referenceTranscriptsReadForReservedTurns\", \"role\", \"schema\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationContract\", \"evaluationStatus\", \"generator\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"preregisteredAtUtc\", \"referenceTranscriptsReadForReservedTurns\", \"role\", \"schema\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/bangor_miami_stt_preregistration_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 49047,
+      "sha256": "00692fd26ac1e1e8966f5f7b93e5eb4838189c3ce376cae895b156d4b7906677",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "canonicalSource",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationContract",
+          "evaluationStatus",
+          "generator",
+          "modelAudioDecoded",
+          "modelContaminationAudit",
+          "preregisteredAtUtc",
+          "referenceTextUsedForSelection",
+          "retrievalMirror",
+          "role",
+          "schema",
+          "selection",
+          "wakeProgramTree"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "modelAudioDecoded",
+          "preregisteredAtUtc",
+          "referenceTextUsedForSelection",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 49046,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"canonicalSource\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationContract\", \"evaluationStatus\", \"generator\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"preregisteredAtUtc\", \"referenceTextUsedForSelection\", \"retriev…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"canonicalSource\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationContract\", \"evaluationStatus\", \"generator\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"preregisteredAtUtc\", \"referenceTextUsedForSelection\", \"retriev…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/bangor_miami_stt_source_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3087,
+      "sha256": "4e281a990134a620e7fa5a351bcc23a9e1c9ccd7c67043fd445350aae393cb59",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acquiredAtUtc",
+          "canonicalSource",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "files",
+          "localRoot",
+          "measurementDiscipline",
+          "modelAudioDecoded",
+          "observedLocalCoverage",
+          "retrievalMirror",
+          "role",
+          "schema",
+          "wakeProgramTree"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "acquiredAtUtc",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "localRoot",
+          "modelAudioDecoded",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3086,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acquiredAtUtc\", \"canonicalSource\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationStatus\", \"files\", \"localRoot\", \"measurementDiscipline\", \"modelAudioDecoded\", \"observedLocalCoverage\", \"retrievalMirror\", \"role\", \"schema\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acquiredAtUtc\", \"canonicalSource\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationStatus\", \"files\", \"localRoot\", \"measurementDiscipline\", \"modelAudioDecoded\", \"observedLocalCoverage\", \"retrievalMirror\", \"role\", \"schema\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_canonical_prefix_contextual_development_v8.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2807,
+      "sha256": "c0c82ef02f1042df1eaed2553ba404788859b4be234c52ff0624bebca4a84554",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "lexicalGuard",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2806,
+        "runtimeSeconds": {
+          "min": 25.066849800059572,
+          "max": 25.066849800059572
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"lexicalGuard\", \"measuredAtUtc\", \"policy\", \"policySum…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"lexicalGuard\", \"measuredAtUtc\", \"policy\", \"policySum…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_consensus_development_v5.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2491,
+      "sha256": "054de5c44babde9dc8c67c290c9c989e88fe5dcd26f30e8d5ff6c0944015884d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2490,
+        "runtimeSeconds": {
+          "min": 54.83984369999962,
+          "max": 54.83984369999962
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_false_diagnostic_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 929,
+      "sha256": "475ff781dd4f2c542ac87fb242205266c0534e475603c0e5965d30d0daa858f4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioRetained",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "filenamesOrCorpusIdentifiersRetained",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "normalizedTranscriptsRetained",
+          "productOperatingPoint",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioRetained",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "filenamesOrCorpusIdentifiersRetained",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "normalizedTranscriptsRetained",
+          "productOperatingPoint",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 928,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioRetained\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"filenamesOrCorpusIdentifiersRetained\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"normalizedTranscriptsRetained\", \"productOperatingP…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioRetained\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"filenamesOrCorpusIdentifiersRetained\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"normalizedTranscriptsRetained\", \"productOperatingP…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_false_diagnostic_inner_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5891,
+      "sha256": "9658fd337582654e4e265385aff5f5046554760501849092f966e1b658125d55",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5890,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hotword_strength_development_v6.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1557,
+      "sha256": "da152c95bfd1e9cf7652495123ca2638a1bba30a1760b29ad953a0505302291f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "completeRecallScores",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "lowestCompleteRecallScore",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "schema",
+          "scope",
+          "scoreSummaries",
+          "selectionRule",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "lowestCompleteRecallScore",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "schema",
+          "scope",
+          "selectionRule"
+        ],
+        "list_lengths": {
+          "completeRecallScores": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1556,
+        "lowestCompleteRecallScore": {
+          "min": 4.0,
+          "max": 4.0
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"completeRecallScores\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"lowestCompleteRecallScore\", \"measuredAtUtc\", \"productOperat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"completeRecallScores\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"lowestCompleteRecallScore\", \"measuredAtUtc\", \"productOperat…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_human_transcript_diagnostic_inner_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2489,
+      "sha256": "d0fa78d777adcfef11ebbd0f8ca164e7ecb86abac5e413b55c7b3a8a259b73e7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2488,
+        "runtimeSeconds": {
+          "min": 24.209011300001293,
+          "max": 24.209011300001293
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_human_transcript_diagnostic_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4092,
+      "sha256": "3f1fef43b3c92116ed88512eddc4ea20b3f6cd11b43c5c77d1d3185d57cc94a5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "decoded",
+          "developmentOnly",
+          "effectsExecuted",
+          "filenamesRetained",
+          "measuredAtUtc",
+          "normalizedTranscriptsRetained",
+          "productOperatingPoint",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "filenamesRetained",
+          "measuredAtUtc",
+          "normalizedTranscriptsRetained",
+          "productOperatingPoint",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4091,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateFrozen\", \"decoded\", \"developmentOnly\", \"effectsExecuted\", \"filenamesRetained\", \"measuredAtUtc\", \"normalizedTranscriptsRetained\", \"productOperatingPoint\", \"schema\", \"scope\", \"sources\"], \"n_keys…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateFrozen\", \"decoded\", \"developmentOnly\", \"effectsExecuted\", \"filenamesRetained\", \"measuredAtUtc\", \"normalizedTranscriptsRetained\", \"productOperatingPoint\", \"schema\", \"scope\", \"sources\"], \"n_keys…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hyperspotter_fusion_development_v4.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2788,
+      "sha256": "2cdde35d554f088e6becbf76ea264deb4e7d66ca2453df4e1dd1a6704d32382c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "contextualDecodeCount",
+          "effectsExecuted",
+          "expandedContextualLexical",
+          "expandedEstablishedCtc",
+          "expandedFixedFusion",
+          "expandedGuardedPolicy",
+          "expandedHumanDevelopmentAudioAccessed",
+          "expandedSentinel",
+          "measuredAtUtc",
+          "negativeMaximumFixedFusionMargin",
+          "policy",
+          "positiveMinimumFixedFusionMargin",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "contextualDecodeCount",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "negativeMaximumFixedFusionMargin",
+          "positiveMinimumFixedFusionMargin",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2787,
+        "contextualDecodeCount": {
+          "min": 4,
+          "max": 4
+        },
+        "positiveMinimumFixedFusionMargin": {
+          "min": 1.460781527585783,
+          "max": 1.460781527585783
+        },
+        "negativeMaximumFixedFusionMargin": {
+          "min": -3.3056436970700154,
+          "max": -3.3056436970700154
+        },
+        "runtimeSeconds": {
+          "min": 44.9675256999908,
+          "max": 44.9675256999908
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"contextualDecodeCount\", \"effectsExecuted\", \"expandedContextualLexical\", \"expandedEstablishedCtc\", \"expandedFixedFusion\", \"expandedGuardedPolicy…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"contextualDecodeCount\", \"effectsExecuted\", \"expandedContextualLexical\", \"expandedEstablishedCtc\", \"expandedFixedFusion\", \"expandedGuardedPolicy…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hyperspotter_fusion_negative_regression_v2.v1.json.partial.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 123023,
+      "sha256": "fdfebb6b4e80867a34df160e3a8602724652a45be632d7a0091845e94c4d8281",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "completedRecords",
+          "elapsedSeconds",
+          "identities",
+          "nearViews",
+          "recordMaximumMargins",
+          "schema",
+          "timings",
+          "viewCount"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "completedRecords",
+          "elapsedSeconds",
+          "schema",
+          "viewCount"
+        ],
+        "list_lengths": {
+          "recordMaximumMargins": 1088,
+          "nearViews": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 123022,
+        "completedRecords": {
+          "min": 1088,
+          "max": 1088
+        },
+        "viewCount": {
+          "min": 2176,
+          "max": 2176
+        },
+        "elapsedSeconds": {
+          "min": 1371.0481442000018,
+          "max": 1371.0481442000018
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"completedRecords\", \"elapsedSeconds\", \"identities\", \"nearViews\", \"recordMaximumMargins\", \"schema\", \"timings\", \"viewCount\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"completedRecords\", \"elapsedSeconds\", \"identities\", \"nearViews\", \"recordMaximumMargins\", \"schema\", \"timings\", \"viewCount\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hyperspotter_fusion_negative_regression_v2.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4276,
+      "sha256": "eaf6d578e8ce6e1ec8a1c3a039da4e808ca99fc2bade099922cb5223fff5a741",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4275,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hyperspotter_fusion_negative_regression_v2.v2.resume.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 572,
+      "sha256": "d1a10e32c3dd7bf41efc71af0d11d79f56c03379b9ea9ea63745aaf04173e7af",
+      "rows": 13,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 518,
+        "min_line_bytes": 34,
+        "max_line_bytes": 54
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 464,
+            "line": 12,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE|896/28139|views=1792|near=1"
+          },
+          {
+            "offset": 518,
+            "line": 13,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE|960/28139|views=1920|near=1"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hyperspotter_fusion_negative_regression_v2.v2.resume2.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 26492,
+      "sha256": "a37d5de068362cbcad7e1030cc5433ede3aba7961f04bc9590e2f33897a39862",
+      "rows": 471,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25951,
+        "min_line_bytes": 34,
+        "max_line_bytes": 541
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25915,
+            "line": 470,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE_CPU|36/36"
+          },
+          {
+            "offset": 25951,
+            "line": 471,
+            "text": "{\"metrics\": {\"contextualLexicalEvidenceAmongRawFalse\": 1, \"corpusUtterances\": 28539, \"cpuRescoredViews\": 36, \"descriptiveExposureHours\": 100.59087964444444, \"guardedDescriptivePointFalseActivationsPerHour\": 0.009941259123438129, \"guardedNe…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_hyperspotter_fusion_negative_regression_v2.v2.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 942,
+      "sha256": "19a63eb8d4af80e3c75aefc1a63f202236ee7bf840b6ade361a0d9c3ee7f388a",
+      "rows": 20,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 888,
+        "min_line_bytes": 34,
+        "max_line_bytes": 54
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 834,
+            "line": 19,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE|640/28139|views=1280|near=1"
+          },
+          {
+            "offset": 888,
+            "line": 20,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE|704/28139|views=1408|near=1"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_strength_negative_regression_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4673,
+      "sha256": "e767016b307419235891e6423c34ef3767f3a63eba566db419efe3c7eacfa294",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4672,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_strength_negative_regression_v3.v1.json.inner-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4281,
+      "sha256": "3a41baa415c71f8a992222201bc47d9dcac6b59210ee187dc0d5f6b2726af330",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4280,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_strength_negative_regression_v3.v1.run2.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1334,
+      "sha256": "4c958a489a5c65ea141f296daa3718ace941ab4be727ded30135c72eaefc78db",
+      "rows": 15,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 947,
+        "min_line_bytes": 11,
+        "max_line_bytes": 387
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "#< CLIXML"
+          },
+          {
+            "offset": 11,
+            "line": 2,
+            "text": "Traceback (most recent call last):"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 890,
+            "line": 14,
+            "text": "RuntimeError: baxy_contextual_negative_cuda_unavailable"
+          },
+          {
+            "offset": 947,
+            "line": 15,
+            "text": "<Objs Version=\"1.1.0.1\" xmlns=\"http://schemas.microsoft.com/powershell/2004/04\"><Obj S=\"progress\" RefId=\"0\"><TN RefId=\"0\"><T>System.Management.Automation.PSCustomObject</T><T>System.Object</T></TN><MS><I64 N=\"SourceId\">1</I64><PR N=\"Record…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_strength_negative_regression_v3.v1.run2.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 162,
+      "sha256": "b3d50c57d5599f601066d60eb1b76783cdfd01086093312c566c938e867263ef",
+      "rows": 4,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 116,
+        "min_line_bytes": 37,
+        "max_line_bytes": 46
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 78,
+            "line": 3,
+            "text": "BAXY_CONTEXTUAL_INIT|evidence_loaded"
+          },
+          {
+            "offset": 116,
+            "line": 4,
+            "text": "BAXY_CONTEXTUAL_INIT|sentinel_selected=28139"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_strength_negative_regression_v3.v1.run3.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 27264,
+      "sha256": "e6132592dc8e820edc4b9c930e7472d71aa1530f3b583dd552711b5334da5994",
+      "rows": 486,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26753,
+        "min_line_bytes": 34,
+        "max_line_bytes": 511
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26717,
+            "line": 485,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE_CPU|36/36"
+          },
+          {
+            "offset": 26753,
+            "line": 486,
+            "text": "{\"contextualLexicalEvidenceAmongRawFalse\": 1, \"corpusUtterances\": 28539, \"cpuRescoredViews\": 36, \"descriptiveExposureHours\": 100.59087964444444, \"guardedDescriptivePointFalseActivationsPerHour\": 0.009941259123438129, \"guardedNegativeFalseA…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_contextual_strength_negative_regression_v3.v1.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 936,
+      "sha256": "052006b22fc6183705e028ad547eb765a6b46f02e701c4205a24e746cbcf3c5c",
+      "rows": 13,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 879,
+        "min_line_bytes": 24,
+        "max_line_bytes": 134
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Traceback (most recent call last):"
+          },
+          {
+            "offset": 36,
+            "line": 2,
+            "text": "File \"D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_baxy_contextual_strength_negative_regression_v3.py\", line 161, in <module>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 810,
+            "line": 12,
+            "text": "raise RuntimeError(\"baxy_contextual_negative_cuda_unavailable\")"
+          },
+          {
+            "offset": 879,
+            "line": 13,
+            "text": "RuntimeError: baxy_contextual_negative_cuda_unavailable"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_explicit_confusable_100h_development_v7.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4102,
+      "sha256": "d32f907da0799af62e74497ac8ea8d09f417be711ec85a68dbd85a8bb5b687d6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blindHoldout",
+          "cache",
+          "candidate",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "fixedEvidence",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedInputs",
+          "plannedOutput",
+          "policy",
+          "registeredAtUtc",
+          "schedule",
+          "schema"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blindHoldout",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "registeredAtUtc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4101
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"cache\", \"candidate\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedInputs\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"sch…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"cache\", \"candidate\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedInputs\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"sch…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_explicit_confusable_same_view_negative_regression_development_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6022,
+      "sha256": "33cfacfedfd94493b571cbd0309c969e2e5867d8f306d1c3ce1e6d73db2555e3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6021,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_explicit_confusable_same_view_negative_regression_development_v7.v1.json.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 22062,
+      "sha256": "a78eb0697d225ce5dbd2c3a4cebc0fa2bb1698fd1571588efc0f985a87a0c363",
+      "rows": 402,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21381,
+        "min_line_bytes": 34,
+        "max_line_bytes": 681
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21345,
+            "line": 401,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE_CPU|64/64"
+          },
+          {
+            "offset": 21381,
+            "line": 402,
+            "text": "{\"metrics\": {\"contextualDecodedCaptures\": 55, \"contextualLexicalEvidenceAmongRawFalse\": 3, \"contextualLexicalEvidenceAmongSecondaryGuard\": 3, \"corpusUtterances\": 28539, \"cpuRescoredViews\": 64, \"descriptiveExposureHours\": 100.59087964444444…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_explicit_confusable_screening_cache_development_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2354531,
+      "sha256": "374d19d4381d3b573a82749851d1760c6cc581b55c052c84166750428fa5de34",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "completedRecords",
+          "elapsedSeconds",
+          "identities",
+          "nearViews",
+          "recordMaximumMargins",
+          "schema",
+          "timings",
+          "viewCount"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "completedRecords",
+          "elapsedSeconds",
+          "schema",
+          "viewCount"
+        ],
+        "list_lengths": {
+          "recordMaximumMargins": 20962,
+          "nearViews": 64
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2354530,
+        "completedRecords": {
+          "min": 20962,
+          "max": 20962
+        },
+        "viewCount": {
+          "min": 41924,
+          "max": 41924
+        },
+        "elapsedSeconds": {
+          "min": 11692.776002899976,
+          "max": 11692.776002899976
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"completedRecords\", \"elapsedSeconds\", \"identities\", \"nearViews\", \"recordMaximumMargins\", \"schema\", \"timings\", \"viewCount\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"completedRecords\", \"elapsedSeconds\", \"identities\", \"nearViews\", \"recordMaximumMargins\", \"schema\", \"timings\", \"viewCount\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hardnegative_contextual_consensus_development_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2488,
+      "sha256": "745635a474ccc1f8c0f904b62d62799ac83df20136f1d94bbbe5714f83548afc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2487,
+        "runtimeSeconds": {
+          "min": 41.48111689998768,
+          "max": 41.48111689998768
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_ctc_continuous_v4.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11389,
+      "sha256": "3d025cae5be7cde756e540e23fa24ace0ba1d2cfd590582539c256d73a1cd78c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "all_human_diagnostic",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "expanded_independent_metrics",
+          "fixed_policy_ctc_fusion",
+          "human_development_audio_accessed",
+          "legacy_selection_metrics",
+          "measured_at_utc",
+          "policy_selection",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11388,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_human_diagnostic\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"expanded_independent_metrics\", \"fixed_policy_ctc_fusion\", \"human_development_audio_accessed\", \"legacy_selection_metrics\", \"measured_at_utc\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_human_diagnostic\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"expanded_independent_metrics\", \"fixed_policy_ctc_fusion\", \"human_development_audio_accessed\", \"legacy_selection_metrics\", \"measured_at_utc\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_ctc_continuous_v4.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11389,
+      "sha256": "625c85d20a2cbae64897357670ab1de41a570a0ac0bb10630e027b11d0819010",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "all_human_diagnostic",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "expanded_independent_metrics",
+          "fixed_policy_ctc_fusion",
+          "human_development_audio_accessed",
+          "legacy_selection_metrics",
+          "measured_at_utc",
+          "policy_selection",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11388,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_human_diagnostic\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"expanded_independent_metrics\", \"fixed_policy_ctc_fusion\", \"human_development_audio_accessed\", \"legacy_selection_metrics\", \"measured_at_utc\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_human_diagnostic\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"expanded_independent_metrics\", \"fixed_policy_ctc_fusion\", \"human_development_audio_accessed\", \"legacy_selection_metrics\", \"measured_at_utc\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_fusion_lexical_guard_development_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2541,
+      "sha256": "53e674c58dcaeaf22e4956b5f39ee25ecc2868428e2f750aac0b5f8e70983695",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedContinuousFusion",
+          "expandedEstablishedCtc",
+          "expandedGuardedPolicy",
+          "expandedHumanDevelopmentAudioAccessed",
+          "expandedStage1",
+          "measuredAtUtc",
+          "policy",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2540,
+        "runtimeSeconds": {
+          "min": 24.177909499965608,
+          "max": 24.177909499965608
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"effectsExecuted\", \"expandedContinuousFusion\", \"expandedEstablishedCtc\", \"expandedGuardedPolicy\", \"expandedHumanDevelopmentAudioAccessed\", \"expa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"effectsExecuted\", \"expandedContinuousFusion\", \"expandedEstablishedCtc\", \"expandedGuardedPolicy\", \"expandedHumanDevelopmentAudioAccessed\", \"expa…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_fusion_negative_regression_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3347,
+      "sha256": "1e455700066cf22b0dfabe7b1ffb1bf5ec3048095dc1903fc177ca0722fd95bf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3346,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsOrFilenamesRetained\", \"regre…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsOrFilenamesRetained\", \"regre…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_fusion_product_runtime_audit_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4008,
+      "sha256": "77b4341da90b9576b28fd50c67d7b0327806953a52eb6b4c39e4217af48b95b9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "allHumanDevelopment",
+          "approved",
+          "audioOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "expandedIndependentDevelopment",
+          "humanDevelopmentAudioAccessed",
+          "latencyMilliseconds",
+          "legacyDevelopment",
+          "measuredAtUtc",
+          "rawProductParityPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "scoreRanges",
+          "sources"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "approved",
+          "audioOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "rawProductParityPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4007,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"allHumanDevelopment\", \"approved\", \"audioOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"developmentOnly\", \"effectsExecuted\", \"expandedIndependentDevelopment\", \"humanDevelopmentAudioAccessed\", \"latencyMilliseconds\", \"legacyDeve…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"allHumanDevelopment\", \"approved\", \"audioOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"developmentOnly\", \"effectsExecuted\", \"expandedIndependentDevelopment\", \"humanDevelopmentAudioAccessed\", \"latencyMilliseconds\", \"legacyDeve…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_fusion_product_runtime_audit_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3892,
+      "sha256": "8785325ea493024cedac143301fa3fa40987c452da946ca123d9c7120999ab70",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "allHumanDevelopment",
+          "approved",
+          "audioOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "expandedIndependentDevelopment",
+          "humanDevelopmentAudioAccessed",
+          "latencyMilliseconds",
+          "legacyDevelopment",
+          "measuredAtUtc",
+          "rawProductParityPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "scoreRanges",
+          "sources"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "approved",
+          "audioOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "rawProductParityPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3891,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"allHumanDevelopment\", \"approved\", \"audioOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"developmentOnly\", \"effectsExecuted\", \"expandedIndependentDevelopment\", \"humanDevelopmentAudioAccessed\", \"latencyMilliseconds\", \"legacyDeve…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"allHumanDevelopment\", \"approved\", \"audioOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"developmentOnly\", \"effectsExecuted\", \"expandedIndependentDevelopment\", \"humanDevelopmentAudioAccessed\", \"latencyMilliseconds\", \"legacyDeve…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_human_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2117,
+      "sha256": "f770ca3667206a6737a07a041d198ae9a008f6995c86bad19bfec1114d01cb86",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "fixed_threshold_ctc_fusion",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "metrics",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2116,
+        "runtime_seconds": {
+          "min": 16.322720500000287,
+          "max": 16.322720500000287
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"human_development_audio_accessed\", \"measured_at_utc\", \"metrics\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"human_development_audio_accessed\", \"measured_at_utc\", \"metrics\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_human_development_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3008,
+      "sha256": "586cf0adc93c069ea0af92a427bd8cb78f6cb237b0b3587a60d291b6d380a790",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "fixed_threshold_ctc_fusion",
+          "fixed_threshold_per_corpus",
+          "human_development_audio_accessed",
+          "human_global_zero_false_ctc_fusion_diagnostic",
+          "measured_at_utc",
+          "metrics",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3007,
+        "runtime_seconds": {
+          "min": 15.69926119997399,
+          "max": 15.69926119997399
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"fixed_threshold_per_corpus\", \"human_development_audio_accessed\", \"human_global_zero_false_ctc_fusion_diagnostic\", \"m…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"fixed_threshold_per_corpus\", \"human_development_audio_accessed\", \"human_global_zero_false_ctc_fusion_diagnostic\", \"m…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_human_development_v1.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3009,
+      "sha256": "9eebec212623bce8eeb1ac66a3f9ef7c1aadd7d741d2c158804e3b45deae5727",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "fixed_threshold_ctc_fusion",
+          "fixed_threshold_per_corpus",
+          "human_development_audio_accessed",
+          "human_global_zero_false_ctc_fusion_diagnostic",
+          "measured_at_utc",
+          "metrics",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3008,
+        "runtime_seconds": {
+          "min": 16.600129599974025,
+          "max": 16.600129599974025
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"fixed_threshold_per_corpus\", \"human_development_audio_accessed\", \"human_global_zero_false_ctc_fusion_diagnostic\", \"m…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"fixed_threshold_per_corpus\", \"human_development_audio_accessed\", \"human_global_zero_false_ctc_fusion_diagnostic\", \"m…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_legacy_adaptation_contrastive_human_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4082,
+      "sha256": "7b5b15fa23fc21101a569ed49afff0e881600f140776d5558e99eebaa929b0a2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "fixed_threshold_ctc_fusion",
+          "human_development",
+          "human_development_audio_accessed",
+          "human_per_corpus",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "sources",
+          "synthetic_validation"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4081,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"human_development\", \"human_development_audio_accessed\", \"human_per_corpus\", \"measured_at_utc\", \"schema\", \"scope\", \"sources\", \"synthetic_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"human_development\", \"human_development_audio_accessed\", \"human_per_corpus\", \"measured_at_utc\", \"schema\", \"scope\", \"sources\", \"synthetic_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_stage1_calibration_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5109,
+      "sha256": "b27d593cdf5d4f9dcc75f9681dab7bda85c9f85e73f596ab8a7e749e9fd27e89",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "all_human_diagnostic",
+          "blind_human_audio_accessed",
+          "contract",
+          "effects_executed",
+          "expanded_independent_metrics",
+          "fixed_policy_ctc_fusion",
+          "human_development_audio_accessed",
+          "legacy_selection_metrics",
+          "measured_at_utc",
+          "policy_selection",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5108,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_human_diagnostic\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"expanded_independent_metrics\", \"fixed_policy_ctc_fusion\", \"human_development_audio_accessed\", \"legacy_selection_metrics\", \"measured_at_utc\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"all_human_diagnostic\", \"blind_human_audio_accessed\", \"contract\", \"effects_executed\", \"expanded_independent_metrics\", \"fixed_policy_ctc_fusion\", \"human_development_audio_accessed\", \"legacy_selection_metrics\", \"measured_at_utc\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_hyperspotter_unfrozen_human_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3000,
+      "sha256": "1bbe035d34f69ff44d0197b1a02d4480417df20f7e63a055ebca46ce0a31c47d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "contract",
+          "effects_executed",
+          "fixed_threshold_ctc_fusion",
+          "fixed_threshold_per_corpus",
+          "human_development_audio_accessed",
+          "human_global_zero_false_ctc_fusion_diagnostic",
+          "measured_at_utc",
+          "metrics",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "human_development_audio_accessed",
+          "measured_at_utc",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2999,
+        "runtime_seconds": {
+          "min": 15.897229399997741,
+          "max": 15.897229399997741
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"fixed_threshold_per_corpus\", \"human_development_audio_accessed\", \"human_global_zero_false_ctc_fusion_diagnostic\", \"m…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"contract\", \"effects_executed\", \"fixed_threshold_ctc_fusion\", \"fixed_threshold_per_corpus\", \"human_development_audio_accessed\", \"human_global_zero_false_ctc_fusion_diagnostic\", \"m…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_phonetic_auxiliary_domain_loco_binding_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2871,
+      "sha256": "06ee4e4214c926cb6970d0ffab3b7b7c94c300257fc9902ef970d708a5b1f745",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "auxiliaryFeatureManifestSha256",
+          "auxiliaryFeatureRoot",
+          "baseProgram",
+          "baseProgramSha256",
+          "baselineReports",
+          "batchSize",
+          "contract",
+          "createdAtUtc",
+          "epochs",
+          "learningRate",
+          "physicalFeatureManifestSha256",
+          "physicalFeatureRoot",
+          "plannedOutputRoot",
+          "programSha256",
+          "role",
+          "schema",
+          "seeds",
+          "targetPerDomainLabelCell",
+          "testSha256"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "auxiliaryFeatureManifestSha256",
+          "auxiliaryFeatureRoot",
+          "baseProgram",
+          "baseProgramSha256",
+          "batchSize",
+          "createdAtUtc",
+          "epochs",
+          "learningRate",
+          "physicalFeatureManifestSha256",
+          "physicalFeatureRoot",
+          "plannedOutputRoot",
+          "programSha256",
+          "role",
+          "schema",
+          "targetPerDomainLabelCell",
+          "testSha256"
+        ],
+        "list_lengths": {
+          "seeds": 2,
+          "baselineReports": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2870,
+        "epochs": {
+          "min": 20,
+          "max": 20
+        },
+        "batchSize": {
+          "min": 32,
+          "max": 32
+        },
+        "targetPerDomainLabelCell": {
+          "min": 96,
+          "max": 96
+        },
+        "learningRate": {
+          "min": 0.001,
+          "max": 0.001
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"auxiliaryFeatureManifestSha256\", \"auxiliaryFeatureRoot\", \"baseProgram\", \"baseProgramSha256\", \"baselineReports\", \"batchSize\", \"contract\", \"createdAtUtc\", \"epochs\", \"learningRate\", \"physicalFeatureManifestSha256\", \"physicalFeature…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"auxiliaryFeatureManifestSha256\", \"auxiliaryFeatureRoot\", \"baseProgram\", \"baseProgramSha256\", \"baselineReports\", \"batchSize\", \"contract\", \"createdAtUtc\", \"epochs\", \"learningRate\", \"physicalFeatureManifestSha256\", \"physicalFeature…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_phonetic_prosody_domain_loco_binding_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2340,
+      "sha256": "bc81823584d2709ac7534fbaac029ce0fb75dcb7428f14cdf921405966fa7b93",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baselineReports",
+          "batchSize",
+          "contract",
+          "createdAtUtc",
+          "epochs",
+          "featureManifestSha256",
+          "featureRoot",
+          "learningRate",
+          "plannedOutputRoot",
+          "programSha256",
+          "role",
+          "schema",
+          "seeds",
+          "testSha256",
+          "variants"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "batchSize",
+          "createdAtUtc",
+          "epochs",
+          "featureManifestSha256",
+          "featureRoot",
+          "learningRate",
+          "plannedOutputRoot",
+          "programSha256",
+          "role",
+          "schema",
+          "testSha256"
+        ],
+        "list_lengths": {
+          "variants": 2,
+          "seeds": 2,
+          "baselineReports": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2339,
+        "epochs": {
+          "min": 20,
+          "max": 20
+        },
+        "batchSize": {
+          "min": 32,
+          "max": 32
+        },
+        "learningRate": {
+          "min": 0.001,
+          "max": 0.001
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baselineReports\", \"batchSize\", \"contract\", \"createdAtUtc\", \"epochs\", \"featureManifestSha256\", \"featureRoot\", \"learningRate\", \"plannedOutputRoot\", \"programSha256\", \"role\", \"schema\", \"seeds\", \"testSha256\", \"variants\"], \"n_keys\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baselineReports\", \"batchSize\", \"contract\", \"createdAtUtc\", \"epochs\", \"featureManifestSha256\", \"featureRoot\", \"learningRate\", \"plannedOutputRoot\", \"programSha256\", \"role\", \"schema\", \"seeds\", \"testSha256\", \"variants\"], \"n_keys\": 1…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_plain_phonetic_consensus_development_v7.distance1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3098,
+      "sha256": "31f990e04d7cce183bf05a11a941989e7b3a9c10a4e80fd7b9ddeb3e5f380193",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3097,
+        "runtimeSeconds": {
+          "min": 64.23540050000884,
+          "max": 64.23540050000884
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_plain_phonetic_consensus_development_v7.distance2.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3099,
+      "sha256": "11f000974beeb7bfb2d6747447287cff437e9b702b51dc3ffcfcb2b4280e96f2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3098,
+        "runtimeSeconds": {
+          "min": 60.386644900019746,
+          "max": 60.386644900019746
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_plain_phonetic_consensus_development_v7.distance3.v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3098,
+      "sha256": "d0e614589a8914b1e1da8f2bc0e0630a2cddc7493b3e24ab56a38b85c6c313e1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3097,
+        "runtimeSeconds": {
+          "min": 59.85286270000506,
+          "max": 59.85286270000506
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_plain_phonetic_consensus_development_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3005,
+      "sha256": "70e74aad567765e6f883415f17088453c8f218293a57c82d8954f47f120aea17",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3004,
+        "runtimeSeconds": {
+          "min": 63.780839299957734,
+          "max": 63.780839299957734
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_contextual_development_v9.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2968,
+      "sha256": "8f0386e722b27733f502251afdf7b897164b9b85b7f1080703788ffb03fb7d43",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "qbytContract",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2967,
+        "runtimeSeconds": {
+          "min": 23.76198830001522,
+          "max": 23.76198830001522
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_dual_100h_development_v10.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2390,
+      "sha256": "b48639b523a9eed4cc6058dbd2e4b9d5e062e8866bf9773856c44d8f9d7bcc28",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blindHoldout",
+          "cache",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "fixedEvidence",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "policy",
+          "registeredAtUtc",
+          "schedule",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blindHoldout",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "registeredAtUtc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2389
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"cache\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schedule\", \"schema\"], \"n_keys\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"cache\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schedule\", \"schema\"], \"n_keys\": 1…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_dual_same_view_negative_regression_development_v10.diagnostic2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6094,
+      "sha256": "b7ab71e7ceaea9d9acd1224f65dee96ce58c12e67b68107788bcd98b51e19356",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "secondaryDiagnostics",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6093,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_dual_same_view_negative_regression_development_v10.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6156,
+      "sha256": "be627188d21c7a402bbb4f854b6df47bda1afd146903c1517119dd5c12e37dc5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "secondaryDiagnostics",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6155,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_or_dual_contextual_development_v9.diagnostic2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3525,
+      "sha256": "56ce83a5fba2723b160f285ec0ca1be1bfd5de217d1490638e9f36a2fbe5c829",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "qbytContract",
+          "qbytFallbackDiagnostics",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 2,
+          "qbytFallbackDiagnostics": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3524,
+        "runtimeSeconds": {
+          "min": 23.74987320008222,
+          "max": 23.74987320008222
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_or_dual_contextual_development_v9.diagnostic3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3632,
+      "sha256": "2652662f7c5e1231aef62c450768aac8b8fecdad880e6f11998c08487caa67c3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "qbytContract",
+          "qbytFallbackDiagnostics",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 2,
+          "qbytFallbackDiagnostics": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3631,
+        "runtimeSeconds": {
+          "min": 25.009106599958614,
+          "max": 25.009106599958614
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_or_dual_contextual_development_v9.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3069,
+      "sha256": "585bd7d5f0569287bfd7a5623f3339dfda1cb5efbfdc987b5f4fe7ed9fb520f8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "qbytContract",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3068,
+        "runtimeSeconds": {
+          "min": 23.58036749996245,
+          "max": 23.58036749996245
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_v2_dual_100h_development_v11.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1964,
+      "sha256": "76c97ea600b4c89d21dab67e6bf7352daa1618a60f5ac49591689ab9ff0be0e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blindHoldout",
+          "cache",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "fixedEvidence",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "policy",
+          "registeredAtUtc",
+          "schedule",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blindHoldout",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "registeredAtUtc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1963
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"cache\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schedule\", \"schema\"], \"n_keys\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"cache\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schedule\", \"schema\"], \"n_keys\": 1…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_v2_dual_same_view_negative_regression_development_v11.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6175,
+      "sha256": "de76f7d5e81e690562fc597b0eff8c4644ccff4a42d850d35dd36b64a7d9fb62",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "secondaryDiagnostics",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6174,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_qbyt_v2_or_dual_contextual_development_v11.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3510,
+      "sha256": "0341870280b59362331aff2e04b10f948b0ea78840490c78fff4339a2cfea5ac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "qbytContract",
+          "qbytFallbackDiagnostics",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 2,
+          "qbytFallbackDiagnostics": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3509,
+        "runtimeSeconds": {
+          "min": 24.79788940004073,
+          "max": 24.79788940004073
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_100h_development_v5.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2977,
+      "sha256": "d8a0031b9974586619d6f9ef035ca6ffd2f23b7a51be3b42f9fad231c2d19c22",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blindHoldout",
+          "candidate",
+          "farCertificationSupported",
+          "fixedEvidence",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedInputs",
+          "plannedOutput",
+          "policy",
+          "registeredAtUtc",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blindHoldout",
+          "farCertificationSupported",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "registeredAtUtc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2976
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"candidate\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedInputs\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schema\"], \"n_keys\": 12, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"candidate\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedInputs\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schema\"], \"n_keys\": 12, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_100h_development_v6.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3737,
+      "sha256": "bcd9fd4e809e8b78296635e537e70382d13e33a75f047409dbef6022c1fba779",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blindHoldout",
+          "candidate",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "fixedEvidence",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedInputs",
+          "plannedOutput",
+          "policy",
+          "registeredAtUtc",
+          "schedule",
+          "schema"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blindHoldout",
+          "candidateFrozen",
+          "farCertificationSupported",
+          "freshHoldoutClaimSupported",
+          "openedCorpus",
+          "plannedOutput",
+          "registeredAtUtc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3736
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"candidate\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedInputs\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schedule\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blindHoldout\", \"candidate\", \"candidateFrozen\", \"farCertificationSupported\", \"fixedEvidence\", \"freshHoldoutClaimSupported\", \"openedCorpus\", \"plannedInputs\", \"plannedOutput\", \"policy\", \"registeredAtUtc\", \"schedule\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_negative_regression_development_v5.rejected.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2210,
+      "sha256": "23b6dcf518a4af37c4a08b03f33851f4862d475811301bd5ca812943991784c7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptedAsEvidence",
+          "authority",
+          "cause",
+          "effectsExecuted",
+          "failureCode",
+          "failurePhase",
+          "inputs",
+          "logs",
+          "modelEvaluationStarted",
+          "recordedAtUtc",
+          "remediation",
+          "schema"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "acceptedAsEvidence",
+          "authority",
+          "effectsExecuted",
+          "failureCode",
+          "failurePhase",
+          "modelEvaluationStarted",
+          "recordedAtUtc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2209,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptedAsEvidence\", \"authority\", \"cause\", \"effectsExecuted\", \"failureCode\", \"failurePhase\", \"inputs\", \"logs\", \"modelEvaluationStarted\", \"recordedAtUtc\", \"remediation\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptedAsEvidence\", \"authority\", \"cause\", \"effectsExecuted\", \"failureCode\", \"failurePhase\", \"inputs\", \"logs\", \"modelEvaluationStarted\", \"recordedAtUtc\", \"remediation\", \"schema\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_negative_regression_development_v5.rejected_obsolete_sentinel_contract.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 669,
+      "sha256": "3bf56abb62703abda8647b6eb83895adae446a72f19d3590f909f91b57d491bd",
+      "rows": 10,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 608,
+        "min_line_bytes": 24,
+        "max_line_bytes": 132
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Traceback (most recent call last):"
+          },
+          {
+            "offset": 36,
+            "line": 2,
+            "text": "File \"D:\\BAXY\\source\\experiments\\voice_latency\\evaluate_baxy_contextual_fusion_negative_regression_v2.py\", line 892, in <module>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 535,
+            "line": 9,
+            "text": "raise ValueError(\"baxy_contextual_negative_sentinel_count_invalid\")"
+          },
+          {
+            "offset": 608,
+            "line": 10,
+            "text": "ValueError: baxy_contextual_negative_sentinel_count_invalid"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_negative_regression_development_v5.rejected_obsolete_sentinel_contract.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 116,
+      "sha256": "960c22b052fafdd3f1748d01218592b3dfd3f747ff3f39589bb12f38ab668131",
+      "rows": 3,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 78,
+        "min_line_bytes": 37,
+        "max_line_bytes": 41
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          },
+          {
+            "offset": 78,
+            "line": 3,
+            "text": "BAXY_CONTEXTUAL_INIT|evidence_loaded"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_negative_regression_development_v6.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5010,
+      "sha256": "c20ba2b4ae5670697144d9e46e82de26ee22b95e10c3082c5d04b963c94a6d46",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5009,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_same_view_hot_negative_regression_development_v6.v1.json.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 22062,
+      "sha256": "5351335a4fcc59710411915f73dade8b843fc77d7fea42c12c44fc25ca7bcc5b",
+      "rows": 402,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21381,
+        "min_line_bytes": 34,
+        "max_line_bytes": 681
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21345,
+            "line": 401,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE_CPU|64/64"
+          },
+          {
+            "offset": 21381,
+            "line": 402,
+            "text": "{\"metrics\": {\"contextualDecodedCaptures\": 56, \"contextualLexicalEvidenceAmongRawFalse\": 3, \"contextualLexicalEvidenceAmongSecondaryGuard\": 3, \"corpusUtterances\": 28539, \"cpuRescoredViews\": 64, \"descriptiveExposureHours\": 100.59087964444444…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_soft_ctc_alignment_development_v8.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20450,
+      "sha256": "7d1e9a4e7aa4a7bb9d270577e8becbd83a8a9c94f07a6df618460e3a89dbd41f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "selectedSoftCtcPolicy",
+          "softCtcDevelopmentGatePassed",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "softCtcDevelopmentGatePassed"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20449,
+        "runtimeSeconds": {
+          "min": 65.94330139999511,
+          "max": 65.94330139999511
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_soft_ctc_alignment_development_v8.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19664,
+      "sha256": "6cdb375ca371a1590d06d66d308e5e4ae1bebf663f98d08842901691803a0b73",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "developmentEligiblePolicies",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "policy",
+          "policySummaries",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "selectedSoftCtcPolicy",
+          "softCtcDevelopmentGatePassed",
+          "sources"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioTranscriptsOrFilenamesRetained",
+          "blindHumanAudioAccessed",
+          "candidateFrozen",
+          "effectsExecuted",
+          "expandedHumanDevelopmentAudioAccessed",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "softCtcDevelopmentGatePassed"
+        ],
+        "list_lengths": {
+          "developmentEligiblePolicies": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19663,
+        "runtimeSeconds": {
+          "min": 64.771248700039,
+          "max": 64.771248700039
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioTranscriptsOrFilenamesRetained\", \"blindHumanAudioAccessed\", \"candidateFrozen\", \"developmentEligiblePolicies\", \"effectsExecuted\", \"expandedHumanDevelopmentAudioAccessed\", \"measuredAtUtc\", \"policy\", \"policySummaries\", \"produc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_soft_ctc_alignment_full_negative_regression_v5.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5300,
+      "sha256": "03a19d96310b49f02eb2c09fa65cf1e9b82ea8481da7e288aa699080931c19f3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "contract",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "metrics",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "runtime",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanAudioAccessed",
+          "candidateDevelopmentUse",
+          "candidateFrozen",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negativeCorpusPreviouslyAccessed",
+          "productOperatingPoint",
+          "recordsTranscriptsOrFilenamesRetained",
+          "regressionPassed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5299,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"contract\", \"effectsExecuted\", \"measuredAtUtc\", \"metrics\", \"negativeCorpusPreviouslyAccessed\", \"productOperatingPoint\", \"recordsTranscriptsOrFilenamesRetain…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_soft_ctc_alignment_full_negative_regression_v5.v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 27399,
+      "sha256": "134ab480c2fc6a48bab6354ddf96bf32d4ccc78bb4cd5b0b3ef24a4560e7abee",
+      "rows": 486,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26753,
+        "min_line_bytes": 34,
+        "max_line_bytes": 646
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "BAXY_CONTEXTUAL_INIT|paths_resolved"
+          },
+          {
+            "offset": 37,
+            "line": 2,
+            "text": "BAXY_CONTEXTUAL_INIT|candidate_verified"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26717,
+            "line": 485,
+            "text": "BAXY_CONTEXTUAL_NEGATIVE_CPU|36/36"
+          },
+          {
+            "offset": 26753,
+            "line": 486,
+            "text": "{\"metrics\": {\"contextualLexicalEvidenceAmongRawFalse\": 1, \"contextualLexicalEvidenceAmongSecondaryGuard\": 1, \"corpusUtterances\": 28539, \"cpuRescoredViews\": 36, \"descriptiveExposureHours\": 100.59087964444444, \"guardedDescriptivePointFalseAc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_split_alias_ctc_guard_binding_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5607,
+      "sha256": "cc0bff8da5cd897148f9bea16d14293df676edb9fd6e4aca6efd7ce83dda10a4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cascade",
+          "contract",
+          "corpora",
+          "createdAtUtc",
+          "currentEndpointConfusableCascade",
+          "plannedOutput",
+          "programSha256",
+          "role",
+          "schema",
+          "stt",
+          "teacher",
+          "test"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "plannedOutput",
+          "programSha256",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {
+          "corpora": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5606
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cascade\", \"contract\", \"corpora\", \"createdAtUtc\", \"currentEndpointConfusableCascade\", \"plannedOutput\", \"programSha256\", \"role\", \"schema\", \"stt\", \"teacher\", \"test\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cascade\", \"contract\", \"corpora\", \"createdAtUtc\", \"currentEndpointConfusableCascade\", \"plannedOutput\", \"programSha256\", \"role\", \"schema\", \"stt\", \"teacher\", \"test\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/baxy_split_alias_localized_qbt_binding_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1464,
+      "sha256": "a4acb4aa4fe89d0206de4d2e579a8adeac209d37ac690657228b83b8f5392ae3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "base",
+          "contract",
+          "createdAtUtc",
+          "plannedOutput",
+          "programSha256",
+          "role",
+          "schema",
+          "test"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "plannedOutput",
+          "programSha256",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1463
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"base\", \"contract\", \"createdAtUtc\", \"plannedOutput\", \"programSha256\", \"role\", \"schema\", \"test\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"base\", \"contract\", \"createdAtUtc\", \"plannedOutput\", \"programSha256\", \"role\", \"schema\", \"test\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/ccby_wake_development_faster_whisper_base_int8_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7492,
+      "sha256": "61da0982fa622d8f62a06a6ca939ec0fcaedf39d5aa3b269f6e8679d0aba481d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "dependencies",
+          "effects_executed",
+          "inference",
+          "measured_at_utc",
+          "metrics",
+          "product_operating_point",
+          "records",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "product_operating_point",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7491,
+        "runtime_seconds": {
+          "min": 41.67525259999093,
+          "max": 41.67525259999093
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 13…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 13…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/ccby_wake_development_faster_whisper_large_v3_fp16_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8639,
+      "sha256": "1fceb018e99cdc227c99696f0bc2e4b8094a6f8efc3ba0b148b63d1073ee66e5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "dependencies",
+          "effects_executed",
+          "inference",
+          "measured_at_utc",
+          "metrics",
+          "product_operating_point",
+          "records",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "product_operating_point",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8638,
+        "runtime_seconds": {
+          "min": 26.533524199970998,
+          "max": 26.533524199970998
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 13…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 13…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/ccby_wake_development_faster_whisper_medium_int8_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7860,
+      "sha256": "d519ad5fc85da9f6cc9d7c4c87126683225f79b27d992c29857dc57060da7f2f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "dependencies",
+          "effects_executed",
+          "inference",
+          "measured_at_utc",
+          "metrics",
+          "product_operating_point",
+          "records",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "product_operating_point",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7859,
+        "runtime_seconds": {
+          "min": 337.8115584999905,
+          "max": 337.8115584999905
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 13…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 13…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/ccby_wake_development_whisper_tiny_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7503,
+      "sha256": "4cd3271c3d20cca0005c723616a4cdd182eb316c3d6886bdf42707985ee0feae",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "product_operating_point",
+          "records",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_frozen",
+          "effects_executed",
+          "measured_at_utc",
+          "product_operating_point",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7502,
+        "runtime_seconds": {
+          "min": 49.73566850001225,
+          "max": 49.73566850001225
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_frozen\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"product_operating_point\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/ccby_wake_v5_development_faster_whisper_large_v3_mining_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1228333,
+      "sha256": "373135635fa2c85ab561a33f51aef6317e8274c8ce033a7af5c53205c8a19c2a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_audio_accessed",
+          "candidate_model_scores_accessed",
+          "dependencies",
+          "effects_executed",
+          "inference",
+          "measured_at_utc",
+          "metrics",
+          "records",
+          "runtime_seconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_audio_accessed",
+          "candidate_model_scores_accessed",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_seconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 21
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1228332,
+        "runtime_seconds": {
+          "min": 338.24142520001624,
+          "max": 338.24142520001624
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_model_scores_accessed\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"o…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_audio_accessed\", \"candidate_model_scores_accessed\", \"dependencies\", \"effects_executed\", \"inference\", \"measured_at_utc\", \"metrics\", \"records\", \"runtime_seconds\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"o…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/common_voice_sps_v4_reservation_preopen_contract_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2295,
+      "sha256": "2b6a30a7beb29fe89c453ef6ddc8fc0afe5f344fc42404684a4b00e039a3e6bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audioDecoded",
+          "caseIdsSelected",
+          "createdAtUtc",
+          "effectsExecuted",
+          "expectedArchives",
+          "modelInvoked",
+          "referenceTranscriptsOpened",
+          "reservationTool",
+          "role",
+          "schema",
+          "selectionPolicy",
+          "sourceAudit",
+          "thresholdsChanged"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioDecoded",
+          "caseIdsSelected",
+          "createdAtUtc",
+          "effectsExecuted",
+          "modelInvoked",
+          "referenceTranscriptsOpened",
+          "role",
+          "schema",
+          "thresholdsChanged"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2294,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioDecoded\", \"caseIdsSelected\", \"createdAtUtc\", \"effectsExecuted\", \"expectedArchives\", \"modelInvoked\", \"referenceTranscriptsOpened\", \"reservationTool\", \"role\", \"schema\", \"selectionPolicy\", \"sourceAudit\", \"thresholdsChanged\"],…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audioDecoded\", \"caseIdsSelected\", \"createdAtUtc\", \"effectsExecuted\", \"expectedArchives\", \"modelInvoked\", \"referenceTranscriptsOpened\", \"reservationTool\", \"role\", \"schema\", \"selectionPolicy\", \"sourceAudit\", \"thresholdsChanged\"],…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/cuda_detached_probe.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 26,
+      "sha256": "021ed231e27a6b56f5883230ea868393ad8d81b273ef74e1c2be80d5322d58b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 26,
+        "max_line_bytes": 26
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "2.10.0+cu130 13.0 True 1"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "2.10.0+cu130 13.0 True 1"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 299010,
+      "sha256": "517e8f24f73f4bf0e2317b730a6543af3eb8c154e4f8cb3ce729adb079727118",
+      "rows": 296,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 296,
+          "phase": 296,
+          "raw_decision": 296,
+          "request_id": 296,
+          "schema": 296,
+          "stages": 296,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 297120,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 296714,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 297120,
+            "line": 296,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r10_grounding.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 185727,
+      "sha256": "6cdc1e2eb96f9115e36421ba71d27f8ad7e5e6f7eebd84fb9d6a433efd966ac3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "presentable_failures": 1,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185726,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r10_grounding.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296151,
+      "sha256": "32c6ad60ba1ce0c10302ce63448d66c626268d1418bc44ffccbf90602618b922",
+      "rows": 295,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 295,
+          "phase": 295,
+          "raw_decision": 295,
+          "request_id": 295,
+          "schema": 295,
+          "stages": 295,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294261,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2454,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 293855,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294261,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r11_grounding.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 183249,
+      "sha256": "466ec2331a87982e4efcb553acbcd89951d97f14ef81f43178dac4f970e3c1ea",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 183248,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r11_grounding.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296515,
+      "sha256": "f51bade32d4aa579a45a07d368a7255bb8eb02b891e839651765ef620d099be8",
+      "rows": 295,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 295,
+          "phase": 295,
+          "raw_decision": 295,
+          "request_id": 295,
+          "schema": 295,
+          "stages": 295,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294625,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2454,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 294219,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294625,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r12_r40.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 178938,
+      "sha256": "1cec1c23f55eeca070f5369c19cb1eb4443a47db25e7c1c5ea82b1803b351588",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "presentable_failures": 1,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 178937,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r12_r40.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296148,
+      "sha256": "3bd502cb61c086e9fe0401e11045a178ff6e638ef962b19a9d66c58d7c829c0d",
+      "rows": 294,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 294,
+          "phase": 294,
+          "raw_decision": 294,
+          "request_id": 294,
+          "schema": 294,
+          "stages": 294,
+          "final": 153,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294258,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2454,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 293852,
+            "line": 293,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294258,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r13_question_veto.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 183123,
+      "sha256": "cfe9dd5be6605da9c7003de2446397940a8ea5b93418ba724b68865fe0d55cbb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 183122,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r13_question_veto.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 319355,
+      "sha256": "fc63a4c96e7710c5b2a2851dec7825a166fd5e9db650a48485219dd1579e80f2",
+      "rows": 294,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 294,
+          "phase": 294,
+          "raw_decision": 294,
+          "request_id": 294,
+          "schema": 294,
+          "stages": 294,
+          "final": 153,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 317269,
+        "min_line_bytes": 209,
+        "max_line_bytes": 2693,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 478,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 316864,
+            "line": 293,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 317269,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r14_literal_fidelity.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 182982,
+      "sha256": "51318c929ecf15da53fa7bd6f230343577180e8abe6c566146cfe69771f6626d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 182981,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    }
+  }
+}

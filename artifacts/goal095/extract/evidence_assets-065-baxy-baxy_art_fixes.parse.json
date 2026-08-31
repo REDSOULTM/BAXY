@@ -1,0 +1,3178 @@
+{
+  "batch_id": "evidence_assets-065-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 50,
+  "hash_ok": 50,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/knowledge_no_tool_trace_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 24188,
+      "sha256": "1ae07ecdd3fb4eb8407c52f337b67ab04f0792507084854efae9f2833f500c0a",
+      "rows": 20,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 20,
+          "phase": 20,
+          "raw_decision": 20,
+          "request_id": 20,
+          "schema": 20,
+          "stages": 20,
+          "final": 10
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22218,
+        "min_line_bytes": 376,
+        "max_line_bytes": 2109,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"vision.describe\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"intent_operations\":[],\"mode\":\"conversati…"
+          },
+          {
+            "offset": 376,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"vision.describe\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21298,
+            "line": 19,
+            "text": "{\"candidate_operations\":[\"streaming.play.named\",\"streaming.navigate\",\"message.send\",\"message.recipient.resolve\",\"notification.list.due\",\"notification.cancel.latest\",\"input.visible.click\",\"input.pointer.control\",\"input.keyboard.open\",\"game.…"
+          },
+          {
+            "offset": 22218,
+            "line": 20,
+            "text": "{\"candidate_operations\":[\"streaming.play.named\",\"streaming.navigate\",\"message.send\",\"message.recipient.resolve\",\"notification.list.due\",\"notification.cancel.latest\",\"input.visible.click\",\"input.pointer.control\",\"input.keyboard.open\",\"game.…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/language_stagger_100_smoke_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27333,
+      "sha256": "d770b792e62cbcae813b2d2e7ae78efe1ffeab61a1083a1545eab176832468ac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "delay_ms",
+          "language_timeline",
+          "latency_delta_stagger_minus_eager",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "delay_ms",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27332,
+        "delay_ms": {
+          "min": 100.0,
+          "max": 100.0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"delay_ms\", \"language_timeline\", \"latency_delta_stagger_minus_eager\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"delay_ms\", \"language_timeline\", \"latency_delta_stagger_minus_eager\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/language_stagger_250_smoke_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27355,
+      "sha256": "960d7ae20b7a68a01e0d658563e5e7de1830069aca584f8b9a9f08b47ae4beca",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "delay_ms",
+          "language_timeline",
+          "latency_delta_stagger_minus_eager",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "delay_ms",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27354,
+        "delay_ms": {
+          "min": 250.0,
+          "max": 250.0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"delay_ms\", \"language_timeline\", \"latency_delta_stagger_minus_eager\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"delay_ms\", \"language_timeline\", \"latency_delta_stagger_minus_eager\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/language_stagger_500_smoke_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27357,
+      "sha256": "088e1fd933c1b5e085fdca203bf6591b76ebc58a35452467912c8421b2fb0695",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "delay_ms",
+          "language_timeline",
+          "latency_delta_stagger_minus_eager",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "smoke"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "delay_ms",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27356,
+        "delay_ms": {
+          "min": 500.0,
+          "max": 500.0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"delay_ms\", \"language_timeline\", \"latency_delta_stagger_minus_eager\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"delay_ms\", \"language_timeline\", \"latency_delta_stagger_minus_eager\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"smoke\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/leading_band_verdict_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5359,
+      "sha256": "a1d0362f6a00192ae12c0244f95368d9befe7b79f6bc39c572391dab2faa89f0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "change",
+          "combined_with_r19",
+          "component",
+          "continues",
+          "effects_executed",
+          "gate",
+          "installation_touched",
+          "measured_at_utc",
+          "new_regression_named",
+          "physical_ab",
+          "problem",
+          "repairs_two_of_the_three_r19_regressions",
+          "rollback",
+          "schema",
+          "state",
+          "sweep",
+          "why_the_global_band_was_rejected_first"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "change",
+          "component",
+          "continues",
+          "effects_executed",
+          "gate",
+          "installation_touched",
+          "measured_at_utc",
+          "problem",
+          "rollback",
+          "schema",
+          "state",
+          "why_the_global_band_was_rejected_first"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5358,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"change\", \"combined_with_r19\", \"component\", \"continues\", \"effects_executed\", \"gate\", \"installation_touched\", \"measured_at_utc\", \"new_regression_named\", \"physical_ab\", \"problem\", \"repairs_two_of_the_three_r19_regressions\", \"rollba…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"change\", \"combined_with_r19\", \"component\", \"continues\", \"effects_executed\", \"gate\", \"installation_touched\", \"measured_at_utc\", \"new_regression_named\", \"physical_ab\", \"problem\", \"repairs_two_of_the_three_r19_regressions\", \"rollba…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/leaf_compatibility_consensus_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 74231,
+      "sha256": "5fa16a7eed3ff190d7c0bee7f40b2bd5a9505609d60492b982252dab5bb506e8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "no_operation_share",
+          "outcomes",
+          "right_family_share",
+          "rows",
+          "runtime_manifest_changed",
+          "schema",
+          "seconds_p50",
+          "seconds_p95",
+          "source",
+          "wrong_raw_proposals_accepted"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "method",
+          "no_operation_share",
+          "right_family_share",
+          "runtime_manifest_changed",
+          "schema",
+          "seconds_p50",
+          "seconds_p95",
+          "source",
+          "wrong_raw_proposals_accepted"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 74230,
+        "cases": {
+          "min": 147,
+          "max": 147
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "no_operation_share": {
+          "min": 0.9456,
+          "max": 0.9456
+        },
+        "right_family_share": {
+          "min": 0.0476,
+          "max": 0.0476
+        },
+        "seconds_p50": {
+          "min": 0.3609,
+          "max": 0.3609
+        },
+        "seconds_p95": {
+          "min": 0.6117,
+          "max": 0.6117
+        },
+        "wrong_raw_proposals_accepted": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"method\", \"no_operation_share\", \"outcomes\", \"right_family_share\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"seconds_p50\", \"seconds_p95\", \"source\", \"wron…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"effects_executed\", \"installation_touched\", \"measured_at_utc\", \"method\", \"no_operation_share\", \"outcomes\", \"right_family_share\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"seconds_p50\", \"seconds_p95\", \"source\", \"wron…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b10182_mtp_load_probe_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2489,
+      "sha256": "1d8059bca5f8c4280d02676200b681b7b0a4924ccc56f169fdefd302446f6ae5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "date",
+          "decision",
+          "evidence",
+          "fixed_runtime_profile",
+          "measurement",
+          "model",
+          "profiles",
+          "runtime",
+          "safety",
+          "schema",
+          "status"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "date",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2488
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"date\", \"decision\", \"evidence\", \"fixed_runtime_profile\", \"measurement\", \"model\", \"profiles\", \"runtime\", \"safety\", \"schema\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"date\", \"decision\", \"evidence\", \"fixed_runtime_profile\", \"measurement\", \"model\", \"profiles\", \"runtime\", \"safety\", \"schema\", \"status\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b10182_mtp_order1-mtp_1785359777186886200.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1690,
+      "sha256": "2318830d6915a4480775f0ba7bf6237f4927509db9a472901731079b6d5c525b",
+      "rows": 17,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 4,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1620,
+        "min_line_bytes": 53,
+        "max_line_bytes": 166
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.165.523 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.330.879 W srv llama_server: -----------------"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1546,
+            "line": 16,
+            "text": "0.05.791.014 I srv operator(): operator(): cleaning up before exit..."
+          },
+          {
+            "offset": 1620,
+            "line": 17,
+            "text": "0.05.792.771 E srv llama_server: exiting due to model loading error"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b10182_mtp_order1-none_1785359742530471600.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 24500,
+      "sha256": "4b39c3e97f082fd915855612984deb3c4eb6f1eb25a1d66ea945cf4c08673e12",
+      "rows": 223,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24399,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.218.405 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.358.529 W srv llama_server: -----------------"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24315,
+            "line": 222,
+            "text": "0.34.447.362 I slot print_timing: id 0 | task 996 | graphs reused = 930"
+          },
+          {
+            "offset": 24399,
+            "line": 223,
+            "text": "0.34.447.418 I slot release: id 0 | task 996 | stop processing: n_tokens = 276, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b10182_mtp_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 741,
+      "sha256": "f9ea150a0d22b6442807f21d92898d4ee8dc8c2e6675e200aa042f9bb79c5c18",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "date",
+          "production_changed",
+          "reason",
+          "result",
+          "schema",
+          "source_artifact"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "date",
+          "production_changed",
+          "reason",
+          "schema",
+          "source_artifact"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 740
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"date\", \"production_changed\", \"reason\", \"result\", \"schema\", \"source_artifact\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"date\", \"production_changed\", \"reason\", \"result\", \"schema\", \"source_artifact\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b8738_gemma4_e2b_compatibility_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 731,
+      "sha256": "13a6b50fcadd26f24c1a28dd1fcf2e5eb56380bc0b9953453c8ca8566b8046d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "installation_changed",
+          "load_error",
+          "manifest_changed",
+          "measured_at_utc",
+          "model",
+          "outcome",
+          "release",
+          "runtime_remains",
+          "schema",
+          "turn_requests_completed"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "installation_changed",
+          "load_error",
+          "manifest_changed",
+          "measured_at_utc",
+          "outcome",
+          "runtime_remains",
+          "schema",
+          "turn_requests_completed"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 730,
+        "turn_requests_completed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"installation_changed\", \"load_error\", \"manifest_changed\", \"measured_at_utc\", \"model\", \"outcome\", \"release\", \"runtime_remains\", \"schema\", \"turn_requests_completed\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"installation_changed\", \"load_error\", \"manifest_changed\", \"measured_at_utc\", \"model\", \"outcome\", \"release\", \"runtime_remains\", \"schema\", \"turn_requests_completed\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b9980_b10182_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51546,
+      "sha256": "98607182308c01fe2a4b8ef66a8739339d2993f6115d7ab0c310d26d2d7a84d0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "exact_outputs",
+          "latency_delta_new_minus_old",
+          "promotion_rule",
+          "safety",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51545
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_new_minus_old\", \"promotion_rule\", \"safety\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_new_minus_old\", \"promotion_rule\", \"safety\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b9980_b10182_ab_reverse_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51547,
+      "sha256": "388fa61d7da93818709b809fe9d0832eb9f09873dbb7455c10693992087eba71",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "exact_outputs",
+          "latency_delta_new_minus_old",
+          "promotion_rule",
+          "safety",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51546
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_new_minus_old\", \"promotion_rule\", \"safety\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_new_minus_old\", \"promotion_rule\", \"safety\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b9980_b10182_ab_third_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51441,
+      "sha256": "a09e75a1a7718a3d694d0d7cfe56602345d4ecb008e4abdbab6cc7bf6747ddff",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "exact_outputs",
+          "latency_delta_new_minus_old",
+          "promotion_rule",
+          "safety",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51440
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_new_minus_old\", \"promotion_rule\", \"safety\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"exact_outputs\", \"latency_delta_new_minus_old\", \"promotion_rule\", \"safety\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_b9980_b10182_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2173,
+      "sha256": "28fce71809dcc4671f7ed819fb00b5dc2f56c8b6b1e07aff8d2e91839f651e2c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "baseline",
+          "candidate",
+          "date",
+          "reason",
+          "replicas",
+          "safety",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "date",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {
+          "replicas": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2172
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"baseline\", \"candidate\", \"date\", \"reason\", \"replicas\", \"safety\", \"schema\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"baseline\", \"candidate\", \"date\", \"reason\", \"replicas\", \"safety\", \"schema\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_checkpoint_spacing_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50999,
+      "sha256": "301764151026d7686274e738bc127f07ba6f8f0d8d363efa53611fe72af2cf66",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "profiles",
+          "promotion_rule",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50998
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"exact_outputs\", \"mode_contracts\", \"profiles\", \"promotion_rule\", \"runtime\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"exact_outputs\", \"mode_contracts\", \"profiles\", \"promotion_rule\", \"runtime\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_checkpoint_spacing_ab_reverse_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50996,
+      "sha256": "16dc41f8b3a49b18ec3ee9cd07a75fcc21551004657623baf4c61dfb2c050a05",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "profiles",
+          "promotion_rule",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50995
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"exact_outputs\", \"mode_contracts\", \"profiles\", \"promotion_rule\", \"runtime\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"exact_outputs\", \"mode_contracts\", \"profiles\", \"promotion_rule\", \"runtime\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_checkpoint_spacing_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2055,
+      "sha256": "8fd1a0eb80ba6acbcbd8186df78bacfe521b9d27e46e7879aec3aa8b6e05e34b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "aggregate",
+          "baseline",
+          "cache_observation",
+          "candidate",
+          "decision",
+          "evidence",
+          "measured_on",
+          "runtime",
+          "schema",
+          "status"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "decision",
+          "measured_on",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "evidence": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2054
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"baseline\", \"cache_observation\", \"candidate\", \"decision\", \"evidence\", \"measured_on\", \"runtime\", \"schema\", \"status\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"aggregate\", \"baseline\", \"cache_observation\", \"candidate\", \"decision\", \"evidence\", \"measured_on\", \"runtime\", \"schema\", \"status\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_cuda_graph_opt_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61201,
+      "sha256": "c7d77bb78b7d27a8b7b04567b1a4781c392a7c9bfcc04406bf51d0f237cceea2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "divergent_posts",
+          "exact_outputs",
+          "latency_delta_graph_minus_baseline",
+          "mode_contracts",
+          "model",
+          "payloads_identical",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "model",
+          "payloads_identical",
+          "promotion_rule",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "divergent_posts": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61200
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"divergent_posts\", \"exact_outputs\", \"latency_delta_graph_minus_baseline\", \"mode_contracts\", \"model\", \"payloads_identical\", \"promotion_rule\", \"safety\", \"schema…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"divergent_posts\", \"exact_outputs\", \"latency_delta_graph_minus_baseline\", \"mode_contracts\", \"model\", \"payloads_identical\", \"promotion_rule\", \"safety\", \"schema…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_cuda_graph_opt_ab_reverse_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61245,
+      "sha256": "e8c190347a109776e5bff99cbaaeb0860a589afe4d925d53e9d89c86aa079bcf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "divergent_cases",
+          "divergent_posts",
+          "exact_outputs",
+          "latency_delta_graph_minus_baseline",
+          "mode_contracts",
+          "model",
+          "payloads_identical",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "model",
+          "payloads_identical",
+          "promotion_rule",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "divergent_cases": 0,
+          "divergent_posts": 0,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61244
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"divergent_posts\", \"exact_outputs\", \"latency_delta_graph_minus_baseline\", \"mode_contracts\", \"model\", \"payloads_identical\", \"promotion_rule\", \"safety\", \"schema…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"divergent_cases\", \"divergent_posts\", \"exact_outputs\", \"latency_delta_graph_minus_baseline\", \"mode_contracts\", \"model\", \"payloads_identical\", \"promotion_rule\", \"safety\", \"schema…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_cuda_graph_opt_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3116,
+      "sha256": "a428014fd28ddc9be8c085697bec5f0fa202dea399f63225e646c913cf1b44d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "date",
+          "decision",
+          "evidence",
+          "primary_sources",
+          "production_changed",
+          "promotion_rule",
+          "reason",
+          "runtime",
+          "safety",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate",
+          "date",
+          "decision",
+          "production_changed",
+          "promotion_rule",
+          "reason",
+          "runtime",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "primary_sources": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3115
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"date\", \"decision\", \"evidence\", \"primary_sources\", \"production_changed\", \"promotion_rule\", \"reason\", \"runtime\", \"safety\", \"schema\", \"scope\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"date\", \"decision\", \"evidence\", \"primary_sources\", \"production_changed\", \"promotion_rule\", \"reason\", \"runtime\", \"safety\", \"schema\", \"scope\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_n1_gpu_smoke_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69685,
+      "sha256": "922741beae7066171c1a1f9c97c03fa94b92f63d1c7bdcb516bd6d153f7e2d09",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "baseline_without_drafts",
+          "candidate",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "n_keys": 23,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "baseline_without_drafts",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69684
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_per_arm\", \"measurement…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_per_arm\", \"measurement…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_n1_p095_gpu_smoke_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 95864,
+      "sha256": "e19d038f567cccbcdc81b5dabd2f15fe653283b861b9429eedea6455f55b5b3e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "baseline_without_drafts",
+          "candidate",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "n_keys": 23,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "baseline_without_drafts",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 95863
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_per_arm\", \"measurement…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_per_arm\", \"measurement…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_n2_gpu_smoke_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 106981,
+      "sha256": "7acf3b6288c61555b2666d0961c990f29f8cce6260d0e9c9c63eecfa18873027",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "baseline_without_drafts",
+          "candidate",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "command_contracts",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "baseline_without_drafts",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "command_contracts",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 106980
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"command_contracts\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_p…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"command_contracts\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_p…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_n3_gpu_smoke_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 107145,
+      "sha256": "c588b0a488ab92d4d68ea6cc61df78f9258c102a89f2f3efa2d1114ede7ab2d2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "baseline_without_drafts",
+          "candidate",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "command_contracts",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "baseline_without_drafts",
+          "candidate_accepted",
+          "candidate_drafted",
+          "candidate_status",
+          "command_contracts",
+          "exact_equivalence",
+          "fresh_server_per_arm",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "tail_not_worse",
+          "valid_measurement"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 107144
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"command_contracts\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_p…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"baseline_without_drafts\", \"candidate\", \"candidate_accepted\", \"candidate_drafted\", \"candidate_status\", \"command_contracts\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"fresh_server_p…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-baseline_1785396497018931000.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8613,
+      "sha256": "7270b44c4de02fffdfacd83d424e0f3cd266bcc1fe08207631428d796e30719b",
+      "rows": 79,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8512,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.159.419 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.305.263 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8428,
+            "line": 78,
+            "text": "0.21.255.438 I slot print_timing: id 0 | task 241 | graphs reused = 320"
+          },
+          {
+            "offset": 8512,
+            "line": 79,
+            "text": "0.21.255.518 I slot release: id 0 | task 241 | stop processing: n_tokens = 319, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-baseline_1785396656573089100.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8613,
+      "sha256": "73320e4d8d864e462c3b213f9cb458135521ef1b667f5b0a2787966e033cc8f0",
+      "rows": 79,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8512,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.175.070 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.323.714 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8428,
+            "line": 78,
+            "text": "0.21.124.294 I slot print_timing: id 0 | task 241 | graphs reused = 320"
+          },
+          {
+            "offset": 8512,
+            "line": 79,
+            "text": "0.21.124.374 I slot release: id 0 | task 241 | stop processing: n_tokens = 319, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-baseline_1785396709892827600.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8613,
+      "sha256": "c997cae8aa0bb8cf4bd0697df996c9c576750c7c8b55caa60dd4db76b8588b07",
+      "rows": 79,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8512,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.173.395 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.311.082 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8428,
+            "line": 78,
+            "text": "0.20.968.296 I slot print_timing: id 0 | task 241 | graphs reused = 319"
+          },
+          {
+            "offset": 8512,
+            "line": 79,
+            "text": "0.20.968.364 I slot release: id 0 | task 241 | stop processing: n_tokens = 319, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-baseline_1785396822661536800.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8612,
+      "sha256": "6f49890bcd7902385d58957e7c152d8ea49899bacf6753d476d62972e6035725",
+      "rows": 79,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8511,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.165.785 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.325.568 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8427,
+            "line": 78,
+            "text": "0.20.735.891 I slot print_timing: id 0 | task 241 | graphs reused = 320"
+          },
+          {
+            "offset": 8511,
+            "line": 79,
+            "text": "0.20.735.955 I slot release: id 0 | task 241 | stop processing: n_tokens = 319, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-baseline_1785396879160305500.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 8612,
+      "sha256": "7a033dbcd25368a1f7779425b8e5219a13efee1adafaffba0dd61ff9b43224ff",
+      "rows": 79,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8511,
+        "min_line_bytes": 48,
+        "max_line_bytes": 158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.154.591 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.277.924 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 8427,
+            "line": 78,
+            "text": "0.20.723.697 I slot print_timing: id 0 | task 241 | graphs reused = 319"
+          },
+          {
+            "offset": 8511,
+            "line": 79,
+            "text": "0.20.723.758 I slot release: id 0 | task 241 | stop processing: n_tokens = 319, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-candidate_1785396518466565100.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 11063,
+      "sha256": "a0081f087170f500372475c9e0ba14a2ec0b15bfd7ef617df7ee93a532bcb6d6",
+      "rows": 98,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10962,
+        "min_line_bytes": 48,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.154.947 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.299.486 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10828,
+            "line": 97,
+            "text": "0.23.250.248 I slot print_timing: id 0 | task 145 | draft acceptance = 0.63218 ( 55 accepted / 87 generated), mean len = 1.63"
+          },
+          {
+            "offset": 10962,
+            "line": 98,
+            "text": "0.23.250.330 I slot release: id 0 | task 145 | stop processing: n_tokens = 345, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-candidate_1785396677874359400.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 9327,
+      "sha256": "7d6afabea93938f9a4bacdaef745f97f8f62a0e2ec3127677627239f5722d1d0",
+      "rows": 82,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9227,
+        "min_line_bytes": 48,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.141.478 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.279.997 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9094,
+            "line": 81,
+            "text": "0.20.180.297 I slot print_timing: id 0 | task 99 | draft acceptance = 0.93333 ( 28 accepted / 30 generated), mean len = 1.93"
+          },
+          {
+            "offset": 9227,
+            "line": 82,
+            "text": "0.20.180.406 I slot release: id 0 | task 99 | stop processing: n_tokens = 307, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-candidate_1785396731055721100.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1761,
+      "sha256": "479198de34495645010f25e36e0fcf7c5dcc9ac70da19b2e19694cff3575f4e1",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1652,
+        "min_line_bytes": 103,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.158.094 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.315.456 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1543,
+            "line": 13,
+            "text": "0.06.465.085 W llama_kv_cache: layer 1: sharing with layer 33. k = 000000075698A100, v = 0000000756A56280"
+          },
+          {
+            "offset": 1652,
+            "line": 14,
+            "text": "0.06.465.089 W llama_kv_cache: layer 2: sharing with layer 33. k = 000000075698A100, v = 0000000756A56280"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-candidate_1785396843575665500.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 11048,
+      "sha256": "74e857e899da418b7d2345f44c637fa0ede18bb7d0ea90f08956fc9797efa2da",
+      "rows": 98,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10947,
+        "min_line_bytes": 48,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.162.271 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.301.275 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10813,
+            "line": 97,
+            "text": "0.21.929.158 I slot print_timing: id 0 | task 116 | draft acceptance = 0.43077 ( 56 accepted / 130 generated), mean len = 1.86"
+          },
+          {
+            "offset": 10947,
+            "line": 98,
+            "text": "0.21.929.237 I slot release: id 0 | task 116 | stop processing: n_tokens = 323, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_external_mtp_order1-candidate_1785396900086870100.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 11040,
+      "sha256": "a7d9b7d2fe9f79aa587def511782f1f923c7b9c33b446ed3b3d18f86c1d21826",
+      "rows": 98,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 2,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10940,
+        "min_line_bytes": 48,
+        "max_line_bytes": 165
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "0.00.159.162 I cmn common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)"
+          },
+          {
+            "offset": 109,
+            "line": 2,
+            "text": "0.00.296.710 I srv load_model: loading model 'D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf'"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10807,
+            "line": 97,
+            "text": "0.22.354.742 I slot print_timing: id 0 | task 95 | draft acceptance = 0.33333 ( 61 accepted / 183 generated), mean len = 2.00"
+          },
+          {
+            "offset": 10940,
+            "line": 98,
+            "text": "0.22.354.922 I slot release: id 0 | task 95 | stop processing: n_tokens = 324, truncated = 0"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_kv_q4_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 328534,
+      "sha256": "22da1513ffb5216155067ab7a49bb315ea09d4ce932451ed18ed23bcf19628e9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "smoke_gate_passed",
+          "stage_coverage"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_status",
+          "exact_equivalence",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "smoke_gate_passed",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 2,
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 328533
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed\", \"promotion_rule\", \"runtime\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed\", \"promotion_rule\", \"runtime\", \"s…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_kv_q4_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1562,
+      "sha256": "97d66bd7e49153e9e01975777e6c084eb5743a41aabf785d92f1ee6cec3404bd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "candidate",
+          "date",
+          "design",
+          "latency",
+          "production_changed",
+          "quality",
+          "schema",
+          "source_artifact",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "date",
+          "production_changed",
+          "schema",
+          "source_artifact"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1561
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"candidate\", \"date\", \"design\", \"latency\", \"production_changed\", \"quality\", \"schema\", \"source_artifact\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"candidate\", \"date\", \"design\", \"latency\", \"production_changed\", \"quality\", \"schema\", \"source_artifact\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_kv_unified_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51228,
+      "sha256": "0eb7f6d63e082ea0b653ff292a29de2ee144a87e1aa9a5b108b732e45ea8469b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "promotion_rule",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "exact_outputs",
+          "mode_contracts",
+          "promotion_rule",
+          "schema"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51227
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"exact_outputs\", \"mode_contracts\", \"promotion_rule\", \"runtime\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"exact_outputs\", \"mode_contracts\", \"promotion_rule\", \"runtime\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_kv_unified_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1301,
+      "sha256": "fe924b4e42eb9a12d95479edf266c9b779a307686353fe62c130ca76f5d4b96b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "candidate",
+          "decision",
+          "evidence",
+          "measured_on",
+          "runtime",
+          "schema",
+          "status"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baseline",
+          "candidate",
+          "decision",
+          "measured_on",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1300
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"candidate\", \"decision\", \"evidence\", \"measured_on\", \"runtime\", \"schema\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"candidate\", \"decision\", \"evidence\", \"measured_on\", \"runtime\", \"schema\", \"status\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_cache_dynamic_4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75388,
+      "sha256": "a77162936a97313a1183857573d4c3eb58cc9d9a07a51b8166cbfce3a5b34dc3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "latency_improved",
+          "measurement",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "required_stages",
+          "run_gate_passed",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "validation"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_equivalence",
+          "latency_improved",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "run_gate_passed",
+          "schema",
+          "smoke",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "required_stages": 3,
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75387
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_map_k4v_4x4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76202,
+      "sha256": "afadf3474f1b0a22f4b708be69241a33b0ee6aa1f9034fe24ba66c3a27ab8248",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "latency_improved",
+          "measurement",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "required_stages",
+          "run_gate_passed",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "validation"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_equivalence",
+          "latency_improved",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "run_gate_passed",
+          "schema",
+          "smoke",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "required_stages": 3,
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76201
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_map_k_12x4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76149,
+      "sha256": "30ed1ccfb66c9915bbf553ce8bd6230a34d5f29fe374638559c9c2d7ee6e02bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "latency_improved",
+          "measurement",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "required_stages",
+          "run_gate_passed",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "validation"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_equivalence",
+          "latency_improved",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "run_gate_passed",
+          "schema",
+          "smoke",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "required_stages": 3,
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76148
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_map_k_4x4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76132,
+      "sha256": "247d0ad5a134de31c21b12825f65ac7f7bdebc8902510236f5837b3f1d5e72cd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "latency_improved",
+          "measurement",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "required_stages",
+          "run_gate_passed",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "validation"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_equivalence",
+          "latency_improved",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "run_gate_passed",
+          "schema",
+          "smoke",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "required_stages": 3,
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76131
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_mod_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 346274,
+      "sha256": "df18e328ebe98592ab0c93b736008da016c46ab9bac984374e4afdde3e082aed",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "stage_coverage"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 2,
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 346273
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_mod_p_only_24_1_2_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 174066,
+      "sha256": "3ea93bdaba33013a747751be823e3b82cb4c7490837d1ef46538c63549f8bfdd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "stage_coverage"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 174065
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_mod_p_only_24_1_4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 174083,
+      "sha256": "302adf3d71ebf055bffb7fa3a7028e71a4cd35aee2b33e7c9efabc02bf85f581",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "stage_coverage"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 174082
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_mod_short_12_1_4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 163913,
+      "sha256": "4916fc8fe363dcfff28bf9a3b3263ba9d22c8ac5f6b8a6fe949c5a1e31404d3d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "stage_coverage"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 163912
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_mod_tuned_24_4_16_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 346602,
+      "sha256": "6cea27955ce5ab55d9819ad3681044493faef13c876d666fc3958afd842f2734",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "measurement",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "runtime",
+          "schema",
+          "stage_coverage"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "exact_equivalence",
+          "mode_contracts",
+          "opposite_order_improvement",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "schema",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "exact_case_outputs": 2,
+          "comparisons": 2,
+          "arms": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 346601
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"exact_case_outputs\", \"exact_equivalence\", \"measurement\", \"mode_contracts\", \"opposite_order_improvement\", \"promotion_gate_passed…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_mod_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3165,
+      "sha256": "faf761a7cc8d7e822ae3137f16c4fd10d47a7d95fd10f45c7bbffab3b22455c9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "date",
+          "design",
+          "profiles",
+          "schema",
+          "source_artifacts",
+          "verdict"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "date",
+          "schema"
+        ],
+        "list_lengths": {
+          "source_artifacts": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3164
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"date\", \"design\", \"profiles\", \"schema\", \"source_artifacts\", \"verdict\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"date\", \"design\", \"profiles\", \"schema\", \"source_artifacts\", \"verdict\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/llama_ngram_simple_12x4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76372,
+      "sha256": "f2ff21cd0b0f2caaa89530cefaa08ef4010e4792457694579962cf15487df07b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate",
+          "candidate_drafted",
+          "candidate_status",
+          "comparisons",
+          "control",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_case_outputs",
+          "exact_equivalence",
+          "latency_improved",
+          "measurement",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "required_stages",
+          "run_gate_passed",
+          "runtime",
+          "schema",
+          "smoke",
+          "stage_coverage",
+          "validation"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "arm_order",
+          "candidate_drafted",
+          "candidate_status",
+          "decisions_captured",
+          "evidence_complete",
+          "exact_equivalence",
+          "latency_improved",
+          "mode_contracts",
+          "promotion_gate_passed",
+          "promotion_rule",
+          "raw_tokens_captured",
+          "replies_captured",
+          "run_gate_passed",
+          "schema",
+          "smoke",
+          "stage_coverage"
+        ],
+        "list_lengths": {
+          "required_stages": 3,
+          "exact_case_outputs": 1,
+          "comparisons": 1,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76371
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate\", \"candidate_drafted\", \"candidate_status\", \"comparisons\", \"control\", \"decisions_captured\", \"evidence_complete\", \"exact_case_outputs\", \"exact_equivalence\", \"latency_improved\", \"measurement\", \"mode_c…"
+          }
+        ]
+      }
+    }
+  }
+}

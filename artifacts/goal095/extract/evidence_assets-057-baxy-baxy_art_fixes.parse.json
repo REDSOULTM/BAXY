@@ -1,0 +1,3251 @@
+{
+  "batch_id": "evidence_assets-057-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 52,
+  "hash_ok": 52,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/python-full.xml": {
+      "parser": "xml",
+      "bytes": 167011,
+      "sha256": "138558ceb27636592909fba7716df9b4e8d7a64f12f59a3358a6cd321b5d0933",
+      "rows": 1069,
+      "schema": {
+        "keys": [
+          "testcase",
+          "testsuite",
+          "testsuites"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "testcase": 1067,
+          "testsuite": 1,
+          "testsuites": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 167010
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<testcase>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<testcase>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1068,
+            "text": "<testsuite>"
+          },
+          {
+            "offset": 0,
+            "line": 1069,
+            "text": "<testsuites>"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/evidence/windows-providers/aud-005-022-runtime-evidence.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9551,
+      "sha256": "b2c8c8172ccc54e0d988014197a784e84187b99df8045a847498191d07e314c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "automatedValidation",
+          "branch",
+          "physicalReproductions",
+          "recordedAtUtc",
+          "repository",
+          "restoration",
+          "runtimes",
+          "sanitization",
+          "schema",
+          "scope",
+          "sourceCommit"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "branch",
+          "recordedAtUtc",
+          "repository",
+          "schema",
+          "sourceCommit"
+        ],
+        "list_lengths": {
+          "scope": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9550
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"automatedValidation\", \"branch\", \"physicalReproductions\", \"recordedAtUtc\", \"repository\", \"restoration\", \"runtimes\", \"sanitization\", \"schema\", \"scope\", \"sourceCommit\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"automatedValidation\", \"branch\", \"physicalReproductions\", \"recordedAtUtc\", \"repository\", \"restoration\", \"runtimes\", \"sanitization\", \"schema\", \"scope\", \"sourceCommit\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-adversarial-final-cases.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6573,
+      "sha256": "b39c681bdb1b7d86cd25ee1f62e1dcbdc641463c0fe9005fb5b5c3dace3363bd",
+      "rows": 62,
+      "schema": {
+        "root": "array",
+        "n": 62,
+        "elem_keys": [
+          "forbiddenOperations",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6572
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Busca Spotify en Google\", \"forbiddenOperations\": [\"media.play.query\", \"media.play.exact\"]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6572,
+            "line": 62,
+            "text": "{\"text\": \"¿Está instalada Asistencia rápida?\", \"expectedKind\": \"action\", \"expectedOperation\": \"app.installed\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-adversarial-final-results.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 31427,
+      "sha256": "aadf353817ad6ad7977f07496fc879362eea7d3418bd603af1c1815ebf4f128e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 42
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31426,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 40,
+          "max": 40
+        },
+        "failed": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-adversarial-no-effect-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12238,
+      "sha256": "351702fd53b9dc48e236eb4e3dc1b6b44af69b983a44de5536fae75c1470b7a4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 16
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12237,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 16,
+          "max": 16
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-adversarial-no-effect-cases.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2423,
+      "sha256": "970a606bb2efc9ad1b2fe0d66cb7c68be9f056b2985de96150017ab544bfe31f",
+      "rows": 28,
+      "schema": {
+        "root": "array",
+        "n": 28,
+        "elem_keys": [
+          "forbiddenKinds",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2422
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Don't open Spotify\", \"forbiddenKinds\": [\"action\", \"plan\"]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2422,
+            "line": 28,
+            "text": "{\"text\": \"Open Spotify but do not open Spotify\", \"forbiddenKinds\": [\"action\", \"plan\"]}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-adversarial-no-effect-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 21065,
+      "sha256": "d0d2e51b7cfb0b174f74248757c667328833d8efaa30856e1ba36dcfbb780326",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 28
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21064,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 28,
+          "max": 28
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-adversarial-no-effect-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 21028,
+      "sha256": "9cbe1ca1478274c8822dc7f8368c9ffbbbd59eac0dd440e6d685ed0b35d52ae3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 28
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21027,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 23,
+          "max": 23
+        },
+        "failed": {
+          "min": 5,
+          "max": 5
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-after-development.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 35719,
+      "sha256": "fed9c933205459b116627bf52ece883966700ba8481a849a4937e7eec15c48b5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "measured_at",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35718,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"history\", \"measured_at\", \"mind_hello\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"history\", \"measured_at\", \"mind_hello\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-after-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43199,
+      "sha256": "62ee5fd02c3439fd11e52a78e8e720ea4e252fddd3bb5af9cd2acf4529606a0f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43198,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 59,
+          "max": 59
+        },
+        "failed": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-after-source-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43688,
+      "sha256": "76ad6fde78c2114d960252cbcadcf185126e1b9477de98dca71275ecfd33b12e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43687,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 60,
+          "max": 60
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-after-source-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43676,
+      "sha256": "5c315c2584994bedce54fe7bfa7c24e3aeac9c73562dc49c0a1e365d51797964",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43675,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 60,
+          "max": 60
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-before.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37005,
+      "sha256": "c3baa52f7f3718fe1589ad2b73fcb6a24ea57296038c3ca4063a0792d6a1879e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "measured_at",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37004,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"history\", \"measured_at\", \"mind_hello\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"history\", \"measured_at\", \"mind_hello\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-compound-cardinality-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12172,
+      "sha256": "1f696cd38b9346155a13754fb5db202b7d5a924a737403f667ab3329b4cc1e8a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12171,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 6,
+          "max": 6
+        },
+        "failed": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-compound-cardinality-cases.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1993,
+      "sha256": "9f01ae687cb3d5cc43907d912e67d3e51bb46f191b3cd73fd87537216c5baf4d",
+      "rows": 12,
+      "schema": {
+        "root": "array",
+        "n": 12,
+        "elem_keys": [
+          "expectedKind",
+          "expectedPlanOperations",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1992
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Abre calculadora y abre Spotify\", \"expectedKind\": \"plan\", \"expectedPlanOperations\": [\"app.open\", \"app.open\"]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1992,
+            "line": 12,
+            "text": "{\"text\": \"Pon el volumen al 8% y luego al 12%\", \"expectedKind\": \"plan\", \"expectedPlanOperations\": [\"audio.volume\", \"audio.volume\"]}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-compound-cardinality-final-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19816,
+      "sha256": "ea9da123bf32942aa6e5e5083c557d4f4e07b3eef6de0ef237f467ec2b1242b9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19815,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 12,
+          "max": 12
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-compound-cardinality-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13477,
+      "sha256": "69a8398ad07706a333e802d787f161179775170e65ac0e5c2882d4659b8c585d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13476,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 8,
+          "max": 8
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-compound-spotify-after.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2555,
+      "sha256": "350d1af553ef963c03b1808594f365e1a3c96a3efaca3e79262e15fa09cd71e4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2554,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 1,
+          "max": 1
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-compound-spotify-case.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 212,
+      "sha256": "4c40a322473b5cb3a710149e6e404303704d6efc4cbda7c1da46ce019fdb5080",
+      "rows": 1,
+      "schema": {
+        "root": "array",
+        "n": 1,
+        "elem_keys": [
+          "expectedKind",
+          "expectedPlanOperations",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 211
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Abre Spotify, reproduce exactamente Beat It y después pausa\", \"expectedKind\": \"plan\", \"expectedPlanOperations\": [\"media.play.exact\", \"media.control\"]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 211,
+            "line": 1,
+            "text": "{\"text\": \"Abre Spotify, reproduce exactamente Beat It y después pausa\", \"expectedKind\": \"plan\", \"expectedPlanOperations\": [\"media.play.exact\", \"media.control\"]}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-live-regressions-final-cases.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1100,
+      "sha256": "998d96233ba64b70c1e4d7ada63a71e7475d8b67ecb69e5b65834bb8dfa4414c",
+      "rows": 10,
+      "schema": {
+        "root": "array",
+        "n": 10,
+        "elem_keys": [
+          "expectedKind",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1099
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Hola\", \"expectedKind\": \"conversation\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1099,
+            "line": 10,
+            "text": "{\"text\": \"Abre Asistencia rápida\", \"expectedKind\": \"action\", \"expectedOperation\": \"app.open\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-original-60-final-cases.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9723,
+      "sha256": "3f17a0952cc73b8e274f82d56db848f12385633508cebf9bd5a87b50b2651925",
+      "rows": 60,
+      "schema": {
+        "root": "array",
+        "n": 60,
+        "elem_keys": [
+          "expectedKind",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9722
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Hola\", \"expectedKind\": \"conversation\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9722,
+            "line": 60,
+            "text": "{\"text\": \"Abre Spotify, reproduce exactamente Beat It y después pausa\", \"expectedKind\": \"plan\", \"expectedPlanOperations\": [\"media.play.exact\", \"media.control\"]}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-partial-effect-cases.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 486,
+      "sha256": "124c61041ab473ab8b0817b0fb378b3687592d33cf44f801219bcb083b76a903",
+      "rows": 4,
+      "schema": {
+        "root": "array",
+        "n": 4,
+        "elem_keys": [
+          "forbiddenOperationSequences",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 485
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"Abre calculadora y envía un mensaje a Ana\", \"forbiddenOperationSequences\": [[\"app.open\"]]}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 485,
+            "line": 4,
+            "text": "{\"text\": \"Crea una nota y borra la nota anterior\", \"forbiddenOperationSequences\": [[\"note.create\"]]}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/2026-07-27-audit-remediation/routing-partial-effects-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4510,
+      "sha256": "444ff7d4d7c33ae2ba745937312763bd8c42148840f4c07d7009dd169cc460fb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "failed",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "passed",
+          "schema"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "failed",
+          "measured_at",
+          "passed",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 1,
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4509,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "passed": {
+          "min": 3,
+          "max": 3
+        },
+        "failed": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"failed\", \"history\", \"measured_at\", \"mind_hello\", \"passed\", \"schema\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_keystroke_to_paint_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14942,
+      "sha256": "0e8224e51959d99d88d26d209dd557d6b760c8ff89dcb3b58d0e87f7b3534db7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "action_route",
+          "all_routes",
+          "conversation_route",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "raw_trace",
+          "schema",
+          "turns",
+          "what_this_measures"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "raw_trace",
+          "schema",
+          "what_this_measures"
+        ],
+        "list_lengths": {
+          "turns": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14941,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"action_route\", \"all_routes\", \"conversation_route\", \"effects_executed\", \"measured_at_utc\", \"method\", \"raw_trace\", \"schema\", \"turns\", \"what_this_measures\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"action_route\", \"all_routes\", \"conversation_route\", \"effects_executed\", \"measured_at_utc\", \"method\", \"raw_trace\", \"schema\", \"turns\", \"what_this_measures\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_keystroke_to_paint_v2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16600,
+      "sha256": "f85263dc09c999fd4785981d3063df87e8fae1accb85a34d46891ad5390fb109",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "action_route",
+          "all_routes",
+          "conversation_route",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "raw_trace",
+          "schema",
+          "turns",
+          "what_this_measures"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "raw_trace",
+          "schema",
+          "what_this_measures"
+        ],
+        "list_lengths": {
+          "turns": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16599,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"action_route\", \"all_routes\", \"conversation_route\", \"effects_executed\", \"measured_at_utc\", \"method\", \"raw_trace\", \"schema\", \"turns\", \"what_this_measures\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"action_route\", \"all_routes\", \"conversation_route\", \"effects_executed\", \"measured_at_utc\", \"method\", \"raw_trace\", \"schema\", \"turns\", \"what_this_measures\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_endtoend_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5686,
+      "sha256": "ee14a2a81570bc9bfa95eca48faea437812e0c752a4b17e1939cb88b72a343a3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "caveats",
+          "clock",
+          "drive_method",
+          "effects_executed",
+          "measured_at_utc",
+          "raw_trace",
+          "schema",
+          "segment_summary",
+          "session",
+          "turns",
+          "what_this_is"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "clock",
+          "drive_method",
+          "effects_executed",
+          "measured_at_utc",
+          "raw_trace",
+          "schema",
+          "session",
+          "what_this_is"
+        ],
+        "list_lengths": {
+          "caveats": 3,
+          "turns": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5685,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"caveats\", \"clock\", \"drive_method\", \"effects_executed\", \"measured_at_utc\", \"raw_trace\", \"schema\", \"segment_summary\", \"session\", \"turns\", \"what_this_is\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"caveats\", \"clock\", \"drive_method\", \"effects_executed\", \"measured_at_utc\", \"raw_trace\", \"schema\", \"segment_summary\", \"session\", \"turns\", \"what_this_is\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_trace_20260730.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10283,
+      "sha256": "22a07f2f397adee2eafd2a6079bd035826e56d11b7d8d509dabd0f129320c29a",
+      "rows": 109,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 109,
+          "ms": 109,
+          "scope": 109,
+          "id": 109,
+          "stage": 109,
+          "detail": 109
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10189,
+        "min_line_bytes": 88,
+        "max_line_bytes": 108,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 109.0
+          },
+          "ms": {
+            "min": 0.427,
+            "max": 600239.232
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.427,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":341.747,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10098,
+            "line": 108,
+            "text": "{\"seq\":108,\"ms\":600218.771,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 10189,
+            "line": 109,
+            "text": "{\"seq\":109,\"ms\":600239.232,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_trace_abba2_20260730.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21222,
+      "sha256": "496bce55f77ff0170d124cb9f5024173f243c4d72a3b7de1ef096afde5499c69",
+      "rows": 225,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 225,
+          "ms": 225,
+          "scope": 225,
+          "id": 225,
+          "stage": 225,
+          "detail": 225
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21128,
+        "min_line_bytes": 87,
+        "max_line_bytes": 109,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 225.0
+          },
+          "ms": {
+            "min": 0.563,
+            "max": 293660.159
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.563,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":329.671,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21037,
+            "line": 224,
+            "text": "{\"seq\":224,\"ms\":293637.945,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 21128,
+            "line": 225,
+            "text": "{\"seq\":225,\"ms\":293660.159,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_trace_abba_20260730.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 18917,
+      "sha256": "5dca8bc92e2dca0d8381e9099a4fb764608da07285d0ffd3e1daf79c7ace4de7",
+      "rows": 201,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 201,
+          "ms": 201,
+          "scope": 201,
+          "id": 201,
+          "stage": 201,
+          "detail": 201
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18823,
+        "min_line_bytes": 87,
+        "max_line_bytes": 109,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 201.0
+          },
+          "ms": {
+            "min": 0.404,
+            "max": 291880.131
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.404,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":336.897,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18732,
+            "line": 200,
+            "text": "{\"seq\":200,\"ms\":291839.652,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 18823,
+            "line": 201,
+            "text": "{\"seq\":201,\"ms\":291880.131,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_trace_scope_after_20260730.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21408,
+      "sha256": "c9a9b9175f9e60bb1852acbe2ef26f56a7e67c7e1c31f72172ed6f03ba782452",
+      "rows": 227,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 227,
+          "ms": 227,
+          "scope": 227,
+          "id": 227,
+          "stage": 227,
+          "detail": 227
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21314,
+        "min_line_bytes": 87,
+        "max_line_bytes": 109,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 227.0
+          },
+          "ms": {
+            "min": 0.425,
+            "max": 292591.476
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.425,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":380.994,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21223,
+            "line": 226,
+            "text": "{\"seq\":226,\"ms\":292573.512,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 21314,
+            "line": 227,
+            "text": "{\"seq\":227,\"ms\":292591.476,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 72047,
+      "sha256": "fafdbce78a9e54bca8d5de6ff65eccbdaa37766b429543557cf07e1e3c85c18b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "attribution",
+          "blocks_unattributed",
+          "by_arm",
+          "by_route",
+          "by_scenario",
+          "cold_vs_warm_keystroke_to_paint",
+          "design",
+          "effects_executed",
+          "environment_after",
+          "environment_before",
+          "first_turn_of_each_block",
+          "harness",
+          "honesty",
+          "later_turns_of_each_block",
+          "measured_at_utc",
+          "readings",
+          "run_id",
+          "samples",
+          "samples_attributed",
+          "scenario_fixture_sha256",
+          "schema"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "attribution",
+          "design",
+          "effects_executed",
+          "harness",
+          "honesty",
+          "measured_at_utc",
+          "run_id",
+          "samples_attributed",
+          "scenario_fixture_sha256",
+          "schema"
+        ],
+        "list_lengths": {
+          "blocks_unattributed": 0,
+          "samples": 40,
+          "readings": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 72046,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "samples_attributed": {
+          "min": 40,
+          "max": 40
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attribution\", \"blocks_unattributed\", \"by_arm\", \"by_route\", \"by_scenario\", \"cold_vs_warm_keystroke_to_paint\", \"design\", \"effects_executed\", \"environment_after\", \"environment_before\", \"first_turn_of_each_block\", \"harness\", \"honest…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attribution\", \"blocks_unattributed\", \"by_arm\", \"by_route\", \"by_scenario\", \"cold_vs_warm_keystroke_to_paint\", \"design\", \"effects_executed\", \"environment_after\", \"environment_before\", \"first_turn_of_each_block\", \"harness\", \"honest…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3/index-c1969c8efd404abc90a210ff06eefbdd.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 23646,
+      "sha256": "8fc754adad05d7506f0ffd149e217b1bfef962ae8b18e30282fc9d885d1d9694",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blocks",
+          "design",
+          "effects_executed",
+          "environment_after",
+          "environment_before",
+          "measured_at_utc",
+          "rounds",
+          "run_id",
+          "scenario_fixture",
+          "schema"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "design",
+          "effects_executed",
+          "measured_at_utc",
+          "rounds",
+          "run_id",
+          "schema"
+        ],
+        "list_lengths": {
+          "blocks": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23645,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "rounds": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blocks\", \"design\", \"effects_executed\", \"environment_after\", \"environment_before\", \"measured_at_utc\", \"rounds\", \"run_id\", \"scenario_fixture\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blocks\", \"design\", \"effects_executed\", \"environment_after\", \"environment_before\", \"measured_at_utc\", \"rounds\", \"run_id\", \"scenario_fixture\", \"schema\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3/trace-c1969c8efd404abc90a210ff06eefbdd-r0b0-cold.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27071,
+      "sha256": "26dfb991d0e4f298615aef8f9430a607f23f1281a1afc27832660b8d980d055a",
+      "rows": 286,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 286,
+          "ms": 286,
+          "scope": 286,
+          "id": 286,
+          "stage": 286,
+          "detail": 286
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26977,
+        "min_line_bytes": 87,
+        "max_line_bytes": 110,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 286.0
+          },
+          "ms": {
+            "min": 0.723,
+            "max": 449745.939
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.723,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":441.223,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26886,
+            "line": 285,
+            "text": "{\"seq\":285,\"ms\":449724.302,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 26977,
+            "line": 286,
+            "text": "{\"seq\":286,\"ms\":449745.939,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3/trace-c1969c8efd404abc90a210ff06eefbdd-r0b3-cold.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9914,
+      "sha256": "8f689616f231bea777b1be322097e0342a1afd5c56a314e0e448bbf1a4ca95f1",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 106,
+          "ms": 106,
+          "scope": 106,
+          "id": 106,
+          "stage": 106,
+          "detail": 106
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9820,
+        "min_line_bytes": 87,
+        "max_line_bytes": 107,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 106.0
+          },
+          "ms": {
+            "min": 0.4,
+            "max": 142510.118
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.400,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":333.638,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9729,
+            "line": 105,
+            "text": "{\"seq\":105,\"ms\":142492.757,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 9820,
+            "line": 106,
+            "text": "{\"seq\":106,\"ms\":142510.118,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3/trace-c1969c8efd404abc90a210ff06eefbdd-r1b0-warm.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 11273,
+      "sha256": "e9d7ed2a3cc834310f62e7cd700af2ceb64fe53a6debb4200acbb47b14d4e033",
+      "rows": 120,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 120,
+          "ms": 120,
+          "scope": 120,
+          "id": 120,
+          "stage": 120,
+          "detail": 120
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11179,
+        "min_line_bytes": 87,
+        "max_line_bytes": 108,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 120.0
+          },
+          "ms": {
+            "min": 0.405,
+            "max": 235443.65
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.405,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":331.805,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 11088,
+            "line": 119,
+            "text": "{\"seq\":119,\"ms\":235424.968,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 11179,
+            "line": 120,
+            "text": "{\"seq\":120,\"ms\":235443.650,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3/trace-c1969c8efd404abc90a210ff06eefbdd-r1b1-cold.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9914,
+      "sha256": "4fa442f96c0cc3325be33ddfc82996ac92b934ffbb757a2c3c1bb8c2f565bd8b",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 106,
+          "ms": 106,
+          "scope": 106,
+          "id": 106,
+          "stage": 106,
+          "detail": 106
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9820,
+        "min_line_bytes": 87,
+        "max_line_bytes": 107,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 106.0
+          },
+          "ms": {
+            "min": 0.407,
+            "max": 142018.173
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.407,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":322.628,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9729,
+            "line": 105,
+            "text": "{\"seq\":105,\"ms\":142000.120,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 9820,
+            "line": 106,
+            "text": "{\"seq\":106,\"ms\":142018.173,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3/trace-c1969c8efd404abc90a210ff06eefbdd-r1b2-cold.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 18468,
+      "sha256": "4bee86b16aabc778dbadbae58e639d9b787808e649a485832e831c2d59149190",
+      "rows": 196,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 196,
+          "ms": 196,
+          "scope": 196,
+          "id": 196,
+          "stage": 196,
+          "detail": 196
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18374,
+        "min_line_bytes": 87,
+        "max_line_bytes": 109,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 196.0
+          },
+          "ms": {
+            "min": 0.44,
+            "max": 298306.203
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.440,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":398.119,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18283,
+            "line": 195,
+            "text": "{\"seq\":195,\"ms\":298288.054,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 18374,
+            "line": 196,
+            "text": "{\"seq\":196,\"ms\":298306.203,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3_aborted_run/harness.log": {
+      "parser": "log",
+      "encoding": "utf-8-sig",
+      "bytes": 2254,
+      "sha256": "f694ba8657833be0b3577ecf951703d7477fc606d469503308d62ed05902a65a",
+      "rows": 40,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 5,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2251,
+        "min_line_bytes": 2,
+        "max_line_bytes": 123
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "powershell : You must install or update .NET to run this application."
+          },
+          {
+            "offset": 74,
+            "line": 2,
+            "text": "En línea: 1 Carácter: 495"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2155,
+            "line": 39,
+            "text": "834effac41a69040e898538eb82f-r0b0-cold.jsonl; lo que arrancÃ³ no es la app instrumentada."
+          },
+          {
+            "offset": 2251,
+            "line": 40,
+            "text": ""
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3_aborted_run/probe.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 860,
+      "sha256": "a2b1dde0bee26b2d8938f3422d3106adee10a8801521548f217ead9ce8652750",
+      "rows": 9,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 9,
+          "ms": 9,
+          "scope": 9,
+          "id": 9,
+          "stage": 9,
+          "detail": 9
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 772,
+        "min_line_bytes": 88,
+        "max_line_bytes": 101,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 9.0
+          },
+          "ms": {
+            "min": 0.454,
+            "max": 6327.54
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.454,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":614.995,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 671,
+            "line": 8,
+            "text": "{\"seq\":8,\"ms\":5660.419,\"scope\":\"turn\",\"id\":\"t0\",\"stage\":\"core.call.start\",\"detail\":\"memory.status\"}"
+          },
+          {
+            "offset": 772,
+            "line": 9,
+            "text": "{\"seq\":9,\"ms\":6327.540,\"scope\":\"turn\",\"id\":\"t0\",\"stage\":\"core.call.end\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3_aborted_run/trace-33a32fd1c0434019b1fdc5c7c197f3e5-r0b0-cold.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27071,
+      "sha256": "9ad1596012541e6cb08a381a54fd78a350fc0249286694a217315381918e8918",
+      "rows": 286,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 286,
+          "ms": 286,
+          "scope": 286,
+          "id": 286,
+          "stage": 286,
+          "detail": 286
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26977,
+        "min_line_bytes": 87,
+        "max_line_bytes": 110,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 286.0
+          },
+          "ms": {
+            "min": 0.467,
+            "max": 448492.857
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.467,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":382.759,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26886,
+            "line": 285,
+            "text": "{\"seq\":285,\"ms\":448473.289,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 26977,
+            "line": 286,
+            "text": "{\"seq\":286,\"ms\":448492.857,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3_aborted_run/trace-33a32fd1c0434019b1fdc5c7c197f3e5-r0b3-cold.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9914,
+      "sha256": "8e14c9a12117479f5bb40c865e528b5ab78cad1d5efa2ba7b22c3994863bca09",
+      "rows": 106,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 106,
+          "ms": 106,
+          "scope": 106,
+          "id": 106,
+          "stage": 106,
+          "detail": 106
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9820,
+        "min_line_bytes": 87,
+        "max_line_bytes": 107,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 106.0
+          },
+          "ms": {
+            "min": 0.403,
+            "max": 142627.163
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.403,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":324.473,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 9729,
+            "line": 105,
+            "text": "{\"seq\":105,\"ms\":142604.341,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 9820,
+            "line": 106,
+            "text": "{\"seq\":106,\"ms\":142627.163,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/app_visible_path_v3_aborted_run/trace-33a32fd1c0434019b1fdc5c7c197f3e5-r1b0-warm.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4219,
+      "sha256": "a3c82f9219e6d4210a0943c37c008a8160a01ac527311013d11f0e9ae9ecfdb3",
+      "rows": 45,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "seq",
+          "ms",
+          "scope",
+          "id",
+          "stage",
+          "detail"
+        ],
+        "key_freq": {
+          "seq": 45,
+          "ms": 45,
+          "scope": 45,
+          "id": 45,
+          "stage": 45,
+          "detail": 45
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4126,
+        "min_line_bytes": 87,
+        "max_line_bytes": 107,
+        "numeric": {
+          "seq": {
+            "min": 1.0,
+            "max": 45.0
+          },
+          "ms": {
+            "min": 0.53,
+            "max": 114308.942
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"seq\":1,\"ms\":0.530,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"process.start\",\"detail\":null}"
+          },
+          {
+            "offset": 93,
+            "line": 2,
+            "text": "{\"seq\":2,\"ms\":396.852,\"scope\":\"startup\",\"id\":\"process\",\"stage\":\"window.created\",\"detail\":null}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4036,
+            "line": 44,
+            "text": "{\"seq\":44,\"ms\":114268.703,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"dom.applied\",\"detail\":null}"
+          },
+          {
+            "offset": 4126,
+            "line": 45,
+            "text": "{\"seq\":45,\"ms\":114308.942,\"scope\":\"turn\",\"id\":\"msg\",\"stage\":\"paint.observed\",\"detail\":null}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/architecture_scenarios_audit_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4448,
+      "sha256": "b6552a18758d14234ca266d4c630f957a154f41809eda3142adbd13741277e85",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cancellation",
+          "cold_start",
+          "concurrency_owned_server_64tok_decodes",
+          "effect_free",
+          "host_state",
+          "measured_at_utc",
+          "schema",
+          "slots_and_kv",
+          "soak_4_consecutive_full_runs",
+          "thermal_comparability_note",
+          "transport",
+          "visible_response_boundary",
+          "warm_runtime"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effect_free",
+          "host_state",
+          "measured_at_utc",
+          "schema",
+          "thermal_comparability_note",
+          "visible_response_boundary"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4447
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cancellation\", \"cold_start\", \"concurrency_owned_server_64tok_decodes\", \"effect_free\", \"host_state\", \"measured_at_utc\", \"schema\", \"slots_and_kv\", \"soak_4_consecutive_full_runs\", \"thermal_comparability_note\", \"transport\", \"visible…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cancellation\", \"cold_start\", \"concurrency_owned_server_64tok_decodes\", \"effect_free\", \"host_state\", \"measured_at_utc\", \"schema\", \"slots_and_kv\", \"soak_4_consecutive_full_runs\", \"thermal_comparability_note\", \"transport\", \"visible…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/b9553_mtp_assistant_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37144,
+      "sha256": "fd2b4c3ff52bea5fac9a803706c7d56d2401bc92f9475d5b81bc00e0a8413025",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assistant_gguf",
+          "block_order",
+          "blocks",
+          "measured_at_utc",
+          "rounds_per_block",
+          "schema",
+          "scope",
+          "server",
+          "summary",
+          "target_gguf"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "assistant_gguf",
+          "measured_at_utc",
+          "rounds_per_block",
+          "schema",
+          "scope",
+          "server",
+          "target_gguf"
+        ],
+        "list_lengths": {
+          "block_order": 4,
+          "blocks": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37143,
+        "rounds_per_block": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assistant_gguf\", \"block_order\", \"blocks\", \"measured_at_utc\", \"rounds_per_block\", \"schema\", \"scope\", \"server\", \"summary\", \"target_gguf\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assistant_gguf\", \"block_order\", \"blocks\", \"measured_at_utc\", \"rounds_per_block\", \"schema\", \"scope\", \"server\", \"summary\", \"target_gguf\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/b9553_mtp_assistant_ab_v2_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37091,
+      "sha256": "7f2de8ff9a77864c8aed73abc62339ca5986c863fc6a3bf1e4137f1fc9a22c26",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assistant_gguf",
+          "block_order",
+          "blocks",
+          "measured_at_utc",
+          "rounds_per_block",
+          "schema",
+          "scope",
+          "server",
+          "summary",
+          "target_gguf"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "assistant_gguf",
+          "measured_at_utc",
+          "rounds_per_block",
+          "schema",
+          "scope",
+          "server",
+          "target_gguf"
+        ],
+        "list_lengths": {
+          "block_order": 4,
+          "blocks": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37090,
+        "rounds_per_block": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assistant_gguf\", \"block_order\", \"blocks\", \"measured_at_utc\", \"rounds_per_block\", \"schema\", \"scope\", \"server\", \"summary\", \"target_gguf\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assistant_gguf\", \"block_order\", \"blocks\", \"measured_at_utc\", \"rounds_per_block\", \"schema\", \"scope\", \"server\", \"summary\", \"target_gguf\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/b9553_mtp_assistant_ab_v3_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 37077,
+      "sha256": "434a6bb41313763415771604b0baab97cd55f245310db1ad3f37788fb0f8aeb0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assistant_gguf",
+          "block_order",
+          "blocks",
+          "measured_at_utc",
+          "rounds_per_block",
+          "schema",
+          "scope",
+          "server",
+          "summary",
+          "target_gguf"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "assistant_gguf",
+          "measured_at_utc",
+          "rounds_per_block",
+          "schema",
+          "scope",
+          "server",
+          "target_gguf"
+        ],
+        "list_lengths": {
+          "block_order": 4,
+          "blocks": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37076,
+        "rounds_per_block": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assistant_gguf\", \"block_order\", \"blocks\", \"measured_at_utc\", \"rounds_per_block\", \"schema\", \"scope\", \"server\", \"summary\", \"target_gguf\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assistant_gguf\", \"block_order\", \"blocks\", \"measured_at_utc\", \"rounds_per_block\", \"schema\", \"scope\", \"server\", \"summary\", \"target_gguf\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/b9553_mtp_assistant_verdict_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3413,
+      "sha256": "4a21be2e09592e4f573487e6e879483541edb1c5ade41d96b419cd260ffb8602",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "ab_protocol",
+          "assets",
+          "authorization",
+          "effect_free",
+          "evidence",
+          "interpretation",
+          "load_gates",
+          "measured_at_utc",
+          "results",
+          "schema",
+          "scope_limits",
+          "status"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "ab_protocol",
+          "authorization",
+          "effect_free",
+          "interpretation",
+          "measured_at_utc",
+          "schema",
+          "scope_limits",
+          "status"
+        ],
+        "list_lengths": {
+          "evidence": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3412
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"ab_protocol\", \"assets\", \"authorization\", \"effect_free\", \"evidence\", \"interpretation\", \"load_gates\", \"measured_at_utc\", \"results\", \"schema\", \"scope_limits\", \"status\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"ab_protocol\", \"assets\", \"authorization\", \"effect_free\", \"evidence\", \"interpretation\", \"load_gates\", \"measured_at_utc\", \"results\", \"schema\", \"scope_limits\", \"status\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/baxy_presentable_ceiling_verdict_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10271,
+      "sha256": "9b31041c7aa05dc94f0c84ef818cc08d627057cfcf8a4282fec274f73791ab33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "answer",
+          "baseline",
+          "canonical_validation",
+          "controlled_ceiling_measurements",
+          "fixed_visible_reply_closure",
+          "measured_at_utc",
+          "mission_targets",
+          "next_safe_gate",
+          "oracle_audit",
+          "promotion_decisions",
+          "question",
+          "reproduction",
+          "schema",
+          "state"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "answer",
+          "measured_at_utc",
+          "question",
+          "schema",
+          "state"
+        ],
+        "list_lengths": {
+          "controlled_ceiling_measurements": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10270
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"answer\", \"baseline\", \"canonical_validation\", \"controlled_ceiling_measurements\", \"fixed_visible_reply_closure\", \"measured_at_utc\", \"mission_targets\", \"next_safe_gate\", \"oracle_audit\", \"promotion_decisions\", \"question\", \"reproduct…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"answer\", \"baseline\", \"canonical_validation\", \"controlled_ceiling_measurements\", \"fixed_visible_reply_closure\", \"measured_at_utc\", \"mission_targets\", \"next_safe_gate\", \"oracle_audit\", \"promotion_decisions\", \"question\", \"reproduct…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/baxy_presentable_verdict_20260801.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6311,
+      "sha256": "9711d3201ca9ad97cd0bc2d5a78d099544317e8ccfc683a9a81383dea6a566f7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "authority_audit",
+          "canonical_validation",
+          "complete_product_oracle",
+          "measured_at_utc",
+          "ocr_runtime",
+          "offline_classifier",
+          "oracle_cleaning",
+          "physical_abba",
+          "physical_plan_execution",
+          "registered_runtime",
+          "rollback",
+          "schema",
+          "scope",
+          "targets",
+          "verdict"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6310
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"authority_audit\", \"canonical_validation\", \"complete_product_oracle\", \"measured_at_utc\", \"ocr_runtime\", \"offline_classifier\", \"oracle_cleaning\", \"physical_abba\", \"physical_plan_execution\", \"registered_runtime\", \"r…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"authority_audit\", \"canonical_validation\", \"complete_product_oracle\", \"measured_at_utc\", \"ocr_runtime\", \"offline_classifier\", \"oracle_cleaning\", \"physical_abba\", \"physical_plan_execution\", \"registered_runtime\", \"r…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_action_tail_composition_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1917655,
+      "sha256": "5a1291df079a7f94ac27acc94a01dcf605b304ca7808c3dfa26af3b2ada99ec9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 552
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1917654,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_action_tail_composition_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1193185,
+      "sha256": "f60bf54e325b94934d8ae501ab03fdbaae5a8e441f338ffc22388e8f15c0e87b",
+      "rows": 1104,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 1104,
+          "phase": 1104,
+          "raw_decision": 1104,
+          "request_id": 1104,
+          "schema": 1104,
+          "stages": 1104,
+          "final": 553
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1191531,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2010,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 334,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1191143,
+            "line": 1103,
+            "text": "{\"candidate_operations\":[\"note.create\",\"app.close\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"note.create\",\"app.close\"],\"effect_verification\":\"multiple\",\"mode\":\"plan\",\"oper…"
+          },
+          {
+            "offset": 1191531,
+            "line": 1104,
+            "text": "{\"candidate_operations\":[\"note.create\",\"app.close\"],\"final\":{\"effect_operations\":[\"note.create\",\"app.close\"],\"intent_operations\":[\"note.create\",\"app.close\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_coun…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/catalog_cross_action_tail_composition_r2_clause_scoped.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1923006,
+      "sha256": "784081047b13e9681f9d7406bbe94769e11422a6772addcf89bbebe492414949",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 552
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1923005,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

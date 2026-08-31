@@ -1,0 +1,2046 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-039-baxy-baxy_art_development",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:42:11Z",
+  "closed_utc": "2026-08-31T05:42:12Z",
+  "estimated_tokens": 295340,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 48,
+  "subsystem": "baxy_art_development",
+  "subsystems": [
+    "baxy_art_development"
+  ],
+  "files": [
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json",
+      "sha256": "e1c8270a3e8d5145e05ac5a7715ee4ec0a9550c091946b542a047288e2c579d1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log",
+      "sha256": "6d4dfece86987063fd1edd72ec6b5804ee58c8326777ee4c7afbf0c86532a5e7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json",
+      "sha256": "f862f7e3084513f5e7504536b1d1e4ff3137aa487cdc481aac43397d75b7b5e8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json",
+      "sha256": "de381569b21274920079c2542a9ae2a086ffa88fa9140742cab38821f2f3a386",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json",
+      "sha256": "40b4a7b0a8d954712e71eb1b00e1158b9021d27e65ec2e1ebf30d02047fc014d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+      "sha256": "dffc918eda5886423812021c6588499bb95a08689de8bbd13e3031e75c55c06d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json",
+      "sha256": "1801fb3851a2231be92c639b8d513cffd59f9630d12d8e3b2a57ebd571a30c54",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log",
+      "sha256": "732ab38c968dfe7b8891f122624654688e475426774ac03543e9c4b23153429d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json",
+      "sha256": "4f787d43692d41a10ac571bd2fd7e1ff99efc9c89254765a33d91f0c44d61846",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log",
+      "sha256": "9d37ac57480b6515712236eeca1ad7f6fcc3b6498a8f12a83664a8dd2dfeea0f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json",
+      "sha256": "992129b3b000a8d75c303a6209af005a81c71b2fc7bfdacfe8d32dc3d894907a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json",
+      "sha256": "f341bd031e10a811fe8bb370f7203659620abbfb6d23410d54ba95ad6ebca7ab",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json",
+      "sha256": "9383af1db1840e68e50310ce89d071a25fd8829a58f4cd967989903d8b40a38d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json",
+      "sha256": "17a10d57c0901c1f14cb788e46be2fb4b0ae6f451016ec037039df4f67f5cbc0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json",
+      "sha256": "be14dd159ddda4be5105926e88035144699ef1a7c531c345db217749fb3af9f5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json",
+      "sha256": "b1cb94e30a4114f50cc86267b539a879c8d447b1d8737b52a216a06b1cc07249",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json",
+      "sha256": "062c26b747b3efdcd7d922edd8d683a3f30de78a44e61088983c922e624e9b61",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+      "sha256": "15ded8a6a1a3ef1c24022f75cecb305b3082174d4c0aa99ebf8764cf20a76a70",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json",
+      "sha256": "e5539f3139304fe8020b32abeb3c7cd27860b7c9d12add3220dc3b9714704456",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json",
+      "sha256": "ee662594ed69d31704295137a2d32ac9798b01951bb78afd72ab6541f3700078",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json",
+      "sha256": "67b90a727c89c07dc24dd3afc86fcec5cf7248f9b3cc17aa11046b1dd80b6a4c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json",
+      "sha256": "0786fa43f033a7e0454db00b8f27a095e0464b77aec169fc9ac143ac8c5e7922",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json",
+      "sha256": "d7a2d98615c9284dfe2c56cd14d731a4badad956e08e1c472effc89bf67a0621",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json",
+      "sha256": "f33d9ddb3bfe3b3cc2ff682fa88abdb7d304dfbae96eea16ef44b325cc5e6ff2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json",
+      "sha256": "f99989e9352900ac5a29a1159c298a57a7b54ff0613f40874027f8588563bc3c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json",
+      "sha256": "06d270aa4fe1be6283c8ce6dcd42c4619d0a5ebaaa2aaf4a4c2ad46721aa54b7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json",
+      "sha256": "fe1f5dfc9052ce2914c402ec8b18f45c5909052157088c26cc752bbc84b8672e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json",
+      "sha256": "d487d9529f36ad93f96aba1a9f19981b024e19ce5a1ab7aeacf26246d6ab5f31",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+      "sha256": "7b6a11cddf142a2964a4637c268baf4a0986802f975e7f3766d9980eb007daa0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+      "sha256": "2687bb40bade67e93e7010e8ec724e1b9f8a34af895a22b6f447f350a3d3731a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json",
+      "sha256": "65da7f499cbea60f18077c8dfb2626ceb4863ca99e94852e80b1fcd398383d1e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json",
+      "sha256": "1a82127f5a880abdb656cca9815108e9a0b2b7d056fc54c2505197fb261d6b52",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json",
+      "sha256": "97cd95e643a61371e4a1f6a99798f8832171651d75b66d568311796503289dcd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json",
+      "sha256": "f97469167c0db82f8dcc4a7034f0496414f5efaf01eba6df50b7c1835dc0fd15",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json",
+      "sha256": "24f95290028b07817408286f261ebc30f316818bcc7ef118cead62d2186af221",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json",
+      "sha256": "7a23c0c4cdeceb55aaf5b739f0a245274a25246eecdb4b2dc7f45d571176fc18",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json",
+      "sha256": "bc0959494fef9f8bb39926f2d02fe07da9e6236a0dca81a1bb549d46226a2913",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json",
+      "sha256": "383f2e31e8ec49bf45d540d5a5f2241aba0d14f54d8610fedd9ab0a576b52f66",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json",
+      "sha256": "2f30f5a771bb57440bc7a01add5c221783c0cb299cc0e514a224dc18e05f70fc",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json",
+      "sha256": "74b615f5ed91551cd4c96bc9de9b512e1fb59bfbf74cf201ce37333ae041dced",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json",
+      "sha256": "bddc44893fbc885bb970ff2df70b4ced4f07527b54526ea039bae80f476980f7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json",
+      "sha256": "6e65975cf000446493b838dd3bfc7efa433741db004109a88e64aca33c46aec7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json",
+      "sha256": "a14741c775efab7429a3cbf56c86e40c1551b3d4e31201de2557de1817129618",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json",
+      "sha256": "9ab48dce482a41d923e9ee1cf1048783f90245d301f8c9937293a7e3d4265be5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json",
+      "sha256": "d396f1369d18f9e18451aa737e60c5aefa5e4d3bb01bd1bab166fbdcc7847b2a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json",
+      "sha256": "111a837b558fc91194b027c5fecf85fa8983458322ede9c81c102fb59e2bced5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json",
+      "sha256": "1ea3076f8d66023d16c39444bf6290fa058c75817abda3070dab5521392f2f0e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json"
+    },
+    {
+      "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json",
+      "sha256": "acdd79f766d73bfddc90fbf3a55074086161f69a5650e6ae49a1901cd761708c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json#artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-01-artifacts-development-baxy_wake_cascade_v10_basi03_openslr10",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json parser=json rows=1 bytes=25351 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"schema\", \"windows\"], \"list_lengths\": {\"screened\": 909, \"parityDrifts\": 4}}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-02-artifacts-development-baxy_wake_cascade_v10_basi03_openslr10",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log parser=log rows=27 bytes=1193 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v10_basi03_openslr100h_negative_regression_v1.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-03-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_hum",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_human.json parser=json rows=1 bytes=67431 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_human.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-04-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_mai",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_main.json parser=json rows=1 bytes=67388 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_main.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-05-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json parser=json rows=1 bytes=7246 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"schema\", \"windows\"], \"list_lengths\": {\"screened\": 239, \"parityDrifts\": 2}}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-06-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log parser=log rows=19 bytes=711 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-07-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json parser=json rows=1 bytes=10476 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"schema\", \"windows\"], \"list_lengths\": {\"screened\": 356, \"parityDrifts\": 2}}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-08-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log parser=log rows=21 bytes=831 dist={\"fail_like\": 0, \"pass_like\": 0}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v2.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-09-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json parser=json rows=1 bytes=3085 dist={\"scalar_keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"effectsExecuted\", \"measuredAtUtc\", \"negativeCorpusPreviouslyAccessed\", \"regressionPassed…",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-10-artifacts-development-baxy_wake_cascade_v11_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log parser=log rows=304 bytes=18954 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_basi03_nolex_openslr100h_negative_regression_v3.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-11-artifacts-development-baxy_wake_cascade_v11_false4_route_dia",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v11_false4_route_diagnostic_v1.json parser=json rows=1 bytes=6215 dist={\"scalar_keys\": [\"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"schema\", \"transcriptsOrFilenamesRetained\"], \"list_lengths\": {\"records\": 4}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v11_false4_route_diagnostic_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-12-artifacts-development-baxy_wake_cascade_v12_basi03_nolex_hum",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v12_basi03_nolex_human.json parser=json rows=1 bytes=67421 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_human.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-13-artifacts-development-baxy_wake_cascade_v12_basi03_nolex_mai",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v12_basi03_nolex_main.json parser=json rows=1 bytes=67389 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v12_basi03_nolex_main.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-14-artifacts-development-baxy_wake_cascade_v12_parent_false4_ro",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json parser=json rows=1 bytes=6305 dist={\"scalar_keys\": [\"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"schema\", \"transcriptsOrFilenamesRetained\"], \"list_lengths\": {\"records\": 4}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v12_parent_false4_route_diagnostic_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-15-artifacts-development-baxy_wake_cascade_v15_basi03_nolex_hum",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_basi03_nolex_human.json parser=json rows=1 bytes=67428 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_human.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-16-artifacts-development-baxy_wake_cascade_v15_basi03_nolex_mai",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_basi03_nolex_main.json parser=json rows=1 bytes=67390 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_main.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-17-artifacts-development-baxy_wake_cascade_v15_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json parser=json rows=1 bytes=2861 dist={\"scalar_keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"effectsExecuted\", \"measuredAtUtc\", \"negativeCorpusPreviouslyAccessed\", \"regressionPassed…",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-18-artifacts-development-baxy_wake_cascade_v15_basi03_nolex_ope",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log parser=log rows=304 bytes=18954 dist={\"fail_like\": 0, \"pass_like\": 1}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v15_basi03_nolex_openslr100h_negative_regression_v1.stdout.log",
+        "ranges": [
+          "log:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-19-artifacts-development-baxy_wake_cascade_v15_parent_false4_ro",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json parser=json rows=1 bytes=6193 dist={\"scalar_keys\": [\"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"schema\", \"transcriptsOrFilenamesRetained\"], \"list_lengths\": {\"records\": 4}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v15_parent_false4_route_diagnostic_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-20-artifacts-development-baxy_wake_cascade_v16d_human_v14_regre",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16d_human_v14_regression_v1.json parser=json rows=1 bytes=67440 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16d_human_v14_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-21-artifacts-development-baxy_wake_cascade_v16d_physical_v11_re",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16d_physical_v11_regression_v1.json parser=json rows=1 bytes=67393 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16d_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-22-artifacts-development-baxy_wake_cascade_v16e_human_v14_regre",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16e_human_v14_regression_v1.json parser=json rows=1 bytes=67440 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16e_human_v14_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-23-artifacts-development-baxy_wake_cascade_v16e_physical_v11_re",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16e_physical_v11_regression_v1.json parser=json rows=1 bytes=67392 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16e_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-24-artifacts-development-baxy_wake_cascade_v16e_sapi16_regressi",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16e_sapi16_regression_v1.json parser=json rows=1 bytes=67421 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16e_sapi16_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-25-artifacts-development-baxy_wake_cascade_v16f_human_v14_regre",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16f_human_v14_regression_v1.json parser=json rows=1 bytes=67427 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16f_human_v14_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-26-artifacts-development-baxy_wake_cascade_v16f_physical_v11_re",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16f_physical_v11_regression_v1.json parser=json rows=1 bytes=67390 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16f_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-27-artifacts-development-baxy_wake_cascade_v16f_sapi16_regressi",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v16f_sapi16_regression_v1.json parser=json rows=1 bytes=67425 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v16f_sapi16_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-28-artifacts-development-baxy_wake_cascade_v25a_endpoint_confus",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json parser=json rows=1 bytes=722 dist={\"scalar_keys\": [\"candidateManifestSha256\", \"corpusManifestSha256\", \"createdAtUtc\", \"effectsExecuted\", \"plannedOutput\", \"programTreeSha256\", \"schema\"], \"list_lengths\": {}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v25a_endpoint_confusable_preregistration_20260811.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-29-artifacts-development-baxy_wake_cascade_v25a_opened_endpoint",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json parser=json rows=1 bytes=73116 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v25a_opened_endpoint_confusable_development_20260811.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-30-artifacts-development-baxy_wake_cascade_v25a_opened_physical",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json parser=json rows=1 bytes=79792 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_cascade_v25a_opened_physical_v20_development_diagnostic_20260811.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-31-artifacts-development-baxy_wake_routed_cascade_v16g_human_v1",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json parser=json rows=1 bytes=67592 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16g_human_v14_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-32-artifacts-development-baxy_wake_routed_cascade_v16g_opened_p",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json parser=json rows=1 bytes=67482 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16g_opened_physical_v17_diagnostic_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-33-artifacts-development-baxy_wake_routed_cascade_v16g_physical",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json parser=json rows=1 bytes=67556 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16g_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-34-artifacts-development-baxy_wake_routed_cascade_v16g_sapi16_r",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json parser=json rows=1 bytes=67586 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16g_sapi16_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-35-artifacts-development-baxy_wake_routed_cascade_v16h_human_v1",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json parser=json rows=1 bytes=67585 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16h_human_v14_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-36-artifacts-development-baxy_wake_routed_cascade_v16h_opened_p",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json parser=json rows=1 bytes=67494 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16h_opened_physical_v17_diagnostic_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-37-artifacts-development-baxy_wake_routed_cascade_v16h_physical",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json parser=json rows=1 bytes=67548 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16h_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-38-artifacts-development-baxy_wake_routed_cascade_v16h_sapi16_r",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json parser=json rows=1 bytes=67591 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16h_sapi16_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-39-artifacts-development-baxy_wake_routed_cascade_v16h_syntheti",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json parser=json rows=1 bytes=67537 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16h_synthetic_v13_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-40-artifacts-development-baxy_wake_routed_cascade_v16i_physical",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json parser=json rows=1 bytes=67545 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16i_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-41-artifacts-development-baxy_wake_routed_cascade_v16j_physical",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json parser=json rows=1 bytes=67542 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16j_physical_v11_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-42-artifacts-development-baxy_wake_routed_cascade_v16k_human_v1",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json parser=json rows=1 bytes=67586 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_human_v14_regression_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-43-artifacts-development-baxy_wake_routed_cascade_v16k_opened_p",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json parser=json rows=1 bytes=67486 dist={\"scalar_keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOr…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_opened_physical_v17_diagnostic_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-44-artifacts-development-baxy_wake_routed_cascade_v16k_openslr1",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json parser=json rows=1 bytes=1016 dist={\"scalar_keys\": [\"blindHumanAudioAccessed\", \"candidateDevelopmentUse\", \"candidateFrozen\", \"effectsExecuted\", \"measuredAtUtc\", \"negativeCorpusPreviouslyAccessed\", \"regressionPassed…",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_early_rejection_v1.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-45-artifacts-development-baxy_wake_routed_cascade_v16k_openslr1",
+      "card_kind": "run",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json parser=json rows=1 bytes=850 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"exactProposals\", \"schema\"], \"list_lengths\": {\"strongFalseAudioSha256\": 0}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_exact_batched_parity_first128_v1.json.exact-parallel.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-46-artifacts-development-baxy_wake_routed_cascade_v16k_openslr1",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json parser=json rows=1 bytes=820 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"exactProposals\", \"schema\"], \"list_lengths\": {\"strongFalseAudioSha256\": 1}}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact-parallel.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-47-artifacts-development-baxy_wake_routed_cascade_v16k_openslr1",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json parser=json rows=1 bytes=1492 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"exactProposals\", \"lexicalInvocations\", \"scanCheckpointSha256\", \"schema\"], \"list_lengths\": {\"strongFalseAudioSha256\": 0, \"le…",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.exact.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    },
+    {
+      "card_id": "evidence_assets-039-baxy-baxy_art_development-48-artifacts-development-baxy_wake_routed_cascade_v16k_openslr1",
+      "card_kind": "negative",
+      "corpus": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json",
+      "denominator": "1 files in group artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json parser=json rows=1 bytes=1246738 dist={\"scalar_keys\": [\"completedRecords\", \"elapsedSeconds\", \"schema\", \"windows\"], \"list_lengths\": {\"screened\": 43651, \"parityDrifts\": 162}}",
+      "outcome": "negativo",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "artifacts/development/baxy_wake_routed_cascade_v16k_openslr100h_negative_regression_v1.json.partial.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=48 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-040-baxy-baxy_art_development",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-039-baxy-baxy_art_development.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

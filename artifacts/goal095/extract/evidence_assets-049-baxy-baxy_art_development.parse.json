@@ -1,0 +1,2684 @@
+{
+  "batch_id": "evidence_assets-049-baxy-baxy_art_development",
+  "source_id": "baxy",
+  "file_count": 38,
+  "hash_ok": 38,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/r16_sapi_nemotron_product_route_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 312957,
+      "sha256": "f81d250e419b034e856e64f40c6b78ba221ad14fd22d40d28dbf64cd854c6af6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 312956,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_nemotron_product_route_development_v1.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 925017,
+      "sha256": "dad988d1af443b70762cb626329a0aed9e9a02672de8fba3ffa25aa3da9608e0",
+      "rows": 795,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 795,
+          "phase": 795,
+          "raw_decision": 795,
+          "request_id": 795,
+          "schema": 795,
+          "stages": 795,
+          "final": 338,
+          "error_type": 103,
+          "failure_kind": 103,
+          "recovery": 45
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 923038,
+        "min_line_bytes": 245,
+        "max_line_bytes": 2900,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 381,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 922434,
+            "line": 794,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 923038,
+            "line": 795,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_nemotron_streaming_semantics_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 119516,
+      "sha256": "5d3bec49b66e562b72480ab25b1bd97a4822b69e12667e0e743b8b6ad473ae55",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 119515,
+        "runtimeSeconds": {
+          "min": 790.3745794999413,
+          "max": 790.3745794999413
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_nemotron_streaming_transcript_corpus_v1.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 245303,
+      "sha256": "89b733573f71ce86f5ccf0de6e1dd8858554c0f6342d803ee9a8e863a1abb683",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 244689,
+        "min_line_bytes": 586,
+        "max_line_bytes": 1230,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 637,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 244067,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 244689,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_qwen3_asr_failures_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50032,
+      "sha256": "a8303a88d55afd1312d165e336be637c7f526aa9c5106176f7ec6f754d1753b8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "inference",
+          "measuredAtUtc",
+          "metrics",
+          "productOperatingPoint",
+          "records",
+          "runtimeSeconds",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHoldoutClaimSupported",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "humanMicrophoneClaimSupported",
+          "measuredAtUtc",
+          "productOperatingPoint",
+          "runtimeSeconds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 60
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50031,
+        "runtimeSeconds": {
+          "min": 151.6766211000504,
+          "max": 151.6766211000504
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHoldoutClaimSupported\", \"candidateFrozen\", \"developmentOnly\", \"effectsExecuted\", \"humanMicrophoneClaimSupported\", \"inference\", \"measuredAtUtc\", \"metrics\", \"productOperatingPoint\", \"records\", \"runtimeSeconds\", \"schema\", \"sco…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 43508,
+      "sha256": "0d5adaa2f02ce968191792a4e3dc12df0a4234a387754bbff64deaab990598dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 9,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 43507,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44221,
+      "sha256": "8da25c29007f25d3b28891e7cb75d6ee1286df1a402ab68ec5cb2690f9185415",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogSource",
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "supersedes",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogSource",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 9,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44220,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44222,
+      "sha256": "08c6aa24be07251bbb74d348df0fc0d738a5adf0842cd4312cf3298a69140981",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogSource",
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "supersedes",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogSource",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 9,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44221,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v4.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44343,
+      "sha256": "64c54683d8a85849b5eb5ef948a9991cde77ff7aa4873b9bc569f10a848f550f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogSource",
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "supersedes",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogSource",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 10,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44342,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v5.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44352,
+      "sha256": "f317b7b108b37b7d867ad715475c5542f51d2908489794105cc191bef924fda3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogSource",
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "supersedes",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogSource",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 10,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44351,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v6.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44461,
+      "sha256": "a2dd2523c1106824894896e2cf6c608e2218ff853be7afef4dfb20cb706b8e16",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogSource",
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "supersedes",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogSource",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 11,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44460,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_build_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44578,
+      "sha256": "7fafe04799e9c1e16bb2e3f8da5e5de9a9b6048fdc0a3c52bcb5d07e0cd53781",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogSource",
+          "decisions",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "selectionCounts",
+          "sources",
+          "supersedes",
+          "usesExpectedLabelsForSelection"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogSource",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "outputSha256",
+          "rows",
+          "schema",
+          "scope",
+          "usesExpectedLabelsForSelection"
+        ],
+        "list_lengths": {
+          "selectionCounts": 10,
+          "decisions": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44577,
+        "rows": {
+          "min": 337,
+          "max": 337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogSource\", \"decisions\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"outputSha256\", \"rows\", \"schema\", \"scope\", \"selectionCounts\", \"sources\", \"supersedes\", \"usesExpectedLabelsForSelection\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v1.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256130,
+      "sha256": "f4ae2bace33ca4a5aa3694d9d2e505d662aa665a430cf1cb402d351cce4d0fa6",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255479,
+        "min_line_bytes": 613,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 254840,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255479,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v2.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256130,
+      "sha256": "e772cfb4aab863ceaa73be17b52088760cfe1e1829f5cfb32411581a3c34fd19",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255479,
+        "min_line_bytes": 613,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 254840,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255479,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v3.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256092,
+      "sha256": "6c44caf08e5cdf94e0c134796e105bd848bcf3534cf590da306e074328045599",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255441,
+        "min_line_bytes": 613,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 254802,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255441,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v4.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256131,
+      "sha256": "b4861589b60fa1067c50ba4d9c5643e23d42165f7be573f4343fe1b4baa5f340",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255480,
+        "min_line_bytes": 613,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 254841,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255480,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v5.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256325,
+      "sha256": "203e0bec25816ac4cc49582e3307cc51c421d23f3dd98070dcdd610ea8f34d9e",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255674,
+        "min_line_bytes": 613,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 255035,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255674,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v6.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256270,
+      "sha256": "a70218571ffb47555acaf3f222f575003f3520b8aabd90f5bf98304d4685df36",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255619,
+        "min_line_bytes": 597,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 254980,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255619,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_corpus_v7.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 256069,
+      "sha256": "641c54ec9cad873269b8b7f6907621b6e852822462a5851b7ccb362d37636c74",
+      "rows": 337,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text",
+          "voice_reference_text_sha256",
+          "transcript_authority",
+          "transcript_selection_reason"
+        ],
+        "key_freq": {
+          "blind_holdout": 337,
+          "case_id": 337,
+          "case_type": 337,
+          "compatible_effect_operation_sets": 337,
+          "compatible_terminal_operation_sets": 337,
+          "execution_authority": 337,
+          "family": 337,
+          "language": 337,
+          "outcome": 337,
+          "owner": 337,
+          "schema": 337,
+          "surface": 337,
+          "text": 337,
+          "voice_reference_text_sha256": 337,
+          "transcript_authority": 337,
+          "transcript_selection_reason": 337
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 255418,
+        "min_line_bytes": 608,
+        "max_line_bytes": 1292,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-01-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          },
+          {
+            "offset": 656,
+            "line": 2,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-app-02-plain\",\"case_type\":\"single_action\",\"compatible_effect_operation_sets\":[[\"app.installed\"]],\"compatible_terminal_operation_sets\":[[\"app.installed\"]],\"execution_authority\":false,\"family\":\"app\",\"lan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 254779,
+            "line": 336,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-53-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          },
+          {
+            "offset": 255418,
+            "line": 337,
+            "text": "{\"blind_holdout\":false,\"case_id\":\"r16-out-of-scope-54-plain\",\"case_type\":\"conversation\",\"compatible_effect_operation_sets\":[[]],\"compatible_terminal_operation_sets\":[[]],\"execution_authority\":false,\"family\":\"out_of_scope\",\"language\":\"spang…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351615,
+      "sha256": "7f1ac0f422cfe48e6a3290456b9e55ab20db2d6f47f8e9617b1a3cd3d060f3aa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351614,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v1.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 846705,
+      "sha256": "6cd2e09127a532ab149433dff854c5e5b8990b89993ead04358940103ac4e4df",
+      "rows": 666,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 666,
+          "phase": 666,
+          "raw_decision": 666,
+          "request_id": 666,
+          "schema": 666,
+          "stages": 666,
+          "final": 338
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 844929,
+        "min_line_bytes": 392,
+        "max_line_bytes": 3406,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 392,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 844528,
+            "line": 665,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 844929,
+            "line": 666,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351645,
+      "sha256": "faf995c20e6a2f03b272376da8e5a9b3fb5708b8dfa8cc540845e65df4586282",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351644,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v2.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 847885,
+      "sha256": "3aa4fd9c0975f914312bd3295f9b1d7dde1e8d1e773deb9887c8ed0cb424893c",
+      "rows": 668,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind"
+        ],
+        "key_freq": {
+          "candidate_operations": 668,
+          "phase": 668,
+          "raw_decision": 668,
+          "request_id": 668,
+          "schema": 668,
+          "stages": 668,
+          "final": 338,
+          "error_type": 1,
+          "failure_kind": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 846109,
+        "min_line_bytes": 260,
+        "max_line_bytes": 3406,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 392,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 845708,
+            "line": 667,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 846109,
+            "line": 668,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351879,
+      "sha256": "36b165666cf188de3a3d8118dd1fbbd8a3d48e95b47e76c8709326ea4a538974",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351878,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v3.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 846429,
+      "sha256": "995949b2b5fee3eafe170a53302df2dda0f98ee88a61f3f02a17af775ca05bf3",
+      "rows": 666,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 666,
+          "phase": 666,
+          "raw_decision": 666,
+          "request_id": 666,
+          "schema": 666,
+          "stages": 666,
+          "final": 338
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 844653,
+        "min_line_bytes": 392,
+        "max_line_bytes": 3406,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 392,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 844252,
+            "line": 665,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 844653,
+            "line": 666,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v6.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351768,
+      "sha256": "8d446cb43e073766371b07e1c73ceb79829d3c063877924aa78dd7d772482142",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351767,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v6.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 846775,
+      "sha256": "1d2e2ebfbbe1421594d68762c88785e72e35e6f50e2a78be509a58a4b53dbec2",
+      "rows": 666,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 666,
+          "phase": 666,
+          "raw_decision": 666,
+          "request_id": 666,
+          "schema": 666,
+          "stages": 666,
+          "final": 338
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 844999,
+        "min_line_bytes": 392,
+        "max_line_bytes": 3406,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 392,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 844598,
+            "line": 665,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 844999,
+            "line": 666,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v7.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 351936,
+      "sha256": "c30b3e775d5b46cbf61688393b7f736a62fe38eb7e39023afcaf62ac6522b0fd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 351935,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_semantic_asr_fusion_product_route_development_v7.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 845916,
+      "sha256": "9b352e274360072a21588ff837e6816cb077a0d3673bb092c4204aeba3794a65",
+      "rows": 666,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 666,
+          "phase": 666,
+          "raw_decision": 666,
+          "request_id": 666,
+          "schema": 666,
+          "stages": 666,
+          "final": 338
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 844140,
+        "min_line_bytes": 392,
+        "max_line_bytes": 3406,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 392,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 843739,
+            "line": 665,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"resp…"
+          },
+          {
+            "offset": 844140,
+            "line": 666,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"no…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 338927,
+      "sha256": "ee7a4b91ac3566bed857739b86e4523208648e209b009bd95032e118ba24d571",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 338926,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v2.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 857402,
+      "sha256": "a67fced461d211be197cb73e2439930e5afaee33435fa3ca1b60b6edcdbba501",
+      "rows": 692,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 692,
+          "phase": 692,
+          "raw_decision": 692,
+          "request_id": 692,
+          "schema": 692,
+          "stages": 692,
+          "final": 338,
+          "error_type": 28,
+          "failure_kind": 28,
+          "recovery": 11
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 855426,
+        "min_line_bytes": 243,
+        "max_line_bytes": 3257,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 378,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 854825,
+            "line": 691,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 855426,
+            "line": 692,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v2.v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5713,
+      "sha256": "c144669d77b2a48ba4fa4b7497a472f05ad1b3fe4928a95f1f4bf1a09f2f073b",
+      "rows": 261,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5710,
+        "min_line_bytes": 3,
+        "max_line_bytes": 44
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 337,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5705,
+            "line": 260,
+            "text": "}"
+          },
+          {
+            "offset": 5710,
+            "line": 261,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v3.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 838687,
+      "sha256": "b4be3ff9ab542024f3d5c7b7d529416583e77787cad33a0f6b10ebac08eb2eba",
+      "rows": 680,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 680,
+          "phase": 680,
+          "raw_decision": 680,
+          "request_id": 680,
+          "schema": 680,
+          "stages": 680,
+          "final": 329,
+          "error_type": 27,
+          "failure_kind": 27,
+          "recovery": 11
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 836790,
+        "min_line_bytes": 244,
+        "max_line_bytes": 3282,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 379,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 836268,
+            "line": 679,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 836790,
+            "line": 680,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v3.v1.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 953,
+      "sha256": "bac8236a597d05f0a53e9a4a8189aa6a16762c9b9ea694661c6f567c4c8b5335",
+      "rows": 16,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 884,
+        "min_line_bytes": 24,
+        "max_line_bytes": 130
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Traceback (most recent call last):"
+          },
+          {
+            "offset": 36,
+            "line": 2,
+            "text": "File \"D:\\BAXY\\source\\experiments\\mind_router_spike\\probe_r16_sapi_voice_product_route_development_v3.py\", line 50, in <module>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 859,
+            "line": 15,
+            "text": "raise RuntimeError("
+          },
+          {
+            "offset": 884,
+            "line": 16,
+            "text": "RuntimeError: raw turn audit is incomplete: expected=337 actual=330"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v4.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 335346,
+      "sha256": "724367fc5d26eebbc3ca8eaf38a90a811f7b9599944e8d1e35030e6f29de6da8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 335345,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v4.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 853879,
+      "sha256": "f129af94c3baabb372003948698671e8eaa42b9963797bc4cddf2a0d85be4783",
+      "rows": 702,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 702,
+          "phase": 702,
+          "raw_decision": 702,
+          "request_id": 702,
+          "schema": 702,
+          "stages": 702,
+          "final": 338,
+          "error_type": 40,
+          "failure_kind": 40,
+          "recovery": 17
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 851903,
+        "min_line_bytes": 243,
+        "max_line_bytes": 3281,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 378,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 851302,
+            "line": 701,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"phase\":\"raw_attempt\"…"
+          },
+          {
+            "offset": 851903,
+            "line": 702,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\",\"clipboard.copy\",\"clipboard.paste\",\"clipboard.read.text\",\"clipboard.write.text\"],\"final\":{\"effect_oper…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v4.v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 5708,
+      "sha256": "9c2fe9a627d2503511a43bc590303beba3c3e52225c4d1c1e86bc3dd047be72a",
+      "rows": 261,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5705,
+        "min_line_bytes": 3,
+        "max_line_bytes": 44
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"cases\": 337,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 5700,
+            "line": 260,
+            "text": "}"
+          },
+          {
+            "offset": 5705,
+            "line": 261,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/r16_sapi_voice_product_route_development_v5.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 323603,
+      "sha256": "8019abc1e209687bd5180866ffcfccfb56f9ccb9af6fcf59dc7b7014ac2fa381",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "sources"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "certification_claim",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 337
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 323602,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"certification_claim\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"sources\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

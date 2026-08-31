@@ -1,0 +1,3071 @@
+{
+  "batch_id": "evidence_assets-027-functiongemma-fg_curated",
+  "source_id": "functiongemma",
+  "file_count": 36,
+  "hash_ok": 36,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "finetune_llm/curated/batches/_batch_58_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 25117,
+      "sha256": "8cd6fe752a1601dcbd7c56c2ac6a46ac0f8e1fd4324f12bc91797b5881c42202",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24614,
+        "min_line_bytes": 397,
+        "max_line_bytes": 859,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_143\", \"user_text\": \"buenas, phrase_hook_test_1778816962 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 11:49 PM.\", \"reply_is_template\": true…"
+          },
+          {
+            "offset": 614,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_144\", \"user_text\": \"abres team\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [], \"correct_reply_style\": \"Abro Teams.\", \"reply_is_template\": false, \"original_was_correct\": false, \"correction_rea…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24111,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_192\", \"user_text\": \"buenas, phrase_hook_test_1778869454 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 2:24 PM.\", \"reply_is_template\": true,…"
+          },
+          {
+            "offset": 24614,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_193\", \"user_text\": \"buenas, phrase_hook_test_1778869603 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 2:26 PM.\", \"reply_is_template\": true,…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_59.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 22335,
+      "sha256": "9e3e1dbeccf90ad91bca5a336d63e9c645627e8a35b45e218d9033ff0d6b5c6d",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21328,
+        "min_line_bytes": 383,
+        "max_line_bytes": 1007,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_194\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1778869731 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Hecho: registre tu ru…"
+          },
+          {
+            "offset": 383,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_195\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1778870394 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Hecho: registre tu ru…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20552,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_242\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"cuando dijiste algo de fútbol, ¿cómo que no nos querían robar\", \"prev_text\": \"Habla en frances\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No re…"
+          },
+          {
+            "offset": 21328,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_243\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"pero la próxima vez no va a pasar ningún error de eso. No, era la punta de inteligencia que hice. Pero veremos en dos semanas. Bueno, bueno. En dos s…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_59_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28295,
+      "sha256": "b23ff6042d7970d625301ef71c60917a216fda5ec7518c7e3aef3c7cd9fc60d6",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27525,
+        "min_line_bytes": 531,
+        "max_line_bytes": 809,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_194\", \"user_text\": \"buenas, phrase_hook_test_1778869731 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Hola. Son las {hora}.\", \"reply_is_template\":…"
+          },
+          {
+            "offset": 695,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_195\", \"user_text\": \"buenas, phrase_hook_test_1778870394 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Hola. Son las {hora}.\", \"reply_is_template\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26813,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_242\", \"user_text\": \"cuando dijiste algo de futbol, como que no nos querian robar\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"No tengo registro de haber dicho eso antes.…"
+          },
+          {
+            "offset": 27525,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_243\", \"user_text\": \"pero la proxima vez no va a pasar ningun error de eso. No, era la punta de inteligencia que hice. Pero veremos en dos semanas. Bueno, bueno. En dos semanas. Yo creo que en una semana\", \"lang\": \"es\"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_60.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21544,
+      "sha256": "53a3aa69f10f64c4b58288cdefa08e6eeae4380ec243f8b759db6499e5555e13",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21149,
+        "min_line_bytes": 336,
+        "max_line_bytes": 716,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_244\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"como van a ser tan baratas las casas tú\", \"prev_text\": \"pon una cancion de michael jackson\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"laten…"
+          },
+          {
+            "offset": 357,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_245\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"en Spotify pon una canción de Benson Boone\", \"prev_text\": \"pon musica en Spotify\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No tengo soporte di…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20754,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_292\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1778967945 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completa…"
+          },
+          {
+            "offset": 21149,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_293\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1778968051 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completa…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_60_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 25692,
+      "sha256": "7ac3fdb5303f808b5396b8748f8481894435e76f394b2742125d423e43484ca0",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25219,
+        "min_line_bytes": 427,
+        "max_line_bytes": 678,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.68,
+            "max": 0.85
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_244\", \"user_text\": \"como van a ser tan baratas las casas tú\", \"lang\": \"es\", \"n_steps\": 0, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Jaja, ni idea, pero suena a oferta sospechosa. ¿Querés que busqu…"
+          },
+          {
+            "offset": 641,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_245\", \"user_text\": \"en Spotify pon una canción de Benson Boone\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [\"app\", \"computer_use\"], \"correct_reply_style\": \"Va, pongo una de Benson Boone en…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24746,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_292\", \"user_text\": \"buenas, phrase_hook_test_1778967945 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las (hora actual).\", \"reply_is_template\":…"
+          },
+          {
+            "offset": 25219,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_293\", \"user_text\": \"buenas, phrase_hook_test_1778968051 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las (hora actual).\", \"reply_is_template\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_61.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 19753,
+      "sha256": "da19164b60c00f9f7eaed6c1d2af5142326baeae68aeb92c5876b266def590cf",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19432,
+        "min_line_bytes": 321,
+        "max_line_bytes": 512,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_294\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1778971595 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completa…"
+          },
+          {
+            "offset": 395,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_295\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1778971970 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19038,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_342\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Que es gemma 4?\", \"prev_text\": \"Quiero saber quien eres\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Gemma 4 es un modelo de lenguaje grande desa…"
+          },
+          {
+            "offset": 19432,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_343\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Perfecto, gracias\", \"prev_text\": \"Que es gemma 4?\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Listo.\", \"latency_ms\": null, \"status_original\": nu…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_61_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 25398,
+      "sha256": "a59e6da7d8d076deed7e963543bba6cc02b32b84feda5f0cd59b6fe66bae96ad",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24972,
+        "min_line_bytes": 405,
+        "max_line_bytes": 690,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_294\", \"user_text\": \"buenas, phrase_hook_test_1778971595 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 18:46.\", \"reply_is_template\": true, \"…"
+          },
+          {
+            "offset": 586,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_295\", \"user_text\": \"buenas, phrase_hook_test_1778971970 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 18:52.\", \"reply_is_template\": true, \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24462,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_342\", \"user_text\": \"Que es gemma 4?\", \"lang\": \"es\", \"n_steps\": 0, \"correct_tools\": [], \"also_valid\": [[\"web\"]], \"correct_reply_style\": \"Gemma 4 es un modelo de lenguaje de Google DeepMind; es el cerebro que me hace fu…"
+          },
+          {
+            "offset": 24972,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_343\", \"user_text\": \"Perfecto, gracias\", \"lang\": \"es\", \"n_steps\": 0, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"De nada, cuando quieras.\", \"reply_is_template\": false, \"original_was_correct\": true, \"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_62.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 20121,
+      "sha256": "20f27fb2a2e9f69c13981e3f6b314198c75900b9666c1185a51cf9a0bf01cb75",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19746,
+        "min_line_bytes": 320,
+        "max_line_bytes": 626,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_344\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Dile a amor en wsp que la amo <3\", \"prev_text\": \"Perfecto, gracias\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Necesito saber qué mensaje le qui…"
+          },
+          {
+            "offset": 410,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_345\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1779049953 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Hecho: registre tu ru…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19320,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_393\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Dile gordo a cbayeah en wsp\", \"prev_text\": \"Escribele a Cbayeah en wsp y dile que es gordo\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No tengo…"
+          },
+          {
+            "offset": 19746,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_394\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Maximiza opera\", \"prev_text\": \"Dile gordo a cbayeah en wsp\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completar la acción. ¿La rep…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_62_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27973,
+      "sha256": "20c0779b0ace064a780c49f973790fde718c70ee78dbfe370dc07ea51f92c61a",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27475,
+        "min_line_bytes": 404,
+        "max_line_bytes": 694,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_344\", \"user_text\": \"Dile a amor en wsp que la amo <3\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"correct_reply_style\": \"Le escribo a \\\"amor\\\" por WhatsApp: \\\"te amo <3\\\". ¿Lo envío?…"
+          },
+          {
+            "offset": 622,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_345\", \"user_text\": \"buenas, phrase_hook_test_1779049953 y dime la hora\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"routine\", \"system\"], \"also_valid\": [], \"correct_reply_style\": \"Registre la rutina \\\"phrase_hook_t…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26925,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_393\", \"user_text\": \"Dile gordo a cbayeah en wsp\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"correct_reply_style\": \"Le escribo \\\"gordo\\\" a Cbayeah por WhatsApp. ¿Lo envío?\", \"reply_i…"
+          },
+          {
+            "offset": 27475,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_394\", \"user_text\": \"Maximiza opera\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"window\"], \"also_valid\": [], \"correct_reply_style\": \"Maximizo la ventana de Opera. ¿Quedo bien?\", \"reply_is_template\": false, \"origina…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_63.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 19701,
+      "sha256": "d1618d76c15957a16cb36159e10f662e45d7212c76f55ff97a8ec0facac5c4aa",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19284,
+        "min_line_bytes": 314,
+        "max_line_bytes": 518,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_395\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1779130824 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Hecho: registre tu ru…"
+          },
+          {
+            "offset": 383,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_396\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"buenas, phrase_hook_test_1779136451 y dime la hora\", \"prev_text\": \"echo prueba\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Hecho: registre tu ru…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18879,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_444\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Quiero ver DERDEVIL.\", \"prev_text\": \"Thank you.\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Para ver Daredevil, necesito saber en qué plataforma…"
+          },
+          {
+            "offset": 19284,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_445\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"hey gemma abre el volumen del PC a...\", \"prev_text\": \"Quiero verlo en Disney.\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Necesito que me digas…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_63_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27026,
+      "sha256": "89501743033f6aa6e4df47704b507b948ba7c2a7041645367d3539b7c615d345",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26470,
+        "min_line_bytes": 421,
+        "max_line_bytes": 778,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_395\", \"user_text\": \"buenas, phrase_hook_test_1779130824 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 15:00.\", \"reply_is_template\": false,…"
+          },
+          {
+            "offset": 665,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_396\", \"user_text\": \"buenas, phrase_hook_test_1779136451 y dime la hora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 16:34.\", \"reply_is_template\": false,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25855,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_444\", \"user_text\": \"Quiero ver DERDEVIL.\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [[\"computer_use\"]], \"correct_reply_style\": \"Para ver Daredevil, ¿en qué plataforma lo abro, Netflix o Di…"
+          },
+          {
+            "offset": 26470,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_445\", \"user_text\": \"hey gemma abre el volumen del PC a...\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"¿A qué número querés que ponga el volumen?\", \"reply_is_temp…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_64.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 20703,
+      "sha256": "404c41ea06a08d5bc997468ded369cf9266df019ea200aca33a1da98e86ebb2f",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20260,
+        "min_line_bytes": 297,
+        "max_line_bytes": 583,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_446\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"hola quien eres\", \"prev_text\": \"abre steam\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Soy un asistente de voz local impulsado por Gemma 4. Fui…"
+          },
+          {
+            "offset": 398,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_447\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"cierra opera\", \"prev_text\": \"tiempo\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"intent close opera\", \"latency_ms\": null, \"status_original\": null…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19878,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_496\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"ahora ponlo en 15\", \"prev_text\": \"pon el volumen del pc al minimo\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completar la acción.…"
+          },
+          {
+            "offset": 20260,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_497\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Quieres hacr un juego de roleplay, tu eres prisionero y yo el policia\", \"prev_text\": \"Pon el volumen del pc a 20\", \"tools_called\": [], \"tool_args\": […"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_64_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27460,
+      "sha256": "3b060a97dbdbc91ef66331bf7c1b8a31a901cb49b3c8715759596af58940af61",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26897,
+        "min_line_bytes": 408,
+        "max_line_bytes": 834,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.7,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_446\", \"user_text\": \"hola quien eres\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Hola. Soy Gemma 4, tu asistente de voz local. ¿En qué te ayudo?\", \"reply_is_template\": f…"
+          },
+          {
+            "offset": 614,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_447\", \"user_text\": \"cierra opera\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [], \"correct_reply_style\": \"Cerré Opera.\", \"reply_is_template\": false, \"original_was_correct\": false, \"correction_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26342,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_496\", \"user_text\": \"ahora ponlo en 15\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, volumen en 15.\", \"reply_is_template\": false, \"original_was_correct\": fal…"
+          },
+          {
+            "offset": 26897,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_497\", \"user_text\": \"Quieres hacr un juego de roleplay, tu eres prisionero y yo el policia\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Dale, me prestó al juego. Soy el p…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_65.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 19991,
+      "sha256": "39ed5316994ef0713761e84dd7a961941e5e1d23287c0bb06b603a7f92fd9a37",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19641,
+        "min_line_bytes": 316,
+        "max_line_bytes": 622,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_498\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Ooooh porque tienes drogaaa??? maldito drogadicto \\\"Le pega\\\"\", \"prev_text\": \"Quieres hacr un juego de roleplay, tu eres prisionero y yo el policia\",…"
+          },
+          {
+            "offset": 493,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_499\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Pues que te arrepienteees, tendras que pagar una fianza de mil dolares o pudrirte en la carcel\", \"prev_text\": \"Ooooh porque tienes drogaaa??? maldito…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19325,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_546\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"en opera entrá a youtube.com\", \"prev_text\": \"hola\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"e…"
+          },
+          {
+            "offset": 19641,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_547\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"andá a discord al chat de juanpi\", \"prev_text\": \"andá a discord al chat de cbayeah\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_65_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 29688,
+      "sha256": "630e4c8d3c8fe36307f73442d854f75dab670b3c1f2f9f8859aff99d16808969",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29066,
+        "min_line_bytes": 450,
+        "max_line_bytes": 825,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_498\", \"user_text\": \"Ooooh porque tienes drogaaa??? maldito drogadicto \\\"Le pega\\\"\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"No tengo nada, señor policía. Soy inocente…"
+          },
+          {
+            "offset": 621,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_499\", \"user_text\": \"Pues que te arrepienteees, tendras que pagar una fianza de mil dolares o pudrirte en la carcel\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"No pienso…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28435,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_546\", \"user_text\": \"en opera entrá a youtube.com\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"browser\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Abro youtube.com en Opera. Un momento.\", \"reply_is_t…"
+          },
+          {
+            "offset": 29066,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_547\", \"user_text\": \"andá a discord al chat de juanpi\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Abro Discord y voy al chat de juanpi. Un momento.\", \"repl…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_66.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 19536,
+      "sha256": "e45857cc9bf3d5cf5fbea61f7e6c8d1a61d5b7d3b698406d59e49fdea5dced55",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19187,
+        "min_line_bytes": 316,
+        "max_line_bytes": 557,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_548\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"andá a discord al chat de ShooterCOCK\", \"prev_text\": \"andá a discord al chat de pierosky\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency…"
+          },
+          {
+            "offset": 356,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_549\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"andá a discord al chat de Ron92\", \"prev_text\": \"andá a discord al chat de ShooterCOCK\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 18868,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_596\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"gracias por todo\", \"prev_text\": \"hola que tal\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"De nada.\", \"latency_ms\": null, \"status_original\": null…"
+          },
+          {
+            "offset": 19187,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_597\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"hace click en el boton rojo\", \"prev_text\": \"que podes hacer\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Soy Gemma, tu asistente.\", \"latency_ms\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_66_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27867,
+      "sha256": "334a3a83c7ba5033142502416dfd7c7180bffc54566b8601757e107ff911f5c8",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27294,
+        "min_line_bytes": 450,
+        "max_line_bytes": 730,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_548\", \"user_text\": \"andá a discord al chat de ShooterCOCK\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Voy al chat de ShooterCOCK en Discord.\", \"reply_is_t…"
+          },
+          {
+            "offset": 606,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_549\", \"user_text\": \"andá a discord al chat de Ron92\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Voy al chat de Ron92 en Discord.\", \"reply_is_template\": fa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26786,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_596\", \"user_text\": \"gracias por todo\", \"lang\": \"es\", \"n_steps\": 0, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"De nada, para eso estoy. Cuando necesites algo, avisame.\", \"reply_is_template\": false,…"
+          },
+          {
+            "offset": 27294,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_597\", \"user_text\": \"hace click en el boton rojo\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Hago clic en el boton rojo de la pantalla.\", \"reply_is_templat…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_67.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 18273,
+      "sha256": "a825360101be81016e53f4afecd3e52b45f19f96dd6dfd464ce3347ceb9d0ec4",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17968,
+        "min_line_bytes": 294,
+        "max_line_bytes": 544,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_598\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"abri el mejor\", \"prev_text\": \"busca teclados\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completar la acción. ¿La repetimos?\", \"lat…"
+          },
+          {
+            "offset": 361,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_599\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"quién es Lionel Messi\", \"prev_text\": \"contestale que si\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Lionel Messi es un futbolista argentino cono…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17663,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_646\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"y ahora que?\", \"prev_text\": \"mas fuerte\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_to…"
+          },
+          {
+            "offset": 17968,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_647\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"el otro no\", \"prev_text\": \"y ahora que?\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_to…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_67_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 26247,
+      "sha256": "c11cf21e18e3326006db70b9bbc41e9b566271ceede9833e332d67f281f81347",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25671,
+        "min_line_bytes": 408,
+        "max_line_bytes": 742,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.5,
+            "max": 0.99
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_598\", \"user_text\": \"abri el mejor\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [\"browser\"], \"correct_reply_style\": \"Dale, abro el mejor resultado de los teclados que buscaste.\", \"repl…"
+          },
+          {
+            "offset": 734,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_599\", \"user_text\": \"quién es Lionel Messi\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [\"web\"], \"correct_reply_style\": \"Lionel Messi es un futbolista argentino, considerado uno de los mejores de la…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25123,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_646\", \"user_text\": \"y ahora que?\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"El video esta reproduciendose. ¿Queres pausar, subir el volumen o algo mas?\", \"reply_is_tem…"
+          },
+          {
+            "offset": 25671,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_647\", \"user_text\": \"el otro no\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [\"media\"], \"correct_reply_style\": \"Perdon, ¿cual queres entonces? Decime y lo pongo.\", \"reply_is_template\": false, \"origi…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_68.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 24969,
+      "sha256": "e8c21a5d2a3560ca96a69e7a224c3ec63820efdae71703676b56ea799ff51cee",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24606,
+        "min_line_bytes": 314,
+        "max_line_bytes": 1283,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_648\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Resumime esto y decime por donde arranco: Te cuento la situacion con detalle para que tengas todo el contexto: ayer estuve organizando los archivos d…"
+          },
+          {
+            "offset": 793,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_649\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Necesito que proceses todo este texto largo: Te cuento la situacion con detalle para que tengas todo el contexto: ayer estuve organizando los archivo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24280,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_697\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Him?\", \"prev_text\": \"abre Steam\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"¿A qué te refieres con Him?\", \"latency_ms\": null, \"status_original\":…"
+          },
+          {
+            "offset": 24606,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_698\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"No.\", \"prev_text\": \"pon una cancion en youtube\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completar la acción. ¿La repetimos?\", \"l…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_68_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 29268,
+      "sha256": "8c1e1930e2df8f2a295f1dcc54da901a2983d174c76515f3401d1a6eb5609afe",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28684,
+        "min_line_bytes": 411,
+        "max_line_bytes": 1166,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_648\", \"user_text\": \"Resumime esto y decime por donde arranco: Te cuento la situacion con detalle para que tengas todo el contexto: ayer estuve organizando los archivos del trabajo y quedaron varias cosas a medio termi…"
+          },
+          {
+            "offset": 1166,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_649\", \"user_text\": \"Necesito que proceses todo este texto largo: Te cuento la situacion con detalle para que tengas todo el contexto: ayer estuve organizando los archivos del trabajo y quedaron varias cosas a medio te…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28188,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_697\", \"user_text\": \"Him?\", \"lang\": \"en\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Sorry, I didn't catch that. What would you like me to do?\", \"reply_is_template\": false, \"original_w…"
+          },
+          {
+            "offset": 28684,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_698\", \"user_text\": \"No.\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Listo, no hago nada entonces. Decime si querés otra cosa.\", \"reply_is_template\": false, \"original_wa…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_69.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21305,
+      "sha256": "65bdba442e5185c3c389b6fea47bb5cec0c664e0b12391d7e5b9342bb7a1659f",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20849,
+        "min_line_bytes": 304,
+        "max_line_bytes": 694,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_699\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"No lo envies\", \"prev_text\": \"pon una cancion de michael jackson en spotify\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completar la…"
+          },
+          {
+            "offset": 391,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_700\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Did you\", \"prev_text\": \"No lo envies\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"No alcancé a completar la acción. ¿La repetimos?\", \"latency_ms\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20155,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_748\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"investigá en internet las 3 mejores laptops del 2026 y resumime\", \"prev_text\": \"buscá en mi biblioteca de Steam todos los juegos tipo metroidvania\",…"
+          },
+          {
+            "offset": 20849,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_749\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"revisá todos los archivos de mi carpeta Descargas\", \"prev_text\": \"investigá en internet las 3 mejores laptops del 2026 y resumime\", \"tools_called\": […"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_69_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28659,
+      "sha256": "b551945a97b81a7bc4ba9755c1bb673360c53dbdac601312610335fac28aff3e",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27973,
+        "min_line_bytes": 416,
+        "max_line_bytes": 785,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.66,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_699\", \"user_text\": \"No lo envies\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Listo, no lo envío. Lo cancelo.\", \"reply_is_template\": false, \"original_was_correct\": true,…"
+          },
+          {
+            "offset": 529,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_700\", \"user_text\": \"Did you\", \"lang\": \"en\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"No te entendi bien. Que necesitas?\", \"reply_is_template\": false, \"original_was_correct\": true, \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 27328,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_748\", \"user_text\": \"investigá en internet las 3 mejores laptops del 2026 y resumime\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [], \"correct_reply_style\": \"Investigo las 3 mejores laptops del…"
+          },
+          {
+            "offset": 27973,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_749\", \"user_text\": \"revisá todos los archivos de mi carpeta Descargas\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"filesystem\"], \"also_valid\": [], \"correct_reply_style\": \"Listo el listado de tu carpeta Descargas:…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_70.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21722,
+      "sha256": "fc6ccbad23e4fbe9b47bfd74a10db6e80429054b701b186a53d30b97162091e0",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21255,
+        "min_line_bytes": 335,
+        "max_line_bytes": 627,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_750\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"decime cuáles son grandes\", \"prev_text\": \"revisá todos los archivos de mi carpeta Descargas\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Abrí el…"
+          },
+          {
+            "offset": 569,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_751\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"mientras tanto andá averiguando el clima de las próximas 3 ciudades que te diga\", \"prev_text\": \"decime cuáles son grandes\", \"tools_called\": [], \"tool…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20742,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_798\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"guardala en el escritorio y abre el explorador ahi\", \"prev_text\": \"toma una captura\", \"tools_called\": [\"desktop_layout\", \"desktop_layout\"], \"tool_arg…"
+          },
+          {
+            "offset": 21255,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_799\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"baja el volumen, abre Spotify\", \"prev_text\": \"guardala en el escritorio y abre el explorador ahi\", \"tools_called\": [\"audio\"], \"tool_args\": [{\"action\"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_70_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27153,
+      "sha256": "c23e0c86cbdb679f6d449ba658046eeff0d26b83e4cd39cc14c90a99496adcab",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26536,
+        "min_line_bytes": 383,
+        "max_line_bytes": 718,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.65,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_750\", \"user_text\": \"decime cuáles son grandes\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"filesystem\"], \"also_valid\": [], \"correct_reply_style\": \"Reviso el tamaño de los archivos de Descargas y te paso cuáles son…"
+          },
+          {
+            "offset": 658,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_751\", \"user_text\": \"mientras tanto andá averiguando el clima de las próximas 3 ciudades que te diga\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Dale, decime las tres ci…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25842,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_798\", \"user_text\": \"guardala en el escritorio y abre el explorador ahi\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"gui\", \"filesystem\"], \"also_valid\": [], \"correct_reply_style\": \"Guardo la captura en el escritorio…"
+          },
+          {
+            "offset": 26536,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_799\", \"user_text\": \"baja el volumen, abre Spotify\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"audio\", \"app\"], \"also_valid\": [], \"correct_reply_style\": \"Bajo el volumen y abro Spotify.\", \"reply_is_template\": false…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_71.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21369,
+      "sha256": "fa6d64dfcd35afe3e3ace090f9807216784d9c874913a432c16a3f1c5e4915f4",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20904,
+        "min_line_bytes": 317,
+        "max_line_bytes": 685,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_800\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"pon algo de jazz\", \"prev_text\": \"baja el volumen, abre Spotify\", \"tools_called\": [\"media\"], \"tool_args\": [{\"action\": \"play\", \"provider\": \"spotify\", \"…"
+          },
+          {
+            "offset": 436,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_801\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"si hay algo sonando\", \"prev_text\": \"si Chrome esta abierto cierralo\", \"tools_called\": [\"audio\"], \"tool_args\": [{\"action\": \"get_volume\"}], \"reply\": \"E…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20479,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_849\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"instalame doom eternal en steam\", \"prev_text\": \"Hola gemma\", \"tools_called\": [\"steam\"], \"tool_args\": [{\"action\": \"install\", \"query\": \"doom eternal\"}]…"
+          },
+          {
+            "offset": 20904,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_850\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"andá al portal UNIEJ, entrá a Canvas y leeme las tareas\", \"prev_text\": \"instalame doom eternal en steam\", \"tools_called\": [\"browser\"], \"tool_args\": [{…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_71_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 30030,
+      "sha256": "aabade46ec7b5e95676322d83d3ddb24366ee8d79c1218903931b8a1517b9c15",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29170,
+        "min_line_bytes": 410,
+        "max_line_bytes": 860,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_800\", \"user_text\": \"pon algo de jazz\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [], \"correct_reply_style\": \"Voy a poner jazz en Spotify.\", \"reply_is_template\": false, \"original_was_correct…"
+          },
+          {
+            "offset": 589,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_801\", \"user_text\": \"si hay algo sonando\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [[\"media\"]], \"correct_reply_style\": \"Dejame revisar si hay algo reproduciendose.\", \"reply_is_template\": f…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28515,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_849\", \"user_text\": \"instalame doom eternal en steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Instalo DOOM Eternal en Steam.\", \"reply_is_template\": false, \"ori…"
+          },
+          {
+            "offset": 29170,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_850\", \"user_text\": \"andá al portal UNIEJ, entrá a Canvas y leeme las tareas\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Voy al portal de la UNIEJ, entro a C…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_72.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21598,
+      "sha256": "9ea2efac295d0dce8445684ef0492d2b849e4dd300adcc3de633f9d47da1ff53",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21106,
+        "min_line_bytes": 320,
+        "max_line_bytes": 637,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_851\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"descargame doom eternal de steam\", \"prev_text\": \"instala doom eternal en steam\", \"tools_called\": [\"steam\"], \"tool_args\": [{\"action\": \"install\", \"quer…"
+          },
+          {
+            "offset": 513,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_852\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"bajá doom eternal en steam\", \"prev_text\": \"descargame doom eternal de steam\", \"tools_called\": [\"steam\"], \"tool_args\": [{\"action\": \"install\", \"query\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 20641,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_900\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Dígame, instálame Batman Arkham Nike.\", \"prev_text\": \"qué hora es\", \"tools_called\": [\"steam\"], \"tool_args\": [{\"action\": \"install\", \"name\": \"Batman Ar…"
+          },
+          {
+            "offset": 21106,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_901\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Instálame Batman Arkham Nike en Steam\", \"prev_text\": \"Dígame, instálame Batman Arkham Nike.\", \"tools_called\": [\"steam\"], \"tool_args\": [{\"action\": \"in…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_72_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27363,
+      "sha256": "49a6d0f3bcb4d9e93c6378c6d40131f29f5cb7969113574195d46d863c53dfd5",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26786,
+        "min_line_bytes": 411,
+        "max_line_bytes": 774,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_851\", \"user_text\": \"descargame doom eternal de steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Le di a instalar DOOM Eternal en Steam. Si te pide elegir carpet…"
+          },
+          {
+            "offset": 640,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_852\", \"user_text\": \"bajá doom eternal en steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Mando instalar Doom Eternal en Steam. Si aparece un dialogo pidiendo c…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26169,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_traces_900\", \"user_text\": \"Dígame, instálame Batman Arkham Nike.\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [[\"package\"]], \"correct_reply_style\": \"Mando instalar Batman Arkham Knight en Steam. Si…"
+          },
+          {
+            "offset": 26786,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_traces_901\", \"user_text\": \"Instálame Batman Arkham Nike en Steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Mando instalar Batman Arkham Knight en Steam. Te aviso si p…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_73.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 20060,
+      "sha256": "7817d4a01af5ed13cfc707df950384f777ff7197515921129d930daf9c65e5b0",
+      "rows": 47,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 47,
+          "source": 47,
+          "project": 47,
+          "user_text": 47,
+          "prev_text": 47,
+          "tools_called": 47,
+          "tool_args": 47,
+          "reply": 47,
+          "latency_ms": 47,
+          "status_original": 47,
+          "expected_tools": 47,
+          "expected_note": 47,
+          "ts": 47
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19677,
+        "min_line_bytes": 315,
+        "max_line_bytes": 757,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_902\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Suma 2 más 2 en la Calculadora\", \"prev_text\": \"Instálame Batman Arkham Nike en Steam\", \"tools_called\": [\"gui\"], \"tool_args\": [{\"action\": \"type\", \"tex…"
+          },
+          {
+            "offset": 513,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_903\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Suma dos más dos en la Calculadora\", \"prev_text\": \"Suma 2 más 2 en la Calculadora\", \"tools_called\": [\"gui\"], \"tool_args\": [{\"action\": \"type\", \"text\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 19306,
+            "line": 46,
+            "text": "{\"id\": \"gemma4_traces_947\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"No lo hice\", \"prev_text\": \"Porque cancelas\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Lo siento, no cancelé nada. Estoy listo para lo que neces…"
+          },
+          {
+            "offset": 19677,
+            "line": 47,
+            "text": "{\"id\": \"gemma4_traces_948\", \"source\": \"gemma4_traces\", \"project\": \"gemma4\", \"user_text\": \"Que mierda me hablas\", \"prev_text\": \"No lo hice\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"Lo siento si te molesto. Estoy aquí para ayudarte co…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_73_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 23838,
+      "sha256": "24efed3559bff9b64239be6a09b6d1bb5eb0dcbaced4fb3568790bbd62a6e4b2",
+      "rows": 47,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 47,
+          "user_text": 47,
+          "lang": 47,
+          "n_steps": 47,
+          "correct_tools": 47,
+          "also_valid": 47,
+          "correct_reply_style": 47,
+          "reply_is_template": 47,
+          "original_was_correct": 47,
+          "correction_reason": 47,
+          "confidence": 47,
+          "category": 47,
+          "source": 47,
+          "project": 47
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23310,
+        "min_line_bytes": 387,
+        "max_line_bytes": 706,
+        "numeric": {
+          "n_steps": {
+            "min": 0.0,
+            "max": 3.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_traces_902\", \"user_text\": \"Suma 2 más 2 en la Calculadora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, sumé 2 más 2 en la Calculadora: da 4.\", \"reply_is_te…"
+          },
+          {
+            "offset": 591,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_traces_903\", \"user_text\": \"Suma dos más dos en la Calculadora\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, en la Calculadora dos más dos da 4.\", \"reply_is_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 22791,
+            "line": 46,
+            "text": "{\"id\": \"gemma4_traces_947\", \"user_text\": \"No lo hice\", \"lang\": \"es\", \"n_steps\": 0, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Tenés razón, me confundí. Decime qué querés que haga y lo hago ahora.\", \"reply_is_template\":…"
+          },
+          {
+            "offset": 23310,
+            "line": 47,
+            "text": "{\"id\": \"gemma4_traces_948\", \"user_text\": \"Que mierda me hablas\", \"lang\": \"es\", \"n_steps\": 0, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Perdón por la confusión, la embarré. Decime de nuevo qué necesitás y lo resuelvo.\",…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/conversation/conv_de.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 37998,
+      "sha256": "18cd5a8f42a256dfae829e0b422443da65c83ed189ca3b0be5c2e90e7f778117",
+      "rows": 75,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode"
+        ],
+        "key_freq": {
+          "user_text": 75,
+          "prev_text": 75,
+          "lang": 75,
+          "correct_tools": 75,
+          "also_valid": 75,
+          "n_steps": 75,
+          "correct_reply_style": 75,
+          "reply_is_template": 75,
+          "category": 75,
+          "personality_applies": 75,
+          "original_was_correct": 75,
+          "confidence": 75,
+          "source": 75,
+          "project": 75,
+          "dataset_part": 75,
+          "mode": 75
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37474,
+        "min_line_bytes": 424,
+        "max_line_bytes": 607,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Hallo!\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Hallo! Schön, dich zu hören. Womit kann ich dir heute helfen?\", \"reply_is_template\": false, \"category\": \"co…"
+          },
+          {
+            "offset": 451,
+            "line": 2,
+            "text": "{\"user_text\": \"Guten Morgen\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Guten Morgen! Ich hoffe, du hast gut geschlafen. Wie kann ich deinen Tag heute leichter machen?\", \"re…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36962,
+            "line": 74,
+            "text": "{\"user_text\": \"Du bist echt eine große Hilfe für mich\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Das geht runter wie Öl, danke dir! Genau dafür bin ich da, und ich mach es…"
+          },
+          {
+            "offset": 37474,
+            "line": 75,
+            "text": "{\"user_text\": \"Wie war dein Tag so?\", \"prev_text\": \"\", \"lang\": \"de\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Lieb, dass du fragst! Mein Tag wird immer dann gut, wenn ich dir helfen kann. Aber jetzt bin…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/conversation/conv_fr.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 42041,
+      "sha256": "f7377c86ad86507b4594c5885caa5567d31520b039a0d54410466a459f12fcfb",
+      "rows": 85,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode"
+        ],
+        "key_freq": {
+          "user_text": 85,
+          "prev_text": 85,
+          "lang": 85,
+          "correct_tools": 85,
+          "also_valid": 85,
+          "n_steps": 85,
+          "correct_reply_style": 85,
+          "reply_is_template": 85,
+          "category": 85,
+          "personality_applies": 85,
+          "original_was_correct": 85,
+          "confidence": 85,
+          "source": 85,
+          "project": 85,
+          "dataset_part": 85,
+          "mode": 85
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 41555,
+        "min_line_bytes": 407,
+        "max_line_bytes": 574,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Salut Gemma !\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Salut ! Content de te retrouver. Comment ça va aujourd'hui ?\", \"reply_is_template\": false, \"category…"
+          },
+          {
+            "offset": 456,
+            "line": 2,
+            "text": "{\"user_text\": \"Bonjour\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Bonjour ! J'espère que ta journée commence bien. Qu'est-ce que je peux faire pour toi ?\", \"reply_is_templa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 41033,
+            "line": 84,
+            "text": "{\"user_text\": \"Salut, comment vas-tu aujourd'hui ?\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Salut ! Tout roule de mon côté, toujours prête à donner un coup de main. Et to…"
+          },
+          {
+            "offset": 41555,
+            "line": 85,
+            "text": "{\"user_text\": \"Je crois que je vais beaucoup t'aimer\", \"prev_text\": \"\", \"lang\": \"fr\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Aw, ça commence bien alors ! Je vais tout faire pour mériter ça.\", \"reply_is…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/conversation/conv_it.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 40353,
+      "sha256": "2415e0505f9c360fda74b9bddad3b5e0ea4c6dda84e5136db5bb92af917c8073",
+      "rows": 85,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode"
+        ],
+        "key_freq": {
+          "user_text": 85,
+          "prev_text": 85,
+          "lang": 85,
+          "correct_tools": 85,
+          "also_valid": 85,
+          "n_steps": 85,
+          "correct_reply_style": 85,
+          "reply_is_template": 85,
+          "category": 85,
+          "personality_applies": 85,
+          "original_was_correct": 85,
+          "confidence": 85,
+          "source": 85,
+          "project": 85,
+          "dataset_part": 85,
+          "mode": 85
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39879,
+        "min_line_bytes": 413,
+        "max_line_bytes": 561,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Ciao!\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Ciao! Che piacere sentirti. Cosa ti gira per la testa?\", \"reply_is_template\": false, \"category\": \"conversaci…"
+          },
+          {
+            "offset": 441,
+            "line": 2,
+            "text": "{\"user_text\": \"Buongiorno\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Buongiorno! Spero tu abbia iniziato bene la giornata. Sono qui se ti serve qualcosa.\", \"reply_is_templa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 39396,
+            "line": 84,
+            "text": "{\"user_text\": \"Che bello chiacchierare con te\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Il piacere è tutto mio! Le chiacchiere con te mi mettono di buonumore.\", \"reply_is_…"
+          },
+          {
+            "offset": 39879,
+            "line": 85,
+            "text": "{\"user_text\": \"Mi manchi quando non ci sei\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Che pensiero gentile! Basta una chiamata e mi ritrovi subito qui.\", \"reply_is_template…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/conversation/conv_pt.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 42480,
+      "sha256": "7f55f79587b56974b49c21bc3ce74874c6559e8fa443dd2233bf8a7b5eef6e06",
+      "rows": 85,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode"
+        ],
+        "key_freq": {
+          "user_text": 85,
+          "prev_text": 85,
+          "lang": 85,
+          "correct_tools": 85,
+          "also_valid": 85,
+          "n_steps": 85,
+          "correct_reply_style": 85,
+          "reply_is_template": 85,
+          "category": 85,
+          "personality_applies": 85,
+          "original_was_correct": 85,
+          "confidence": 85,
+          "source": 85,
+          "project": 85,
+          "dataset_part": 85,
+          "mode": 85
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 41879,
+        "min_line_bytes": 435,
+        "max_line_bytes": 601,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"Oi!\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Oi! Que bom te ver por aqui. Em que posso ajudar hoje?\", \"reply_is_template\": false, \"category\": \"conversacion…"
+          },
+          {
+            "offset": 439,
+            "line": 2,
+            "text": "{\"user_text\": \"Bom dia!\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Bom dia! Espero que o seu dia comece com o pé direito. O que você precisa?\", \"reply_is_template\": false,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 41361,
+            "line": 84,
+            "text": "{\"user_text\": \"Tô orgulhoso de mim hoje\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"E com toda razão! Reconhecer o próprio esforço é importante demais. Parabéns, viu? Você m…"
+          },
+          {
+            "offset": 41879,
+            "line": 85,
+            "text": "{\"user_text\": \"Acho que vou desistir de tudo\", \"prev_text\": \"\", \"lang\": \"pt\", \"correct_tools\": [], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Ei, calma, respira comigo um instante. Quando tudo parece demais, às vezes é só sina…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/coverage/cov_dev.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 37956,
+      "sha256": "a7c093fe957f6c7484efa02106a9d78f6b779944a3cf9ba2a71558f486dbc047",
+      "rows": 72,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "user_text",
+          "prev_text",
+          "lang",
+          "correct_tools",
+          "also_valid",
+          "n_steps",
+          "correct_reply_style",
+          "reply_is_template",
+          "category",
+          "personality_applies",
+          "original_was_correct",
+          "confidence",
+          "source",
+          "project",
+          "dataset_part",
+          "mode",
+          "tool_args"
+        ],
+        "key_freq": {
+          "user_text": 72,
+          "prev_text": 72,
+          "lang": 72,
+          "correct_tools": 72,
+          "also_valid": 72,
+          "n_steps": 72,
+          "correct_reply_style": 72,
+          "reply_is_template": 72,
+          "category": 72,
+          "personality_applies": 72,
+          "original_was_correct": 72,
+          "confidence": 72,
+          "source": 72,
+          "project": 72,
+          "dataset_part": 72,
+          "mode": 72,
+          "tool_args": 72
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 37434,
+        "min_line_bytes": 495,
+        "max_line_bytes": 588,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.9,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"user_text\": \"corré los tests del proyecto, a ver si pasa todo\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"developer\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Voy con los tests del proyecto. Te aviso apenas tenga…"
+          },
+          {
+            "offset": 534,
+            "line": 2,
+            "text": "{\"user_text\": \"mostrame el estado del repo, qué tengo sin commitear\", \"prev_text\": \"\", \"lang\": \"es\", \"correct_tools\": [\"developer\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Te traigo el git status para ver qué quedó sin com…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 36920,
+            "line": 71,
+            "text": "{\"user_text\": \"quali processi ho in esecuzione in questo momento\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"job_manager\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Ti mostro i processi che hai in esecuzione adesso.\"…"
+          },
+          {
+            "offset": 37434,
+            "line": 72,
+            "text": "{\"user_text\": \"qual è lo stato del job di compilazione\", \"prev_text\": \"\", \"lang\": \"it\", \"correct_tools\": [\"job_manager\"], \"also_valid\": [], \"n_steps\": 1, \"correct_reply_style\": \"Controllo lo stato del job di compilazione.\", \"reply_is_templ…"
+          }
+        ]
+      }
+    }
+  }
+}

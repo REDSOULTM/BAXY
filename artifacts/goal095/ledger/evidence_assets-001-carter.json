@@ -1,0 +1,543 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-001-carter",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:38:05Z",
+  "closed_utc": "2026-08-31T05:38:09Z",
+  "estimated_tokens": 292102,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 38,
+  "subsystem": "carter_data",
+  "subsystems": [
+    "carter_data",
+    "carter_docs"
+  ],
+  "files": [
+    {
+      "path": "data/carter_memory.db",
+      "sha256": "573f31b1df0c8ee78533042b897af93e4ef887aaf61fa57775d8a6a30be32c13",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#data/carter_memory.db"
+    },
+    {
+      "path": "docs/investigaciones/La razon de carter/Carter_defensa_tesis_producto_final_costos_api.pptx",
+      "sha256": "beefd69abf34d802d7faf7c5967e221d78e4572ddb8a55fdfb21f793be047817",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/La razon de carter/Carter_defensa_tesis_producto_final_costos_api.pptx",
+      "binary_format": "zip"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/audio_E4B.json",
+      "sha256": "e9afd09be30b102175a695f12c63f2e472bb9a678bb68d0c29d870ade4526496",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/audio_E4B.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/baseline_qwen3-4b.json",
+      "sha256": "4b216cccc007641bd8e14e3d1a78f69d1706927048e882aa0a87775161c3a4be",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/baseline_qwen3-4b.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/judged.json",
+      "sha256": "b249b6f930cba4c5131ec49c6a8bdc4a04f2095165dd99ebe35b365f8476429b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/judged.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ2_M.log.err",
+      "sha256": "c7c9352a0a5724e803c02addd82795ba8245d125c03e9c847060fdf3c3f4b5af",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ2_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ2_XXS.log.err",
+      "sha256": "19345b4f5efc138f8e5dd74ae6b559e9637bf2207266c7364cead1d7dc342fdc",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ2_XXS.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ4_XS.log.err",
+      "sha256": "e8a776d0e50c73da476ffbf3767670acdd75e4b919f817020fdd589d7c5ae24c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ4_XS.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q2_K_XL.log.err",
+      "sha256": "68613756534bdb154776de72f990622c39bda8b2ce5f1e58d851d57065b19352",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q2_K_XL.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q3_K_M.log.err",
+      "sha256": "7508c2be693e99f72cf6d06ea288bcb6a1808bbe2384a52eee81939e276043d5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q3_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q3_K_XL.log.err",
+      "sha256": "5775a4273fc4ac2c64c87ed3ea1481f41573a632fd8457511c0e2cddec68ad60",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q3_K_XL.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-Q3_K_M.log.err",
+      "sha256": "4eec570edf7a1f0377b83fd592ac9d0f2974648d7ebbec754c131f96fadd511d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-Q3_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-IQ2_M.log.err",
+      "sha256": "1196e31abce00231ed64bfb95ff9b2c388f6b001a861f090d8099ed3c017f205",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-IQ2_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-IQ2_XXS.log.err",
+      "sha256": "f0ede9184a116f8c592abd1df073c3ff67caa372fc0fbe20518a90360fa3aa50",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-IQ2_XXS.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-Q2_K_XL.log.err",
+      "sha256": "b4c4381132606f78a4ad130ddb9316c582b9f3ca132ce77bfad42a511b0624de",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-Q2_K_XL.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q3_K_M.log.err",
+      "sha256": "14229ba5423f40c4b95f1ea620885adbc90388bef32015adb2adda8dfc113b46",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q3_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q4_K_M.log.err",
+      "sha256": "7670a6ac1197274b47897758371efcf925a4d7f5efc4e14b923cbe88a4f74851",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q4_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q5_K_M-RETRY.log.err",
+      "sha256": "e22c200b1ee68b61567c653b3f3b13e49e6037b40189cba6e9f13e171044ebf6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q5_K_M-RETRY.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q5_K_M.log.err",
+      "sha256": "4c651cd20c88cc7297da34e60d6d977ab54cff620dd9c1830621a2737764c83e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q5_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q2_K_XL.log.err",
+      "sha256": "4fb9d255b1a8f84ac1bd267dea3bd223f6011b3cd19e173cf5854ecca9c7b86a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q2_K_XL.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q3_K_XL.log.err",
+      "sha256": "e61a425c505ed13228e786c0c438b9c8e8bdb1cf74b2e09a7128531017a099c9",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q3_K_XL.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q4_K_XL.log.err",
+      "sha256": "a5e6848e036898877a87e177b096bfdc9533b839e16ba3ef222ac11e6e056f37",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q4_K_XL.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q4_K_M.log.err",
+      "sha256": "7b462f965f86f588a38920076ac5cd8a0292f71f4aaf3e684d79783171d1a670",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q4_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q5_K_M.log.err",
+      "sha256": "548cb4b6b7fa7c3cada42d6a59346ca4d177c2bc3aa3979142bb1357e1886bc1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q5_K_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q6_K.log.err",
+      "sha256": "22dd2d4908af516db6c95b3e6346dacb5a59db81945486a0928b8912ec815525",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q6_K.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q8_0.log.err",
+      "sha256": "cbe607ced27a7a4eecd254c05283a8b85224b15e925d0d254d18ebf5a26cbc29",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q8_0.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-UD-IQ2_M.log.err",
+      "sha256": "ee2085e4f432554c65212830ab946ecaff408cb2776a035cde4a0071b3a1f781",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-UD-IQ2_M.log.err"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/summary.json",
+      "sha256": "88251baafa3c656d5b67a0b26ce71cde3af4dfb1cc565f9c40b8e2272753d635",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/summary.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ2_M.json",
+      "sha256": "4df517e5cef5e10311e1f00b8b4bb0c6ff22ae810e5a8640421f42f07b0a3006",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ2_M.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ2_XXS.json",
+      "sha256": "aeee09ad3c888d54ac185a434340823c01bc1b26f8129d3df004b446d143cad1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ2_XXS.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ4_XS.json",
+      "sha256": "856a84c8efbea69b8e3b6ae3e4ab53439849adc3ddad1520dae272aefebe5ffa",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ4_XS.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q2_K_XL.json",
+      "sha256": "b97a8a2d3ffc274db088b9696c00b20aff6043e30e3c750c5ef600dd50d284ae",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q2_K_XL.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q3_K_M.json",
+      "sha256": "cd6baf943d342ab9e132599302b86f03351c38860f07460439bc3d14490f0560",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q3_K_M.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q3_K_XL.json",
+      "sha256": "ec601579f6cb1dfb64243d82bb6c69d2df30c23468794ac2bf5ca665b5ef7828",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q3_K_XL.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-Q3_K_M.json",
+      "sha256": "5f9c54b0e8b8949f74c88124002ef19e265df11e6f169fe3cb1e10fc65dbb7e2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-Q3_K_M.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-IQ2_M.json",
+      "sha256": "f8ea53fdd607c7ab7aa3b4fd463f7441ffdbbd4b8addcaf1c2db5916844c04dd",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-IQ2_M.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-IQ2_XXS.json",
+      "sha256": "3f68cc1fe98f057296a0b9b35b1d49499a1ef713c0562e9f8e1779e39728219c",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-IQ2_XXS.json"
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-Q2_K_XL.json",
+      "sha256": "c6c8dca8c69f3610f1738408ce760e642cbc4ace69aa84371a72dd71a4d3498d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json#docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-Q2_K_XL.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-001-carter-01-data-carter_memory.db",
+      "card_kind": "run",
+      "corpus": "data/carter_memory.db",
+      "denominator": "1 files in group data/carter_memory.db; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:data/carter_memory.db",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "data/carter_memory.db"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "carter_memory.db parser=sqlite rows=83 bytes=40960 dist={\"table_count\": 2, \"rows_total\": 83}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "data/carter_memory.db",
+        "ranges": [
+          "sqlite:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-001-carter-02-docs-investigaciones-La razon de carter",
+      "card_kind": "asset",
+      "corpus": "docs/investigaciones/La razon de carter",
+      "denominator": "1 files in group docs/investigaciones/La razon de carter; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:docs/investigaciones/La razon de carter",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "docs/investigaciones/La razon de carter/Carter_defensa_tesis_producto_final_costos_api.pptx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Carter_defensa_tesis_producto_final_costos_api.pptx parser=binary_inventory rows=0 bytes=58011 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "docs/investigaciones/La razon de carter/Carter_defensa_tesis_producto_final_costos_api.pptx",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-001-carter-03-docs-investigaciones-evidencia pruebas gemma4",
+      "card_kind": "metric",
+      "corpus": "docs/investigaciones/evidencia pruebas gemma4",
+      "denominator": "36 files in group docs/investigaciones/evidencia pruebas gemma4; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:docs/investigaciones/evidencia pruebas gemma4",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "docs/investigaciones/evidencia pruebas gemma4/results/audio_E4B.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/baseline_qwen3-4b.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/judged.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ2_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ2_XXS.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-IQ4_XS.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q2_K_XL.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q3_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_26B-UD-Q3_K_XL.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-Q3_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-IQ2_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-IQ2_XXS.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_31B-UD-Q2_K_XL.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q3_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q4_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q5_K_M-RETRY.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-Q5_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q2_K_XL.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q3_K_XL.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E2B-UD-Q4_K_XL.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q4_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q5_K_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q6_K.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-Q8_0.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/logs_servidores/server_E4B-UD-IQ2_M.log.err",
+        "docs/investigaciones/evidencia pruebas gemma4/results/summary.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ2_M.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ2_XXS.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-IQ4_XS.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q2_K_XL.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q3_K_M.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_26B-UD-Q3_K_XL.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-Q3_K_M.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-IQ2_M.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-IQ2_XXS.json",
+        "docs/investigaciones/evidencia pruebas gemma4/results/trazas_modelos/extended_31B-UD-Q2_K_XL.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "audio_E4B.json parser=json rows=1 bytes=9741 dist={\"scalar_keys\": [], \"list_lengths\": {\"runs\": 10}} | baseline_qwen3-4b.json parser=json rows=1 bytes=58354 dist={\"scalar_keys\": [\"model\"], \"list_lengths\": {\"tests\": 60}} | judged.json parser=json rows=1 bytes=378316 dist={\"scalar_keys\": [], \"list_lengths\": {}} | server_26B-UD-IQ2_M.log.err parser=log rows=2954 bytes=247619 dist={\"fail_like\": 0, \"pass_like\": 0} | server_26B-UD-IQ2_XXS.log.err parser=log rows=1458 bytes=118904 dist={\"fail_like\": 2, \"pass_like\": 0} | server_26B-UD-IQ4_XS.log.err parser=log rows=2720 bytes=227333 dist={\"fail_like\": 3, \"pass_like\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "docs/investigaciones/evidencia pruebas gemma4/results/audio_E4B.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=38 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-002-carter",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-001-carter.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

@@ -1,0 +1,1271 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-034-baxy-baxy_art_audit",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:42:04Z",
+  "closed_utc": "2026-08-31T05:42:06Z",
+  "estimated_tokens": 299771,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 110,
+  "subsystem": "baxy_art_audit",
+  "subsystems": [
+    "baxy_art_audit"
+  ],
+  "files": [
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress_installed.json",
+      "sha256": "f283ec02d172b208d75aba36c27c0b5d6b456e57b98dca3dcbd721d7e899b0c8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_raw_notepad.json",
+      "sha256": "bfc32446033ddbea2b5cc5bba63b5a69c53ef9a0f03491262958a83a04002a55",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_raw_notepad.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad.json",
+      "sha256": "c66e0d7e51dbaacf5326d027bf9c9072f13133faac56cbca5f60bca3f005a723",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_2.json",
+      "sha256": "2e321a8adbd2c0d01532ffd76f29327966f2bac5f61108997693385cd8eb3587",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_2.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_3.json",
+      "sha256": "0d547f35b3957380b26dfc96e94268896cc71eac58d6f078b5379ff684d1aff7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_3.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_4.json",
+      "sha256": "d104d7e5d890af891686e9bacde8ed19edb78f4e98c7a2c4e019920a248c9787",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_4.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_5.json",
+      "sha256": "4257a0a0f35a9f9610b039e7dfa773b294720c6690596ad4d8632a663051fdf4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_5.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_6.json",
+      "sha256": "0b6bc29940428109206d50b6749bb12e1b09590a8dd808e3e581f991090e780d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_6.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_7.json",
+      "sha256": "8e215f4b5a148ec3ce24d2eee20083a1dcfb59c5bf3738ebc2179ad0eba27efc",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_7.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_mute_restored_installed.json",
+      "sha256": "e9899691de3d08f092b51d880096757c65c2d4f070bcffa43586f8a1b13c75cf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_mute_restored_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_mute_true_installed.json",
+      "sha256": "d4920079f8b653d84c88a948124260a0fa2114a1bf73f6a0e0377342a3cc8c56",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_mute_true_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_status_after_mute_cycle.json",
+      "sha256": "c4463b058e63575caceb1381ac51f27c2e86653706c881db1a1c86e96dcb699f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_status_after_mute_cycle.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_status_after_youtube_installed.json",
+      "sha256": "6bdaf58cba42a631676000a28670b12121e1a0349b003c41d4599424bce756ae",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_status_after_youtube_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_status_baseline.json",
+      "sha256": "147920c01fbcdcfd9109035538f9eccff0813b434a93c045f86d5dd9172379b4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_status_baseline.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_status_restored.json",
+      "sha256": "30464c49cb5f6171ed72c3e971b5b94c56d3a376a01638a6f3d8835dda618403",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_status_restored.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_status_restored_second.json",
+      "sha256": "05eff3b659a026d2535486fc0540342d7073e01cd79790012457d7eed3e45f24",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_status_restored_second.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_volume_adjust_down_2.json",
+      "sha256": "f887d419c19cbd165f2279c8896d7175628ac08043a6e5762c9860a51c12fedf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_volume_adjust_down_2.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_volume_bridge_0.json",
+      "sha256": "666accc6148747876f9393e4c8519afcd0b32f5fb46733d3674909cec2b6b9ff",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_volume_bridge_0.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_volume_restore_3.json",
+      "sha256": "53873f742a54525025e1d9ba322c4271c2d5bb7d33b36bbb51f64d5a52c64338",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_volume_restore_3.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_volume_restore_3_second.json",
+      "sha256": "f1264659e62cec6826a2065ab12f7256beec8c8b1d6fac883b2599247554be53",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_volume_restore_3_second.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/audio_volume_set_7.json",
+      "sha256": "27a1a2c3b3228c703aaf5eb61892e98cc722b77c42a4c4978f81b8281f5f7d1e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/audio_volume_set_7.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/backlog_evidence_validation.json",
+      "sha256": "fe0e66e72fc79f2e18f988740d0f78fc05d56229a02f262328cc95ad9366ebdd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/backlog_evidence_validation.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-core-notes-corrected-path/emman_REDNOTE_2026-07-27_01_09_42.trx",
+      "sha256": "86440d557e024972fa39e8968359821e04a72d1baa06e8fbdb5a95ccd5df897d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-core-notes-corrected-path/emman_REDNOTE_2026-07-27_01_09_42.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-core-notes-isolated/emman_REDNOTE_2026-07-27_01_06_06.trx",
+      "sha256": "af4e273f94133387de9df67c8b3eeac4777360ff0e87259b04e36b8bc825c1be",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-core-notes-isolated/emman_REDNOTE_2026-07-27_01_06_06.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_10_01.trx",
+      "sha256": "ffbaec4866ff80c667088cde1eb0298cd95d5038738ea802619e2748969174ea",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_10_01.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_10_06.trx",
+      "sha256": "482c0bbc3159ce86e4319f455eb2b4b2503a441d88d4fbcfbaebe1b4044e214b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_10_06.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_11_40.trx",
+      "sha256": "99a84175309750ea16e0917f4a04be795042f36ea39c0272ae8983275bd198a1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_11_40.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_11_43.trx",
+      "sha256": "94754c92f4dc08cfdcfe86219167c50582bdcf336ec37619df3190ba6cc34ac0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_11_43.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_12_28.trx",
+      "sha256": "ff6434fc8c165516dfc55665aa8789e87d4f223311b005dd2f4d96bf0c83dd5b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_12_28.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_01_10.trx",
+      "sha256": "3eb142abe8aa00ab0a1a3b163a783ab57aeecbc90f8e370b6021cc2c334cd3bb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_01_10.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_01_16.trx",
+      "sha256": "1c2efea4355c6ea8ccfb194571ce3142ac44af750246a0c23cf7cf78fa1d91ec",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_01_16.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_02_38.trx",
+      "sha256": "b3b3808395c33fbe64ccbfbcb8cb1e4c6bc9b4cc8cb1105c53582fe17c6fbe0b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_02_38.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_02_42.trx",
+      "sha256": "e66065d31944fde23a0a5c206a0d72fcdb08589c3ce92e89a3a4f97e4f73d57b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_02_42.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_03_31.trx",
+      "sha256": "ee7a646c8c7f7fb883b50702ce63e9bfb6863a7f02975eca7729ebc9f7acc2d3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_03_31.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/dotnet/dotnet.trx",
+      "sha256": "66abe9c67094f2ae05722d0d8548ef774440085a2254f326b5a603ba9ef27835",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/dotnet/dotnet.trx"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/baseline/pytest.xml",
+      "sha256": "f6540cbe24f0569e3cb9d0666effd65dfcfbf9417c7a1966dfc73dafc8f677c3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "xml:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/baseline/pytest.xml"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_process_probe.json",
+      "sha256": "21b0d5be68f781d8aebab2093b3902ed8211746a22c983c0b2877ff3fccf0f8d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_process_probe.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_repro_development.json",
+      "sha256": "de0ecdab52638dcffe6ba61436ae1a455fd34ea0f3b9908aba9bd7ad2724c30e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_repro_development.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_repro_installed.json",
+      "sha256": "5208df0ec4061f59ccd468b543e7998c0ddc477c4a5c7612051acaa50098b297",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_repro_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/bluetooth_radio_set_noop_installed.json",
+      "sha256": "c61b881e31dc2fbc6969c6f92aa91791cd6346289de35f22da43b0d42068b9da",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/bluetooth_radio_set_noop_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/brightness_adjust_up5_installed.json",
+      "sha256": "62bd242eb4596db37f62d71ad51bd4d5ceffe4e91ae4303e01051831411761a3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/brightness_adjust_up5_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/brightness_restore_0_installed.json",
+      "sha256": "dcf92c30c2b98cab2adf8f5d1eb4514861df00f3916092d044255cd1dd46568b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/brightness_restore_0_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/brightness_status_installed.json",
+      "sha256": "592f24d90416edcd976d5dffcbbc78b09f8edaf12735114e86d116d2696f7817",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/brightness_status_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/brightness_status_restored_installed.json",
+      "sha256": "a4e60359d5646bcd12f2a80c3790f3a83158eb7f814595ae8698922c6c69e14d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/brightness_status_restored_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/browser_chain_generic_installed.json",
+      "sha256": "a3501e841ce35d8b1b71451a17f0b24f42d16893981fa4357b5f258c37a8b7ce",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/browser_chain_generic_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/browser_chain_installed.json",
+      "sha256": "e61f7d25911c2fad5187771e8e797e50f9e9335eaed22963f7cf2fcd9b896081",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/browser_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/browser_navigate_named_installed.json",
+      "sha256": "f1b2c30f3f3fcc727a9e810d1bee15a5c48e4be188bc5b24dd5c5e62afe5501e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/browser_navigate_named_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/browser_visible_click_chain_installed.json",
+      "sha256": "cb82e7b8cceeef258b568e3f635f423eafd9b88e898f5af4ce6ae9a447fad449",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/browser_visible_click_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/capture_active_window_installed.json",
+      "sha256": "24ac86c9c9a31cde9db07d5019151c6b02225b55378c2c354ca472ff7b190da0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/capture_active_window_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/capture_ocr_installed.json",
+      "sha256": "6ed93c7605ccbd740ab38a3fda559e7e6629a9eafb2dfcfd52060ee1555bb5a3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/capture_ocr_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/capture_ocr_vision_installed.json",
+      "sha256": "f6cba6469e1ff76de34d3b410b6189e7d41d8c3c77bfac1c88c5afe2e52f8c09",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/capture_ocr_vision_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/clipboard_interaction_chain_installed.json",
+      "sha256": "86d3ef9bc535b5fc7c111eeadb695a1c545b585deb8d2ed4502c4d9a8ceff13c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/clipboard_interaction_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/clipboard_read_marker.json",
+      "sha256": "56f2c9bc03886d26560b68ff12c0641b39fd51a69ba04e1722b1b4179bb99a07",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/clipboard_read_marker.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/clipboard_write_marker.json",
+      "sha256": "fcec3b3da8c31617b6da0e0f10c2b590e5f93b648eb295635c9217ca91daed8b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/clipboard_write_marker.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/cold_start_stress_installed.json",
+      "sha256": "a0c69b4c3765d28364129ca17dc061b2b78e852fd098f6134e8f5da13d459419",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/cold_start_stress_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/dotnet_rerun_under_soak.json",
+      "sha256": "40d8a6575343759c8fb84770f52239db3ca12a2d2d7b021086a172bd99152b72",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/dotnet_rerun_under_soak.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/email_latest_read_installed.json",
+      "sha256": "650ea13728a8fbb3fa46093931779e3b8aba7ae369efa879fcf474a931dbed87",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/email_latest_read_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/empty_history.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/empty_history.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/extended_turn_cases.json",
+      "sha256": "7f67f3ae054e7952093605d2fcafa897a9d0071a1986a84a336a8b7a33320e97",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/extended_turn_cases.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/extended_turn_probe_installed.json",
+      "sha256": "8ea5d27740dd2ba46f530a2a6072f7d042fcf7fa4ffd096894c37139978ab7a1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/extended_turn_probe_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/file_open_latest_synthetic_installed.json",
+      "sha256": "7bb28c1fb5ad2118c83caa4fd57aea179995050291aef3324a153f2be721c769",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/file_open_latest_synthetic_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_absolute_absent_installed.json",
+      "sha256": "d6a6a9a6b3aff76efbcb9e5ef18d9ca5bf4757065d10970a9e7657d19621c099",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/filesystem_absolute_absent_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_chain_after_hash_installed.json",
+      "sha256": "f7bc855661cb7edd7d98c3a3d38570cda200a28b041724b7d7a9f58b57766f71",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/filesystem_chain_after_hash_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_chain_after_hash_installed_2.json",
+      "sha256": "e05a1cc037cb04a6b96ee425b037779c5ee668a36b78711594067c614c32865a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/filesystem_chain_after_hash_installed_2.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_chain_installed.json",
+      "sha256": "203b0afab146ac2221b6f9427f17e21c3edb8eacf5c6a282cde7d005bff7f50f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/filesystem_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_hash_crash_development.json",
+      "sha256": "13fb37c553579a3f7b67becdb5c8875137c75bfab93409b3cbd818472f29c1c5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/filesystem_hash_crash_development.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/filesystem_hash_crash_installed_2.json",
+      "sha256": "e0bbfce169666b257e6a55d95d1346b3b3be487e3a97dde02661ca57577ddf38",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/filesystem_hash_crash_installed_2.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/final_artifact_validation.json",
+      "sha256": "5db77c96f3243cdc3a1d3cf4d42f4022cd306362150f3582de80ff3ec487aca1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/final_artifact_validation.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/final_audio_status.json",
+      "sha256": "6ef55793fafacff1aa71823695b14156b9c5e427a41bc354d31af427458ba903",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/final_audio_status.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/final_brightness_status.json",
+      "sha256": "2f51c3b25d6bb8f24e590a6c34748257510d85df9b56700f77cc11a6267a7eb7",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/final_brightness_status.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/final_microphone_unmuted.json",
+      "sha256": "f957dec005b7adb318222cf35eb7d277e4c72022e8ea75941b9f282b26785157",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/final_microphone_unmuted.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/folder_open_downloads_installed.json",
+      "sha256": "9dafd5e46c0608b125f1bdbd498a396355e99177daf436688b4c520d9015c48b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/folder_open_downloads_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/game_install_named_already_installed.json",
+      "sha256": "01f082ee39450f2c66623f663db19ab891b24f10a84230c6865c24f4c8a0e1be",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/game_install_named_already_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/game_install_prepare_installed.json",
+      "sha256": "927ef5be15977d2b42660dd17ed594cafb9abbd7126c32d06bdf9fe4e0051f66",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/game_install_prepare_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/game_install_status_installed.json",
+      "sha256": "b3b2e4be98fea893fac6ca260583ccf4e2061eb2723c43c92dbc5f8e89b0960f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/game_install_status_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/installed_catalog_smoke.json",
+      "sha256": "17b9f1575c18f18c3a35176d2a355ac442b4140485ca024693b8210edb32a363",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/installed_catalog_smoke.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/installed_integrity_recheck.json",
+      "sha256": "8f8cdbc56a235a099e362bbbdc725a145b20d0d1a1bcd19f06d07999bca3c692",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/installed_integrity_recheck.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/known_trash_restore_chain_installed.json",
+      "sha256": "01c69265b5217e40d08b0ef2e06dd447aba7e1287fa84ea7e33f9c8d6c2ce6ab",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/known_trash_restore_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/live_turn_and_plan_probe.json",
+      "sha256": "3ed9db9debf0204c5d3f7bc5ea0f4a61a51a4f7bf0665b37c3372360709b23e4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/live_turn_and_plan_probe.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/live_turn_probe.json",
+      "sha256": "707f2d05588cfd22905b1bc49cb15549360a749f8350f527f5b767d96ebd5121",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/live_turn_probe.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/llm_plan_execution_gate_installed.json",
+      "sha256": "6a1fea58e915dfe7728371ced31f0f985451a179d560dbe429f548526dd0523f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/llm_plan_execution_gate_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/local_data_chain_installed.json",
+      "sha256": "9e60a60c41c044fd1e22850104c26f32fe1b8f088cd2c36d1a1c0fb5b84aab49",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/local_data_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_control_chain_installed.json",
+      "sha256": "179768e8b110c8c193afc8f7b73a75c6a23bea43a7733a8054d84cc9d91e2d3f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_control_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed.json",
+      "sha256": "141e4e1bb8346cf1f708c55423286680073e22a328009feef25934ca5373f8c8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_2.json",
+      "sha256": "8b538d1396584d5bd4b790db98734bb43e41cff20fc5315b39aa85f07d02edd8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_2.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_3.json",
+      "sha256": "ef731d719a22cd1561e7b60016a07744c0e9a93e49de71e8f3a0e33d82706788",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_3.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_4.json",
+      "sha256": "789c8a1f76b5a2f92ecd8101647ab738ef2dd812c4b725d76f3a6fae2f65e0bf",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_4.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_5.json",
+      "sha256": "0aa09e2f2692cd3ea92627391c2c2b6e09285940f05c4684b4239003f92aab11",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_5.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/media_play_youtube_installed.json",
+      "sha256": "a61cbd12a9d2495c41e2370bb8cf466a0e19195845f19b18f18aab3239744d1e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/media_play_youtube_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/memory-extended-ui-final-outbox.json",
+      "sha256": "8bcae181d21321b79e1cee4976a6c9759a0f03769dde64b6f821ab5d22a33921",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/memory-extended-ui-final-outbox.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/memory-extended-ui-missions.jsonl",
+      "sha256": "16e3dc252c6652bb5df7720fd5d6172b64ad0b30e1f3d0fb640e5506e41d4639",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/memory-extended-ui-missions.jsonl"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/memory-ui-missions.jsonl",
+      "sha256": "4af626a636517049b2205914d0df1c3a8c36e2f6e9bb7e7b49dca7245ec996e5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/memory-ui-missions.jsonl"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/memory_export_ui_installed.json",
+      "sha256": "ad9b78feee3e098ce68db80b969bbce34351eebcf699c5fd8604df829be5c9d6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/memory_export_ui_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/microphone_mute_restored_installed.json",
+      "sha256": "2ea5d30fe9a3cd98f02d2205008f6b2086f9f96da2c3cc10d641fd38a41cebb9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/microphone_mute_restored_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/microphone_mute_true_installed.json",
+      "sha256": "cded65ccce620413d172dd61487015b17253aec7c9a2cf811b7cbf5f01cf3b57",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/microphone_mute_true_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/mind_overnight_soak_installed.json",
+      "sha256": "51a6153b8bf5302a17e99f3e53ddb025916427d718c299833a3a3dfc8211cc47",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/mind_overnight_soak_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/mind_soak_harness_check.json",
+      "sha256": "5e7a10bb571a3aeaff8d69959005ea4e5e5c75d5623b3ce7feb147a0415cf7dd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/mind_soak_harness_check.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/network_ip_list_sanitized.json",
+      "sha256": "8632c50a8e39b23545f2492ceb57e7783a6ceb17226257c77d5df4220b4a2c43",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/network_ip_list_sanitized.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/notification_chain_installed.json",
+      "sha256": "d8cf6d3a9a59ca701ef6984e99303f308b70c817e3e19850a77625ece256c0d2",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/notification_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/notification_due_chain_installed.json",
+      "sha256": "9072de919faeb7af4331165f60698cd18cf914ce07fa2ecf669dcfd36c58379b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/notification_due_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/office_document_chain_installed.json",
+      "sha256": "81ef8e3f2c565e9df6095b9553c2db8d67777dddb457e8d0f1863e05a312a728",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/office_document_chain_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/opera_false_success_context_probe.json",
+      "sha256": "6728e608317a72a28bc583ebb5f28297af49144e2a61fc107f68ace97ed2de42",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/opera_false_success_context_probe.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/opera_false_success_history.json",
+      "sha256": "ff1878fecb1838ac39e8b2916a2f2807c5189fe699ed1a1b651b9c7666971e04",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/opera_false_success_history.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/opera_recovery_context_probe.json",
+      "sha256": "30828d86e588e3c5c248b6753a9078ca7cebcb63d6d17caea170fffac0e4d504",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/opera_recovery_context_probe.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/opera_recovery_history.json",
+      "sha256": "348fc5486af11b2b8abc3a72fb184a37be29fefbd23c726d1cc0155fae8ca767",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/opera_recovery_history.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/operation_coverage.json",
+      "sha256": "047b3f7f00584ccb41ea2220af346e0eaf7652525403f8b79e68279890e2f752",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/operation_coverage.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/overnight_soak_installed.json",
+      "sha256": "ccc3a9dda18694ccac8fa2b368a71d7ee0cf378b005bcc8a2a16162774595bf3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/overnight_soak_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/package_prepare_crash_repro_development.json",
+      "sha256": "c94b7ecd6bd790fc579b9ab0c60232ac1ec283162b0c9b184fff9ac301f07c2a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/package_prepare_crash_repro_development.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/package_prepare_crash_repro_installed.json",
+      "sha256": "b1acef9fbc7be2c20d672b0cb7b8386789f736942c78984234ff4a912f16b979",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/package_prepare_crash_repro_installed.json"
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/parallel_core_start_under_dual_soak.json",
+      "sha256": "0c960e05cb834f5132406e8cbccf1595c821b1a70fb2f042b727a446cc724e4f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json#artifacts/audit/2026-07-27-night-audit/parallel_core_start_under_dual_soak.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-034-baxy-baxy_art_audit-01-artifacts-audit-2026-07-27-night-audit",
+      "card_kind": "metric",
+      "corpus": "artifacts/audit/2026-07-27-night-audit",
+      "denominator": "110 files in group artifacts/audit/2026-07-27-night-audit; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:artifacts/audit/2026-07-27-night-audit",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_raw_notepad.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_2.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_3.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_4.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_5.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_6.json",
+        "artifacts/audit/2026-07-27-night-audit/app_open_installed_windows_notepad_7.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_mute_restored_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_mute_true_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_status_after_mute_cycle.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_status_after_youtube_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_status_baseline.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_status_restored.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_status_restored_second.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_volume_adjust_down_2.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_volume_bridge_0.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_volume_restore_3.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_volume_restore_3_second.json",
+        "artifacts/audit/2026-07-27-night-audit/audio_volume_set_7.json",
+        "artifacts/audit/2026-07-27-night-audit/backlog_evidence_validation.json",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-core-notes-corrected-path/emman_REDNOTE_2026-07-27_01_09_42.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-core-notes-isolated/emman_REDNOTE_2026-07-27_01_06_06.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_10_01.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_10_06.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_11_40.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_11_43.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-corrected-path/emman_REDNOTE_2026-07-27_01_12_28.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_01_10.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_01_16.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_02_38.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_02_42.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet-isolated/emman_REDNOTE_2026-07-27_01_03_31.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/dotnet/dotnet.trx",
+        "artifacts/audit/2026-07-27-night-audit/baseline/pytest.xml",
+        "artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_process_probe.json",
+        "artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_repro_development.json",
+        "artifacts/audit/2026-07-27-night-audit/bluetooth_list_timeout_repro_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/bluetooth_radio_set_noop_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/brightness_adjust_up5_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/brightness_restore_0_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/brightness_status_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/brightness_status_restored_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/browser_chain_generic_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/browser_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/browser_navigate_named_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/browser_visible_click_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/capture_active_window_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/capture_ocr_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/capture_ocr_vision_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/clipboard_interaction_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/clipboard_read_marker.json",
+        "artifacts/audit/2026-07-27-night-audit/clipboard_write_marker.json",
+        "artifacts/audit/2026-07-27-night-audit/cold_start_stress_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/dotnet_rerun_under_soak.json",
+        "artifacts/audit/2026-07-27-night-audit/email_latest_read_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/empty_history.json",
+        "artifacts/audit/2026-07-27-night-audit/extended_turn_cases.json",
+        "artifacts/audit/2026-07-27-night-audit/extended_turn_probe_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/file_open_latest_synthetic_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_absolute_absent_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_chain_after_hash_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_chain_after_hash_installed_2.json",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_hash_crash_development.json",
+        "artifacts/audit/2026-07-27-night-audit/filesystem_hash_crash_installed_2.json",
+        "artifacts/audit/2026-07-27-night-audit/final_artifact_validation.json",
+        "artifacts/audit/2026-07-27-night-audit/final_audio_status.json",
+        "artifacts/audit/2026-07-27-night-audit/final_brightness_status.json",
+        "artifacts/audit/2026-07-27-night-audit/final_microphone_unmuted.json",
+        "artifacts/audit/2026-07-27-night-audit/folder_open_downloads_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/game_install_named_already_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/game_install_prepare_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/game_install_status_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/installed_catalog_smoke.json",
+        "artifacts/audit/2026-07-27-night-audit/installed_integrity_recheck.json",
+        "artifacts/audit/2026-07-27-night-audit/known_trash_restore_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/live_turn_and_plan_probe.json",
+        "artifacts/audit/2026-07-27-night-audit/live_turn_probe.json",
+        "artifacts/audit/2026-07-27-night-audit/llm_plan_execution_gate_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/local_data_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/media_control_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_2.json",
+        "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_3.json",
+        "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_4.json",
+        "artifacts/audit/2026-07-27-night-audit/media_exact_control_chain_installed_5.json",
+        "artifacts/audit/2026-07-27-night-audit/media_play_youtube_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/memory-extended-ui-final-outbox.json",
+        "artifacts/audit/2026-07-27-night-audit/memory-extended-ui-missions.jsonl",
+        "artifacts/audit/2026-07-27-night-audit/memory-ui-missions.jsonl",
+        "artifacts/audit/2026-07-27-night-audit/memory_export_ui_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/microphone_mute_restored_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/microphone_mute_true_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/mind_overnight_soak_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/mind_soak_harness_check.json",
+        "artifacts/audit/2026-07-27-night-audit/network_ip_list_sanitized.json",
+        "artifacts/audit/2026-07-27-night-audit/notification_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/notification_due_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/office_document_chain_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/opera_false_success_context_probe.json",
+        "artifacts/audit/2026-07-27-night-audit/opera_false_success_history.json",
+        "artifacts/audit/2026-07-27-night-audit/opera_recovery_context_probe.json",
+        "artifacts/audit/2026-07-27-night-audit/opera_recovery_history.json",
+        "artifacts/audit/2026-07-27-night-audit/operation_coverage.json",
+        "artifacts/audit/2026-07-27-night-audit/overnight_soak_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/package_prepare_crash_repro_development.json",
+        "artifacts/audit/2026-07-27-night-audit/package_prepare_crash_repro_installed.json",
+        "artifacts/audit/2026-07-27-night-audit/parallel_core_start_under_dual_soak.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "abrupt_restart_recovery_stress_installed.json parser=json rows=1 bytes=7912 dist={\"scalar_keys\": [\"core\", \"cycles\", \"queuedRequestsBeforeKill\", \"schema\", \"successfulCycles\"], \"list_lengths\": {\"errors\": 0, \"results\": 20}} | app_open_installed_raw_notepad.json parser=json rows=1 bytes=875 dist={\"scalar_keys\": [\"app_id\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"process_exit_code\", \"schema\", \"stderr\"], \"list_lengths\": {\"close_requests\": 0}} | app_open_installed_windows_notepad.json parser=json rows=1 bytes=1240 dist={\"scalar_keys\": [\"app_id\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"process_exit_code\", \"schema\", \"stderr\"], \"list_lengths\": {\"close_requests\": 1}} | app_open_installed_windows_notepad_2.json parser=json rows=1 bytes=1248 dist={\"sc…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "artifacts/audit/2026-07-27-night-audit/abrupt_restart_recovery_stress_installed.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=110 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-035-baxy-baxy_art_audit",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-034-baxy-baxy_art_audit.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

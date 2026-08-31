@@ -1,0 +1,4902 @@
+{
+  "batch_id": "evidence_assets-063-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 60,
+  "hash_ok": 60,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/evidence_readiness_stability_verdict_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4678,
+      "sha256": "fb0e39cba2151eaa2b67389cb309f0c4d2b1e92db5406ed309f72bcca495c79f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architectural_cause",
+          "effect_free",
+          "instability_evidence",
+          "measured_at_utc",
+          "schema",
+          "subject",
+          "variants",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effect_free",
+          "measured_at_utc",
+          "schema",
+          "subject",
+          "verdict"
+        ],
+        "list_lengths": {
+          "variants": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4677
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architectural_cause\", \"effect_free\", \"instability_evidence\", \"measured_at_utc\", \"schema\", \"subject\", \"variants\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architectural_cause\", \"effect_free\", \"instability_evidence\", \"measured_at_utc\", \"schema\", \"subject\", \"variants\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/evidence_ready_gated_workload_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5955,
+      "sha256": "63790010f3118d849a889dea0f7d5b40186ce50734ff3c18e661918549d619da",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 30,
+          "status_timeline": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5954,
+        "index_ready_seconds_after_catalog": {
+          "min": 19.33,
+          "max": 19.33
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 90328,
+      "sha256": "1383bdb160c13e781bf4e50dacdc9f818214f292573e773972487e9007b10c82",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 30,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 90327
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r10_operation_shortlist.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69789,
+      "sha256": "173b4a7bcf211d5533297d9f7afae78ca6bd00c591517ab9efac357ef352ec43",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69788
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 85710,
+      "sha256": "988f3fca40401bcf48f0d0eb9d93a5a9b9da838aecd721db96264ae181e21f8e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 23,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 85709
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 250462,
+      "sha256": "9b822648d62377d88cb320c509d2083c75eacaf86f72410ded6613edb35dd955",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 72,
+          "samples": 270
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 250461
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 245968,
+      "sha256": "729c5fff3f5c7d577d7824bf0cab27cc3f9b211f2585c627a0ea8fc6deba0b14",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 66,
+          "samples": 270
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 245967
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75259,
+      "sha256": "0390fae85a5621e80bf54e674d4ea740dd44d25c772e8148341c4e2e3c1e990e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 8,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75258
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 70473,
+      "sha256": "0c2c67b01f3ec0959091d157f2c8d3cecd37a114fd73b9cbd83dbd7f9d7fe567",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70472
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69796,
+      "sha256": "56afc41cf6d2219cefb8a716fb4c3c68a52be5a83b02ea2d05638b89ef498bb6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69795
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r8_stability.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 201121,
+      "sha256": "f4bec38961e9cb1aaefa0014af861decb8cf4df39360da9cb78e97efaadd7e72",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "samples": 270
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 201120
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/exact_operation_development_gate_r9_operation_shortlist.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 70588,
+      "sha256": "454c7a383bf83653fe9efe827f7b451cba54b8c81fd791c6b642995a48ebb408",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_category",
+          "by_language",
+          "catalog",
+          "failures",
+          "measured_at",
+          "runtime",
+          "samples",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "status",
+          "summary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "status"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "samples": 90
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70587
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_category\", \"by_language\", \"catalog\", \"failures\", \"measured_at\", \"runtime\", \"samples\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"status\", \"summary\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/experimental_assets_provenance_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8-sig",
+      "bytes": 5721,
+      "sha256": "b644dba8212f73f90dc43eb46cf1994778b740893f2008a1dfbcf3e26e4a787f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authorization",
+          "files",
+          "folder",
+          "measured_at_utc",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authorization",
+          "folder",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5720
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authorization\", \"files\", \"folder\", \"measured_at_utc\", \"schema\", \"sources\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authorization\", \"files\", \"folder\", \"measured_at_utc\", \"schema\", \"sources\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/experimental_assets_provenance_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1110,
+      "sha256": "654d824614a142c9091ca817a2d4d3ad63f33858059d31cda2df83a98217f3d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authorization",
+          "diagnostics_written_in_folder",
+          "files",
+          "folder",
+          "manifest_changed",
+          "measured_at_utc",
+          "outside_active_installation",
+          "outside_git",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authorization",
+          "folder",
+          "manifest_changed",
+          "measured_at_utc",
+          "outside_active_installation",
+          "outside_git",
+          "schema"
+        ],
+        "list_lengths": {
+          "diagnostics_written_in_folder": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1109
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authorization\", \"diagnostics_written_in_folder\", \"files\", \"folder\", \"manifest_changed\", \"measured_at_utc\", \"outside_active_installation\", \"outside_git\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authorization\", \"diagnostics_written_in_folder\", \"files\", \"folder\", \"manifest_changed\", \"measured_at_utc\", \"outside_active_installation\", \"outside_git\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/farewell_reply_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 46317,
+      "sha256": "134d6fdc1c15fec172c84dec9c69b7295c80df85dc4cdfea528cc8010ad2455d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "answered_by_a_constant",
+          "by_family_p50_s",
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "mechanism",
+          "method",
+          "passed",
+          "per_case",
+          "question",
+          "runtime",
+          "samples",
+          "schema",
+          "turns_per_arm"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "gate",
+          "measured_at_utc",
+          "mechanism",
+          "method",
+          "passed",
+          "question",
+          "schema",
+          "turns_per_arm"
+        ],
+        "list_lengths": {
+          "samples": 96
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 46316,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "turns_per_arm": {
+          "min": 48,
+          "max": 48
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"answered_by_a_constant\", \"by_family_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"mechanism\", \"method\", \"passed\", \"per_case\", \"question\", \"runtime\", \"samples\", \"schema\", \"turns_per_arm\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"answered_by_a_constant\", \"by_family_p50_s\", \"effects_executed\", \"gate\", \"measured_at_utc\", \"mechanism\", \"method\", \"passed\", \"per_case\", \"question\", \"runtime\", \"samples\", \"schema\", \"turns_per_arm\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/farewell_reply_verdict_20260731.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4596,
+      "sha256": "304e9da7216f337fcd9b04b35e9a89d5bb5a0cd0a13ab08b1359782902ea7592",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blocked_before_the_fix",
+          "change",
+          "component",
+          "defect",
+          "discovery",
+          "effects_executed",
+          "installation_touched",
+          "latency_side_effect",
+          "measured_at_utc",
+          "not_introduced_by_r16",
+          "physical_ab",
+          "principle",
+          "regression",
+          "remaining_constant",
+          "rollback",
+          "schema",
+          "state"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "change",
+          "component",
+          "defect",
+          "discovery",
+          "effects_executed",
+          "installation_touched",
+          "measured_at_utc",
+          "not_introduced_by_r16",
+          "principle",
+          "regression",
+          "rollback",
+          "schema",
+          "state"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4595,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blocked_before_the_fix\", \"change\", \"component\", \"defect\", \"discovery\", \"effects_executed\", \"installation_touched\", \"latency_side_effect\", \"measured_at_utc\", \"not_introduced_by_r16\", \"physical_ab\", \"principle\", \"regression\", \"rem…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blocked_before_the_fix\", \"change\", \"component\", \"defect\", \"discovery\", \"effects_executed\", \"installation_touched\", \"latency_side_effect\", \"measured_at_utc\", \"not_introduced_by_r16\", \"physical_ab\", \"principle\", \"regression\", \"rem…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_cache_verdict_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5159,
+      "sha256": "598d73b26821c6c4f142dc3ae8f0f2422589a4fa11a0d71003e240afda35245a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "date",
+          "final_decision",
+          "online_prefix_priming",
+          "persisted_slot_restore",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "date",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5158
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"date\", \"final_decision\", \"online_prefix_priming\", \"persisted_slot_restore\", \"runtime\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"date\", \"final_decision\", \"online_prefix_priming\", \"persisted_slot_restore\", \"runtime\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_priming_ab_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 120332,
+      "sha256": "eb4fc62cacca0b1468c16fbecd84c9192cce9b5bf4ca97a4f2c20f09b43fbd08",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "aggregate_delta_primed_minus_baseline_seconds",
+          "arm_order",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "pairs",
+          "profile",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "promotion_rule",
+          "schema",
+          "server"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "pairs": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 120331
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_primed_minus_baseline_seconds\", \"arm_order\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"pairs\", \"profile\", \"promotion_rule\", \"safety\", \"schema\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_primed_minus_baseline_seconds\", \"arm_order\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"pairs\", \"profile\", \"promotion_rule\", \"safety\", \"schema\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_priming_ab_reverse_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 120341,
+      "sha256": "f351637868d62c84bb9f89d67971069a45c6f53018499ec0dcf01d9a99e7ffeb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "aggregate_delta_primed_minus_baseline_seconds",
+          "arm_order",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "pairs",
+          "profile",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "promotion_rule",
+          "schema",
+          "server"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "pairs": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 120340
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_primed_minus_baseline_seconds\", \"arm_order\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"pairs\", \"profile\", \"promotion_rule\", \"safety\", \"schema\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_primed_minus_baseline_seconds\", \"arm_order\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"pairs\", \"profile\", \"promotion_rule\", \"safety\", \"schema\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_priming_smoke_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20527,
+      "sha256": "719a29a2ff66267af2e8e046fdfd17bd714f54bf279c8cb24aae59422b4a7175",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "aggregate_delta_primed_minus_baseline_seconds",
+          "arm_order",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "pairs",
+          "profile",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "promotion_rule",
+          "schema",
+          "server"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "pairs": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20526
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_primed_minus_baseline_seconds\", \"arm_order\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"pairs\", \"profile\", \"promotion_rule\", \"safety\", \"schema\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_primed_minus_baseline_seconds\", \"arm_order\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"pairs\", \"profile\", \"promotion_rule\", \"safety\", \"schema\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_restore_mechanism_probe_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27687,
+      "sha256": "329cb0472f17b9aa048e26fbc84a1421f4c6192b40bf336c55f904272abaf06e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "aggregate_delta_restored_minus_baseline_seconds",
+          "arm_order",
+          "automatic_slot_selection_preserved_restored_prefixes",
+          "binding",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "model_sha256",
+          "one_time_seed",
+          "pairs",
+          "profile",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "automatic_slot_selection_preserved_restored_prefixes",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "model_sha256",
+          "promotion_rule",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "pairs": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27686
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_restored_minus_baseline_seconds\", \"arm_order\", \"automatic_slot_selection_preserved_restored_prefixes\", \"binding\", \"candidate_status\", \"exact_turn_outputs…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_restored_minus_baseline_seconds\", \"arm_order\", \"automatic_slot_selection_preserved_restored_prefixes\", \"binding\", \"candidate_status\", \"exact_turn_outputs…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_restore_pinned_probe_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27915,
+      "sha256": "ce1d282baf58b0ec323c6a358d3bebbba94e25c3c6e46e1d71ac45aac735a911",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "aggregate_delta_restored_minus_baseline_seconds",
+          "arm_order",
+          "automatic_slot_selection_preserved_restored_prefixes",
+          "binding",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "model_sha256",
+          "one_time_seed",
+          "pairs",
+          "profile",
+          "promotion_rule",
+          "restored_prefixes_reappeared",
+          "safety",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "automatic_slot_selection_preserved_restored_prefixes",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "model_sha256",
+          "promotion_rule",
+          "restored_prefixes_reappeared",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "pairs": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27914
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_restored_minus_baseline_seconds\", \"arm_order\", \"automatic_slot_selection_preserved_restored_prefixes\", \"binding\", \"candidate_status\", \"exact_turn_outputs…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_restored_minus_baseline_seconds\", \"arm_order\", \"automatic_slot_selection_preserved_restored_prefixes\", \"binding\", \"candidate_status\", \"exact_turn_outputs…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/first_turn_prefix_restore_smoke_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 26491,
+      "sha256": "2eb53a07f3b583edda2cf4b77dc2764437f056a28283747cd3302ccf42da3fa2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "aggregate_delta_restored_minus_baseline_seconds",
+          "arm_order",
+          "binding",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "model_sha256",
+          "one_time_seed",
+          "pairs",
+          "profile",
+          "promotion_rule",
+          "safety",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "actual_prompt_token_identity",
+          "actual_request_identity",
+          "candidate_status",
+          "exact_turn_outputs",
+          "model",
+          "model_sha256",
+          "promotion_rule",
+          "schema",
+          "server",
+          "server_sha256"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "pairs": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26490
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_restored_minus_baseline_seconds\", \"arm_order\", \"binding\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"model_sha256\", \"one_time_seed\", \"pairs\", \"p…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"actual_prompt_token_identity\", \"actual_request_identity\", \"aggregate_delta_restored_minus_baseline_seconds\", \"arm_order\", \"binding\", \"candidate_status\", \"exact_turn_outputs\", \"model\", \"model_sha256\", \"one_time_seed\", \"pairs\", \"p…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/fused_guard_language_smoke_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27055,
+      "sha256": "acbebded0096c56f9013836bd5138d69d8acd1246e05e3404eae10bcfad793f9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "fused_guard_language_projection",
+          "latency_delta_fused_minus_separate",
+          "post_counts",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "separate_guard_language_projection",
+          "smoke"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "separate_guard_language_projection": 2,
+          "fused_guard_language_projection": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27054
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"fused_guard_language_projection\", \"latency_delta_fused_minus_separate\", \"post_counts\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"separate_guard_language_projection\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"fused_guard_language_projection\", \"latency_delta_fused_minus_separate\", \"post_counts\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"separate_guard_language_projection\", \"s…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/fused_guard_language_smoke_ba_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 27071,
+      "sha256": "6c0f7a9ca1e9a36e2635682ec8cc5340e2428417dc979388e8dbfb57d872c7ba",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arm_order",
+          "arms",
+          "candidate_status",
+          "control",
+          "fused_guard_language_projection",
+          "latency_delta_fused_minus_separate",
+          "post_counts",
+          "promotion_rule",
+          "quality",
+          "safety",
+          "schema",
+          "separate_guard_language_projection",
+          "smoke"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "promotion_rule",
+          "schema",
+          "smoke"
+        ],
+        "list_lengths": {
+          "arm_order": 2,
+          "separate_guard_language_projection": 2,
+          "fused_guard_language_projection": 2,
+          "arms": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27070
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"fused_guard_language_projection\", \"latency_delta_fused_minus_separate\", \"post_counts\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"separate_guard_language_projection\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arm_order\", \"arms\", \"candidate_status\", \"control\", \"fused_guard_language_projection\", \"latency_delta_fused_minus_separate\", \"post_counts\", \"promotion_rule\", \"quality\", \"safety\", \"schema\", \"separate_guard_language_projection\", \"s…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu-tail-invalid-json-full/invalid-turn-1785364433152154600-30748-31136.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 337,
+      "sha256": "7e9756c4b633783500ab650cce5b5a1360ec8bd57fce42b4d82447a8ba93eaa6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 336,
+        "attempt": {
+          "min": 0,
+          "max": 0
+        },
+        "content_chars": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu-tail-invalid-json-full/invalid-turn-1785364437767520500-30748-31136.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 337,
+      "sha256": "c16c4a96c8ae6a3699816b32371f602476855fca9799fa19a272e9a04daf9484",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 336,
+        "attempt": {
+          "min": 1,
+          "max": 1
+        },
+        "content_chars": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu-tail-invalid-json-full/invalid-turn-1785364454160758400-30748-34368.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 306,
+      "sha256": "429277dbe7953c985e77e24bc6f5c6a0e6c638f4a2465a098c3f05e70f60cfaa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 305,
+        "attempt": {
+          "min": 0,
+          "max": 0
+        },
+        "content_chars": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu-tail-invalid-json-full/invalid-turn-1785364457221751900-30748-34368.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 306,
+      "sha256": "b1c923b29d4b321fed431d6bd806d915dd3a5e98114fd1e97b241381bd07bfdf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "attempt",
+          "content_chars",
+          "content_sha256",
+          "content_state",
+          "finish_reason",
+          "label",
+          "sanitized_content",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 305,
+        "attempt": {
+          "min": 1,
+          "max": 1
+        },
+        "content_chars": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"attempt\", \"content_chars\", \"content_sha256\", \"content_state\", \"finish_reason\", \"label\", \"sanitized_content\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_thermal_state_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 466,
+      "sha256": "15747e5bc1e2128d8336be36055ee900fae4a029e103e12d233eb62a3c378fa9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "current_power_limit_watts",
+          "device",
+          "maximum_sm_clock_mhz",
+          "measured_at_local",
+          "performance_state",
+          "power_draw_watts",
+          "schema",
+          "settings_changed",
+          "sm_clock_mhz",
+          "software_thermal_slowdown_active",
+          "source",
+          "temperature_celsius"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "current_power_limit_watts",
+          "device",
+          "maximum_sm_clock_mhz",
+          "measured_at_local",
+          "performance_state",
+          "power_draw_watts",
+          "schema",
+          "settings_changed",
+          "sm_clock_mhz",
+          "software_thermal_slowdown_active",
+          "source",
+          "temperature_celsius"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 465,
+        "temperature_celsius": {
+          "min": 60,
+          "max": 60
+        },
+        "sm_clock_mhz": {
+          "min": 900,
+          "max": 900
+        },
+        "maximum_sm_clock_mhz": {
+          "min": 2100,
+          "max": 2100
+        },
+        "power_draw_watts": {
+          "min": 19.76,
+          "max": 19.76
+        },
+        "current_power_limit_watts": {
+          "min": 95,
+          "max": 95
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"current_power_limit_watts\", \"device\", \"maximum_sm_clock_mhz\", \"measured_at_local\", \"performance_state\", \"power_draw_watts\", \"schema\", \"settings_changed\", \"sm_clock_mhz\", \"software_thermal_slowdown_active\", \"source\", \"temperature…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"current_power_limit_watts\", \"device\", \"maximum_sm_clock_mhz\", \"measured_at_local\", \"performance_state\", \"power_draw_watts\", \"schema\", \"settings_changed\", \"sm_clock_mhz\", \"software_thermal_slowdown_active\", \"source\", \"temperature…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_current_baseline_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5305,
+      "sha256": "c3fe66f9709d95be0945073d1517bb4e072e1987fb8db2924b1115a8ad374ba8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 1,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5304,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 53.5,
+          "max": 53.5
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_compact_prefill_fenced_four_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5333,
+      "sha256": "5b555c9542147d59183e2fb209a9117a305bc43e652ec8603f4189a505c7a913",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5332,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 40.475,
+          "max": 40.475
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_compact_prefill_fenced_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2338,
+      "sha256": "6dcd40e4fa31586ba8d750fd87edea3e0e99850caf9e38e89d3f71571ca3099c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 1,
+          "retry_cases": 0,
+          "slowest": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2337,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 12.29,
+          "max": 12.29
+        },
+        "requests_completed": {
+          "min": 1,
+          "max": 1
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_compact_prefill_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2347,
+      "sha256": "3d24f34efe1fdd51bc65b2e0315fb5e66c77706a4176a6ec7090e081457356e9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 1,
+          "retry_cases": 1,
+          "slowest": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2346,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 8.895,
+          "max": 8.895
+        },
+        "requests_completed": {
+          "min": 1,
+          "max": 1
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_direct_capture_probe_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2383,
+      "sha256": "3d73307d676d065d5d9189032ae141d03b09b0124f171ccb08788d01c9a4980f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 1,
+          "retry_cases": 1,
+          "slowest": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2382,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 8.223,
+          "max": 8.223
+        },
+        "requests_completed": {
+          "min": 1,
+          "max": 1
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_direct_compact_four_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5390,
+      "sha256": "ad80041b553cea8fc316171afabce4cf58199d431c834c111d8f181b0aed1613",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 4,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5389,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 14.474,
+          "max": 14.474
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_direct_learned_indent_four_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5383,
+      "sha256": "3ccb42d1b7d06718f4cfd9997c0006c87a36dac9ad3f10fa06a3521c090c0151",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 3,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5382,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 20.09,
+          "max": 20.09
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_direct_newline_no_indent_four_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5384,
+      "sha256": "90a97926a9432d735fd288c5c496c73ddddf6b5accdfad368966a340de1afc2f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 3,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5383,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 20.569,
+          "max": 20.569
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_direct_single_space_four_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5384,
+      "sha256": "cbd6606dca549cbb72e953cb179eeaec9455c1541f3ee60f25589aa5c93139fd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 3,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5383,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 20.323,
+          "max": 20.323
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_exclusive_first_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5260,
+      "sha256": "7997c210271ebca69c5294af16ec08ac36c8c91e46f2140e93cef96ffb5441d9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 1,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5259,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 55.018,
+          "max": 55.018
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_max112_order2_baseline_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42776,
+      "sha256": "c48efdf98f378189acc3d35ff0b9fd5b6cd03b2d54fec7531917acebff2fb2af",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 1,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42775,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 238.02,
+          "max": 238.02
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 227.9156,
+          "max": 227.9156
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_max112_order2_candidate_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 42779,
+      "sha256": "76f62a216b6ce4e08ca48dbffc5cc420258e6f02ce5c2eacb6273f23842bc69c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "server_reasoning_auto",
+          "slowest",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "n_keys": 40,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "policy_reasoning_controls_requested",
+          "policy_reasoning_controls_succeeded",
+          "policy_reasoning_early_aborts",
+          "policy_reasoning_format_none_retries",
+          "policy_speculative_retries_started",
+          "policy_speculative_retries_used",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_reasoning_control",
+          "primary_reasoning_cutoff",
+          "primary_reasoning_early_abort",
+          "primary_reasoning_format_none",
+          "primary_retry_reasoning_format_none",
+          "primary_speculative_retry",
+          "primary_stagger_ms",
+          "primary_stream",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "server_reasoning_auto",
+          "thinking_budgets",
+          "turn_elapsed_total_seconds",
+          "validation_errors",
+          "workload_sha256"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 42778,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 261.611,
+          "max": 261.611
+        },
+        "policy_reasoning_controls_requested": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_controls_succeeded": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_early_aborts": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_reasoning_format_none_retries": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_started": {
+          "min": 0,
+          "max": 0
+        },
+        "policy_speculative_retries_used": {
+          "min": 0,
+          "max": 0
+        },
+        "primary_max_tokens": {
+          "min": 112,
+          "max": 112
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "turn_elapsed_total_seconds": {
+          "min": 252.5193,
+          "max": 252.5193
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"policy_reasoning_controls_requested\", \"policy_reasoning_controls_succeeded\", \"poli…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_max320_full_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 21394,
+      "sha256": "19ba95f6f4fe78209e71729b96ef68078391ceb4c6b6762a1831d76355717a90",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21393,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 259.357,
+          "max": 259.357
+        },
+        "primary_max_tokens": {
+          "min": 320,
+          "max": 320
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_max320_smoke_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5429,
+      "sha256": "39c8117e3cf7b00874dadcfffb331362085e99e636d7646af0fce4091544745a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_max_tokens",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5428,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 40.802,
+          "max": 40.802
+        },
+        "primary_max_tokens": {
+          "min": 320,
+          "max": 320
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_minimal_prefill_four_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5331,
+      "sha256": "e91977e0c4938ca53859c65cd2b338d0b07f4a4e0e15a9022bd5c43b7080905c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5330,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 40.664,
+          "max": 40.664
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_exclusive_first\", \"primary_operation_names_only…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_names_only_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5207,
+      "sha256": "7026636274b7dd246d40ef68a8a32ebe71358157609bd9495b8844aa6d82005a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5206,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 36.449,
+          "max": 36.449
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_operation_names_only\", \"primary_whitespace_free_grammar\", \"requests_comple…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_operation_names_only\", \"primary_whitespace_free_grammar\", \"requests_comple…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_stagger_50ms_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5411,
+      "sha256": "8b067be224201c621e6b98f28f6c1f874f357a67de8dc52591f16d9df79aae5e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 23,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 1,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5410,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 54.575,
+          "max": 54.575
+        },
+        "primary_stagger_ms": {
+          "min": 50.0,
+          "max": 50.0
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_stagger_baseline_order1_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5397,
+      "sha256": "bac220003a8913a880f9160867e7f5eb139df9d9e8ae8d71d41503b3893135af",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 23,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_compact_prefill",
+          "primary_direct_compact",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_stagger_ms",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5396,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 41.198,
+          "max": 41.198
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_compact_prefill\", \"primary_direct_compact\", \"primary_exclusive_first\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_whitespace_free_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5192,
+      "sha256": "cde669a0459fb88318bd26edbde4175e7b81047e0f499f5c9e0b15840a8307db",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 4,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5191,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 14.861,
+          "max": 14.861
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_whitespace_free_grammar\", \"requests_completed\", \"retry_cases\", \"retry_reus…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_whitespace_free_grammar\", \"requests_completed\", \"retry_cases\", \"retry_reus…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_whitespace_free_with_schema_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5265,
+      "sha256": "6f5dd38756a7dbf99fca341164e17500605d1d2fca3b72efe445483bf308a940",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 3,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5264,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 19.917,
+          "max": 19.917
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_without_redundant_fields_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 21260,
+      "sha256": "9c34339691a6e5d49b7799e85683e5287f1c73e715c05380a54e254958f8b4a8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 4,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21259,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 246.409,
+          "max": 246.409
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_primary_without_redundant_fields_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5290,
+      "sha256": "da34cd728f3cdf42a2b1a30c28237a10d9cb1e60faedf527fa95f028df604ac1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_cases",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "primary_exclusive_first",
+          "primary_operation_names_only",
+          "primary_whitespace_free_grammar",
+          "primary_without_redundant_fields",
+          "requests_completed",
+          "retry_reuse_verified_guard_language",
+          "retry_without_speculative_v",
+          "schema",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5289,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 36.575,
+          "max": 36.575
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"primary_exclusive_first\", \"primary_operation_names_only\", \"primary_whitespace_free…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_b10182_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17103,
+      "sha256": "b4cc7e85d97569d3144ad8a5e8151e22ebab0398121c89da3443b0f9c04306ae",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "validation_errors"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17102,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 189.615,
+          "max": 189.615
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_er…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_er…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_b10182_budget16_2_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4386,
+      "sha256": "dc4ebeadc1eba64a9bcb16043bcd001d3cd5dbc26e8ae1d998d9864a68002883",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 1,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4385,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 50.15,
+          "max": 50.15
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_b10182_budget32_4_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17175,
+      "sha256": "07b1afe5aadb79e60476c2cf3d035fa7c0d778e6682b12b05c99f7013af975a3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17174,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 180.397,
+          "max": 180.397
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_b10182_budget32_4_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4382,
+      "sha256": "c701b2d5b2e6c00bca1c4af57c19dead64e73eb3f92b95dc665d0d2dd2015fac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4381,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 40.569,
+          "max": 40.569
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_b10182_budget64_8_full_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17172,
+      "sha256": "e72542b22963cf309e7578d9cfb748c029c97b867959d561dd0298e5fe2eb8af",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17171,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 181.074,
+          "max": 181.074
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_b10182_budget64_8_smoke_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4382,
+      "sha256": "eecb8b64cf97f48f69ca3400ee0c7e860d04e13cb2bd2908c2c9624300c18bc8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "thinking_budgets",
+          "validation_errors"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "llama_server_override",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 4,
+          "retry_cases": 0,
+          "slowest": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4381,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 42.592,
+          "max": 42.592
+        },
+        "requests_completed": {
+          "min": 4,
+          "max": 4
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"llama_server_override\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"thinking_budg…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_diagnostic_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16973,
+      "sha256": "b131df4e2a8fb720a9f6e1be7307213e1d4678b6824280777ae1070eff00a935",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "validation_errors"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 2,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16972,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 171.366,
+          "max": 171.366
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_errors\"], \"n_keys\": 12, \"ro…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_errors\"], \"n_keys\": 12, \"ro…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/gpu_turn_tail_diagnostic_repeat_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 16977,
+      "sha256": "0abd35cab9e392b9331f401814c5fab7aa9d1b2634bfb494f09c544a7f5db273",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "latency_seconds",
+          "measured_at_utc",
+          "observations",
+          "requests_completed",
+          "retry_cases",
+          "runtime",
+          "schema",
+          "slowest",
+          "validation_errors"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "effects_executed",
+          "elapsed_total_seconds",
+          "measured_at_utc",
+          "requests_completed",
+          "schema",
+          "validation_errors"
+        ],
+        "list_lengths": {
+          "observations": 30,
+          "retry_cases": 3,
+          "slowest": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16976,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsed_total_seconds": {
+          "min": 196.912,
+          "max": 196.912
+        },
+        "requests_completed": {
+          "min": 30,
+          "max": 30
+        },
+        "validation_errors": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_errors\"], \"n_keys\": 12, \"ro…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"effects_executed\", \"elapsed_total_seconds\", \"latency_seconds\", \"measured_at_utc\", \"observations\", \"requests_completed\", \"retry_cases\", \"runtime\", \"schema\", \"slowest\", \"validation_errors\"], \"n_keys\": 12, \"ro…"
+          }
+        ]
+      }
+    }
+  }
+}

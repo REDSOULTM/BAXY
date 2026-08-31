@@ -1,0 +1,468 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-025-functiongemma-fg_curated",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:41:26Z",
+  "closed_utc": "2026-08-31T05:41:26Z",
+  "estimated_tokens": 297930,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "functiongemma",
+  "source_head": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+  "source_root": "Programacion/FunctionGemma",
+  "file_count": 37,
+  "subsystem": "fg_curated",
+  "subsystems": [
+    "fg_curated"
+  ],
+  "files": [
+    {
+      "path": "finetune_llm/curated/batches/_batch_21_out.jsonl",
+      "sha256": "7874ba84f0e95b8776bff3f92d5e9541580e1f16dc9e15d0cba5c387a6262664",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_21_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_22.jsonl",
+      "sha256": "7af298fd776f5c8070dc7827cffaceeb01287ad0abf08e6e2dbd06103d8eb574",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_22.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_22_out.jsonl",
+      "sha256": "6408b3c3f4e15ba882cd11f33e9ccdd1876635144b41fbad58212536380798fc",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_22_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_23.jsonl",
+      "sha256": "41fc8cd3fa949f37115708e913fd5b51f8a9c02e1d96217b0b260f8d70471bdf",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_23.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_23_out.jsonl",
+      "sha256": "e2a801cf953118330a394e55dd6d54a990aa8744ef82e8eb6771473a06864629",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_23_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_24.jsonl",
+      "sha256": "9700adc3c47499666ea403588ec83c582205346576ebb18080e810ca6991dbb0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_24.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_24_out.jsonl",
+      "sha256": "9a819bf8690a875ee87c4b2c890c1536dbb31241ff608bfcbb6a4b1ac8798787",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_24_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_25.jsonl",
+      "sha256": "0705b0e618ee79f9c4d0809d23b5aaec6263b986a31b6df90c0e384f40316bf8",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_25.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_25_out.jsonl",
+      "sha256": "a244da780c9a2cf4563b3343cd39b3746db80b7935a6dde6534b29eb0f6e6a32",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_25_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_26.jsonl",
+      "sha256": "6d2754a54e0ff249513cc1ae0c701712a34ac3ef8b92580108d526e69f3fd193",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_26.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_26_out.jsonl",
+      "sha256": "6d798866a87e1cb6aa27f33e3053cc985b4901ea2fe273f1d62248e1c80223f4",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_26_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_27.jsonl",
+      "sha256": "613e7c26169d442347e45387728a99f6dbdb0baf54be022406d04a4fcfeabc2e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_27.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_27_out.jsonl",
+      "sha256": "1cca9ced331766456eba274fdc060ab4bc8929979225cf346f41fa82e972ee0a",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_27_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_28.jsonl",
+      "sha256": "93432dc6717353bbed0377cadae1f8288ee52978171f4d85007a42b16d2a7f08",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_28.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_28_out.jsonl",
+      "sha256": "35fb0b0ddc8030a079057fb6e35ff8bedb39b69cd0611c06bcef4d3748c08f9e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_28_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_29.jsonl",
+      "sha256": "beef174e2142529e084777b22747f4e05bd5695fa16d33204ce0a2b750e86783",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_29.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_29_out.jsonl",
+      "sha256": "a256c896afa0c74e0daaf738b5d7f68ae9bfc65a03ab6b24d43bcf3c2c58d81e",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_29_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_30.jsonl",
+      "sha256": "3986c0bf3e0c27f5ab199dfe6b951879d525624c255b70066410576c2fa5e710",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_30.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_30_out.jsonl",
+      "sha256": "986873a6fad8ca35cb61cf278f7a7c891b91a5a50e8f680f768520cf825a2de8",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_30_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_31.jsonl",
+      "sha256": "15d030b16890b78249dcdc133d21f51f3dd8d3e52422c4a26fb8632c530fd7b0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_31.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_31_out.jsonl",
+      "sha256": "b1c12d50ae2bde79f50e11b35ca73dfff145b3be9fa4a44a3b84a3cb35e3c7d7",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_31_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_32.jsonl",
+      "sha256": "0c615ec148e5c592b921eae87a2ca7597355bb182fb37d6995d094bd9a3ea32c",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_32.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_32_out.jsonl",
+      "sha256": "ccd41d6b48b4ccc4f1ce22ffc133cbcc765157f01da58b8658ce281cd1e50ec6",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_32_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_33.jsonl",
+      "sha256": "962d3ce612cae094c7e84eb772012c76404cbdefe92dfdc925b952f92b2043c5",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_33.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_33_out.jsonl",
+      "sha256": "72de1197f404d961ab67368ec96f4a86d4d0b7d516fbf53501f2bf9e8b76ca3f",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_33_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_34.jsonl",
+      "sha256": "37e2b9404cc7577c7a7507b1993561fc35627f2dfd8303787c6c8b2c26dcbd5c",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_34.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_34_out.jsonl",
+      "sha256": "d4067ea81a55e8c51c20dab39a75988f2dbcbc190e43348a4f0940961d75ac66",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_34_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_35.jsonl",
+      "sha256": "62a97b148b6daf3ba3699d502f5fbe0d54fbe12e281458d5962addd40c147ea0",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_35.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_35_out.jsonl",
+      "sha256": "7a7a84a38fc909e3d09329fef70fc4961c1930eecc513d624522234c3d7cb92d",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_35_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_36.jsonl",
+      "sha256": "8d0cb8478d4c3591306967b6801ca228f11f5f5781b3b9bac29f424cc3e79596",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_36.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_36_out.jsonl",
+      "sha256": "af58828a8d1633255b8d45f30fa49789ef07b3b0ae561cf5987d71ed87bd64ca",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_36_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_37.jsonl",
+      "sha256": "d6431c495633ad9dcdf33a2498aecd3d32d0eb5eb360c8ccde7ccceba4e831f9",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_37.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_37_out.jsonl",
+      "sha256": "3631e27053bc1510c0e5b438e9d610589edf8f88513c36b888781dc1668412d7",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_37_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_38.jsonl",
+      "sha256": "966b09587a490b56962b4394c75a00c1932e3ccc41780552ac2089105e60ec59",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_38.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_38_out.jsonl",
+      "sha256": "d8762da697b191074adee684d48a95a38c3e76fcbda57ac8bf749df3a21b0ce1",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_38_out.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_39.jsonl",
+      "sha256": "86dfb25d0ee15055b11f4226fa880f5f5ccac525500bcd2c82595993c421b04f",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_39.jsonl"
+    },
+    {
+      "path": "finetune_llm/curated/batches/_batch_39_out.jsonl",
+      "sha256": "b2b762f2de7ffa72f58bed5df736e3fe4a15f76a55eaf4209c3c0e8e808a79d5",
+      "source_id": "functiongemma",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json#finetune_llm/curated/batches/_batch_39_out.jsonl"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-025-functiongemma-fg_curated-01-finetune_llm-curated-batches",
+      "card_kind": "metric",
+      "corpus": "finetune_llm/curated/batches",
+      "denominator": "37 files in group finetune_llm/curated/batches; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 functiongemma head=ff150df27808",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "functiongemma:finetune_llm/curated/batches",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "finetune_llm/curated/batches/_batch_21_out.jsonl",
+        "finetune_llm/curated/batches/_batch_22.jsonl",
+        "finetune_llm/curated/batches/_batch_22_out.jsonl",
+        "finetune_llm/curated/batches/_batch_23.jsonl",
+        "finetune_llm/curated/batches/_batch_23_out.jsonl",
+        "finetune_llm/curated/batches/_batch_24.jsonl",
+        "finetune_llm/curated/batches/_batch_24_out.jsonl",
+        "finetune_llm/curated/batches/_batch_25.jsonl",
+        "finetune_llm/curated/batches/_batch_25_out.jsonl",
+        "finetune_llm/curated/batches/_batch_26.jsonl",
+        "finetune_llm/curated/batches/_batch_26_out.jsonl",
+        "finetune_llm/curated/batches/_batch_27.jsonl",
+        "finetune_llm/curated/batches/_batch_27_out.jsonl",
+        "finetune_llm/curated/batches/_batch_28.jsonl",
+        "finetune_llm/curated/batches/_batch_28_out.jsonl",
+        "finetune_llm/curated/batches/_batch_29.jsonl",
+        "finetune_llm/curated/batches/_batch_29_out.jsonl",
+        "finetune_llm/curated/batches/_batch_30.jsonl",
+        "finetune_llm/curated/batches/_batch_30_out.jsonl",
+        "finetune_llm/curated/batches/_batch_31.jsonl",
+        "finetune_llm/curated/batches/_batch_31_out.jsonl",
+        "finetune_llm/curated/batches/_batch_32.jsonl",
+        "finetune_llm/curated/batches/_batch_32_out.jsonl",
+        "finetune_llm/curated/batches/_batch_33.jsonl",
+        "finetune_llm/curated/batches/_batch_33_out.jsonl",
+        "finetune_llm/curated/batches/_batch_34.jsonl",
+        "finetune_llm/curated/batches/_batch_34_out.jsonl",
+        "finetune_llm/curated/batches/_batch_35.jsonl",
+        "finetune_llm/curated/batches/_batch_35_out.jsonl",
+        "finetune_llm/curated/batches/_batch_36.jsonl",
+        "finetune_llm/curated/batches/_batch_36_out.jsonl",
+        "finetune_llm/curated/batches/_batch_37.jsonl",
+        "finetune_llm/curated/batches/_batch_37_out.jsonl",
+        "finetune_llm/curated/batches/_batch_38.jsonl",
+        "finetune_llm/curated/batches/_batch_38_out.jsonl",
+        "finetune_llm/curated/batches/_batch_39.jsonl",
+        "finetune_llm/curated/batches/_batch_39_out.jsonl"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "_batch_21_out.jsonl parser=jsonl rows=50 bytes=18216 dist={\"status\": {}, \"error_rows\": 0} | _batch_22.jsonl parser=jsonl rows=50 bytes=15828 dist={\"status\": {}, \"error_rows\": 0} | _batch_22_out.jsonl parser=jsonl rows=50 bytes=18943 dist={\"status\": {}, \"error_rows\": 0} | _batch_23.jsonl parser=jsonl rows=50 bytes=16566 dist={\"status\": {}, \"error_rows\": 0} | _batch_23_out.jsonl parser=jsonl rows=50 bytes=25828 dist={\"status\": {}, \"error_rows\": 0} | _batch_24.jsonl parser=jsonl rows=50 bytes=16654 dist={\"status\": {}, \"error_rows\": 0}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ + Goal 09.5.5",
+      "provenance": {
+        "path": "finetune_llm/curated/batches/_batch_21_out.jsonl",
+        "ranges": [
+          "jsonl:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=37 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-026-functiongemma-fg_curated",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-025-functiongemma-fg_curated.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

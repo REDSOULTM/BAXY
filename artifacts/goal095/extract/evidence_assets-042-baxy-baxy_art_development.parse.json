@@ -1,0 +1,3437 @@
+{
+  "batch_id": "evidence_assets-042-baxy-baxy_art_development",
+  "source_id": "baxy",
+  "file_count": 56,
+  "hash_ok": 56,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/baxy_wake_v16k_opened_physical_v17_open_upstream_diagnostic_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67823,
+      "sha256": "42b371274ab518d99d7eb3501f7d49960511b0bc054bdc9f6d3b2fdb78cc5572",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "negative",
+          "openedCorpusPassed",
+          "positive",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67822,
+        "elapsedWallSeconds": {
+          "min": 35.98283999998239,
+          "max": 35.98283999998239
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_wake_v16s_opened_physical_v17_lexical_all_diagnostic_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 72984,
+      "sha256": "e6771d112766e6e4e4d6e1ed3d76141ed6f0e2d09071a86cb945f54e9e9c87ba",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "negative",
+          "openedCorpusPassed",
+          "positive",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 72983,
+        "elapsedWallSeconds": {
+          "min": 56.47625080001308,
+          "max": 56.47625080001308
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_wake_v16s_opened_physical_v17_open_upstream_diagnostic_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67822,
+      "sha256": "d9ac7d7656bcc645ea2aa9e382ac10c9b3bcf123a95849a6afcae877ce298175",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "negative",
+          "openedCorpusPassed",
+          "positive",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "preregistrationSha256",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67821,
+        "elapsedWallSeconds": {
+          "min": 37.62618399999337,
+          "max": 37.62618399999337
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"negat…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_wake_v17_preflight_20260811_102140.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3754,
+      "sha256": "e72571a9e210af6495a9dcf2c32f79ec671bd7148035e7808f415909f660c077",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assetsAndPrograms",
+          "audioPlayedOrCaptured",
+          "authority",
+          "captureOpened",
+          "checkedAtLocal",
+          "effectsExecuted",
+          "notAfterLocal",
+          "notBeforeLocal",
+          "physicalPath",
+          "plannedOutputs",
+          "preflightPassed",
+          "programTree",
+          "schema",
+          "sourceSelection",
+          "timingEstimate"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audioPlayedOrCaptured",
+          "captureOpened",
+          "checkedAtLocal",
+          "effectsExecuted",
+          "notAfterLocal",
+          "notBeforeLocal",
+          "preflightPassed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3753,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assetsAndPrograms\", \"audioPlayedOrCaptured\", \"authority\", \"captureOpened\", \"checkedAtLocal\", \"effectsExecuted\", \"notAfterLocal\", \"notBeforeLocal\", \"physicalPath\", \"plannedOutputs\", \"preflightPassed\", \"programTree\", \"schema\", \"so…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assetsAndPrograms\", \"audioPlayedOrCaptured\", \"authority\", \"captureOpened\", \"checkedAtLocal\", \"effectsExecuted\", \"notAfterLocal\", \"notBeforeLocal\", \"physicalPath\", \"plannedOutputs\", \"preflightPassed\", \"programTree\", \"schema\", \"so…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_wake_v25a_opened_physical_v20_diagnostic_preregistration_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2804,
+      "sha256": "7965af9e4654b970cd99a8ab9d5a865d6bf4f744efe91141938f337f7b615e33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "createdAtUtc",
+          "effectsExecuted",
+          "evaluation",
+          "frozenCandidate",
+          "frozenProgramTree",
+          "interpretationRules",
+          "openedDevelopmentCorpus",
+          "plannedOutputs",
+          "promotionEligible",
+          "purpose",
+          "role",
+          "schema",
+          "v17Trigger"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "effectsExecuted",
+          "promotionEligible",
+          "purpose",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {
+          "interpretationRules": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2803,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"createdAtUtc\", \"effectsExecuted\", \"evaluation\", \"frozenCandidate\", \"frozenProgramTree\", \"interpretationRules\", \"openedDevelopmentCorpus\", \"plannedOutputs\", \"promotionEligible\", \"purpose\", \"role\", \"schema\", \"v17Trigger\"], \"n_keys…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"createdAtUtc\", \"effectsExecuted\", \"evaluation\", \"frozenCandidate\", \"frozenProgramTree\", \"interpretationRules\", \"openedDevelopmentCorpus\", \"plannedOutputs\", \"promotionEligible\", \"purpose\", \"role\", \"schema\", \"v17Trigger\"], \"n_keys…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_prototype_domain_r252.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2052,
+      "sha256": "cf044e220a177c1dc39cb49db3dc59a2c0422b087f2f636cb51fa5466525f0ae",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "development_evaluation",
+          "hypothesis",
+          "identities",
+          "schema",
+          "training"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2051
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"training\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"training\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_r207_operation_retrieval_r256.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2905,
+      "sha256": "951fbc5b8e7547329771494b115f4fc656bafefa29156dbc8c2e5f9a8371e776",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "development_evaluation",
+          "hypothesis",
+          "identities",
+          "schema",
+          "selection"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2904
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"selection\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"selection\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_r207_operation_retrieval_r257.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 39964,
+      "sha256": "55dd65e7ff447a6018ebeb138095e31161b4d12740417019fee0cb3652448ab3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "latency_gpu",
+          "next_requirement",
+          "observed",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 39963
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"latency_gpu\", \"next_requirement\", \"observed\", \"schema\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"latency_gpu\", \"next_requirement\", \"observed\", \"schema\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_r207_prototype_domain_r254.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2663,
+      "sha256": "c5478938e8fe6e56ee623e78c070554746f68008bcfce16bba6a33e6733fa3c7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "development_evaluation",
+          "hypothesis",
+          "identities",
+          "schema",
+          "selection",
+          "training"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2662
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"selection\", \"training\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development_evaluation\", \"hypothesis\", \"identities\", \"schema\", \"selection\", \"training\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_r207_prototype_domain_r255.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2573,
+      "sha256": "bd8d7c2b91a2aee4cbd91e6c6300edf64053242a264aef7f4975769c10cec4b3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "next_requirement",
+          "observed",
+          "schema",
+          "training",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2572
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\", \"training\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\", \"training\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_semantic_abstention_r235.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1944,
+      "sha256": "145f94e9c4bd4665884bd1a51019b33f67a5f1e64f0c91a4a98d09ddf8b00fa7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1943
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_m3_semantic_abstention_r236.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1955,
+      "sha256": "2109cae9afb597e7177f30a9ccf6283a153291980b0b194ff8b947da2407ba48",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "next_requirement",
+          "observed",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1954
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_qwen_embedding_cascade_r186_preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 192705,
+      "sha256": "5bddd16566865f789a428a4f27afaa2cf236945d94d0f7c055e15406435e39ed",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "candidate",
+          "constraints",
+          "identities",
+          "population",
+          "rows",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {
+          "rows": 195
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 192704
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"candidate\", \"constraints\", \"identities\", \"population\", \"rows\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"candidate\", \"constraints\", \"identities\", \"population\", \"rows\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_reranker_calibration_r239.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1195,
+      "sha256": "efbdd1f70a2e2ee1159ac3696fd13c97e7185b62009479abb580f715d6ef4d2a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "development",
+          "identities",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1194
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development\", \"identities\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development\", \"identities\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_reranker_r237.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1137,
+      "sha256": "2e8e62c40fccf1418f9c901caa0fa346a61ac44b5e4fb9b9630553a9e4ad4de9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "future_measurement",
+          "identities",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1136
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"future_measurement\", \"identities\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"future_measurement\", \"identities\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_reranker_r240.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1810,
+      "sha256": "3e5bd831ca713360404fa2741c7fa65bcfb8f8901748d3a399ceef4d3304ec72",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1809
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/bge_reranker_r241_development.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2015,
+      "sha256": "e4ee13dcbd4942fa07ab275b6fa8d253160757e9914a3bbe84950123c166d3ce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "development_population",
+          "identities",
+          "next_requirement",
+          "observed",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2014
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"development_population\", \"identities\", \"next_requirement\", \"observed\", \"schema\", \"verdict\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_development_r1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 112763,
+      "sha256": "b710774f558399a18112b568d07d86e90d0438a53d93ed4bb438c4b5c8c11835",
+      "rows": 169,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "basis",
+          "blind_holdout",
+          "case_id",
+          "catalog_sha256",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "description_sha256",
+          "execution_authority",
+          "language",
+          "outcome",
+          "required_arguments",
+          "schema",
+          "text"
+        ],
+        "key_freq": {
+          "basis": 169,
+          "blind_holdout": 169,
+          "case_id": 169,
+          "catalog_sha256": 169,
+          "compatible_effect_operation_sets": 169,
+          "compatible_terminal_operation_sets": 169,
+          "description_sha256": 169,
+          "execution_authority": 169,
+          "language": 169,
+          "outcome": 169,
+          "required_arguments": 169,
+          "schema": 169,
+          "text": 169
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 112124,
+        "min_line_bytes": 603,
+        "max_line_bytes": 876,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"basis\":\"authenticated_catalog_description_seen_surface\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-app-close\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operation_sets\":[[\"ap…"
+          },
+          {
+            "offset": 653,
+            "line": 2,
+            "text": "{\"basis\":\"authenticated_catalog_description_seen_surface\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-app-installed\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operation_sets\":[…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 111470,
+            "line": 168,
+            "text": "{\"basis\":\"authenticated_catalog_description_seen_surface\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-window-resolve\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operation_sets\":…"
+          },
+          {
+            "offset": 112124,
+            "line": 169,
+            "text": "{\"basis\":\"authenticated_catalog_description_seen_surface\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-window-restore\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operation_sets\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_development_r1.manifest.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 698,
+      "sha256": "3144f64e73abb2397d27a40361c79865c05141a1e2b320fab58b3b94339880eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "output",
+          "review",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 697
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"output\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"output\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 740668,
+      "sha256": "d765426ae8397d463aec06eb63ff7ca2f60e863ccc61335057454debf1e05079",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 740667,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 436608,
+      "sha256": "70066afd0f23088fae1ba913d9baae9fdc63797eb9264fa1dde4fee4c4be786d",
+      "rows": 338,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_reason",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 338,
+          "phase": 338,
+          "raw_decision": 338,
+          "request_id": 338,
+          "schema": 338,
+          "stages": 338,
+          "final": 170,
+          "error_type": 3,
+          "failure_kind": 3,
+          "failure_reason": 3,
+          "failure_stage": 3,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 434849,
+        "min_line_bytes": 334,
+        "max_line_bytes": 2700,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 434481,
+            "line": 337,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 434849,
+            "line": 338,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r2_oracle_fixed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 644787,
+      "sha256": "cd2a9b31406e2395bcb38a324d97d466fca3d48900119162ec78579571f5b024",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 644786,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r2_oracle_fixed.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 332835,
+      "sha256": "6c156fe1a5a380e5fe19f06184941e97548e75397dfa54182180b3262929a981",
+      "rows": 326,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_reason",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 326,
+          "phase": 326,
+          "raw_decision": 326,
+          "request_id": 326,
+          "schema": 326,
+          "stages": 326,
+          "final": 170,
+          "error_type": 2,
+          "failure_kind": 2,
+          "failure_reason": 2,
+          "failure_stage": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 332454,
+        "min_line_bytes": 334,
+        "max_line_bytes": 1905,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 330695,
+            "line": 325,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          },
+          {
+            "offset": 332454,
+            "line": 326,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"app.open\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-catalog-seen-window-restore\",\"schema\":\"baxy.mind-turn-audit.v1\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r2_oracle_fixed.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 627,
+      "sha256": "99506fa7b5c563e46bb8552080de6ac3860cfa2ad59ce873736ab4e2d3bc283e",
+      "rows": 25,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 624,
+        "min_line_bytes": 3,
+        "max_line_bytes": 49
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.0,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 619,
+            "line": 24,
+            "text": "}"
+          },
+          {
+            "offset": 624,
+            "line": 25,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r3_natural_surface.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 748019,
+      "sha256": "397d1f6ba72bbcc9e2e5b461599839e7f93df74e3e9ad2c40c7f251f01c824c9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 748018,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r3_natural_surface.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 433667,
+      "sha256": "2dccb8a3ae11cf9fd27ebc134a48ef6141a14b17a2d50fcf8f207fc8070eaa3f",
+      "rows": 333,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 333,
+          "phase": 333,
+          "raw_decision": 333,
+          "request_id": 333,
+          "schema": 333,
+          "stages": 333,
+          "final": 170
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 431908,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2673,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 431540,
+            "line": 332,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"re…"
+          },
+          {
+            "offset": 431908,
+            "line": 333,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"unsupported\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_product_probe_r3_natural_surface.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 705,
+      "sha256": "2fdadfa07d4638a65c19e9646a9614ff63fdfd0c21b05fa5c0f0eef5f9c05dfa",
+      "rows": 26,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 702,
+        "min_line_bytes": 3,
+        "max_line_bytes": 51
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.28402366863905326,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 697,
+            "line": 25,
+            "text": "}"
+          },
+          {
+            "offset": 702,
+            "line": 26,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 691874,
+      "sha256": "f6cda0889005367469d4c7d9d37ddebed7d275a3fdc0a2af176a403effe21a47",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 691873,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 395958,
+      "sha256": "5cd1fcec00613927adeee1b8fed721cfd0bf76c4d9bf63c8b128c3a49ad58093",
+      "rows": 315,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 315,
+          "phase": 315,
+          "raw_decision": 315,
+          "request_id": 315,
+          "schema": 315,
+          "stages": 315,
+          "final": 159
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 394120,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2840,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 393723,
+            "line": 314,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"window.restore\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"window.resto…"
+          },
+          {
+            "offset": 394120,
+            "line": 315,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"final\":{\"effect_operations\":[\"window.restore\"],\"intent_operations\":[\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 736,
+      "sha256": "2cdd58df361f3f9b7ccb78a05f56fdc51f9446dfeb3afa8b94cce601f1d97754",
+      "rows": 27,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 733,
+        "min_line_bytes": 3,
+        "max_line_bytes": 50
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.5569620253164557,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 728,
+            "line": 26,
+            "text": "}"
+          },
+          {
+            "offset": 733,
+            "line": 27,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r2_hybrid_rrf5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 694102,
+      "sha256": "326c4790cdfad66ce1147048e5852d210c55a0ae3a81ae5b625eecdf99ea2be2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 694101,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r2_hybrid_rrf5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 401071,
+      "sha256": "455beda5f689a81a658b4e445c8086600f0e1e6dbc9e8bed7de1e7471ce9203d",
+      "rows": 318,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 318,
+          "phase": 318,
+          "raw_decision": 318,
+          "request_id": 318,
+          "schema": 318,
+          "stages": 318,
+          "final": 159,
+          "error_type": 2,
+          "failure_kind": 2,
+          "failure_stage": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 399233,
+        "min_line_bytes": 278,
+        "max_line_bytes": 2857,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 398836,
+            "line": 317,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"window.restore\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"window.resto…"
+          },
+          {
+            "offset": 399233,
+            "line": 318,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"final\":{\"effect_operations\":[\"window.restore\"],\"intent_operations\":[\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r2_hybrid_rrf5.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 755,
+      "sha256": "da6534605d1aa8fcb5d4081e044d54b284dd64d6b4543fe4f3e685e2715db4e7",
+      "rows": 28,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 752,
+        "min_line_bytes": 3,
+        "max_line_bytes": 50
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.5632911392405063,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 747,
+            "line": 27,
+            "text": "}"
+          },
+          {
+            "offset": 752,
+            "line": 28,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r3_semantic_lexical5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 697392,
+      "sha256": "cf9c76a432af7e61ca36b85ba8ac9c73456ae1ba5365906b106f6601f8e7ab01",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 697391,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r3_semantic_lexical5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 404020,
+      "sha256": "5d8e60616a7161ca2971587f2cedcaa3cf17d81cffd637dc0a60071176bf5dde",
+      "rows": 318,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 318,
+          "phase": 318,
+          "raw_decision": 318,
+          "request_id": 318,
+          "schema": 318,
+          "stages": 318,
+          "final": 159,
+          "error_type": 2,
+          "failure_kind": 2,
+          "failure_stage": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 402182,
+        "min_line_bytes": 278,
+        "max_line_bytes": 2857,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 401785,
+            "line": 317,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"window.restore\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"window.resto…"
+          },
+          {
+            "offset": 402182,
+            "line": 318,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"final\":{\"effect_operations\":[\"window.restore\"],\"intent_operations\":[\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r3_semantic_lexical5.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 756,
+      "sha256": "758f8c08e75c1364f89c158517fd70f0e84c88444c7899519478b2b6d33fb5d3",
+      "rows": 28,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 753,
+        "min_line_bytes": 3,
+        "max_line_bytes": 50
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.5886075949367089,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 748,
+            "line": 27,
+            "text": "}"
+          },
+          {
+            "offset": 753,
+            "line": 28,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r4_operation_ranker5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 691459,
+      "sha256": "da791f4058f68282ecc92a428c468b3f74db11acf42a9dcd2dba345b7c0ba37f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 691458,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r4_operation_ranker5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 395821,
+      "sha256": "a73cd59770bb22fbc10341e782156ecf89c19b3fecc88708da7109d70398f00b",
+      "rows": 315,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 315,
+          "phase": 315,
+          "raw_decision": 315,
+          "request_id": 315,
+          "schema": 315,
+          "stages": 315,
+          "final": 159
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 393983,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2840,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 393586,
+            "line": 314,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"window.restore\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"window.resto…"
+          },
+          {
+            "offset": 393983,
+            "line": 315,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"final\":{\"effect_operations\":[\"window.restore\"],\"intent_operations\":[\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r4_operation_ranker5.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 735,
+      "sha256": "632fb14d49ebaa73c0b5d2126237154fa13d71e47f3b4917f9fa34d43670d160",
+      "rows": 27,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 732,
+        "min_line_bytes": 3,
+        "max_line_bytes": 50
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.5569620253164557,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 727,
+            "line": 26,
+            "text": "}"
+          },
+          {
+            "offset": 732,
+            "line": 27,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r5_operation_ranker5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 697987,
+      "sha256": "307b0bc1cc55db994532b985e4506f6b68953a5a155352c78d4f44743d06409a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 697986,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r5_operation_ranker5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 403964,
+      "sha256": "4491a6a5d5e3e0590fcacc1d3b6aed8dd81c7a8008d6f5a8a1731c3c6bae395a",
+      "rows": 318,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "failure_stage",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 318,
+          "phase": 318,
+          "raw_decision": 318,
+          "request_id": 318,
+          "schema": 318,
+          "stages": 318,
+          "final": 159,
+          "error_type": 2,
+          "failure_kind": 2,
+          "failure_stage": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 402126,
+        "min_line_bytes": 278,
+        "max_line_bytes": 2875,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 401729,
+            "line": 317,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"window.restore\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"operation\":\"window.resto…"
+          },
+          {
+            "offset": 402126,
+            "line": 318,
+            "text": "{\"candidate_operations\":[\"window.restore\"],\"final\":{\"effect_operations\":[\"window.restore\"],\"intent_operations\":[\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r5_operation_ranker5.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 755,
+      "sha256": "59b8ab946400ed526835614877d2a972a310363a0c50cf3fae17c9ce27a51015",
+      "rows": 28,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 1,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 752,
+        "min_line_bytes": 3,
+        "max_line_bytes": 50
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{"
+          },
+          {
+            "offset": 3,
+            "line": 2,
+            "text": "\"exact_turn_accuracy\": 0.5886075949367089,"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 747,
+            "line": 27,
+            "text": "}"
+          },
+          {
+            "offset": 752,
+            "line": 28,
+            "text": "}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r6_exact_alias.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 689141,
+      "sha256": "6a1bd7091c4982469ed0033cb6b167f5f7459e2f262369aabb0b300d9a55e034",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 689140,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r6_exact_alias.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 368949,
+      "sha256": "0aa333720cc53f555129819f901aca7d2ad2664e5613840bf47ad57c289127a4",
+      "rows": 315,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 315,
+          "phase": 315,
+          "raw_decision": 315,
+          "request_id": 315,
+          "schema": 315,
+          "stages": 315,
+          "final": 159
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 367015,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2280,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 366594,
+            "line": 314,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 367015,
+            "line": 315,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"final\":{\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"intent_operations\":[\"window.resolve\",\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r7_policy_fix.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 697252,
+      "sha256": "e01425f4e8870a0330da177f793fd277e10b053d936fbf48678b092ecb9348f7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 697251,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r7_policy_fix.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 750754,
+      "sha256": "2feb6cff8bef110f6281fc36bb87163c6d55ef8f02adb25df689ad1cff334c43",
+      "rows": 636,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 636,
+          "phase": 636,
+          "raw_decision": 636,
+          "request_id": 636,
+          "schema": 636,
+          "stages": 636,
+          "final": 318
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 748820,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2280,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 748399,
+            "line": 635,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 748820,
+            "line": 636,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"final\":{\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"intent_operations\":[\"window.resolve\",\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r8_authenticated_game.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 697281,
+      "sha256": "23a09c1411152adc8df31879216d4d97e19e7cb78cf297572a1619312745576a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 697280,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_probe_r8_authenticated_game.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 375397,
+      "sha256": "6ae556cb45630678e5d155bd0f22bb2785b1c4df799caeefed6488af4622498f",
+      "rows": 318,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 318,
+          "phase": 318,
+          "raw_decision": 318,
+          "request_id": 318,
+          "schema": 318,
+          "stages": 318,
+          "final": 159
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 373463,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2280,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 373042,
+            "line": 317,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 373463,
+            "line": 318,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"final\":{\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"intent_operations\":[\"window.resolve\",\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_r1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 106491,
+      "sha256": "a12fe3fcd17053810ee5e11b06c87201bfd2552ab2f5d099bf67689e6a78e697",
+      "rows": 169,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "basis",
+          "blind_holdout",
+          "case_id",
+          "catalog_sha256",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "language",
+          "outcome",
+          "owner",
+          "scenario_sha256",
+          "schema",
+          "text"
+        ],
+        "key_freq": {
+          "basis": 169,
+          "blind_holdout": 169,
+          "case_id": 169,
+          "catalog_sha256": 169,
+          "compatible_effect_operation_sets": 169,
+          "compatible_terminal_operation_sets": 169,
+          "execution_authority": 169,
+          "language": 169,
+          "outcome": 169,
+          "owner": 169,
+          "scenario_sha256": 169,
+          "schema": 169,
+          "text": 169
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 105881,
+        "min_line_bytes": 564,
+        "max_line_bytes": 716,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-app-close\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operation_se…"
+          },
+          {
+            "offset": 582,
+            "line": 2,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-app-installed\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 105236,
+            "line": 168,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-window-resolve\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operati…"
+          },
+          {
+            "offset": 105881,
+            "line": 169,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-window-restore\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operati…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_r1.manifest.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 886,
+      "sha256": "8d6ba693409394a2b1ffbc4b3f0aff037f2b122ae64a62c3bc8749768a0eee3e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "output",
+          "review",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 885
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"output\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"output\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_r2_dependency_complete.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 113903,
+      "sha256": "cbe9fc751ccfddf60ba1a66e5ca149ec1c0f29cec02783e2566444294ff51978",
+      "rows": 169,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "basis",
+          "blind_holdout",
+          "case_id",
+          "catalog_sha256",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "language",
+          "outcome",
+          "owner",
+          "scenario_sha256",
+          "schema",
+          "target_operation",
+          "text"
+        ],
+        "key_freq": {
+          "basis": 169,
+          "blind_holdout": 169,
+          "case_id": 169,
+          "catalog_sha256": 169,
+          "compatible_effect_operation_sets": 169,
+          "compatible_terminal_operation_sets": 169,
+          "execution_authority": 169,
+          "language": 169,
+          "outcome": 169,
+          "owner": 169,
+          "scenario_sha256": 169,
+          "schema": 169,
+          "target_operation": 169,
+          "text": 169
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 113223,
+        "min_line_bytes": 594,
+        "max_line_bytes": 767,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-app-close\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operation_se…"
+          },
+          {
+            "offset": 647,
+            "line": 2,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-app-installed\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operatio…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 112542,
+            "line": 168,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-window-resolve\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operati…"
+          },
+          {
+            "offset": 113223,
+            "line": 169,
+            "text": "{\"basis\":\"explicit_human_reviewed_seen_operation_scenario\",\"blind_holdout\":false,\"case_id\":\"catalog-seen-natural-window-restore\",\"catalog_sha256\":\"67c82b61bc661bdf35478a1ae2139e2b609dcbb861e0c59ab5d05dfa0a41fd41\",\"compatible_effect_operati…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_seen_scenarios_r2_dependency_complete.manifest.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 906,
+      "sha256": "68e445f25993aa9656d0b6ce2dded0c5731c06198795f023c13ca0229f780ff1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "output",
+          "review",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 905
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"output\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"output\", \"review\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_surface_current_tree_r1_memory_closure_fix_development.trx": {
+      "parser": "xml",
+      "bytes": 17172,
+      "sha256": "b95e625152b8b6db25774d84f22764eb1fe88214000b9cffa2bbdb3ef970b456",
+      "rows": 69,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 11,
+          "Execution": 11,
+          "TestMethod": 11,
+          "UnitTest": 11,
+          "TestEntry": 11,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17171
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 68,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 69,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_surface_r22_replay_after_social_fix.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 689541,
+      "sha256": "2f8127faaf012fe256d0956ab4e7b3a417b4b3d7c946bbf312dc38b3f1879b9e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 158
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 689540,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_surface_r22_replay_after_social_fix.v1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 375081,
+      "sha256": "19dcbb059cfa0cc84c15ec9cba5e61e941a8e94904dd4a3e869d31726285b45e",
+      "rows": 318,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 318,
+          "phase": 318,
+          "raw_decision": 318,
+          "request_id": 318,
+          "schema": 318,
+          "stages": 318,
+          "final": 159
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 373148,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2279,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 372728,
+            "line": 317,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"multiple\",\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"effect_verification\":\"multiple\",\"mo…"
+          },
+          {
+            "offset": 373148,
+            "line": 318,
+            "text": "{\"candidate_operations\":[\"window.resolve\",\"window.restore\"],\"final\":{\"effect_operations\":[\"window.resolve\",\"window.restore\"],\"intent_operations\":[\"window.resolve\",\"window.restore\"],\"kind\":\"plan\"},\"phase\":\"final\",\"raw_decision\":{\"conversati…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/catalog_surface_r24_memory_postfix.trx": {
+      "parser": "xml",
+      "bytes": 16908,
+      "sha256": "3835d0174999db217fab7715e58357e2157c203a95817a61082c499c27a5f856",
+      "rows": 69,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 11,
+          "Execution": 11,
+          "TestMethod": 11,
+          "UnitTest": 11,
+          "TestEntry": 11,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16907
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 68,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 69,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,6669 @@
+{
+  "batch_id": "evidence_assets-035-baxy-baxy_art_audit",
+  "source_id": "baxy",
+  "file_count": 106,
+  "hash_ok": 106,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/audit/2026-07-27-night-audit/process_terminate_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15048,
+      "sha256": "673cefd8076650fe261b73ca4209c1868770d8cd94ea1fe6b38fa4262f52c05a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalogCount",
+          "cleanup",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr",
+          "targetPid"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr",
+          "targetPid"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15047,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "targetPid": {
+          "min": 19296,
+          "max": 19296
+        },
+        "elapsedSeconds": {
+          "min": 4.18747859999894,
+          "max": 4.18747859999894
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"cleanup\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"schema\", \"stderr\", \"targetPid\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"cleanup\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"schema\", \"stderr\", \"targetPid\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/process_terminate_chain_installed_2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15007,
+      "sha256": "c02e0ec87e47f63fbb9d91e91110a8b1288ebb83ad87e4476f750184af88135a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalogCount",
+          "cleanup",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr",
+          "targetPid"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr",
+          "targetPid"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15006,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "targetPid": {
+          "min": 19040,
+          "max": 19040
+        },
+        "elapsedSeconds": {
+          "min": 3.2404645000005985,
+          "max": 3.2404645000005985
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"cleanup\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"schema\", \"stderr\", \"targetPid\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"cleanup\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"schema\", \"stderr\", \"targetPid\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/protocol_burst_1200_under_dual_soak.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 556,
+      "sha256": "4c572eedabd16882a258eeb14e20fbbe2026b4ecc4313a70cd782e02a09f7b42",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "mismatches",
+          "missing_count",
+          "missing_request_ids",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "statuses",
+          "stderr",
+          "writer_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "missing_count",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "missing_request_ids": 0,
+          "mismatches": 0,
+          "writer_errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 555,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "requests": {
+          "min": 1200,
+          "max": 1200
+        },
+        "responses": {
+          "min": 1200,
+          "max": 1200
+        },
+        "elapsed_seconds": {
+          "min": 60.688212699998985,
+          "max": 60.688212699998985
+        },
+        "responses_per_second": {
+          "min": 19.773197242304352,
+          "max": 19.773197242304352
+        },
+        "missing_count": {
+          "min": 0,
+          "max": 0
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/protocol_burst_5000_under_dual_soak.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 556,
+      "sha256": "a4e85dbfc6ed2f843dd8dc89f891bee55fc31b22ebca5cd8d43a2ec6da0db9b4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "mismatches",
+          "missing_count",
+          "missing_request_ids",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "statuses",
+          "stderr",
+          "writer_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "missing_count",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "missing_request_ids": 0,
+          "mismatches": 0,
+          "writer_errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 555,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "requests": {
+          "min": 5000,
+          "max": 5000
+        },
+        "responses": {
+          "min": 5000,
+          "max": 5000
+        },
+        "elapsed_seconds": {
+          "min": 236.64871219999986,
+          "max": 236.64871219999986
+        },
+        "responses_per_second": {
+          "min": 21.128363444354306,
+          "max": 21.128363444354306
+        },
+        "missing_count": {
+          "min": 0,
+          "max": 0
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/protocol_burst_stress_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 553,
+      "sha256": "080dce8745682074d58f6297aa8e366bfbd03fe1766a0dea9e32e60eedd6ec2e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "mismatches",
+          "missing_count",
+          "missing_request_ids",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "statuses",
+          "stderr",
+          "writer_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "missing_count",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "missing_request_ids": 0,
+          "mismatches": 0,
+          "writer_errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 552,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "requests": {
+          "min": 240,
+          "max": 240
+        },
+        "responses": {
+          "min": 240,
+          "max": 240
+        },
+        "elapsed_seconds": {
+          "min": 11.471406900000147,
+          "max": 11.471406900000147
+        },
+        "responses_per_second": {
+          "min": 20.921583733552065,
+          "max": 20.921583733552065
+        },
+        "missing_count": {
+          "min": 0,
+          "max": 0
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/protocol_burst_under_mind_load_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 552,
+      "sha256": "38838c5d959d6328770ac8f3007aba58af3a2d364aef77d23d0a33cf4461e8b9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "mismatches",
+          "missing_count",
+          "missing_request_ids",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "statuses",
+          "stderr",
+          "writer_errors"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "missing_count",
+          "process_exit_code",
+          "reader_error",
+          "requests",
+          "responses",
+          "responses_per_second",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "missing_request_ids": 0,
+          "mismatches": 0,
+          "writer_errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 551,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "requests": {
+          "min": 240,
+          "max": 240
+        },
+        "responses": {
+          "min": 240,
+          "max": 240
+        },
+        "elapsed_seconds": {
+          "min": 11.682536899999832,
+          "max": 11.682536899999832
+        },
+        "responses_per_second": {
+          "min": 20.54348315390328,
+          "max": 20.54348315390328
+        },
+        "missing_count": {
+          "min": 0,
+          "max": 0
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"mismatches\", \"missing_count\", \"missing_request_ids\", \"process_exit_code\", \"reader_error\", \"requests\", \"responses\", \"responses_per_second\", \"schema\", \"statuses\", \"stderr…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/protocol_fuzz_recovery_500_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 516,
+      "sha256": "13353a91ce9c12d9c0168b966971b6b1c82561885b2b7331f72abafd61df97b5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalogCount",
+          "completedCases",
+          "core",
+          "coreVersion",
+          "elapsedSeconds",
+          "invalidErrorCodes",
+          "invalidResponseTypes",
+          "problems",
+          "processExitCode",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "catalogCount",
+          "completedCases",
+          "core",
+          "coreVersion",
+          "elapsedSeconds",
+          "processExitCode",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "problems": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 515,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "cases": {
+          "min": 500,
+          "max": 500
+        },
+        "completedCases": {
+          "min": 500,
+          "max": 500
+        },
+        "elapsedSeconds": {
+          "min": 15.089359000001423,
+          "max": 15.089359000001423
+        },
+        "processExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"completedCases\", \"core\", \"coreVersion\", \"elapsedSeconds\", \"invalidErrorCodes\", \"invalidResponseTypes\", \"problems\", \"processExitCode\", \"schema\", \"stderr\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"completedCases\", \"core\", \"coreVersion\", \"elapsedSeconds\", \"invalidErrorCodes\", \"invalidResponseTypes\", \"problems\", \"processExitCode\", \"schema\", \"stderr\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/protocol_recovery_stress_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2796,
+      "sha256": "9534a50f208e663adab089cc54dbf8eb876f61ea147fcae9e18938772c9d387f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "errors",
+          "process_exit_code",
+          "safe_rejections",
+          "schema",
+          "stderr",
+          "successful_recoveries"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "process_exit_code",
+          "safe_rejections",
+          "schema",
+          "stderr",
+          "successful_recoveries"
+        ],
+        "list_lengths": {
+          "cases": 11,
+          "errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2795,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "safe_rejections": {
+          "min": 11,
+          "max": 11
+        },
+        "successful_recoveries": {
+          "min": 11,
+          "max": 11
+        },
+        "elapsed_seconds": {
+          "min": 0.36546139999882143,
+          "max": 0.36546139999882143
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"errors\", \"process_exit_code\", \"safe_rejections\", \"schema\", \"stderr\", \"successful_recoveries\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"core\", \"core_version\", \"elapsed_seconds\", \"errors\", \"process_exit_code\", \"safe_rejections\", \"schema\", \"stderr\", \"successful_recoveries\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/pytest_rerun_under_soak.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 322,
+      "sha256": "125ae4b196361b5d927602b98a431a408325320e0ecfedc436b92d5195d87e7a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "checkedAt",
+          "command",
+          "context",
+          "elapsedSeconds",
+          "exitCode",
+          "failed",
+          "subtestsPassed",
+          "testsPassed"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "checkedAt",
+          "command",
+          "context",
+          "elapsedSeconds",
+          "exitCode",
+          "failed",
+          "subtestsPassed",
+          "testsPassed"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 321,
+        "testsPassed": {
+          "min": 611,
+          "max": 611
+        },
+        "subtestsPassed": {
+          "min": 350,
+          "max": 350
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsedSeconds": {
+          "min": 153.23,
+          "max": 153.23
+        },
+        "exitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"checkedAt\", \"command\", \"context\", \"elapsedSeconds\", \"exitCode\", \"failed\", \"subtestsPassed\", \"testsPassed\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"checkedAt\", \"command\", \"context\", \"elapsedSeconds\", \"exitCode\", \"failed\", \"subtestsPassed\", \"testsPassed\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/replay_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3269,
+      "sha256": "8944cf9b55260251de16d4d7bc7f58d4e4f98f9fbc6294b9c6bc141fe9797250",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "responses",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "responses": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3268,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 0.07851990000017395,
+          "max": 0.07851990000017395
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"responses\", \"schema\", \"stderr\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"responses\", \"schema\", \"stderr\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/replay_chain_installed_2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3211,
+      "sha256": "01a9bdc503d5637595937db5b2d1bf8dedcb2c53a988149fbfe4328978d70d4d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "responses",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "responses": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3210,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 0.08089619999918796,
+          "max": 0.08089619999918796
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"responses\", \"schema\", \"stderr\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"responses\", \"schema\", \"stderr\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/restart_replay_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4147,
+      "sha256": "7bdd33a105e89055fa3fba210ca13154aa369d74c5609454fedcf107090aa259",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogCount",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "rounds",
+          "schema"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema"
+        ],
+        "list_lengths": {
+          "rounds": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4146,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 0.7172967000005883,
+          "max": 0.7172967000005883
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"rounds\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"rounds\", \"schema\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/routing_failed_subset.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2048,
+      "sha256": "3dbe13364129c4c1ed81c3e5a0e02727a199d91c6cd2c3edd529dbe70d511b84",
+      "rows": 20,
+      "schema": {
+        "root": "array",
+        "n": 20,
+        "elem_keys": [
+          "expectedKind",
+          "expectedOperation",
+          "text"
+        ]
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2047
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"text\": \"¿Qué hora es?\", \"expectedKind\": \"action\", \"expectedOperation\": \"system.time\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2047,
+            "line": 20,
+            "text": "{\"text\": \"¿Cómo está el Wi-Fi?\", \"expectedKind\": \"action\", \"expectedOperation\": \"wifi.status\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/routing_failed_subset_empty_history.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11847,
+      "sha256": "4552eb16a34802649ffc5a609da52dc1f82f937253421c07276aaba4224f59a6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_ready",
+          "history",
+          "measured_at",
+          "mind_hello",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "measured_at",
+          "schema"
+        ],
+        "list_lengths": {
+          "history": 0,
+          "cases": 20
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11846,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"history\", \"measured_at\", \"mind_hello\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_ready\", \"history\", \"measured_at\", \"mind_hello\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/routing_shortlist_diagnostic.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15917,
+      "sha256": "435606c13645cc3cbc72351ba2a3a700901418e519eca7e323833c6a37bcb8d8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "expectedPresent",
+          "measuredAt",
+          "rows",
+          "schema",
+          "stderr",
+          "total"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "expectedPresent",
+          "measuredAt",
+          "schema",
+          "stderr",
+          "total"
+        ],
+        "list_lengths": {
+          "rows": 20
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15916,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 29.798315199999706,
+          "max": 29.798315199999706
+        },
+        "total": {
+          "min": 20,
+          "max": 20
+        },
+        "expectedPresent": {
+          "min": 18,
+          "max": 18
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"expectedPresent\", \"measuredAt\", \"rows\", \"schema\", \"stderr\", \"total\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"expectedPresent\", \"measuredAt\", \"rows\", \"schema\", \"stderr\", \"total\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/sandbox_named_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8757,
+      "sha256": "0f8d5c6dfb922f8024becc8cd4c3ce66aee3d0e32744d359cb38ace3e658efe3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "expected_failures",
+          "expected_successes",
+          "process_exit_code",
+          "safe_expected_failures",
+          "schema",
+          "stderr",
+          "total",
+          "verified_successes"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "expected_failures",
+          "expected_successes",
+          "process_exit_code",
+          "safe_expected_failures",
+          "schema",
+          "stderr",
+          "total",
+          "verified_successes"
+        ],
+        "list_lengths": {
+          "cases": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8756,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 0.27015320000100473,
+          "max": 0.27015320000100473
+        },
+        "total": {
+          "min": 7,
+          "max": 7
+        },
+        "expected_successes": {
+          "min": 5,
+          "max": 5
+        },
+        "verified_successes": {
+          "min": 5,
+          "max": 5
+        },
+        "expected_failures": {
+          "min": 2,
+          "max": 2
+        },
+        "safe_expected_failures": {
+          "min": 2,
+          "max": 2
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"expected_failures\", \"expected_successes\", \"process_exit_code\", \"safe_expected_failures\", \"schema\", \"stderr\", \"total\", \"verified_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"expected_failures\", \"expected_successes\", \"process_exit_code\", \"safe_expected_failures\", \"schema\", \"stderr\", \"total\", \"verified_…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/soak_summary_checkpoint.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14604,
+      "sha256": "3d5643f83899b47aef49772795e5d48d9d25e670c6155e946c5b2c53867137b1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "mind",
+          "schema"
+        ],
+        "n_keys": 3,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14603
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"mind\", \"schema\"], \"n_keys\": 3, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"mind\", \"schema\"], \"n_keys\": 3, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/soak_summary_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19756,
+      "sha256": "4f04749e728d094f0a79bdb9cc8b7807d0540bff1020609e810837e8568190bc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "mind",
+          "schema"
+        ],
+        "n_keys": 3,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19755
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"mind\", \"schema\"], \"n_keys\": 3, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"mind\", \"schema\"], \"n_keys\": 3, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/social_greeting_repro.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1033,
+      "sha256": "b2459c4d0c4b2339110f3a512566807985bbdbdf52585af95f3e314ab15453d7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "contextual_welcome_runs",
+          "direct_social_runs",
+          "measured_at",
+          "route",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "measured_at",
+          "schema"
+        ],
+        "list_lengths": {
+          "direct_social_runs": 3,
+          "contextual_welcome_runs": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1032
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contextual_welcome_runs\", \"direct_social_runs\", \"measured_at\", \"route\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contextual_welcome_runs\", \"direct_social_runs\", \"measured_at\", \"route\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/spotify_plan_timeout_repro.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1631,
+      "sha256": "6e0f5923ca1e2e4d7c6ff0fa7d40013e50509c1740b84ec2928fff754d88c02a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "commit",
+          "confirmation_sent_utc",
+          "core_completed_utc",
+          "core_operation",
+          "core_result",
+          "core_started_utc",
+          "core_status",
+          "core_verified",
+          "elapsed_core_seconds",
+          "notes",
+          "objective",
+          "observed_effect",
+          "outbox_after_verified_completion",
+          "schema",
+          "ui_messages",
+          "ui_timeout_message_utc",
+          "version"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "commit",
+          "confirmation_sent_utc",
+          "core_completed_utc",
+          "core_operation",
+          "core_started_utc",
+          "core_status",
+          "core_verified",
+          "elapsed_core_seconds",
+          "objective",
+          "schema",
+          "ui_timeout_message_utc",
+          "version"
+        ],
+        "list_lengths": {
+          "ui_messages": 2,
+          "notes": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1630,
+        "elapsed_core_seconds": {
+          "min": 21.7336368,
+          "max": 21.7336368
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"commit\", \"confirmation_sent_utc\", \"core_completed_utc\", \"core_operation\", \"core_result\", \"core_started_utc\", \"core_status\", \"core_verified\", \"elapsed_core_seconds\", \"notes\", \"objective\", \"observed_effect\", \"outbox_after_verified…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"commit\", \"confirmation_sent_utc\", \"core_completed_utc\", \"core_operation\", \"core_result\", \"core_started_utc\", \"core_status\", \"core_verified\", \"elapsed_core_seconds\", \"notes\", \"objective\", \"observed_effect\", \"outbox_after_verified…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/steam_appid_crash_repro_development.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2803,
+      "sha256": "2d75fcca7ace73880f3b357c3c9700c6d8ba6390e44ba7913694292578a3b6d8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2802
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/steam_appid_crash_repro_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2799,
+      "sha256": "24e6a9424b0297b9ed49fce2c51115ef10aecefa72d467cbd452f9d4e591ad67",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "runs",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core",
+          "measured_at",
+          "reproduced",
+          "schema"
+        ],
+        "list_lengths": {
+          "runs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2798
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"core\", \"measured_at\", \"reproduced\", \"runs\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/streaming_navigate_chain_delayed_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6694,
+      "sha256": "92faeee0c1f8f111eae1ffab4f90ca013f26b9a9fe423480a385e22f93087f7e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6693,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 22.93131270000049,
+          "max": 22.93131270000049
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/streaming_navigate_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3437,
+      "sha256": "9b30255e5ccba7000162b0d497d8a80f657547a613a52b4bd83616cc20c78ac7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3436,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 1.718382199998814,
+          "max": 1.718382199998814
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/streaming_navigate_chain_installed_2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3438,
+      "sha256": "d4cfcd8d59947920369a71698a78c5e694a4ae34dae4d0aaa6ed9f96f7fffa95",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3437,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 1.6938862999995763,
+          "max": 1.6938862999995763
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/streaming_navigate_chain_installed_3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3436,
+      "sha256": "bbb583177ada4a635c9c5a0b2945c5f2a8e3494fc1e031a02fcd22e380202769",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr"
+        ],
+        "list_lengths": {
+          "cases": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3435,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 1.9146813999996084,
+          "max": 1.9146813999996084
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/streaming_play_named_netflix_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1705,
+      "sha256": "dd0414027ef003fecbd3d167a85acdb07cc2c56317a5504f53366ab3fa1b861f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1704,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 3.3730302000003576,
+          "max": 3.3730302000003576
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/system_event_log_check.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 379,
+      "sha256": "1309325992309d0ca1e7eb6fe4928734b2e868b3f339a368356a1d49970a7ce2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "checkedAt",
+          "levels",
+          "log",
+          "matchTerms",
+          "matchingEvents",
+          "since"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "checkedAt",
+          "log",
+          "matchingEvents",
+          "since"
+        ],
+        "list_lengths": {
+          "levels": 3,
+          "matchTerms": 7
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 378,
+        "matchingEvents": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"checkedAt\", \"levels\", \"log\", \"matchTerms\", \"matchingEvents\", \"since\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"checkedAt\", \"levels\", \"log\", \"matchTerms\", \"matchingEvents\", \"since\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-after-cancel-attempt.png": {
+      "parser": "binary_inventory",
+      "bytes": 487490,
+      "sha256": "d63191bd896331adad31c780439f79a88b512bac5ae1569c15b81cd95499e5f1",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-after-cancel-attempt.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 487489
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 487489,
+            "line": 0,
+            "text": "eof bytes=487490"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-calculator-close-fail-2.png": {
+      "parser": "binary_inventory",
+      "bytes": 486844,
+      "sha256": "35153be73de48217b3c037596396701a7bf64fa8847c5fcfd747876910589188",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-calculator-close-fail-2.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 486843
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 486843,
+            "line": 0,
+            "text": "eof bytes=486844"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-calculator-closed.png": {
+      "parser": "binary_inventory",
+      "bytes": 489761,
+      "sha256": "a12d69e8e50915729af35e5c8c354bc88560769323cf8cbce819747886ca640f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-calculator-closed.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 489760
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 489760,
+            "line": 0,
+            "text": "eof bytes=489761"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-calculator-open.png": {
+      "parser": "binary_inventory",
+      "bytes": 494528,
+      "sha256": "2497417aa56b7768e66355f8be5ad2f122a3002fed92650f8a51dc804823c05b",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-calculator-open.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 494527
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 494527,
+            "line": 0,
+            "text": "eof bytes=494528"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-hola-2.png": {
+      "parser": "binary_inventory",
+      "bytes": 946113,
+      "sha256": "b5b7f023e9cff090f0e04b26721d5bf7d472581645453a3d226d31d424788a77",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-hola-2.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 946112
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 946112,
+            "line": 0,
+            "text": "eof bytes=946113"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-hola-3.png": {
+      "parser": "binary_inventory",
+      "bytes": 474914,
+      "sha256": "b232e7b784d72f3ae5369d57e66323d9515b6e17783748559a8378cd179889d8",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-hola-3.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 474913
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 474913,
+            "line": 0,
+            "text": "eof bytes=474914"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-hola-baxy.png": {
+      "parser": "binary_inventory",
+      "bytes": 487140,
+      "sha256": "115c65c6c0601ffe33d9daf5b33480baee834b97d0855c883aa7f72d90c977c0",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-hola-baxy.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 487139
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 487139,
+            "line": 0,
+            "text": "eof bytes=487140"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-hola-fresh-2.png": {
+      "parser": "binary_inventory",
+      "bytes": 489687,
+      "sha256": "024deff636df6b78a0cccb1fc37be7ff7351527e5ecbfda0c81cc2f180fe627e",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-hola-fresh-2.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 489686
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 489686,
+            "line": 0,
+            "text": "eof bytes=489687"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-hola-fresh.png": {
+      "parser": "binary_inventory",
+      "bytes": 468082,
+      "sha256": "0e83345362024f224cda8fbbe63ef7c76861ff9c73c54df346ff157b7d9a8b33",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-hola-fresh.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 468081
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 468081,
+            "line": 0,
+            "text": "eof bytes=468082"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-hola.png": {
+      "parser": "binary_inventory",
+      "bytes": 144324,
+      "sha256": "6fe3e359d622883e93020138b0f5de753d7ce6aa8d006346c874ed5f3c362189",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-hola.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 144323
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 144323,
+            "line": 0,
+            "text": "eof bytes=144324"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-initial-dpi.png": {
+      "parser": "binary_inventory",
+      "bytes": 469616,
+      "sha256": "694cd34303455433979e1c02f8b1393c6021552cfdb4c81bc4434de2fdf6e7c9",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-initial-dpi.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 469615
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 469615,
+            "line": 0,
+            "text": "eof bytes=469616"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-initial.png": {
+      "parser": "binary_inventory",
+      "bytes": 311317,
+      "sha256": "54ced97d126ee86b43956683d95b971895fb62b599e6bb6d13ec7d3dfae584bd",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-initial.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1280,
+        "height": 720
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 311316
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 311316,
+            "line": 0,
+            "text": "eof bytes=311317"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-knowledge-history.png": {
+      "parser": "binary_inventory",
+      "bytes": 493702,
+      "sha256": "61bb9adb3e9ae03283ce29fb30bcedbb27ef374457304e194ca1ee9396cfca5a",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-knowledge-history.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 493701
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 493701,
+            "line": 0,
+            "text": "eof bytes=493702"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-correction.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 50464,
+      "sha256": "9775b583d8efb5641054705d8fbd8d4a1ab57f6c8d6dd340434a9fb14c1b8417",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 127
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 50463,
+        "process_id": {
+          "min": 20548,
+          "max": 20548
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-extended-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 79356,
+      "sha256": "52be5d62c9e40bb19692c99afaa53ef1c6153451659204e1d91a3e8e198742b6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 199
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 79355,
+        "process_id": {
+          "min": 20548,
+          "max": 20548
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-final-status.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 69716,
+      "sha256": "db1746408ec758764099ac4595f332d0a15bb6104add2f28593c747fba978628",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 175
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 69715,
+        "process_id": {
+          "min": 29560,
+          "max": 29560
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67330,
+      "sha256": "a5842348d0c3e2bc7d2ccbc03af5a2c95ccd8a5df2a0fcf139a7efc973473e79",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67329,
+        "process_id": {
+          "min": 29560,
+          "max": 29560
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-flow.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 62533,
+      "sha256": "e6f19aef4c14f01cc6427d8c58e80b7290ef0369c838b386ee3eda9bce70772b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 157
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 62532,
+        "process_id": {
+          "min": 29560,
+          "max": 29560
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-initial.png": {
+      "parser": "binary_inventory",
+      "bytes": 311229,
+      "sha256": "84d83eb2a8d8267c61a5bc13a90519424682c2720414dfad761dd5330edf45f7",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-memory-initial.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical sqlite memory/store",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1280,
+        "height": 673
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 311228
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 311228,
+            "line": 0,
+            "text": "eof bytes=311229"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-sensitive-prompt.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 62610,
+      "sha256": "1c8befdab69a623d57cb22c505027aa12f4c7423b2b01afc117db038fb91e6c4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 157
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 62609,
+        "process_id": {
+          "min": 20548,
+          "max": 20548
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-sensitive-saved.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 65009,
+      "sha256": "8c3fd40c788937c8aa4444780b624011a612e7cbdfa696bd16c95fd67b8f19a8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 163
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 65008,
+        "process_id": {
+          "min": 20548,
+          "max": 20548
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-memory-session-clear.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 60107,
+      "sha256": "c119f23be61d89f2b291ec49b8de0a252afcc39476b37464a6b264df737d3193",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 151
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 60106,
+        "process_id": {
+          "min": 20548,
+          "max": 20548
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-notepad-open-attempt-2.png": {
+      "parser": "binary_inventory",
+      "bytes": 475981,
+      "sha256": "641e0f4ccc5772c7c9023399faf81f04d30f0226f4b0346d5f042d2fc88c42b3",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-notepad-open-attempt-2.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 475980
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 475980,
+            "line": 0,
+            "text": "eof bytes=475981"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-notepad-open-attempt.png": {
+      "parser": "binary_inventory",
+      "bytes": 490677,
+      "sha256": "c337ce5485b1fa33d6b384607131d1224d6550206aa85045b6a878f0e269ddba",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-notepad-open-attempt.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 490676
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 490676,
+            "line": 0,
+            "text": "eof bytes=490677"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-opera-compound-result.png": {
+      "parser": "binary_inventory",
+      "bytes": 486849,
+      "sha256": "36860ec80a6688a88d22e413c7f7084adc937ab87ade0c9c110749ce57fee22b",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-opera-compound-result.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 486848
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 486848,
+            "line": 0,
+            "text": "eof bytes=486849"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-opera-navigate-explicit.png": {
+      "parser": "binary_inventory",
+      "bytes": 487258,
+      "sha256": "b2dad8fb7af804aa06a4139d7c2edafc749341cdb8c9f5e842f926b45c1c1264",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-opera-navigate-explicit.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "historical gate/eval beside this file, if any",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 487257
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 487257,
+            "line": 0,
+            "text": "eof bytes=487258"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-opera-open-attempt.png": {
+      "parser": "binary_inventory",
+      "bytes": 470481,
+      "sha256": "7e88661e6406f039b542d1e5ab85cd3c0c9c12bdf446b39e75bbaf55fbb7e7b4",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-opera-open-attempt.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 470480
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 470480,
+            "line": 0,
+            "text": "eof bytes=470481"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-orphan-outbox-restart.png": {
+      "parser": "binary_inventory",
+      "bytes": 479487,
+      "sha256": "3ffbf39710354952a521699294c0792aa1eaeb5c021c33498a7dc143b7185771",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-orphan-outbox-restart.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 479486
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 479486,
+            "line": 0,
+            "text": "eof bytes=479487"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-recovery-after-spotify-timeout.png": {
+      "parser": "binary_inventory",
+      "bytes": 487521,
+      "sha256": "171dbddd8129e78613a43f6f7c029c93f1c3ec8726353c4e9484d155b6b847ec",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-recovery-after-spotify-timeout.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 487520
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 487520,
+            "line": 0,
+            "text": "eof bytes=487521"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-restarted.png": {
+      "parser": "binary_inventory",
+      "bytes": 468093,
+      "sha256": "925ff4b0838c8f4bf1cbef7cd06c8a91b8d292c77b9048dc8c1e525c7ee1da0c",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-restarted.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 468092
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 468092,
+            "line": 0,
+            "text": "eof bytes=468093"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound-baxy-result.png": {
+      "parser": "binary_inventory",
+      "bytes": 500543,
+      "sha256": "d8724db2c5950103ee0651f3456a1969b5e80c8cd98095bac3b6777fb87325f8",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound-baxy-result.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 500542
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 500542,
+            "line": 0,
+            "text": "eof bytes=500543"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound-confirmed.png": {
+      "parser": "binary_inventory",
+      "bytes": 954806,
+      "sha256": "7598360039b2dcb1ec03f855c57cfb3b5151353916111017c194c8735b976b3f",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound-confirmed.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 954805
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 954805,
+            "line": 0,
+            "text": "eof bytes=954806"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound-full.png": {
+      "parser": "binary_inventory",
+      "bytes": 501024,
+      "sha256": "744f075911e271164161896b25db13fe98d18e4d7452be23a981ddda1b391c09",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound-full.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 501023
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 501023,
+            "line": 0,
+            "text": "eof bytes=501024"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound.png": {
+      "parser": "binary_inventory",
+      "bytes": 307949,
+      "sha256": "2e6815223aa4adb83036081047b6b8d66d18545ce8705921767cdf20b986814c",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-spotify-compound.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1280,
+        "height": 720
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 307948
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 307948,
+            "line": 0,
+            "text": "eof bytes=307949"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-spotify-open.png": {
+      "parser": "binary_inventory",
+      "bytes": 495322,
+      "sha256": "4eaf0eee6a86703f02f2e58391dde5cacf3700196a7af89176f90f16cdf1f645",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-spotify-open.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 495321
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 495321,
+            "line": 0,
+            "text": "eof bytes=495322"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-spotify-timeout-cancel.png": {
+      "parser": "binary_inventory",
+      "bytes": 492422,
+      "sha256": "9f23aa042297c87b1032e202ee0d7f58f2a5c654ed2c31d708e175d68f9e5c99",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-spotify-timeout-cancel.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 492421
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 492421,
+            "line": 0,
+            "text": "eof bytes=492422"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui-time-fail.png": {
+      "parser": "binary_inventory",
+      "bytes": 488001,
+      "sha256": "4676963b1b6ae8f49ccec5d86e842aa7e54f1bb2925799f9d5c2f9e95d893658",
+      "format": "png",
+      "magic_hex": "89504e470d0a1a0a0000000d49484452",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/audit/2026-07-27-night-audit/ui-time-fail.png"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {
+        "width": 1920,
+        "height": 1080
+      },
+      "rows": 0,
+      "schema": {
+        "format": "png"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 488000
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=89504e470d0a1a0a0000000d49484452 format=png"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 488000,
+            "line": 0,
+            "text": "eof bytes=488001"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui_startup_stress_100_under_soak.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 28765,
+      "sha256": "b4c4f51da5acc9d6755cf35460629bf87781ebb06cb0fb0df5b3fe9d0f838679",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "app",
+          "cycle_results",
+          "cycles",
+          "errors",
+          "ready_seconds",
+          "schema",
+          "successful_cycles"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "app",
+          "cycles",
+          "schema",
+          "successful_cycles"
+        ],
+        "list_lengths": {
+          "cycle_results": 100,
+          "errors": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28764,
+        "cycles": {
+          "min": 100,
+          "max": 100
+        },
+        "successful_cycles": {
+          "min": 99,
+          "max": 99
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui_startup_stress_200_child_observation.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 67714,
+      "sha256": "32d4179ac7745eea9be9da577607319da76db72c03317e21f98d42dd1b7a06b8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "app",
+          "cycle_results",
+          "cycles",
+          "errors",
+          "ready_seconds",
+          "schema",
+          "successful_cycles"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "app",
+          "cycles",
+          "schema",
+          "successful_cycles"
+        ],
+        "list_lengths": {
+          "cycle_results": 200,
+          "errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 67713,
+        "cycles": {
+          "min": 200,
+          "max": 200
+        },
+        "successful_cycles": {
+          "min": 200,
+          "max": 200
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui_startup_stress_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3188,
+      "sha256": "73076b738b64e5e6d9044898d7322dec7d8b615ae0af945e26ab3e8c61785ec1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "app",
+          "cycle_results",
+          "cycles",
+          "errors",
+          "ready_seconds",
+          "schema",
+          "successful_cycles"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "app",
+          "cycles",
+          "schema",
+          "successful_cycles"
+        ],
+        "list_lengths": {
+          "cycle_results": 10,
+          "errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3187,
+        "cycles": {
+          "min": 10,
+          "max": 10
+        },
+        "successful_cycles": {
+          "min": 10,
+          "max": 10
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui_startup_stress_under_soak.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6027,
+      "sha256": "f993d4906353d6b63dfc5c1058d1ecabe1262758d95812faaa4aa8968bfcf662",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "app",
+          "cycle_results",
+          "cycles",
+          "errors",
+          "ready_seconds",
+          "schema",
+          "successful_cycles"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "app",
+          "cycles",
+          "schema",
+          "successful_cycles"
+        ],
+        "list_lengths": {
+          "cycle_results": 20,
+          "errors": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6026,
+        "cycles": {
+          "min": 20,
+          "max": 20
+        },
+        "successful_cycles": {
+          "min": 20,
+          "max": 20
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"app\", \"cycle_results\", \"cycles\", \"errors\", \"ready_seconds\", \"schema\", \"successful_cycles\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/ui_time_under_soak_accessibility.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 36003,
+      "sha256": "9ce9b4c2827e1367febd7d7237294ed36c86efb96f9bf1c22ee28438d273c26b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "captured_at_utc",
+          "elements",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "captured_at_utc",
+          "main_window_title",
+          "process_id",
+          "process_name"
+        ],
+        "list_lengths": {
+          "elements": 91
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36002,
+        "process_id": {
+          "min": 15308,
+          "max": 15308
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"captured_at_utc\", \"elements\", \"main_window_title\", \"process_id\", \"process_name\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/user_behavior_gate_live.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5269,
+      "sha256": "8ff40c704e44086157899fd65f2587c097ad497766cbc579355c88cacf7fdf79",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "failed",
+          "maximumLatencySeconds",
+          "passed",
+          "results",
+          "schema",
+          "total"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "failed",
+          "maximumLatencySeconds",
+          "passed",
+          "schema",
+          "total"
+        ],
+        "list_lengths": {
+          "results": 25
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5268,
+        "total": {
+          "min": 25,
+          "max": 25
+        },
+        "passed": {
+          "min": 24,
+          "max": 24
+        },
+        "failed": {
+          "min": 1,
+          "max": 1
+        },
+        "maximumLatencySeconds": {
+          "min": 0.437,
+          "max": 0.437
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"failed\", \"maximumLatencySeconds\", \"passed\", \"results\", \"schema\", \"total\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"failed\", \"maximumLatencySeconds\", \"passed\", \"results\", \"schema\", \"total\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/visible_click_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6637,
+      "sha256": "a76e21c3cda3b8bfc36794f1e064779f02845b341c6341deaaae4915d727999b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr",
+          "targetExitCode"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalogCount",
+          "coreExitCode",
+          "coreVersion",
+          "elapsedSeconds",
+          "error",
+          "schema",
+          "stderr",
+          "targetExitCode"
+        ],
+        "list_lengths": {
+          "cases": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6636,
+        "catalogCount": {
+          "min": 168,
+          "max": 168
+        },
+        "elapsedSeconds": {
+          "min": 1.4693729000009625,
+          "max": 1.4693729000009625
+        },
+        "targetExitCode": {
+          "min": 0,
+          "max": 0
+        },
+        "coreExitCode": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"schema\", \"stderr\", \"targetExitCode\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalogCount\", \"coreExitCode\", \"coreVersion\", \"elapsedSeconds\", \"error\", \"schema\", \"stderr\", \"targetExitCode\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/voice_clip_diagnostic.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 732,
+      "sha256": "a77219ffae1d241d3a612b5cd87749008d77ed448579189403cf2fd82055150e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "channels",
+          "corrected",
+          "correction_terms_include_spotify",
+          "duration_seconds",
+          "raw",
+          "schema",
+          "source_rate",
+          "transcript_redacted"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "channels",
+          "correction_terms_include_spotify",
+          "duration_seconds",
+          "schema",
+          "source_rate",
+          "transcript_redacted"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 731,
+        "source_rate": {
+          "min": 22050,
+          "max": 22050
+        },
+        "channels": {
+          "min": 1,
+          "max": 1
+        },
+        "duration_seconds": {
+          "min": 1.7892063492063492,
+          "max": 1.7892063492063492
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"channels\", \"corrected\", \"correction_terms_include_spotify\", \"duration_seconds\", \"raw\", \"schema\", \"source_rate\", \"transcript_redacted\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"channels\", \"corrected\", \"correction_terms_include_spotify\", \"duration_seconds\", \"raw\", \"schema\", \"source_rate\", \"transcript_redacted\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/web_search_0.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2014,
+      "sha256": "608edf3683f94569865341f74d7b83d3fcce7e07b98fb8b7d7bd3084c38541fe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2013,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 0.6018443000002662,
+          "max": 0.6018443000002662
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/web_search_1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2444,
+      "sha256": "a6bdc8ff495e8a15a91a06b1c584fa9c579af8d739134997eecad8117e7a3527",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2443,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 0.5699556999998094,
+          "max": 0.5699556999998094
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/web_search_2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2519,
+      "sha256": "8bad5a486c8abea04dd47e92319b49d634d41aafb8a6e3482af81adcc1fe22ea",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2518,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 0.6136464999999589,
+          "max": 0.6136464999999589
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/web_search_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2247,
+      "sha256": "7c8bd68e37b3ef0bf5042ea55d93360f769c990e1c5c2702f4787252afaa7b73",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2246,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 0.6478178000006665,
+          "max": 0.6478178000006665
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/wifi_status_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1693,
+      "sha256": "cedadff4689a0fa740b3f4b1fe32569d4c2c37689b4aa0934a326e3ff40d5a40",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arguments",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "responses",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "confirmation_followed",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "operation",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "timed_out"
+        ],
+        "list_lengths": {
+          "responses": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1692,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 1.5597497999988263,
+          "max": 1.5597497999988263
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arguments\", \"catalog_count\", \"catalog_utf8_bytes\", \"confirmation_followed\", \"core\", \"core_version\", \"elapsed_seconds\", \"operation\", \"process_exit_code\", \"responses\", \"schema\", \"stderr\", \"timed_out\"], \"n_keys\": 13, \"root\": \"objec…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 13096,
+      "sha256": "5f862ccc9fd40baf42bc3657275683d61ce4ebec24ac7c1d93e7c886fa5cac4b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "total",
+          "verified"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 9
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 13095,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 9.542732800000522,
+          "max": 9.542732800000522
+        },
+        "total": {
+          "min": 9,
+          "max": 9
+        },
+        "verified": {
+          "min": 8,
+          "max": 8
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"total\", \"verified\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"total\", \"verified\"], \"n_keys\": 13, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_osk_close_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 36506,
+      "sha256": "5df580fdf7822adbc7bf379560f4c002e3543b4b3f1cdcb8c8b083ab295c722f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified",
+          "window_recoveries"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 26,
+          "window_recoveries": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36505,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 9.743015800000649,
+          "max": 9.743015800000649
+        },
+        "target_pid": {
+          "min": 3756,
+          "max": 3756
+        },
+        "total": {
+          "min": 26,
+          "max": 26
+        },
+        "verified": {
+          "min": 21,
+          "max": 21
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\", \"window_recoveries\"],…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\", \"window_recoveries\"],…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_safe_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12013,
+      "sha256": "d1f3a60f498c09622a2845971fc7dd207853395782ba5a51d7a406055b403db6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12012,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 4.190170900001249,
+          "max": 4.190170900001249
+        },
+        "target_pid": {
+          "min": 18488,
+          "max": 18488
+        },
+        "total": {
+          "min": 8,
+          "max": 8
+        },
+        "verified": {
+          "min": 7,
+          "max": 7
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_winforms_full_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 35367,
+      "sha256": "8ec43071d0adc79f6fc53d953f4cb2b9c5f0ec798b5f4303104c876b87c1e6ca",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified",
+          "window_recoveries"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 25,
+          "window_recoveries": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35366,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 9.317001399998844,
+          "max": 9.317001399998844
+        },
+        "target_pid": {
+          "min": 24104,
+          "max": 24104
+        },
+        "total": {
+          "min": 25,
+          "max": 25
+        },
+        "verified": {
+          "min": 22,
+          "max": 22
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\", \"window_recoveries\"],…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\", \"window_recoveries\"],…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_wpf_after_select_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17216,
+      "sha256": "72cd9a6734835e7048194740173d7b61af0b17d9b3d67c5f003c8d2c4d047a9c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 11
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17215,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 5.284178099998826,
+          "max": 5.284178099998826
+        },
+        "target_pid": {
+          "min": 2636,
+          "max": 2636
+        },
+        "total": {
+          "min": 11,
+          "max": 11
+        },
+        "verified": {
+          "min": 10,
+          "max": 10
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 15, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 15, \"root\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_wpf_chain_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12096,
+      "sha256": "d6c8a6ed9dd198e39c24aa7d4c94bb9eb2c92a55ba941cf65858c8d1748265bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12095,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 4.580827600000703,
+          "max": 4.580827600000703
+        },
+        "target_pid": {
+          "min": 22588,
+          "max": 22588
+        },
+        "total": {
+          "min": 8,
+          "max": 8
+        },
+        "verified": {
+          "min": 7,
+          "max": 7
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_wpf_diagnostic_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12551,
+      "sha256": "c973f7f2fc650c88b361a12dc3a2a582e8806b5ec79290fbe6e69801a753a458",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12550,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74282,
+          "max": 74282
+        },
+        "elapsed_seconds": {
+          "min": 5.299241900000197,
+          "max": 5.299241900000197
+        },
+        "target_pid": {
+          "min": 4596,
+          "max": 4596
+        },
+        "total": {
+          "min": 8,
+          "max": 8
+        },
+        "verified": {
+          "min": 7,
+          "max": 7
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 15, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\"], \"n_keys\": 15, \"root\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/2026-07-27-night-audit/window_input_wpf_full_installed.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 36604,
+      "sha256": "10a9a088f47ff5c0cea60db06f06fbab44d32de1c0ee65a6a94cd163b747dc42",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "cleanup",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified",
+          "window_recoveries"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_count",
+          "catalog_utf8_bytes",
+          "core",
+          "core_version",
+          "elapsed_seconds",
+          "error",
+          "process_exit_code",
+          "schema",
+          "select_diagnostic",
+          "stderr",
+          "target_pid",
+          "total",
+          "verified"
+        ],
+        "list_lengths": {
+          "cases": 26,
+          "window_recoveries": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 36603,
+        "catalog_count": {
+          "min": 168,
+          "max": 168
+        },
+        "catalog_utf8_bytes": {
+          "min": 74283,
+          "max": 74283
+        },
+        "elapsed_seconds": {
+          "min": 10.119035800000347,
+          "max": 10.119035800000347
+        },
+        "target_pid": {
+          "min": 19680,
+          "max": 19680
+        },
+        "total": {
+          "min": 26,
+          "max": 26
+        },
+        "verified": {
+          "min": 22,
+          "max": 22
+        },
+        "process_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\", \"window_recoveries\"],…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"catalog_count\", \"catalog_utf8_bytes\", \"cleanup\", \"core\", \"core_version\", \"elapsed_seconds\", \"error\", \"process_exit_code\", \"schema\", \"select_diagnostic\", \"stderr\", \"target_pid\", \"total\", \"verified\", \"window_recoveries\"],…"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/active_decision_path_r280.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1645,
+      "sha256": "37210507e43d15486056bead835631acb74c11f26768d35701caa04db7f2eed3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "correctsR277",
+          "gate",
+          "next_requirement",
+          "overall_goal_met",
+          "registeredRuntime",
+          "schema",
+          "section_7_met",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "overall_goal_met",
+          "schema",
+          "section_7_met",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1644
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"correctsR277\", \"gate\", \"next_requirement\", \"overall_goal_met\", \"registeredRuntime\", \"schema\", \"section_7_met\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"correctsR277\", \"gate\", \"next_requirement\", \"overall_goal_met\", \"registeredRuntime\", \"schema\", \"section_7_met\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/bge_m3_acquisition_r232.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6186,
+      "sha256": "d6462c8c964887a99b5b6ad82f92606fe206c8b850c7d0e6f084180a0c64bb2c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "schema",
+          "source"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6185
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"identities\", \"next_requirement\", \"schema\", \"source\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"identities\", \"next_requirement\", \"schema\", \"source\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/bge_m3_prototype_domain_r253_preexecution_rejection.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1256,
+      "sha256": "112103547e4cf5ef48fc95965dfc61a75750be06f9eced95ea798cb9435033ef",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1255
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed\", \"reason\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed\", \"reason\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/bge_m3_r233_structural_abstention_rejection.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1674,
+      "sha256": "4bec261e7ade045f6d8bb034a48d0cc44b052622ce838e8b758c0caf4d175356",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "deduction",
+          "identities",
+          "required_for_any_successor",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {
+          "required_for_any_successor": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1673
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"deduction\", \"identities\", \"required_for_any_successor\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"deduction\", \"identities\", \"required_for_any_successor\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/bge_reranker_r238.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 814,
+      "sha256": "9e148c026438c242d8c96dfc8c21af801997f53da6ebad3d74d58121d900c5cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "candidate",
+          "constraints",
+          "identities",
+          "schema"
+        ],
+        "n_keys": 5,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 813
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"identities\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"candidate\", \"constraints\", \"identities\", \"schema\"], \"n_keys\": 5, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/catalog_oracle_coverage_r52.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18471,
+      "sha256": "4aa7cf66f2e26f0a1f41bcc3febe994e12ef3bbde53d674b4504b837d42c8944",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "catalog",
+          "conflicts",
+          "coverage",
+          "measured_at_utc",
+          "schema",
+          "sources",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18470
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalog\", \"conflicts\", \"coverage\", \"measured_at_utc\", \"schema\", \"sources\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"catalog\", \"conflicts\", \"coverage\", \"measured_at_utc\", \"schema\", \"sources\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/catalog_structural_discriminability_r212.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 47923,
+      "sha256": "e21ddcb103353dafb561adc63e5cb8a391f75c49208a805decb362acf5fcff5c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "conclusion",
+          "counts",
+          "equivalence_classes",
+          "identities",
+          "method",
+          "operations",
+          "schema"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {
+          "equivalence_classes": 97,
+          "operations": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 47922
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"conclusion\", \"counts\", \"equivalence_classes\", \"identities\", \"method\", \"operations\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"conclusion\", \"counts\", \"equivalence_classes\", \"identities\", \"method\", \"operations\", \"schema\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/catalog_structural_signal_r211.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 68250,
+      "sha256": "f079220de007dad67705e31fd88a6c918bc49898284e0c4fc11ed8b1ce25bff7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "conclusion",
+          "counts",
+          "families",
+          "identities",
+          "operations",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "schema"
+        ],
+        "list_lengths": {
+          "operations": 169
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 68249
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"conclusion\", \"counts\", \"families\", \"identities\", \"operations\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"conclusion\", \"counts\", \"families\", \"identities\", \"operations\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/clean_lifecycle_environment_preflight_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2276,
+      "sha256": "6d4ad472b1c9af54ff2eb62b0ee50a76369e90da44995b7abf62454cbd0465f9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "conclusion",
+          "current_profile",
+          "current_source",
+          "host_isolation",
+          "measured_at_utc",
+          "newest_available_attested_setup",
+          "required_before_execution",
+          "safety",
+          "schema",
+          "status"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "conclusion",
+          "measured_at_utc",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {
+          "required_before_execution": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2275
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"conclusion\", \"current_profile\", \"current_source\", \"host_isolation\", \"measured_at_utc\", \"newest_available_attested_setup\", \"required_before_execution\", \"safety\", \"schema\", \"status\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"conclusion\", \"current_profile\", \"current_source\", \"host_isolation\", \"measured_at_utc\", \"newest_available_attested_setup\", \"required_before_execution\", \"safety\", \"schema\", \"status\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/clinc_oos_development_r251.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1445,
+      "sha256": "bec486d7da45d2a736dc986d6878b180d939ecc6d3223bd8042eb58f44619e5b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "development",
+          "identities",
+          "next_requirement",
+          "schema",
+          "source",
+          "test_seal"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1444
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development\", \"identities\", \"next_requirement\", \"schema\", \"source\", \"test_seal\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"development\", \"identities\", \"next_requirement\", \"schema\", \"source\", \"test_seal\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/conditional_omissions_20260811/providers-v2.trx": {
+      "parser": "xml",
+      "bytes": 8378,
+      "sha256": "d4b39ab8bfbc9cfbca4ab1004ab8ed010bac7b654c6751c442146ff68fe797d5",
+      "rows": 39,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 5,
+          "Execution": 5,
+          "TestMethod": 5,
+          "UnitTest": 5,
+          "TestEntry": 5,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8377
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 38,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 39,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/conditional_omissions_20260811/providers.trx": {
+      "parser": "xml",
+      "bytes": 4109,
+      "sha256": "8344b132a171221cdf20fd8f528a725c1a8cfa9889f19dbea615a0d85246012a",
+      "rows": 14,
+      "schema": {
+        "keys": [
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "Text",
+          "RunInfo",
+          "RunInfos",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "Text": 1,
+          "RunInfo": 1,
+          "RunInfos": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4108
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 13,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 14,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/conditional_omissions_20260811/python.xml": {
+      "parser": "xml",
+      "bytes": 4886,
+      "sha256": "af32784e5197feef90bebfb5db922be87ee30571772bb82fc1b715664542a100",
+      "rows": 36,
+      "schema": {
+        "keys": [
+          "testcase",
+          "testsuite",
+          "testsuites"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "testcase": 34,
+          "testsuite": 1,
+          "testsuites": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4885
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<testcase>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<testcase>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 35,
+            "text": "<testsuite>"
+          },
+          {
+            "offset": 0,
+            "line": 36,
+            "text": "<testsuites>"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/conditional_omissions_20260811/setup-v2.trx": {
+      "parser": "xml",
+      "bytes": 6804,
+      "sha256": "a9e45e5f7f9339aeaa669baba0f978bf836b5fbca5e5515049ea1615bd17b936",
+      "rows": 34,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 4,
+          "Execution": 4,
+          "TestMethod": 4,
+          "UnitTest": 4,
+          "TestEntry": 4,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6803
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 33,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 34,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/conditional_omissions_20260811/summary.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2402,
+      "sha256": "94995ab455c6856e05681d29f1f3bd9467dfb826997795366919d8635d0395c5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "conclusion",
+          "covered_conditions",
+          "current_host_result",
+          "dotnet",
+          "failed_launcher_attempt",
+          "measured_at_utc",
+          "python",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "conclusion",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "covered_conditions": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2401
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"conclusion\", \"covered_conditions\", \"current_host_result\", \"dotnet\", \"failed_launcher_attempt\", \"measured_at_utc\", \"python\", \"schema\", \"scope\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"conclusion\", \"covered_conditions\", \"current_host_result\", \"dotnet\", \"failed_launcher_attempt\", \"measured_at_utc\", \"python\", \"schema\", \"scope\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/conditional_omissions_20260811/visible-v2.trx": {
+      "parser": "xml",
+      "bytes": 3509,
+      "sha256": "1a24b00c9b8f93baf7a13f700699891dd88f4ef40910ee8f826ec0587b83f544",
+      "rows": 24,
+      "schema": {
+        "keys": [
+          "StdOut",
+          "Output",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "UnitTestResult",
+          "Results",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestDefinitions",
+          "TestEntry",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "Text",
+          "RunInfo",
+          "RunInfos",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "StdOut": 2,
+          "Output": 2,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "UnitTestResult": 1,
+          "Results": 1,
+          "Execution": 1,
+          "TestMethod": 1,
+          "UnitTest": 1,
+          "TestDefinitions": 1,
+          "TestEntry": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "Text": 1,
+          "RunInfo": 1,
+          "RunInfos": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3508
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 23,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 24,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/cross_encoder_r209_audit_r210.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1079,
+      "sha256": "b52ff0375180d4a399638bb056525137ac61f07312936320d2add99720aae6de",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "constraints",
+          "identities",
+          "reason",
+          "schema",
+          "training",
+          "verdict"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1078
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"constraints\", \"identities\", \"reason\", \"schema\", \"training\", \"verdict\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"constraints\", \"identities\", \"reason\", \"schema\", \"training\", \"verdict\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/direct_abstain_classifier_r248_preexecution_rejection.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1441,
+      "sha256": "b8d4da1769f0278c875094fa530245e03b1691749e318ad5f4296795362d7506",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "next_requirement",
+          "observed",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "reason",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1440
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed\", \"reason\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"next_requirement\", \"observed\", \"reason\", \"schema\", \"verdict\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/forced_tool_choice_r277.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2184,
+      "sha256": "a898809db3ebe0641c79491e6f9a4d57f46d6b9e83b9651674dcc9e83d15ad28",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "contract",
+          "identities",
+          "next_requirement",
+          "openPopulationPricing",
+          "overall_goal_met",
+          "schema",
+          "section_7_met",
+          "verdict"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "overall_goal_met",
+          "schema",
+          "section_7_met",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2183
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"contract\", \"identities\", \"next_requirement\", \"openPopulationPricing\", \"overall_goal_met\", \"schema\", \"section_7_met\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"contract\", \"identities\", \"next_requirement\", \"openPopulationPricing\", \"overall_goal_met\", \"schema\", \"section_7_met\", \"verdict\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/audit/fresh_independent_cut_b_recogniser_r266.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12477,
+      "sha256": "c9781184ac7d5bbf33a625da51495f2f2e81c015d6b6c20545ae051504bd3a63",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "constraints",
+          "identities",
+          "interpretation",
+          "next_requirement",
+          "observed",
+          "population",
+          "predecessor",
+          "recogniser_surface",
+          "schema",
+          "verdict"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_requirement",
+          "schema",
+          "verdict"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12476
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"observed\", \"population\", \"predecessor\", \"recogniser_surface\", \"schema\", \"verdict\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"constraints\", \"identities\", \"interpretation\", \"next_requirement\", \"observed\", \"population\", \"predecessor\", \"recogniser_surface\", \"schema\", \"verdict\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

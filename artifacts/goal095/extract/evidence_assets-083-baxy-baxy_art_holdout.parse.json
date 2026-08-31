@@ -1,0 +1,3586 @@
+{
+  "batch_id": "evidence_assets-083-baxy-baxy_art_holdout",
+  "source_id": "baxy",
+  "file_count": 52,
+  "hash_ok": 52,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/holdout/generalization_product_holdout_v13.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 415421,
+      "sha256": "50d87c394c3c80cbac54251a060779435d4a3531bfd26d754e73072cf7a5ebdb",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 414924,
+        "min_line_bytes": 447,
+        "max_line_bytes": 1149,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r13-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 472,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r13-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 414448,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r13-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 414924,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r13-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v13.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7813,
+      "sha256": "b2e58bb3587f32b9d62f67a3cf5d02dcf23a4369067dc51923fe009e9bd76f1c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7812
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v14.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 415351,
+      "sha256": "9d3d02dafbb1db65d6608bbd10f8d4526c9c715d65ee19c3d22ce1a725547a30",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 414854,
+        "min_line_bytes": 447,
+        "max_line_bytes": 1168,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r14-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 469,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r14-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 414377,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r14-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 414854,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r14-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v14.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8218,
+      "sha256": "bb5fc4c4fb7255218353ce53112258369385a752d42944466137d4beb83991f8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8217
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v15.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 418897,
+      "sha256": "78652541c875d47f5eef8f4e72f1c1ae4ac5d86715a97c63520f50dc91e7ad83",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 418403,
+        "min_line_bytes": 445,
+        "max_line_bytes": 1149,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r15-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 485,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r15-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 417929,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r15-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 418403,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r15-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v15.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8507,
+      "sha256": "6e73c11b1289cddf30b565e5f1fd5c36bd2c8948bac6c2d1638f90baef4afc90",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8506
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v16.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 423013,
+      "sha256": "56cc8c6acf9fed096bcdf22f46f1ed77cd9bd1e88102249fb36abd2f163d9db6",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 422508,
+        "min_line_bytes": 456,
+        "max_line_bytes": 1155,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r16-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 491,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r16-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 422023,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r16-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 422508,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r16-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v16.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8752,
+      "sha256": "7d18adfe828d9b8e7df70b20cb7c4696b2ee90c4a76541d64109e926a32c5fde",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8751
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v17.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 431259,
+      "sha256": "069a20fea016423c3880292023b1464ec7300c0de2bac40cdf2d6c56846fc394",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 430741,
+        "min_line_bytes": 466,
+        "max_line_bytes": 1151,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r17-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 506,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r17-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 430248,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r17-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 430741,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r17-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v17.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9000,
+      "sha256": "82b3778671bd37f1f8042d968bddcf9bde9bcf9f66c8f0345604d6578c4eed23",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8999
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v18.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 428686,
+      "sha256": "f498650260ada7d4f173726563ceb66badbcbf46daa57b15ebba693006e15313",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 428163,
+        "min_line_bytes": 465,
+        "max_line_bytes": 1164,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r18-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 498,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r18-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 427668,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r18-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 428163,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r18-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v18.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9267,
+      "sha256": "fcbc2c52a1e516265fdecc3601e05b9810a7cd2f00735a0a4766ac01ccc2a38f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9266
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v19.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 425714,
+      "sha256": "265bbaac39a6f4a264c92661ccd5c5dd8b45a2cc17157b8477ba023d2fb09fee",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 425191,
+        "min_line_bytes": 461,
+        "max_line_bytes": 1137,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r19-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 491,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r19-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 424694,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r19-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 425191,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r19-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v19.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9529,
+      "sha256": "4cbf0fde735d9c3adc9d11e17d88c04cc622cd5243e73b383c6773d757a030f3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9528
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 158134,
+      "sha256": "c020d14872343acdfcaa1359f9df5fdb096b3802d8fba8bb08d777f0df20ff01",
+      "rows": 340,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 340,
+          "case_id": 340,
+          "case_type": 340,
+          "compatible_effect_operation_sets": 340,
+          "compatible_terminal_operation_sets": 340,
+          "execution_authority": 340,
+          "family": 340,
+          "language": 340,
+          "outcome": 340,
+          "owner": 340,
+          "schema": 340,
+          "surface": 340,
+          "text": 340
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 157593,
+        "min_line_bytes": 415,
+        "max_line_bytes": 552,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r2-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 462,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r2-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 157072,
+            "line": 339,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r2-composition-10-01-plain\", \"case_type\": \"composition\", \"compatible_effect_operation_sets\": [[\"app.installed\", \"game.catalog.list\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\", \"game.catal…"
+          },
+          {
+            "offset": 157593,
+            "line": 340,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r2-composition-10-01-addressed\", \"case_type\": \"composition\", \"compatible_effect_operation_sets\": [[\"app.installed\", \"game.catalog.list\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\", \"game.c…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v2.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4645,
+      "sha256": "5d09fe76fb190e8e61ed7f1f7e309b11a0073289cae21116e1af40fa53adcea6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4644
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v20.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 435568,
+      "sha256": "257c6cbe1fc88ccbbba549926e85bfeeae76d47bb3b98ad95f3b276eb94f08b4",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 435025,
+        "min_line_bytes": 471,
+        "max_line_bytes": 1181,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r20-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 505,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r20-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 434517,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r20-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 435025,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r20-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v20.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9794,
+      "sha256": "4cd537e146d53b2ceee99eba70cf75f435d905a77643932e36ef85b8bf9109b9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9793
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v21.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 428209,
+      "sha256": "be085d3bb7a857fc66f97f23a9c748aaa920177558429eaff4d4358496f78c32",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 427687,
+        "min_line_bytes": 467,
+        "max_line_bytes": 1145,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r21-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\"…"
+          },
+          {
+            "offset": 488,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r21-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fam…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 427194,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r21-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lan…"
+          },
+          {
+            "offset": 427687,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r21-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v21.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10094,
+      "sha256": "0aeafa6f0bdbfcaa6892689c46616c42f77fea73301f6a45e1fc7513ea956b16",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10093
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 160256,
+      "sha256": "cb79baf06faaa3117513a19a554f967f5c9f2fe9dade39ed8479c457635bfdf6",
+      "rows": 340,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 340,
+          "case_id": 340,
+          "case_type": 340,
+          "compatible_effect_operation_sets": 340,
+          "compatible_terminal_operation_sets": 340,
+          "execution_authority": 340,
+          "family": 340,
+          "language": 340,
+          "outcome": 340,
+          "owner": 340,
+          "schema": 340,
+          "surface": 340,
+          "text": 340
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 159710,
+        "min_line_bytes": 422,
+        "max_line_bytes": 565,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r3-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 449,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r3-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 159183,
+            "line": 339,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r3-composition-10-01-plain\", \"case_type\": \"composition\", \"compatible_effect_operation_sets\": [[\"game.catalog.list\", \"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"game.catalog.list\", \"app.in…"
+          },
+          {
+            "offset": 159710,
+            "line": 340,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r3-composition-10-01-addressed\", \"case_type\": \"composition\", \"compatible_effect_operation_sets\": [[\"game.catalog.list\", \"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"game.catalog.list\", \"ap…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v3.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5234,
+      "sha256": "d90189d30f4295f3c9e09e9c83ec9606ff98c51eefc274d05b35c4d5fc899f31",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5233
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v4.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 190260,
+      "sha256": "92bbcefc767accfde39acff5b061bd8ff3ce1531a657ea8c7cf1310bb0d2f361",
+      "rows": 400,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 400,
+          "case_id": 400,
+          "case_type": 400,
+          "compatible_effect_operation_sets": 400,
+          "compatible_terminal_operation_sets": 400,
+          "execution_authority": 400,
+          "family": 400,
+          "language": 400,
+          "outcome": 400,
+          "owner": 400,
+          "schema": 400,
+          "surface": 400,
+          "text": 400
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 189805,
+        "min_line_bytes": 423,
+        "max_line_bytes": 566,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r4-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 450,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r4-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 189372,
+            "line": 399,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r4-out-of-scope-20-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lang…"
+          },
+          {
+            "offset": 189805,
+            "line": 400,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r4-out-of-scope-20-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v4.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5703,
+      "sha256": "dc413e0efc78610919a8e31c7f0df50e827cb6bbe2f91a481a690f843f58d5a3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5702
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v5.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 194149,
+      "sha256": "3bf8a5e982c64aca8f6b827fae47b074e9d49587ad78db97fd9f3481f3bd3405",
+      "rows": 400,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 400,
+          "case_id": 400,
+          "case_type": 400,
+          "compatible_effect_operation_sets": 400,
+          "compatible_terminal_operation_sets": 400,
+          "execution_authority": 400,
+          "family": 400,
+          "language": 400,
+          "outcome": 400,
+          "owner": 400,
+          "schema": 400,
+          "surface": 400,
+          "text": 400
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 193686,
+        "min_line_bytes": 423,
+        "max_line_bytes": 679,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r5-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 459,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r5-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 193250,
+            "line": 399,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r5-out-of-scope-20-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lang…"
+          },
+          {
+            "offset": 193686,
+            "line": 400,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r5-out-of-scope-20-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v5.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6003,
+      "sha256": "7f0db5a0d6d739a29aa4d3f2af76e7b33a6c36cfbab1ee17395e684664c8e6c5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6002
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v6.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 300474,
+      "sha256": "d227ff86fbdb497d3505cd3cabd9bbd5b963661174d6c6d47f697d0d3b445038",
+      "rows": 600,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 600,
+          "case_id": 600,
+          "case_type": 600,
+          "compatible_effect_operation_sets": 600,
+          "compatible_terminal_operation_sets": 600,
+          "execution_authority": 600,
+          "family": 600,
+          "language": 600,
+          "outcome": 600,
+          "owner": 600,
+          "schema": 600,
+          "surface": 600,
+          "text": 600
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 299999,
+        "min_line_bytes": 416,
+        "max_line_bytes": 804,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r6-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 456,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r6-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 299553,
+            "line": 599,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r6-out-of-scope-44-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lang…"
+          },
+          {
+            "offset": 299999,
+            "line": 600,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r6-out-of-scope-44-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v6.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6120,
+      "sha256": "b52684f020b3fb902346b9c602cb7a7746bcc33e7e2444a672c755435649d7eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6119
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v7.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 402434,
+      "sha256": "85881b5f281cf124899e4a4a74eda68fc3fc1fdc390eb6beeee96c21506568f8",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 401948,
+        "min_line_bytes": 425,
+        "max_line_bytes": 1120,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r7-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 445,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r7-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 401494,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r7-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lang…"
+          },
+          {
+            "offset": 401948,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r7-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v7.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6270,
+      "sha256": "b97cc0f6c1b2ecb540aa3d26fc100917e62c108ad15470e491d411dd06eb9c79",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6269
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v8.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 407454,
+      "sha256": "ec9d411ef6d28834000add47a791110b3f3653f4335446d8e71bdc21c6aa54bc",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 406972,
+        "min_line_bytes": 434,
+        "max_line_bytes": 1130,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r8-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 459,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r8-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 406513,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r8-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lang…"
+          },
+          {
+            "offset": 406972,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r8-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v8.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6461,
+      "sha256": "085da10af6c5697e7f58d6ffecee6abf8a05a88de339bb334c57df8bc0b04f96",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6460
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v9.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 410977,
+      "sha256": "82c00d5970689459961dda3ddfcd17d0f259cf2548671f8dd6d4f7e9a50334a0",
+      "rows": 700,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "case_type",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 700,
+          "case_id": 700,
+          "case_type": 700,
+          "compatible_effect_operation_sets": 700,
+          "compatible_terminal_operation_sets": 700,
+          "execution_authority": 700,
+          "family": 700,
+          "language": 700,
+          "outcome": 700,
+          "owner": 700,
+          "schema": 700,
+          "surface": 700,
+          "text": 700
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 410498,
+        "min_line_bytes": 437,
+        "max_line_bytes": 1143,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r9-app-01-plain\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\":…"
+          },
+          {
+            "offset": 460,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r9-app-01-addressed\", \"case_type\": \"single_action\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"fami…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 410034,
+            "line": 699,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r9-out-of-scope-54-plain\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"lang…"
+          },
+          {
+            "offset": 410498,
+            "line": 700,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"r9-out-of-scope-54-addressed\", \"case_type\": \"conversation\", \"compatible_effect_operation_sets\": [[]], \"compatible_terminal_operation_sets\": [[]], \"execution_authority\": false, \"family\": \"out_of_scope\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_product_holdout_v9.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6755,
+      "sha256": "5bdaf4474350f764faa8febfa7a0832650e648bf8cce227bd2f9a709cfe89eee",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6754
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_surface_holdout_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 356210,
+      "sha256": "335852815590b095303f8c3f55ee5567abe5993d1118af61d7aac6117d483af8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "measurement_recovery",
+          "metrics",
+          "rows",
+          "schema",
+          "scope",
+          "source",
+          "thresholds"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 310
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 356209,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"measurement_recovery\", \"metrics\", \"rows\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"measurement_recovery\", \"metrics\", \"rows\", \"schema\", \"scope\", \"source\", \"thresholds\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_surface_holdout_r1.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 813592,
+      "sha256": "ccddbf76237b2dc9ef500c709f8bee3fde8fbe51b8024b0475edd90bd3640257",
+      "rows": 654,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 654,
+          "phase": 654,
+          "raw_decision": 654,
+          "request_id": 654,
+          "schema": 654,
+          "stages": 654,
+          "final": 311,
+          "error_type": 22,
+          "failure_kind": 22,
+          "recovery": 11
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 811561,
+        "min_line_bytes": 225,
+        "max_line_bytes": 2708,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 348,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 810953,
+            "line": 653,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.application.status\",\"window.focus\",\"window.maximize\",\"window.minimize\",\"window.move\",\"window.resize\",\"window.resolve\",\"window.restore\",\"app.close\",\"app.installed\",\"app.open\"],\"phase\":\"raw_at…"
+          },
+          {
+            "offset": 811561,
+            "line": 654,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.application.status\",\"window.focus\",\"window.maximize\",\"window.minimize\",\"window.move\",\"window.resize\",\"window.resolve\",\"window.restore\",\"app.close\",\"app.installed\",\"app.open\"],\"final\":{\"effec…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_surface_holdout_r1_failure_analysis.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2258,
+      "sha256": "0a06ce2d62ad55c95e0885ef31e416bf2943ae6e398c7dd042ab31ef593bd91c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "created_at_utc",
+          "development_output",
+          "effects_executed",
+          "holdout_reuse_policy",
+          "metrics",
+          "schema",
+          "source"
+        ],
+        "n_keys": 8,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "created_at_utc",
+          "effects_executed",
+          "holdout_reuse_policy",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2257,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"created_at_utc\", \"development_output\", \"effects_executed\", \"holdout_reuse_policy\", \"metrics\", \"schema\", \"source\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"created_at_utc\", \"development_output\", \"effects_executed\", \"holdout_reuse_policy\", \"metrics\", \"schema\", \"source\"], \"n_keys\": 8, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_surface_holdout_v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 126164,
+      "sha256": "2f44271fc19d6a9bdccea3b0ef2f0e1a372517cf99acc012c6a833299d8435c5",
+      "rows": 310,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "compatible_effect_operation_sets",
+          "compatible_terminal_operation_sets",
+          "execution_authority",
+          "family",
+          "language",
+          "outcome",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 310,
+          "case_id": 310,
+          "compatible_effect_operation_sets": 310,
+          "compatible_terminal_operation_sets": 310,
+          "execution_authority": 310,
+          "family": 310,
+          "language": 310,
+          "outcome": 310,
+          "schema": 310,
+          "surface": 310,
+          "text": 310
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 125748,
+        "min_line_bytes": 344,
+        "max_line_bytes": 491,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"app-01-plain\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\": \"app\", \"language\": \"es\", \"outcom…"
+          },
+          {
+            "offset": 382,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"app-01-addressed_polite\", \"compatible_effect_operation_sets\": [[\"app.installed\"]], \"compatible_terminal_operation_sets\": [[\"app.installed\"]], \"execution_authority\": false, \"family\": \"app\", \"language\": \"e…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 125368,
+            "line": 309,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"window-05-plain\", \"compatible_effect_operation_sets\": [[\"window.active\"]], \"compatible_terminal_operation_sets\": [[\"window.active\"]], \"execution_authority\": false, \"family\": \"window\", \"language\": \"spangl…"
+          },
+          {
+            "offset": 125748,
+            "line": 310,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"window-05-addressed_polite\", \"compatible_effect_operation_sets\": [[\"window.active\"]], \"compatible_terminal_operation_sets\": [[\"window.active\"]], \"execution_authority\": false, \"family\": \"window\", \"languag…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/generalization_surface_holdout_v1.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3797,
+      "sha256": "55504532cd1bba33d1621e2228e9f36d27a4f559c8f348a64bd9cfda13b2a20a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "catalog",
+          "measurement_status",
+          "method",
+          "output",
+          "planned_measurement",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3796
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"catalog\", \"measurement_status\", \"method\", \"output\", \"planned_measurement\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/independent_cut_b_r213.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 34169,
+      "sha256": "1afeb27bacbe929e43c8c7b5722078de0565182af92b96d6c036470696fe590b",
+      "rows": 93,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "execution_authority",
+          "expected_operations",
+          "family",
+          "language",
+          "oracle_origin",
+          "schema",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 93,
+          "case_id": 93,
+          "execution_authority": 93,
+          "expected_operations": 93,
+          "family": 93,
+          "language": 93,
+          "oracle_origin": 93,
+          "schema": 93,
+          "text": 93
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 33796,
+        "min_line_bytes": 337,
+        "max_line_bytes": 395,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"independent-r213-app-en\", \"execution_authority\": false, \"expected_operations\": [\"app.installed\"], \"family\": \"app\", \"language\": \"en\", \"oracle_origin\": \"manual_semantic_specification_independent_of_recogni…"
+          },
+          {
+            "offset": 359,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"independent-r213-app-es\", \"execution_authority\": false, \"expected_operations\": [\"app.installed\"], \"family\": \"app\", \"language\": \"es\", \"oracle_origin\": \"manual_semantic_specification_independent_of_recogni…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 33426,
+            "line": 92,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"independent-r213-window-es\", \"execution_authority\": false, \"expected_operations\": [\"window.active\"], \"family\": \"window\", \"language\": \"es\", \"oracle_origin\": \"manual_semantic_specification_independent_of_r…"
+          },
+          {
+            "offset": 33796,
+            "line": 93,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"independent-r213-window-spanglish\", \"execution_authority\": false, \"expected_operations\": [\"window.active\"], \"family\": \"window\", \"language\": \"spanglish\", \"oracle_origin\": \"manual_semantic_specification_in…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/independent_cut_b_r213.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4352,
+      "sha256": "b36ea9f61b7226f1a050ec814898c2e272e424f5b8d525e41902668b77bd87be",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "constraints",
+          "identities",
+          "next_step",
+          "population",
+          "schema"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "next_step",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4351
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"constraints\", \"identities\", \"next_step\", \"population\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"constraints\", \"identities\", \"next_step\", \"population\", \"schema\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/livekit_wakeword_openslr12_train_clean_100_holdout_candidate_v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 26817921,
+      "sha256": "8854b5b489d4d2be9c761de9acbfe1535e767204bb27db295ac6deb4395c3b04",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "metrics",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "records",
+          "retention_threshold",
+          "runtime",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "retention_threshold",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 28539
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26817920,
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "hop_samples": {
+          "min": 2560,
+          "max": 2560
+        },
+        "audio_frame_samples": {
+          "min": 512,
+          "max": 512
+        },
+        "retention_threshold": {
+          "min": 0.0175,
+          "max": 0.0175
+        },
+        "proposal_threshold": {
+          "min": 0.035,
+          "max": 0.035
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 572,
+      "sha256": "783369d4f5afed43f9f9a7498a1c9b345c3e534a1837b69321e5c43f727b568b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy",
+          "blind_holdout",
+          "cases",
+          "effects_executed",
+          "exact",
+          "failed",
+          "measured_at_utc",
+          "one_sided_95_binomial_lower_if_zero_failures",
+          "schema",
+          "sources",
+          "threshold_passed",
+          "unsafe_effects"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy",
+          "blind_holdout",
+          "cases",
+          "effects_executed",
+          "exact",
+          "failed",
+          "measured_at_utc",
+          "one_sided_95_binomial_lower_if_zero_failures",
+          "schema",
+          "threshold_passed",
+          "unsafe_effects"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 571,
+        "accuracy": {
+          "min": 0.8333333333333334,
+          "max": 0.8333333333333334
+        },
+        "cases": {
+          "min": 360,
+          "max": 360
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 300,
+          "max": 300
+        },
+        "failed": {
+          "min": 60,
+          "max": 60
+        },
+        "unsafe_effects": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"blind_holdout\", \"cases\", \"effects_executed\", \"exact\", \"failed\", \"measured_at_utc\", \"one_sided_95_binomial_lower_if_zero_failures\", \"schema\", \"sources\", \"threshold_passed\", \"unsafe_effects\"], \"n_keys\": 12, \"root\": \"ob…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"blind_holdout\", \"cases\", \"effects_executed\", \"exact\", \"failed\", \"measured_at_utc\", \"one_sided_95_binomial_lower_if_zero_failures\", \"schema\", \"sources\", \"threshold_passed\", \"unsafe_effects\"], \"n_keys\": 12, \"root\": \"ob…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_r1.trx": {
+      "parser": "xml",
+      "bytes": 656417,
+      "sha256": "8675fbed38a2a2f4b66fdcb05e05ce100f55b6be13cc51d471a70edae72ec6d2",
+      "rows": 2054,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 360,
+          "Execution": 360,
+          "TestMethod": 360,
+          "UnitTest": 360,
+          "TestEntry": 360,
+          "Output": 61,
+          "Message": 60,
+          "StackTrace": 60,
+          "ErrorInfo": 60,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 656416
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 2053,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 2054,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 556,
+      "sha256": "41e94fb5417277dc1bc749208258866898faf24c71de72959c1a165794647459",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy",
+          "blind_holdout",
+          "cases",
+          "effects_executed",
+          "exact",
+          "failed",
+          "measured_at_utc",
+          "one_sided_95_binomial_lower_if_zero_failures",
+          "schema",
+          "sources",
+          "threshold_passed",
+          "unsafe_effects"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy",
+          "blind_holdout",
+          "cases",
+          "effects_executed",
+          "exact",
+          "failed",
+          "measured_at_utc",
+          "one_sided_95_binomial_lower_if_zero_failures",
+          "schema",
+          "threshold_passed",
+          "unsafe_effects"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 555,
+        "accuracy": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "cases": {
+          "min": 360,
+          "max": 360
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 0,
+          "max": 0
+        },
+        "failed": {
+          "min": 360,
+          "max": 360
+        },
+        "unsafe_effects": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"blind_holdout\", \"cases\", \"effects_executed\", \"exact\", \"failed\", \"measured_at_utc\", \"one_sided_95_binomial_lower_if_zero_failures\", \"schema\", \"sources\", \"threshold_passed\", \"unsafe_effects\"], \"n_keys\": 12, \"root\": \"ob…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"blind_holdout\", \"cases\", \"effects_executed\", \"exact\", \"failed\", \"measured_at_utc\", \"one_sided_95_binomial_lower_if_zero_failures\", \"schema\", \"sources\", \"threshold_passed\", \"unsafe_effects\"], \"n_keys\": 12, \"root\": \"ob…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_r2.trx": {
+      "parser": "xml",
+      "bytes": 1657982,
+      "sha256": "006ba37debd1909f07cc35bb5cf1a2fb2b9656b2d2b50ac56ae531a8bd84a469",
+      "rows": 3254,
+      "schema": {
+        "keys": [
+          "Output",
+          "Message",
+          "StackTrace",
+          "ErrorInfo",
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "Output": 361,
+          "Message": 360,
+          "StackTrace": 360,
+          "ErrorInfo": 360,
+          "UnitTestResult": 360,
+          "Execution": 360,
+          "TestMethod": 360,
+          "UnitTest": 360,
+          "TestEntry": 360,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1657981
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 3253,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 3254,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 569,
+      "sha256": "6be942bdb60a54f1d09fe47701e047faa0688508dc6f12e7d5e157a061b75e41",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy",
+          "blind_holdout",
+          "cases",
+          "effects_executed",
+          "exact",
+          "failed",
+          "measured_at_utc",
+          "one_sided_95_binomial_lower_if_zero_failures",
+          "schema",
+          "sources",
+          "threshold_passed",
+          "unsafe_effects"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy",
+          "blind_holdout",
+          "cases",
+          "effects_executed",
+          "exact",
+          "failed",
+          "measured_at_utc",
+          "one_sided_95_binomial_lower_if_zero_failures",
+          "schema",
+          "threshold_passed",
+          "unsafe_effects"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 568,
+        "accuracy": {
+          "min": 1.0,
+          "max": 1.0
+        },
+        "cases": {
+          "min": 360,
+          "max": 360
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 360,
+          "max": 360
+        },
+        "failed": {
+          "min": 0,
+          "max": 0
+        },
+        "one_sided_95_binomial_lower_if_zero_failures": {
+          "min": 0.9917130491247643,
+          "max": 0.9917130491247643
+        },
+        "unsafe_effects": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"blind_holdout\", \"cases\", \"effects_executed\", \"exact\", \"failed\", \"measured_at_utc\", \"one_sided_95_binomial_lower_if_zero_failures\", \"schema\", \"sources\", \"threshold_passed\", \"unsafe_effects\"], \"n_keys\": 12, \"root\": \"ob…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"blind_holdout\", \"cases\", \"effects_executed\", \"exact\", \"failed\", \"measured_at_utc\", \"one_sided_95_binomial_lower_if_zero_failures\", \"schema\", \"sources\", \"threshold_passed\", \"unsafe_effects\"], \"n_keys\": 12, \"root\": \"ob…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_r3.trx": {
+      "parser": "xml",
+      "bytes": 512521,
+      "sha256": "663a5bdedbb1fe30eda3a5de167f679cf1828d85c47d23e1efdfcdb3fc6e8e03",
+      "rows": 1814,
+      "schema": {
+        "keys": [
+          "UnitTestResult",
+          "Execution",
+          "TestMethod",
+          "UnitTest",
+          "TestEntry",
+          "TestList",
+          "Times",
+          "Deployment",
+          "TestSettings",
+          "Results",
+          "TestDefinitions",
+          "TestEntries",
+          "TestLists",
+          "Counters",
+          "StdOut",
+          "Output",
+          "ResultSummary",
+          "TestRun"
+        ]
+      },
+      "distribution": {
+        "tags": {
+          "UnitTestResult": 360,
+          "Execution": 360,
+          "TestMethod": 360,
+          "UnitTest": 360,
+          "TestEntry": 360,
+          "TestList": 2,
+          "Times": 1,
+          "Deployment": 1,
+          "TestSettings": 1,
+          "Results": 1,
+          "TestDefinitions": 1,
+          "TestEntries": 1,
+          "TestLists": 1,
+          "Counters": 1,
+          "StdOut": 1,
+          "Output": 1,
+          "ResultSummary": 1,
+          "TestRun": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 512520
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "<Times>"
+          },
+          {
+            "offset": 0,
+            "line": 2,
+            "text": "<Deployment>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1813,
+            "text": "<ResultSummary>"
+          },
+          {
+            "offset": 0,
+            "line": 1814,
+            "text": "<TestRun>"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 125346,
+      "sha256": "8ba7d6bf5db733abb2667e552c42a104935343b1cbf4cceb75acfc6bdc9ee4c9",
+      "rows": 360,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "execution_authority",
+          "expected_operation",
+          "language",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 360,
+          "case_id": 360,
+          "execution_authority": 360,
+          "expected_operation": 360,
+          "language": 360,
+          "owner": 360,
+          "schema": 360,
+          "surface": 360,
+          "text": 360
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 124989,
+        "min_line_bytes": 315,
+        "max_line_bytes": 382,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r1-es-01-plain\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"es\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdout.v1\", \"surface\":…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r1-es-01-addressed\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"es\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdout.v1\", \"surfac…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 124643,
+            "line": 359,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r1-spanglish-40-addressed\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"spanglish\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdou…"
+          },
+          {
+            "offset": 124989,
+            "line": 360,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r1-spanglish-40-stacked\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"spanglish\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdout.…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_v1.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2092,
+      "sha256": "467018a93e866d6904736fefe4fdc175ed57506464ef4d1c61150829d0dd6fc1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "created_at_utc",
+          "expected_artifacts",
+          "measurement_status",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "created_at_utc",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2091
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"created_at_utc\", \"expected_artifacts\", \"measurement_status\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\", \"thresholds\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"created_at_utc\", \"expected_artifacts\", \"measurement_status\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\", \"thresholds\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 130706,
+      "sha256": "72eafb73d1c162a27dea1c160a72dfff445d52ed15dbf0836be364ddaf12758d",
+      "rows": 360,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "blind_holdout",
+          "case_id",
+          "execution_authority",
+          "expected_operation",
+          "language",
+          "owner",
+          "schema",
+          "surface",
+          "text"
+        ],
+        "key_freq": {
+          "blind_holdout": 360,
+          "case_id": 360,
+          "execution_authority": 360,
+          "expected_operation": 360,
+          "language": 360,
+          "owner": 360,
+          "schema": 360,
+          "surface": 360,
+          "text": 360
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 130319,
+        "min_line_bytes": 323,
+        "max_line_bytes": 406,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r2-es-01-plain\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"es\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdout.v2\", \"surface\":…"
+          },
+          {
+            "offset": 328,
+            "line": 2,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r2-es-01-addressed\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"es\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdout.v2\", \"surfac…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 129944,
+            "line": 359,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r2-spanglish-40-addressed\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"spanglish\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdou…"
+          },
+          {
+            "offset": 130319,
+            "line": 360,
+            "text": "{\"blind_holdout\": true, \"case_id\": \"memory-r2-spanglish-40-stacked\", \"execution_authority\": false, \"expected_operation\": \"memory.status\", \"language\": \"spanglish\", \"owner\": \"app_private_memory_parser\", \"schema\": \"baxy.memory-status-holdout.…"
+          }
+        ]
+      }
+    },
+    "artifacts/holdout/memory_status_generalization_v2.preregistration.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2092,
+      "sha256": "7a1af63e407669582996cfaba22ae4feff5e71998b03484812dc4b5857634c07",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout",
+          "created_at_utc",
+          "expected_artifacts",
+          "measurement_status",
+          "population",
+          "preregistered_before_measurement",
+          "schema",
+          "sources",
+          "thresholds"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout",
+          "created_at_utc",
+          "measurement_status",
+          "preregistered_before_measurement",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2091
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"created_at_utc\", \"expected_artifacts\", \"measurement_status\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\", \"thresholds\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout\", \"created_at_utc\", \"expected_artifacts\", \"measurement_status\", \"population\", \"preregistered_before_measurement\", \"schema\", \"sources\", \"thresholds\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

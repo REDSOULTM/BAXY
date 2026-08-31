@@ -1,0 +1,3656 @@
+{
+  "batch_id": "evidence_assets-092-baxy-baxy_art_research",
+  "source_id": "baxy",
+  "file_count": 45,
+  "hash_ok": 45,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/research/current_catalog_ready_pipeline_r15_argument_fidelity.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 195167,
+      "sha256": "e72a35688f849883de453b40cd34e2def706fab4ed4cf3a3cab215a35cb8e607",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 195166,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 165003,
+      "sha256": "925a979a930c73d9bad63b8578a33f220956ce0ecc9fbf5f8f54b59c6f7ba30d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 26,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 165002,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 151505,
+      "sha256": "2563c0d01448c954ac2c21f84ac10ce21f04d533813b8a26c954d92b97e79954",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 12,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 151504,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 298875,
+      "sha256": "3e9575437d14712e2ded7fbfa81b98d5aff608309e77cf7f5ad87b84e9011441",
+      "rows": 296,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 296,
+          "phase": 296,
+          "raw_decision": 296,
+          "request_id": 296,
+          "schema": 296,
+          "stages": 296,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 296985,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 296579,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 296985,
+            "line": 296,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 188207,
+      "sha256": "d351989417c29ae90450d144111a02e8a37d461732444fce604bd139493634bb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 6,
+          "presentable_failures": 1,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 188206,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r4.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 298972,
+      "sha256": "9227b0371203ac4adc25e1a7f64a6fc02dc10e79d55f832b2f1a31ba4bb04620",
+      "rows": 296,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 296,
+          "phase": 296,
+          "raw_decision": 296,
+          "request_id": 296,
+          "schema": 296,
+          "stages": 296,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 297082,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 296676,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 297082,
+            "line": 296,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 185836,
+      "sha256": "284a58285b885bb6bb795cbfc23bb3585b47a327257ed2cc5e66b6f0f86cb451",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 5,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185835,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 185624,
+      "sha256": "34550ea27780eab2884e8a16e3a87637cf6f87849a4372bb57457c5d3c8fec32",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 4,
+          "presentable_failures": 1,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 185623,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r6.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 295979,
+      "sha256": "8d105df2cc291a2744466e971247802837e9accc0f7aed8cb3e09888fd481a67",
+      "rows": 294,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 294,
+          "phase": 294,
+          "raw_decision": 294,
+          "request_id": 294,
+          "schema": 294,
+          "stages": 294,
+          "final": 153,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294089,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 293683,
+            "line": 293,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294089,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 183180,
+      "sha256": "4cf14a0229e5f6f59a46acd1094cf3eead4dfa7a52450dac410271315986a24a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 183179,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r7.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296255,
+      "sha256": "a5aa8a645f5ed746112c1042654eb1dab701c8d853cd359d9996771e97e62bc2",
+      "rows": 295,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 295,
+          "phase": 295,
+          "raw_decision": 295,
+          "request_id": 295,
+          "schema": 295,
+          "stages": 295,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294365,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 293959,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294365,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r8.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 183172,
+      "sha256": "70ee484607e59c9abc1777059c3be09d10cdcaecb538bc702b59c7089a6b0506",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 183171,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r8.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296289,
+      "sha256": "0927bbe8f8142e9c3013e9fb4436ade5bffe675ec6fe7bb5b7b9344b4403b3ae",
+      "rows": 295,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 295,
+          "phase": 295,
+          "raw_decision": 295,
+          "request_id": 295,
+          "schema": 295,
+          "stages": 295,
+          "final": 153,
+          "error_type": 5,
+          "failure_kind": 5,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294399,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2354,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"knowledge\",\"effect_count\":\"zero\",\"effect_o…"
+          },
+          {
+            "offset": 479,
+            "line": 2,
+            "text": "{\"candidate_operations\":[\"media.control\",\"media.play.exact\",\"media.play.query\",\"media.play.youtube\",\"media.seek.relative\",\"media.status\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 293993,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294399,
+            "line": 295,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/current_catalog_ready_pipeline_r9.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 183167,
+      "sha256": "a5002d1ab628fba00242310b0f89d6351c78faafe2ffba91465f1cc4d6f01c18",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "by_family",
+          "core_or_provider_requests_sent",
+          "failure_groups",
+          "failures",
+          "measured_at",
+          "presentable_failure_groups",
+          "presentable_failures",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "side_effect_free",
+          "source",
+          "summary"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "core_or_provider_requests_sent",
+          "measured_at",
+          "schema",
+          "scope",
+          "side_effect_free"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "presentable_failures": 0,
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 183166,
+        "core_or_provider_requests_sent": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"by_family\", \"core_or_provider_requests_sent\", \"failure_groups\", \"failures\", \"measured_at\", \"presentable_failure_groups\", \"presentable_failures\", \"rows\", \"runtime\", \"schema\", \"scope\", \"side_effect_free\", \"source\", \"summary\"], \"n_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/family_arbiter_e5.v1.npz": {
+      "parser": "binary_inventory",
+      "bytes": 2667496,
+      "sha256": "ff372ce63d21f727757a60d3fb4010ff0f857a0f08a4a6a4c81c661321fafb76",
+      "format": "zip",
+      "magic_hex": "504b03042d000000080000002100fe8c",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/research/family_arbiter_e5.v1.npz"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "zip"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2667495
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=504b03042d000000080000002100fe8c format=zip"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 2667495,
+            "line": 0,
+            "text": "eof bytes=2667496"
+          }
+        ]
+      }
+    },
+    "artifacts/research/family_arbiter_exact_dev_once.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 28964,
+      "sha256": "07bfd589ddde593c15120fd092668025b5d4c5b7e18b9e38215d54a3a308ccde",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy",
+          "cases",
+          "configuration",
+          "corpus",
+          "corpus_sha256",
+          "effects_executed",
+          "encoder_latency_seconds",
+          "incremental_classifier_coefficients",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "right",
+          "rows",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "top2_recall",
+          "top3_recall",
+          "training_rows"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy",
+          "cases",
+          "configuration",
+          "corpus",
+          "corpus_sha256",
+          "effects_executed",
+          "incremental_classifier_coefficients",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "right",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "top2_recall",
+          "top3_recall",
+          "training_rows"
+        ],
+        "list_lengths": {
+          "rows": 70
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28963,
+        "accuracy": {
+          "min": 0.9,
+          "max": 0.9
+        },
+        "cases": {
+          "min": 70,
+          "max": 70
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "incremental_classifier_coefficients": {
+          "min": 11935,
+          "max": 11935
+        },
+        "right": {
+          "min": 63,
+          "max": 63
+        },
+        "top2_recall": {
+          "min": 0.942857,
+          "max": 0.942857
+        },
+        "top3_recall": {
+          "min": 0.971429,
+          "max": 0.971429
+        },
+        "training_rows": {
+          "min": 1892,
+          "max": 1892
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"cases\", \"configuration\", \"corpus\", \"corpus_sha256\", \"effects_executed\", \"encoder_latency_seconds\", \"incremental_classifier_coefficients\", \"measured_at_utc\", \"oracle\", \"oracle_sha256\", \"right\", \"rows\", \"runtime_manife…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"cases\", \"configuration\", \"corpus\", \"corpus_sha256\", \"effects_executed\", \"encoder_latency_seconds\", \"incremental_classifier_coefficients\", \"measured_at_utc\", \"oracle\", \"oracle_sha256\", \"right\", \"rows\", \"runtime_manife…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/family_arbiter_internal_validation.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 26745,
+      "sha256": "bbbc805728542a92d4e6441a5b8c54a269f3c6ab2bebe7990cb15e2d1442c3b9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate_count",
+          "candidates",
+          "corpus",
+          "corpus_sha256",
+          "effects_executed",
+          "families",
+          "fit_rows",
+          "measured_at_utc",
+          "normalised_text_overlap",
+          "rows",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "seconds",
+          "selected",
+          "selected_metrics",
+          "validation_rows"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_count",
+          "corpus",
+          "corpus_sha256",
+          "effects_executed",
+          "fit_rows",
+          "measured_at_utc",
+          "normalised_text_overlap",
+          "rows",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "seconds",
+          "validation_rows"
+        ],
+        "list_lengths": {
+          "candidates": 80,
+          "families": 31
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26744,
+        "candidate_count": {
+          "min": 80,
+          "max": 80
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "fit_rows": {
+          "min": 1506,
+          "max": 1506
+        },
+        "normalised_text_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "rows": {
+          "min": 1892,
+          "max": 1892
+        },
+        "seconds": {
+          "min": 37.47535,
+          "max": 37.47535
+        },
+        "validation_rows": {
+          "min": 386,
+          "max": 386
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_count\", \"candidates\", \"corpus\", \"corpus_sha256\", \"effects_executed\", \"families\", \"fit_rows\", \"measured_at_utc\", \"normalised_text_overlap\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"seconds\", \"selected\", \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_count\", \"candidates\", \"corpus\", \"corpus_sha256\", \"effects_executed\", \"families\", \"fit_rows\", \"measured_at_utc\", \"normalised_text_overlap\", \"rows\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"seconds\", \"selected\", \"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/fresh_postweight_stt_source_audit_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 10136,
+      "sha256": "3adf2651b88fade3762f3444ef28f025965d41178cbfd96450b87990cc7f7793",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "auditContract",
+          "auditedAtUtc",
+          "decision",
+          "effectsExecuted",
+          "generator",
+          "modelBinding",
+          "previousBlindCampaignConsumed",
+          "previousBlindResultsMayBeUsedForTuning",
+          "role",
+          "schema",
+          "sources",
+          "status",
+          "wakeProgramTree"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "auditedAtUtc",
+          "effectsExecuted",
+          "previousBlindCampaignConsumed",
+          "previousBlindResultsMayBeUsedForTuning",
+          "role",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10135,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"auditContract\", \"auditedAtUtc\", \"decision\", \"effectsExecuted\", \"generator\", \"modelBinding\", \"previousBlindCampaignConsumed\", \"previousBlindResultsMayBeUsedForTuning\", \"role\", \"schema\", \"sources\", \"status\", \"wakeProgramTree\"], \"n…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"auditContract\", \"auditedAtUtc\", \"decision\", \"effectsExecuted\", \"generator\", \"modelBinding\", \"previousBlindCampaignConsumed\", \"previousBlindResultsMayBeUsedForTuning\", \"role\", \"schema\", \"sources\", \"status\", \"wakeProgramTree\"], \"n…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/full_catalog_mdeberta_v2_mtop_r4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 93372,
+      "sha256": "1bc2e7b396e1c25ada15eec43b1fd06fc2e165059d23ab358f91f97f8950ce67",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases",
+          "checkpoint",
+          "device",
+          "excluded_no_effect_or_unavailable",
+          "latency_seconds_per_case",
+          "rows",
+          "schema",
+          "scope",
+          "source",
+          "top_1_accuracy",
+          "top_3_accuracy"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "checkpoint",
+          "device",
+          "excluded_no_effect_or_unavailable",
+          "schema",
+          "scope",
+          "top_1_accuracy",
+          "top_3_accuracy"
+        ],
+        "list_lengths": {
+          "rows": 185
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 93371,
+        "cases": {
+          "min": 185,
+          "max": 185
+        },
+        "excluded_no_effect_or_unavailable": {
+          "min": 13,
+          "max": 13
+        },
+        "top_1_accuracy": {
+          "min": 0.772973,
+          "max": 0.772973
+        },
+        "top_3_accuracy": {
+          "min": 0.864865,
+          "max": 0.864865
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"checkpoint\", \"device\", \"excluded_no_effect_or_unavailable\", \"latency_seconds_per_case\", \"rows\", \"schema\", \"scope\", \"source\", \"top_1_accuracy\", \"top_3_accuracy\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases\", \"checkpoint\", \"device\", \"excluded_no_effect_or_unavailable\", \"latency_seconds_per_case\", \"rows\", \"schema\", \"scope\", \"source\", \"top_1_accuracy\", \"top_3_accuracy\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/full_catalog_mdeberta_v2_onnx.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 731,
+      "sha256": "bbe5fec52971aa472a2aaef9260fb1b305697f14d91bee90c87132fb361dfa49",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "blind_holdout_opened",
+          "checkpoint",
+          "checkpoint_config_sha256",
+          "effects_executed",
+          "export_seconds",
+          "model",
+          "model_bytes",
+          "model_sha256",
+          "onnx_version",
+          "opset",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "blind_holdout_opened",
+          "checkpoint",
+          "checkpoint_config_sha256",
+          "effects_executed",
+          "export_seconds",
+          "model",
+          "model_bytes",
+          "model_sha256",
+          "onnx_version",
+          "opset",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 730,
+        "model_bytes": {
+          "min": 1116765019,
+          "max": 1116765019
+        },
+        "opset": {
+          "min": 17,
+          "max": 17
+        },
+        "export_seconds": {
+          "min": 12.945477,
+          "max": 12.945477
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout_opened\", \"checkpoint\", \"checkpoint_config_sha256\", \"effects_executed\", \"export_seconds\", \"model\", \"model_bytes\", \"model_sha256\", \"onnx_version\", \"opset\", \"schema\", \"scope\"], \"n_keys\": 13, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"blind_holdout_opened\", \"checkpoint\", \"checkpoint_config_sha256\", \"effects_executed\", \"export_seconds\", \"model\", \"model_bytes\", \"model_sha256\", \"onnx_version\", \"opset\", \"schema\", \"scope\"], \"n_keys\": 13, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/full_catalog_operation_classifier_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8091,
+      "sha256": "1974159477c6e53cfec16cd8c89fe6a5128101ca51c13b8911af3d7153655738",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "best_epoch",
+          "best_validation_top_1_accuracy",
+          "blind_holdout_opened",
+          "checkpoint",
+          "configuration",
+          "cuda",
+          "data",
+          "epochs",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "best_epoch",
+          "best_validation_top_1_accuracy",
+          "blind_holdout_opened",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "epochs": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8090,
+        "best_epoch": {
+          "min": 2,
+          "max": 2
+        },
+        "best_validation_top_1_accuracy": {
+          "min": 0.258065,
+          "max": 0.258065
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"best_epoch\", \"best_validation_top_1_accuracy\", \"blind_holdout_opened\", \"checkpoint\", \"configuration\", \"cuda\", \"data\", \"epochs\", \"measured_at_utc\", \"schema\", \"scope\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"best_epoch\", \"best_validation_top_1_accuracy\", \"blind_holdout_opened\", \"checkpoint\", \"configuration\", \"cuda\", \"data\", \"epochs\", \"measured_at_utc\", \"schema\", \"scope\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/full_catalog_operation_classifier_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8426,
+      "sha256": "6382fbd8faf9bef42d6a22486d628a055f3e1fd3e9605847464f27a662fdeed1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "best_epoch",
+          "best_validation_top_1_accuracy",
+          "blind_holdout_opened",
+          "checkpoint",
+          "configuration",
+          "cuda",
+          "data",
+          "epochs",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "best_epoch",
+          "best_validation_top_1_accuracy",
+          "blind_holdout_opened",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "epochs": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8425,
+        "best_epoch": {
+          "min": 4,
+          "max": 4
+        },
+        "best_validation_top_1_accuracy": {
+          "min": 0.462687,
+          "max": 0.462687
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"best_epoch\", \"best_validation_top_1_accuracy\", \"blind_holdout_opened\", \"checkpoint\", \"configuration\", \"cuda\", \"data\", \"epochs\", \"measured_at_utc\", \"schema\", \"scope\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"best_epoch\", \"best_validation_top_1_accuracy\", \"blind_holdout_opened\", \"checkpoint\", \"configuration\", \"cuda\", \"data\", \"epochs\", \"measured_at_utc\", \"schema\", \"scope\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_all_base.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 44862,
+      "sha256": "c60ac25f5b3f51c73a0e47c80f08131aeabdb5410acada0fba5faf4720a89e01",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_family",
+          "by_language",
+          "candidate_operations",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "adapter_report",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 74
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 44861,
+        "cases_per_repeat": {
+          "min": 74,
+          "max": 74
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 52,
+          "max": 52
+        },
+        "exact_accuracy": {
+          "min": 0.702703,
+          "max": 0.702703
+        },
+        "load_seconds": {
+          "min": 1.098376,
+          "max": 1.098376
+        },
+        "peak_allocated_mib": {
+          "min": 564.3,
+          "max": 564.3
+        },
+        "peak_reserved_mib": {
+          "min": 574.0,
+          "max": 574.0
+        },
+        "repeats": {
+          "min": 1,
+          "max": 1
+        },
+        "samples": {
+          "min": 74,
+          "max": 74
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_all_lora_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 122917,
+      "sha256": "e1ac49ac0a5c4fc38aa4c08da073deedcd087e1b98805911c640d405ee02b45c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_family",
+          "by_language",
+          "candidate_operations",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 222
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 122916,
+        "cases_per_repeat": {
+          "min": 74,
+          "max": 74
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 186,
+          "max": 186
+        },
+        "exact_accuracy": {
+          "min": 0.837838,
+          "max": 0.837838
+        },
+        "load_seconds": {
+          "min": 1.390128,
+          "max": 1.390128
+        },
+        "peak_allocated_mib": {
+          "min": 578.8,
+          "max": 578.8
+        },
+        "peak_reserved_mib": {
+          "min": 588.0,
+          "max": 588.0
+        },
+        "repeats": {
+          "min": 3,
+          "max": 3
+        },
+        "samples": {
+          "min": 222,
+          "max": 222
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_all_lora_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 123087,
+      "sha256": "bcf7bcde89242e03a6b953f6f57743e27aef0ff53128f38952e9d1f677cfa077",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_family",
+          "by_language",
+          "candidate_operations",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 222
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 123086,
+        "cases_per_repeat": {
+          "min": 74,
+          "max": 74
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 195,
+          "max": 195
+        },
+        "exact_accuracy": {
+          "min": 0.878378,
+          "max": 0.878378
+        },
+        "load_seconds": {
+          "min": 1.252843,
+          "max": 1.252843
+        },
+        "peak_allocated_mib": {
+          "min": 578.8,
+          "max": 578.8
+        },
+        "peak_reserved_mib": {
+          "min": 588.0,
+          "max": 588.0
+        },
+        "repeats": {
+          "min": 3,
+          "max": 3
+        },
+        "samples": {
+          "min": 222,
+          "max": 222
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_all_lora_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 122916,
+      "sha256": "dbb7927e00d02f5cefe4c777d700dba09f12cc94c3f0d77df680452d33ff7982",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_family",
+          "by_language",
+          "candidate_operations",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 222
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 122915,
+        "cases_per_repeat": {
+          "min": 74,
+          "max": 74
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 183,
+          "max": 183
+        },
+        "exact_accuracy": {
+          "min": 0.824324,
+          "max": 0.824324
+        },
+        "load_seconds": {
+          "min": 1.294969,
+          "max": 1.294969
+        },
+        "peak_allocated_mib": {
+          "min": 578.8,
+          "max": 578.8
+        },
+        "peak_reserved_mib": {
+          "min": 588.0,
+          "max": 588.0
+        },
+        "repeats": {
+          "min": 3,
+          "max": 3
+        },
+        "samples": {
+          "min": 222,
+          "max": 222
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measure…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_audio_base.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7071,
+      "sha256": "1b3bd8fbc54c408c142df3e7497390e0367d4cfd4a3aa99341b9663564719ee5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_language",
+          "candidate_operations",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "adapter_report",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "candidate_operations": 5,
+          "rows": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7070,
+        "cases_per_repeat": {
+          "min": 12,
+          "max": 12
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 5,
+          "max": 5
+        },
+        "exact_accuracy": {
+          "min": 0.416667,
+          "max": 0.416667
+        },
+        "load_seconds": {
+          "min": 0.629506,
+          "max": 0.629506
+        },
+        "peak_allocated_mib": {
+          "min": 537.5,
+          "max": 537.5
+        },
+        "peak_reserved_mib": {
+          "min": 544.0,
+          "max": 544.0
+        },
+        "repeats": {
+          "min": 1,
+          "max": 1
+        },
+        "samples": {
+          "min": 12,
+          "max": 12
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measured_at_utc\", \"o…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measured_at_utc\", \"o…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_audio_lora_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19093,
+      "sha256": "34163347bc5607f38fc94903c7f7f5a626ee34f27a12bf1e8340244953e1e895",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_language",
+          "candidate_operations",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 24,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "candidate_operations": 5,
+          "rows": 36
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19092,
+        "cases_per_repeat": {
+          "min": 12,
+          "max": 12
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 36,
+          "max": 36
+        },
+        "exact_accuracy": {
+          "min": 1.0,
+          "max": 1.0
+        },
+        "load_seconds": {
+          "min": 0.916322,
+          "max": 0.916322
+        },
+        "peak_allocated_mib": {
+          "min": 552.0,
+          "max": 552.0
+        },
+        "peak_reserved_mib": {
+          "min": 560.0,
+          "max": 560.0
+        },
+        "repeats": {
+          "min": 3,
+          "max": 3
+        },
+        "samples": {
+          "min": 36,
+          "max": 36
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measured_at_utc\", \"o…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_language\", \"candidate_operations\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"latency_seconds\", \"load_seconds\", \"measured_at_utc\", \"o…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_audio_seed.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 375861,
+      "sha256": "e9d87e951587fddd1692d6e7fcb790f1ef2158ffd8ed0b8dea2bc0ad609c2f3c",
+      "rows": 227,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 227,
+          "family": 227,
+          "language": 227,
+          "operation": 227,
+          "schema": 227,
+          "source": 227,
+          "text": 227,
+          "tools": 227
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 374186,
+        "min_line_bytes": 1627,
+        "max_line_bytes": 1687,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"audio-seed-5e60931b9e9d917d\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.status\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.status\", \"text\": \"a qué volumen está el sonido\", \"too…"
+          },
+          {
+            "offset": 1657,
+            "line": 2,
+            "text": "{\"case_id\": \"audio-seed-a240c341c3e4aece\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.mute\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.mute\", \"text\": \"activa el sonido de nuevo\", \"tools\": [{…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 372513,
+            "line": 226,
+            "text": "{\"case_id\": \"audio-seed-7c2775b59022042a\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"__no_action__\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:ABSTAIN__hardware_knowledge\", \"text\": \"which cpu is better…"
+          },
+          {
+            "offset": 374186,
+            "line": 227,
+            "text": "{\"case_id\": \"audio-seed-750b43b994a25e04\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"__no_action__\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:ABSTAIN__statement_no_request\", \"text\": \"ya silencié el au…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.generated.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 371936,
+      "sha256": "98433abe6f1ccb0dfb55d7fbc05ad00022d74e6b79c0d3737e7f12a5c41ad750",
+      "rows": 168,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "arguments_schema",
+          "candidate_counts",
+          "candidates",
+          "complete",
+          "description",
+          "family",
+          "generator_usage",
+          "operation",
+          "rejected_reasons",
+          "schema",
+          "seed",
+          "siblings",
+          "generation_attempt",
+          "response_attempt"
+        ],
+        "key_freq": {
+          "arguments_schema": 168,
+          "candidate_counts": 168,
+          "candidates": 168,
+          "complete": 168,
+          "description": 168,
+          "family": 168,
+          "generator_usage": 168,
+          "operation": 168,
+          "rejected_reasons": 168,
+          "schema": 168,
+          "seed": 168,
+          "siblings": 168,
+          "generation_attempt": 167,
+          "response_attempt": 151
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 370106,
+        "min_line_bytes": 1153,
+        "max_line_bytes": 3627,
+        "numeric": {
+          "generation_attempt": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "seed": {
+            "min": 36989622.0,
+            "max": 4293366592.0
+          },
+          "response_attempt": {
+            "min": 1.0,
+            "max": 2.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 13, \"es\": 13, \"spanglish…"
+          },
+          {
+            "offset": 3113,
+            "line": 2,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"name\": {\"type\": \"string\", \"x-maxUtf8Bytes\": 256, \"x-nonWhitespace\": true}}, \"required\": [\"name\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 4, \"es\": 4, \"spanglish\": 2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 367963,
+            "line": 167,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"limit\": {\"maximum\": 50, \"minimum\": 1, \"type\": \"integer\"}, \"process\": {\"maxLength\": 260, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"process\"], \"type\": \"obj…"
+          },
+          {
+            "offset": 370106,
+            "line": 168,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 4, \"es\": 4, \"spanglish\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.generated.v1.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 808,
+      "sha256": "b488f067cfeb8d511ccea0be2854a07bfd9ecc4f00b97b244461ecbd4e2bbe42",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidates",
+          "complete_operations",
+          "effects_executed",
+          "heldout_exact_overlap",
+          "heldout_sha256",
+          "measured_at_utc",
+          "model",
+          "operations_generated_this_run",
+          "operations_present",
+          "operations_requested",
+          "output",
+          "output_sha256",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidates",
+          "complete_operations",
+          "effects_executed",
+          "heldout_exact_overlap",
+          "heldout_sha256",
+          "measured_at_utc",
+          "operations_generated_this_run",
+          "operations_present",
+          "operations_requested",
+          "output",
+          "output_sha256",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 807,
+        "candidates": {
+          "min": 1689,
+          "max": 1689
+        },
+        "complete_operations": {
+          "min": 91,
+          "max": 91
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "heldout_exact_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "operations_generated_this_run": {
+          "min": 151,
+          "max": 151
+        },
+        "operations_present": {
+          "min": 168,
+          "max": 168
+        },
+        "operations_requested": {
+          "min": 168,
+          "max": 168
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidates\", \"complete_operations\", \"effects_executed\", \"heldout_exact_overlap\", \"heldout_sha256\", \"measured_at_utc\", \"model\", \"operations_generated_this_run\", \"operations_present\", \"operations_requested\", \"output\", \"output_sha2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidates\", \"complete_operations\", \"effects_executed\", \"heldout_exact_overlap\", \"heldout_sha256\", \"measured_at_utc\", \"model\", \"operations_generated_this_run\", \"operations_present\", \"operations_requested\", \"output\", \"output_sha2…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.generated.v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 735038,
+      "sha256": "b4f4ed3c59059841e985158522e109dc72ebc31a9b6b69d2665903521a98b288",
+      "rows": 169,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "arguments_schema",
+          "candidate_counts",
+          "candidates",
+          "complete",
+          "description",
+          "family",
+          "generation_attempt",
+          "generator_usage",
+          "operation",
+          "rejected_reasons",
+          "response_attempt",
+          "schema",
+          "seed",
+          "siblings"
+        ],
+        "key_freq": {
+          "arguments_schema": 169,
+          "candidate_counts": 169,
+          "candidates": 169,
+          "complete": 169,
+          "description": 169,
+          "family": 169,
+          "generation_attempt": 169,
+          "generator_usage": 169,
+          "operation": 169,
+          "rejected_reasons": 169,
+          "response_attempt": 169,
+          "schema": 169,
+          "seed": 169,
+          "siblings": 169
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 731287,
+        "min_line_bytes": 1737,
+        "max_line_bytes": 6747,
+        "numeric": {
+          "generation_attempt": {
+            "min": 2.0,
+            "max": 5.0
+          },
+          "response_attempt": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "seed": {
+            "min": 14729834.0,
+            "max": 4252063543.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 21, \"es\": 21, \"spanglish…"
+          },
+          {
+            "offset": 5077,
+            "line": 2,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"name\": {\"type\": \"string\", \"x-maxUtf8Bytes\": 256, \"x-nonWhitespace\": true}}, \"required\": [\"name\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 11, \"es\": 12, \"spanglish\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 726785,
+            "line": 168,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"limit\": {\"maximum\": 50, \"minimum\": 1, \"type\": \"integer\"}, \"process\": {\"maxLength\": 260, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"process\"], \"type\": \"obj…"
+          },
+          {
+            "offset": 731287,
+            "line": 169,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 12, \"es\": 12, \"spanglish…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.generated.v2.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1347,
+      "sha256": "7d02ad07270ca7839cfb73accd3111598d61f4d8646ca2ecca626cc9932f6603",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "batch_language_counts",
+          "candidates",
+          "complete_operations",
+          "effects_executed",
+          "heldout",
+          "heldout_exact_overlap",
+          "measured_at_utc",
+          "model",
+          "operations_generated_this_run",
+          "operations_present",
+          "operations_requested",
+          "output",
+          "output_sha256",
+          "runtime_manifest_changed",
+          "schema",
+          "seed_input",
+          "target_language_counts"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidates",
+          "complete_operations",
+          "effects_executed",
+          "heldout_exact_overlap",
+          "measured_at_utc",
+          "operations_generated_this_run",
+          "operations_present",
+          "operations_requested",
+          "output",
+          "output_sha256",
+          "runtime_manifest_changed",
+          "schema",
+          "seed_input"
+        ],
+        "list_lengths": {
+          "heldout": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1346,
+        "candidates": {
+          "min": 4632,
+          "max": 4632
+        },
+        "complete_operations": {
+          "min": 19,
+          "max": 19
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "heldout_exact_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "operations_generated_this_run": {
+          "min": 169,
+          "max": 169
+        },
+        "operations_present": {
+          "min": 169,
+          "max": 169
+        },
+        "operations_requested": {
+          "min": 169,
+          "max": 169
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"batch_language_counts\", \"candidates\", \"complete_operations\", \"effects_executed\", \"heldout\", \"heldout_exact_overlap\", \"measured_at_utc\", \"model\", \"operations_generated_this_run\", \"operations_present\", \"operations_requested\", \"out…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"batch_language_counts\", \"candidates\", \"complete_operations\", \"effects_executed\", \"heldout\", \"heldout_exact_overlap\", \"measured_at_utc\", \"model\", \"operations_generated_this_run\", \"operations_present\", \"operations_requested\", \"out…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.reviewed.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 687452,
+      "sha256": "839974edc96a377ae52b79606dfebef282363d8e505ffe26b3152bb7f195fc9e",
+      "rows": 168,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "arguments_schema",
+          "candidate_counts",
+          "candidates",
+          "complete",
+          "description",
+          "family",
+          "generator_usage",
+          "operation",
+          "rejected_reasons",
+          "review",
+          "schema",
+          "seed",
+          "siblings",
+          "generation_attempt",
+          "response_attempt"
+        ],
+        "key_freq": {
+          "arguments_schema": 168,
+          "candidate_counts": 168,
+          "candidates": 168,
+          "complete": 168,
+          "description": 168,
+          "family": 168,
+          "generator_usage": 168,
+          "operation": 168,
+          "rejected_reasons": 168,
+          "review": 168,
+          "schema": 168,
+          "seed": 168,
+          "siblings": 168,
+          "generation_attempt": 167,
+          "response_attempt": 151
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 683820,
+        "min_line_bytes": 1886,
+        "max_line_bytes": 6005,
+        "numeric": {
+          "generation_attempt": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "seed": {
+            "min": 36989622.0,
+            "max": 4293366592.0
+          },
+          "response_attempt": {
+            "min": 1.0,
+            "max": 2.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 13, \"es\": 13, \"spanglish…"
+          },
+          {
+            "offset": 5716,
+            "line": 2,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"name\": {\"type\": \"string\", \"x-maxUtf8Bytes\": 256, \"x-nonWhitespace\": true}}, \"required\": [\"name\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 4, \"es\": 4, \"spanglish\": 2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 679718,
+            "line": 167,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"limit\": {\"maximum\": 50, \"minimum\": 1, \"type\": \"integer\"}, \"process\": {\"maxLength\": 260, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"process\"], \"type\": \"obj…"
+          },
+          {
+            "offset": 683820,
+            "line": 168,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 4, \"es\": 4, \"spanglish\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.reviewed.v1.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5775,
+      "sha256": "d842281d39be58ead398224793f82b5138c3a8076d5e6bc9479d2263b20e2649",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_candidates",
+          "chosen_operation_counts",
+          "effects_executed",
+          "input",
+          "input_sha256",
+          "measured_at_utc",
+          "operations_present",
+          "operations_reviewed_this_run",
+          "output",
+          "output_sha256",
+          "rejected_candidates",
+          "reviewer",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted_candidates",
+          "effects_executed",
+          "input",
+          "input_sha256",
+          "measured_at_utc",
+          "operations_present",
+          "operations_reviewed_this_run",
+          "output",
+          "output_sha256",
+          "rejected_candidates",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5774,
+        "accepted_candidates": {
+          "min": 1442,
+          "max": 1442
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "operations_present": {
+          "min": 168,
+          "max": 168
+        },
+        "operations_reviewed_this_run": {
+          "min": 162,
+          "max": 162
+        },
+        "rejected_candidates": {
+          "min": 247,
+          "max": 247
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_candidates\", \"chosen_operation_counts\", \"effects_executed\", \"input\", \"input_sha256\", \"measured_at_utc\", \"operations_present\", \"operations_reviewed_this_run\", \"output\", \"output_sha256\", \"rejected_candidates\", \"reviewer\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_candidates\", \"chosen_operation_counts\", \"effects_executed\", \"input\", \"input_sha256\", \"measured_at_utc\", \"operations_present\", \"operations_reviewed_this_run\", \"output\", \"output_sha256\", \"rejected_candidates\", \"reviewer\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.reviewed.v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1569161,
+      "sha256": "2981dbaffb8e3d5c99ff902e3f56a82dc14ec05e1524a94d5cbcb4b20e884c02",
+      "rows": 169,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "arguments_schema",
+          "candidate_counts",
+          "candidates",
+          "complete",
+          "description",
+          "family",
+          "generation_attempt",
+          "generator_usage",
+          "operation",
+          "rejected_reasons",
+          "response_attempt",
+          "review",
+          "schema",
+          "seed",
+          "siblings"
+        ],
+        "key_freq": {
+          "arguments_schema": 169,
+          "candidate_counts": 169,
+          "candidates": 169,
+          "complete": 169,
+          "description": 169,
+          "family": 169,
+          "generation_attempt": 169,
+          "generator_usage": 169,
+          "operation": 169,
+          "rejected_reasons": 169,
+          "response_attempt": 169,
+          "review": 169,
+          "schema": 169,
+          "seed": 169,
+          "siblings": 169
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1560618,
+        "min_line_bytes": 3330,
+        "max_line_bytes": 13362,
+        "numeric": {
+          "generation_attempt": {
+            "min": 2.0,
+            "max": 5.0
+          },
+          "response_attempt": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "seed": {
+            "min": 14729834.0,
+            "max": 4252063543.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 21, \"es\": 21, \"spanglish…"
+          },
+          {
+            "offset": 12655,
+            "line": 2,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"name\": {\"type\": \"string\", \"x-maxUtf8Bytes\": 256, \"x-nonWhitespace\": true}}, \"required\": [\"name\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 11, \"es\": 12, \"spanglish\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1551080,
+            "line": 168,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"limit\": {\"maximum\": 50, \"minimum\": 1, \"type\": \"integer\"}, \"process\": {\"maxLength\": 260, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"process\"], \"type\": \"obj…"
+          },
+          {
+            "offset": 1560618,
+            "line": 169,
+            "text": "{\"arguments_schema\": {\"additionalProperties\": false, \"properties\": {\"windowId\": {\"maxLength\": 36, \"type\": \"string\", \"x-nonWhitespace\": true}}, \"required\": [\"windowId\"], \"type\": \"object\"}, \"candidate_counts\": {\"en\": 12, \"es\": 12, \"spanglish…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_candidates.reviewed.v2.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6001,
+      "sha256": "04c938bffc95d9383d2f5c54161295b083525956153a112525017a1336e44773",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_candidates",
+          "chosen_operation_counts",
+          "effects_executed",
+          "input",
+          "input_sha256",
+          "measured_at_utc",
+          "operations_present",
+          "operations_reviewed_this_run",
+          "output",
+          "output_sha256",
+          "rejected_candidates",
+          "reviewer",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accepted_candidates",
+          "effects_executed",
+          "input",
+          "input_sha256",
+          "measured_at_utc",
+          "operations_present",
+          "operations_reviewed_this_run",
+          "output",
+          "output_sha256",
+          "rejected_candidates",
+          "runtime_manifest_changed",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6000,
+        "accepted_candidates": {
+          "min": 4179,
+          "max": 4179
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "operations_present": {
+          "min": 169,
+          "max": 169
+        },
+        "operations_reviewed_this_run": {
+          "min": 76,
+          "max": 76
+        },
+        "rejected_candidates": {
+          "min": 453,
+          "max": 453
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_candidates\", \"chosen_operation_counts\", \"effects_executed\", \"input\", \"input_sha256\", \"measured_at_utc\", \"operations_present\", \"operations_reviewed_this_run\", \"output\", \"output_sha256\", \"rejected_candidates\", \"reviewer\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_candidates\", \"chosen_operation_counts\", \"effects_executed\", \"input\", \"input_sha256\", \"measured_at_utc\", \"operations_present\", \"operations_reviewed_this_run\", \"output\", \"output_sha256\", \"rejected_candidates\", \"reviewer\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_contrastive_seed.v3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 196372,
+      "sha256": "e078bb12e84772ee6285f08b80dfa6adb119ffdc7076d422cc66d79347ab0507",
+      "rows": 112,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 112,
+          "family": 112,
+          "language": 112,
+          "operation": 112,
+          "schema": 112,
+          "source": 112,
+          "text": 112,
+          "tools": 112
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 194443,
+        "min_line_bytes": 1577,
+        "max_line_bytes": 1952,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"contrastive-authored-81d7f216ce7ba1fc\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.microphone.mute\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-contrastive-v3\", \"text\": \"Mu…"
+          },
+          {
+            "offset": 1690,
+            "line": 2,
+            "text": "{\"case_id\": \"contrastive-authored-5b7b26eea2b31a6b\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.microphone.mute\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-contrastive-v3\", \"text\": \"Si…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 192504,
+            "line": 111,
+            "text": "{\"case_id\": \"contrastive-authored-7534b8e0a0fa88ea\", \"family\": \"media\", \"language\": \"en\", \"operation\": \"media.status\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-contrastive-v3\", \"text\": \"Check curre…"
+          },
+          {
+            "offset": 194443,
+            "line": 112,
+            "text": "{\"case_id\": \"contrastive-authored-0b8801c2c9efa892\", \"family\": \"media\", \"language\": \"en\", \"operation\": \"media.status\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-contrastive-v3\", \"text\": \"Is the musi…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_failure_seed.v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 141118,
+      "sha256": "41d092ae1dee2899d3de8ca8c6bc99f4ca884b7e90936d139b4e10f092c3998a",
+      "rows": 72,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 72,
+          "family": 72,
+          "language": 72,
+          "operation": 72,
+          "schema": 72,
+          "source": 72,
+          "text": 72,
+          "tools": 72
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 137595,
+        "min_line_bytes": 1592,
+        "max_line_bytes": 3532,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"failure-authored-db106052dea88485\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.volume.adjust\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Incrementa…"
+          },
+          {
+            "offset": 1706,
+            "line": 2,
+            "text": "{\"case_id\": \"failure-authored-714ae54e2a0e6ac4\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.volume.adjust\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Reduce doce…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 134081,
+            "line": 71,
+            "text": "{\"case_id\": \"failure-authored-b36864baea71ab64\", \"family\": \"system\", \"language\": \"en\", \"operation\": \"system.status\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"How much free di…"
+          },
+          {
+            "offset": 137595,
+            "line": 72,
+            "text": "{\"case_id\": \"failure-authored-6d6c16fad375c290\", \"family\": \"system\", \"language\": \"en\", \"operation\": \"system.status\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Tell me this com…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_r4_repair_seed.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 140828,
+      "sha256": "5e79fd48c08feb1bbb355a1de502d4ead0338432c6e1c01767088ec41df611bb",
+      "rows": 70,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 70,
+          "family": 70,
+          "language": 70,
+          "operation": 70,
+          "schema": 70,
+          "source": 70,
+          "text": 70,
+          "tools": 70
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 138915,
+        "min_line_bytes": 1898,
+        "max_line_bytes": 2069,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"r4-repair-974f7a47cced64db\", \"family\": \"notification\", \"language\": \"en\", \"operation\": \"notification.cancel.latest\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-r4-repair-v1\", \"text\": \"Can…"
+          },
+          {
+            "offset": 2044,
+            "line": 2,
+            "text": "{\"case_id\": \"r4-repair-6bfd672e4c9984ee\", \"family\": \"notification\", \"language\": \"en\", \"operation\": \"notification.cancel.latest\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-r4-repair-v1\", \"text\": \"Tur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 137002,
+            "line": 69,
+            "text": "{\"case_id\": \"r4-repair-159afd81df79883b\", \"family\": \"media\", \"language\": \"spanglish\", \"operation\": \"media.play.query\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-r4-repair-v1\", \"text\": \"Play un live…"
+          },
+          {
+            "offset": 138915,
+            "line": 70,
+            "text": "{\"case_id\": \"r4-repair-02ef2ed53238d7c5\", \"family\": \"media\", \"language\": \"spanglish\", \"operation\": \"media.play.query\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-r4-repair-v1\", \"text\": \"Pon Tesla liv…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_r4_repair_seed.v1.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1081,
+      "sha256": "41d17cff7250ef75234b5a52c8be560dc366d9bdea62c9e511c6abfd6a6b7f97",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "exact_text_overlap",
+          "heldouts",
+          "operations",
+          "output",
+          "output_sha256",
+          "r4_selected_identity_sha256",
+          "rows",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "exact_text_overlap",
+          "output",
+          "output_sha256",
+          "r4_selected_identity_sha256",
+          "rows",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "heldouts": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1080,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact_text_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "rows": {
+          "min": 70,
+          "max": 70
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"exact_text_overlap\", \"heldouts\", \"operations\", \"output\", \"output_sha256\", \"r4_selected_identity_sha256\", \"rows\", \"schema\", \"scope\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"exact_text_overlap\", \"heldouts\", \"operations\", \"output\", \"output_sha256\", \"r4_selected_identity_sha256\", \"rows\", \"schema\", \"scope\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_selection_corpus.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 3612674,
+      "sha256": "b27ea15c5c62b37f44f8de374129d2dae9f97b0da512e0ee85a1cac98b44adbf",
+      "rows": 1442,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 1442,
+          "family": 1442,
+          "language": 1442,
+          "operation": 1442,
+          "schema": 1442,
+          "source": 1442,
+          "text": 1442,
+          "tools": 1442
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3610066,
+        "min_line_bytes": 765,
+        "max_line_bytes": 5382,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"committee-24ec7a1eb6494d65\", \"family\": \"app\", \"language\": \"es\", \"operation\": \"app.close\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Cierra la ventana de Microsoft Word…"
+          },
+          {
+            "offset": 1290,
+            "line": 2,
+            "text": "{\"case_id\": \"committee-3016a4eb33dd1494\", \"family\": \"app\", \"language\": \"es\", \"operation\": \"app.close\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Cierre la ventana de Outlook.\", \"to…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 3607493,
+            "line": 1441,
+            "text": "{\"case_id\": \"committee-64043d6cfea55187\", \"family\": \"window\", \"language\": \"en\", \"operation\": \"window.restore\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Restore the window that is…"
+          },
+          {
+            "offset": 3610066,
+            "line": 1442,
+            "text": "{\"case_id\": \"committee-9553894a05d008b2\", \"family\": \"window\", \"language\": \"spanglish\", \"operation\": \"window.restore\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Restore la ventana c…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_selection_corpus.v1.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6248,
+      "sha256": "c1be8401165db69efced7a753cac313bd03193d5deaeb6029c87dd10b79db9d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "families",
+          "heldout_exact_overlap",
+          "heldout_sha256",
+          "input_sha256",
+          "languages",
+          "missing_operations",
+          "operation_counts",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "heldout_exact_overlap",
+          "heldout_sha256",
+          "input_sha256",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "list_lengths": {
+          "missing_operations": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6247,
+        "catalog_operations": {
+          "min": 168,
+          "max": 168
+        },
+        "heldout_exact_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "operations": {
+          "min": 164,
+          "max": 164
+        },
+        "rows": {
+          "min": 1442,
+          "max": 1442
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"families\", \"heldout_exact_overlap\", \"heldout_sha256\", \"input_sha256\", \"languages\", \"missing_operations\", \"operation_counts\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\"], \"n_keys\": 13, \"root\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"families\", \"heldout_exact_overlap\", \"heldout_sha256\", \"input_sha256\", \"languages\", \"missing_operations\", \"operation_counts\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\"], \"n_keys\": 13, \"root\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_selection_corpus.v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 10414806,
+      "sha256": "f5b59ca7210b5a535e29daf154be105879a5e0d03729ec4a933392260c15f4d9",
+      "rows": 4179,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 4179,
+          "family": 4179,
+          "language": 4179,
+          "operation": 4179,
+          "schema": 4179,
+          "source": 4179,
+          "text": 4179,
+          "tools": 4179
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 10412209,
+        "min_line_bytes": 759,
+        "max_line_bytes": 5399,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"committee-24ec7a1eb6494d65\", \"family\": \"app\", \"language\": \"es\", \"operation\": \"app.close\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Cierra la ventana de Microsoft Word…"
+          },
+          {
+            "offset": 1290,
+            "line": 2,
+            "text": "{\"case_id\": \"committee-3016a4eb33dd1494\", \"family\": \"app\", \"language\": \"es\", \"operation\": \"app.close\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Cierre la ventana de Outlook.\", \"to…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 10409636,
+            "line": 4178,
+            "text": "{\"case_id\": \"committee-64043d6cfea55187\", \"family\": \"window\", \"language\": \"en\", \"operation\": \"window.restore\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Restore the window that is…"
+          },
+          {
+            "offset": 10412209,
+            "line": 4179,
+            "text": "{\"case_id\": \"committee-3d7ba5679196cc59\", \"family\": \"window\", \"language\": \"es\", \"operation\": \"window.restore\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"qwen-generator+gemma-reviewer\", \"text\": \"Restaura la ventana de mi a…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_selection_corpus.v2.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6746,
+      "sha256": "98b26d79df587b2993e1bd85d6825072539ffc99ce4d7833d0c21a77262b2307",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "catalog_operations",
+          "families",
+          "heldout_exact_overlap",
+          "heldouts",
+          "input_sha256",
+          "languages",
+          "missing_operations",
+          "operation_counts",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "catalog_operations",
+          "heldout_exact_overlap",
+          "input_sha256",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "list_lengths": {
+          "heldouts": 2,
+          "missing_operations": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6745,
+        "catalog_operations": {
+          "min": 169,
+          "max": 169
+        },
+        "heldout_exact_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "operations": {
+          "min": 167,
+          "max": 167
+        },
+        "rows": {
+          "min": 4179,
+          "max": 4179
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"families\", \"heldout_exact_overlap\", \"heldouts\", \"input_sha256\", \"languages\", \"missing_operations\", \"operation_counts\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\"], \"n_keys\": 13, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"catalog_operations\", \"families\", \"heldout_exact_overlap\", \"heldouts\", \"input_sha256\", \"languages\", \"missing_operations\", \"operation_counts\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\"], \"n_keys\": 13, \"root\": \"obje…"
+          }
+        ]
+      }
+    }
+  }
+}

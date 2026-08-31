@@ -1,0 +1,963 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-129-baxy-baxy_legacy_data",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:48:14Z",
+  "closed_utc": "2026-08-31T05:48:16Z",
+  "estimated_tokens": 294360,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 82,
+  "subsystem": "baxy_legacy_data",
+  "subsystems": [
+    "baxy_legacy_data"
+  ],
+  "files": [
+    {
+      "path": "legacy/data/logs/gemma4-audit/stt_red_b9959_bf16_lexicon_pad500.json",
+      "sha256": "a3dd93e594f43bc83f518b9297cd1e17b5dda0d4350dc1b08804fcacb0e2cb3a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/stt_red_b9959_bf16_lexicon_pad500.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/stt_red_b9959_f16.json",
+      "sha256": "4b2d547e64f38b391415b677aa4a752d4bf9c28c38da6750ba72eea9ba162993",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/stt_red_b9959_f16.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/stt_third_party_b9959_bf16.json",
+      "sha256": "372a317c4b2cd23e5777c2779291a2f50bbc0dc2f1d9579bec35f0beabb5c52d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/stt_third_party_b9959_bf16.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-b9980-v2.json",
+      "sha256": "6a30cfb5f90f60f9e6f0eb573af8a0a70175190b83cc7ff4cdab57fad82c8d03",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-b9980-v2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-b9980.json",
+      "sha256": "4dc2e24196960df7a7897ed9a1f06bb82c17e20ee07e8ad718b2b843575538e3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-b9980.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-01-20260713.json",
+      "sha256": "b3c6ab42e3210dfda66bf9a346cd8adf9dd6f7a9d5f0fc17835825788834a8da",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-01-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-02-20260713.json",
+      "sha256": "daa6165bc1412582be8282075b3d4cba9719cef9eeb3624e447bb511b49d0fd6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-02-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-03-20260713.json",
+      "sha256": "c73efe2b1229e3fa3be0b5f94aca7d11e20ef227cd21ef2c783331a579eea717",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-03-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-04-20260713.json",
+      "sha256": "2ab2e9199fe0b173ea5c5b2d47b81dc2ba7429372eca292a5cb114bc3c703b9e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-04-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-05-20260713.json",
+      "sha256": "00228e0d83ad19019ce7ffc5a0695a23c574c6749cb57494539285055c407321",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-05-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-06-20260713.json",
+      "sha256": "cc1035f418fc471197856abe765be59892790b09f4d30761f32d52b7e2842ec4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-06-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-07-20260713.json",
+      "sha256": "d28c6bfde12996b296c9dba715a8728f77ad37190cdedc0479d1f7be2d9ac47d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-07-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-08-20260713.json",
+      "sha256": "d6cbf41060a2c21591eb5fb902ddf4633d275251cebb136434d4495886d181ed",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-08-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-09-20260713.json",
+      "sha256": "f33a7079d9690b1f4194ac556d244f50237a70599c59cecc56a0f57169967bec",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-09-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-10-20260713.json",
+      "sha256": "1ba188d2461d928f55982df09e67c7f21bd8947f4309a8730e5b7ea35f59c6db",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-10-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-11-20260713.json",
+      "sha256": "eb10a21dc7e2d7dbb8727a01954a9ed5a6918bd16e987828dfe91bb73b195d33",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-11-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-12-20260713.json",
+      "sha256": "44c30be80b063d13e1f762cd1fed26cf72073f46d055f4c1ea4f1eec578927dc",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-12-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-13-20260713.json",
+      "sha256": "641ae6426d6a288a3950d22ed6e91ec76c104ed663ea1a18a2270eda3e4eb3ee",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-13-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-14-20260713.json",
+      "sha256": "98c0024e5edc59a03956c4e01f28cb27721422247b6d9074f14dfdc1d4c0e030",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-14-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-15-20260713.json",
+      "sha256": "bb9ba3318c01520ef7fbc92565689ee2b825002b0544cb8fa70b6ad6ae5ddadd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-15-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-16-20260713.json",
+      "sha256": "5d93cc0c7c2beb4408a6bbf582bae71f365cec12629eb35389fcc5609d36a3fd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-16-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-17-20260713.json",
+      "sha256": "12d151348a17cc8482c4582fa8e39a006adfdeb318e645a0f9dc86e935edc7e9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-17-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-18-20260713.json",
+      "sha256": "c8b49467d2211be4513bf4f744d0db8ac88df255e6f92faf2c96bbf9f28623b0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-18-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-19-20260713.json",
+      "sha256": "185760d76fbc5ef03c4a3dd7ae859af030372fc501b8259777bf3b80ab588383",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-19-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-20-20260713.json",
+      "sha256": "658c44d46a3da211f3d04ac6accfc00428cdabd0904edf2ec90c6d96207bfe7c",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-durable-20-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-helper.out.log",
+      "sha256": "5f14c516e0c7a2be0aa613a98a475138fe4e5824bd7715e51ae46652059c709b",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-helper.out.log"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-owned-20260713-212355.json",
+      "sha256": "b34b58c89b959dd7f5340c8d0cd85dbd4c006678319307b6bd746c07e0b97848",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-owned-20260713-212355.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-postreboot-20260713.json",
+      "sha256": "7d15d05a5ac39b17032f150c5b7aea98e33d604841e82468ba03bd2b57732534",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-postreboot-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-01-20260713.json",
+      "sha256": "b8bd93fd419b4da3b2643dc648de42bf588643d00d2dd8f50332159fb816dcd6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-01-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-02-20260713.json",
+      "sha256": "975f553f82b73467a7785aa1edaf3ec7a2ba961acab3019b4109e8f4d0453525",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-02-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-03-20260713.json",
+      "sha256": "56e0774010e47b7c2ed8c3c9e73c12ae3564265c9acf3509ecb5afdeacfcaefb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-03-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-04-20260713.json",
+      "sha256": "63f5ca53c671675ea5917d4a6f39052938ff79f98676e50acb56f36b6fa021d0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-04-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-05-20260713.json",
+      "sha256": "b18a5894fd8325bf0b1c9f78c09e59aae4fb34fa04f159bb5b92034fa05dffc0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-05-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-06-20260713.json",
+      "sha256": "dabf0cc690b6a4c1bf2a2bf6938b85acde4a1fe1328a132ba47907e1f4b49131",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-06-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-07-20260713.json",
+      "sha256": "8b6fbe928f61c5037ccc1e0765f8f5d32282cdf2b0412505c8e282075ea0d629",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-07-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-08-20260713.json",
+      "sha256": "155e5eb8f4da4e873f7961581446936ccdc9ffc6df4e7f628e9c745bbc7ee30e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-08-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-09-20260713.json",
+      "sha256": "9c7f6647cb8f0c198262026fb6b75d32ed6cf4e3d8a5b2ca8909c4826f2b89bc",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-09-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-10-20260713.json",
+      "sha256": "c42fd356da41dcc552847c9f3cffa0b1d3294ad1926d79ac00f0911dff071a59",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-10-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-11-20260713.json",
+      "sha256": "b27548c15864e07b91e7564126645a06b57e0e37246c538b452417453d7818d5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-11-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-12-20260713.json",
+      "sha256": "cf9242a39138786ce23bec95097f53feac2d9b2e1f4c2c0b802135cc47e8e70f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-12-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-live-replaydiag-20260713.json",
+      "sha256": "9c8ffecbf98233f2396f8577efbe3da660eacc87c22945b95e45338424a45e85",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-live-replaydiag-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-173933.json",
+      "sha256": "1e70e9a4518a0bd09c0db0a10054831c86ed6e09f7c2b0553d0b597f926d440f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-173933.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-190505.json",
+      "sha256": "cab596f68ad52042853e2c928ad800ff0aff99143d60c902dd25683fcf60d229",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-190505.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713.json",
+      "sha256": "cd83c4c55e42d63a4791ba6b3c9058bfd8c6117eb4d516a5aa2c9f362d9c09da",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-offline-hardened.json",
+      "sha256": "c68a52c81a35a6988cb264bd398095ebff21192902399ecab0261e02da994465",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-offline-hardened.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-offline-integrated.json",
+      "sha256": "9800ea204309fc7a920c5a4f894e3c9060442ef938f0cb978a78fa156b5921f1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-offline-integrated.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-offline-recheck.json",
+      "sha256": "bc470793a990fa986d2553f70edee6788227e53504c93c2515e3d916fb276de8",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-offline-recheck.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-owned-live-20260713-173616.json",
+      "sha256": "3a784af9c062d8185b4786dc347a5a4e318fa121b5b1db138d191c5b24d3ba0d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-owned-live-20260713-173616.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/tooling-v2-owned-live-revalidation-20260713-202338.json",
+      "sha256": "04a487a69721a63c1d855e7603db1ba16ab663bfb05a7f4700f85115378f28ed",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/tooling-v2-owned-live-revalidation-20260713-202338.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/uia-live-harness-cbd8a87d.jsonl",
+      "sha256": "26f2cf562320677c3fdc287a16a9793c502dcde35904271f615613b0cc5b36f1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "jsonl:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/uia-live-harness-cbd8a87d.jsonl"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-1.json",
+      "sha256": "8a44aa6dfcc098b4fd9063aef71aff26ae8666f469313bc606e67a175ea06a8f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-2.json",
+      "sha256": "6895394cb3e827991411dd41dd969ccc84f6ea06d2d09386e05240a66537cc8a",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-3.json",
+      "sha256": "baade083b5b736884959a3f946f768f4c0e4c8c48483a69570493860ed1c0722",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-4.json",
+      "sha256": "fc405fcf03d2f2b3209995dd48317d72a79fb2e1ca3f8733161c6f384ff45580",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-4.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-sem0-1.json",
+      "sha256": "197a891cc3259fcee86e47f3da4c472817680d8c39997620837d94b0ff8dc1ad",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-sem0-1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-sem0-2.json",
+      "sha256": "ff3410e0ee065071a3d02bb59986ea1f05175c350241249a0eab00c8e3b7b142",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-sem0-2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-sem0-3.json",
+      "sha256": "fc2ee51192f3c3905b1636d30f2ef1ab33a5f8006aed66998e46382f03d2e4ce",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-sem0-3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-debug-sem0-4.json",
+      "sha256": "f82f68cdfc00b0d7a247bbac07758093fc0ea831cacf870a5f9d9a36b169bda0",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-debug-sem0-4.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed-1.json",
+      "sha256": "6a5fc8a8e5733c5bc03ec2fcd217bf32da6807c08bb89fe1303dff9f26fe1be9",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed-1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed-2.json",
+      "sha256": "4d33c87fc95dd9a78996096ef6d6e3e7b5db932f6ab974fb0439fea4b8e89570",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed-2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed-3.json",
+      "sha256": "e6e811647def7a443f9b0b01918d44ddbda3e3995f80a5efa85d67bacc62e964",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed-3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed-4.json",
+      "sha256": "ed0c4e92b8edb4ec932ac5ce78b4f8a140ead4234e9a818ead26f280d92898eb",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed-4.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-1.json",
+      "sha256": "2d57d8cbf4beabe99795505ba00b17443a48f22288d6eeb488a7d12fd4f43b6d",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed2-1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-2.json",
+      "sha256": "dff01380d8e45add3e5816f977af21d619e5179f96d2eb9933d3e7c8a7827097",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed2-2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-3.json",
+      "sha256": "900477a8a336e5bbc74b674f9091ee5fd616c2dc07669fd60fda16894c8f9702",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed2-3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-4.json",
+      "sha256": "f9894c7187c36aa0b8aec54bc68a577be0ae09c2cd05c0e1ec5b369cee7ecab5",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/v2-parallel-fixed2-4.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/voice-hardware-ambient-20260711.json",
+      "sha256": "63d60f72941c76caad374a1579ef69558d0a5ff051acfc128e5b4d5e0ced2614",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/voice-hardware-ambient-20260711.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/voice-hardware-ambient-private-v2.json",
+      "sha256": "c6664131638e58e6c4dabdd09a456b292e97f742b31c7b15ba454ef675704255",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/voice-hardware-ambient-private-v2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/voice-hardware-silence-private-v3.json",
+      "sha256": "d1f426793f05b0fd60f07f88821e454aabf9171a0b43bcb5e7166be2715f2008",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/voice-hardware-silence-private-v3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-controlled-v1.json",
+      "sha256": "eb735173eade4288063ce894e4d5697880a5f8c13d9e460684d6dd11b3956372",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-controlled-v1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-global-v2.json",
+      "sha256": "fc79475a900e1d981362517cf00752983af02a8f6c8f232d31744bbe68133b00",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-global-v2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-adapter-map-smoke-v7.json",
+      "sha256": "a423e79fe43026e4e590d61cb34b14e7bf1faf9ffd313673a8fbd956d7f47a26",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-adapter-map-smoke-v7.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-b9980-40vision-idle120-global-v1.json",
+      "sha256": "3e3034aa05495a6e1cbee5cf4133298c773a93105f7d85d2d57c04ae6047284f",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-b9980-40vision-idle120-global-v1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-boundary-3072-controlled-v1.json",
+      "sha256": "d7290455a774f7f0769fc8271997f8944a7af089242a02bfb9247fb4b8860fd4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-boundary-3072-controlled-v1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-boundary-3328-controlled-v1.json",
+      "sha256": "d687fb427f8f6fbec19cf9b8a3f887118474286cd389e196a718cff7cc0a1308",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-boundary-3328-controlled-v1.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-build-v2.json",
+      "sha256": "081735b3e23f89f97c79536afeafbd59e75a3c17c9ef953c4d8c3bf38760fc4e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-build-v2.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-build-v3.json",
+      "sha256": "a7df562bf9e72fc547ee9979334d9bfa15b2bd463dfdcf70d42456b9cc481d2e",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-build-v3.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-build-v4.json",
+      "sha256": "b7ccca11e8cf173a62ac8f8d36f2958f7ba00611e2a8a6ee5218a12edd24eae3",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-build-v4.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v4.json",
+      "sha256": "ad28f27b1194f0f740b00da7c2bdd9261f3501f9ad5c9036139d09614e0c97f1",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v4.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v5.json",
+      "sha256": "a921e9631982c5c8b60fd9c56bd81a30651561c02057af4494924df9317430d4",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v5.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-smoke-global-nonlocal-v6.json",
+      "sha256": "30dc70db4448dfc90b455e6b291120e0ed375ee071e709bc55ceeec9a893b8dd",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-smoke-global-nonlocal-v6.json"
+    },
+    {
+      "path": "legacy/data/logs/gemma4-audit/vram-pressure-smoke-local-nonlocal-v3.json",
+      "sha256": "21b3f566104cc3751d63380abd3ea6526d4bf6730428cd97b4a2bad1aefab0c6",
+      "source_id": "baxy",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json#legacy/data/logs/gemma4-audit/vram-pressure-smoke-local-nonlocal-v3.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-129-baxy-baxy_legacy_data-01-legacy-data-logs",
+      "card_kind": "metric",
+      "corpus": "legacy/data/logs",
+      "denominator": "82 files in group legacy/data/logs; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 baxy head=203c34a968ee",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "baxy:legacy/data/logs",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "legacy/data/logs/gemma4-audit/stt_red_b9959_bf16_lexicon_pad500.json",
+        "legacy/data/logs/gemma4-audit/stt_red_b9959_f16.json",
+        "legacy/data/logs/gemma4-audit/stt_third_party_b9959_bf16.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-b9980-v2.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-b9980.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-01-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-02-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-03-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-04-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-05-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-06-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-07-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-08-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-09-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-10-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-11-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-12-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-13-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-14-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-15-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-16-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-17-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-18-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-19-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-20-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-helper.out.log",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-owned-20260713-212355.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-postreboot-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-01-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-02-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-03-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-04-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-05-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-06-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-07-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-08-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-09-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-10-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-11-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-12-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-live-replaydiag-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-173933.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-190505.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-offline-hardened.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-offline-integrated.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-offline-recheck.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-owned-live-20260713-173616.json",
+        "legacy/data/logs/gemma4-audit/tooling-v2-owned-live-revalidation-20260713-202338.json",
+        "legacy/data/logs/gemma4-audit/uia-live-harness-cbd8a87d.jsonl",
+        "legacy/data/logs/gemma4-audit/v2-debug-1.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-2.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-3.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-4.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-sem0-1.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-sem0-2.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-sem0-3.json",
+        "legacy/data/logs/gemma4-audit/v2-debug-sem0-4.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed-1.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed-2.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed-3.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed-4.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-1.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-2.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-3.json",
+        "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-4.json",
+        "legacy/data/logs/gemma4-audit/voice-hardware-ambient-20260711.json",
+        "legacy/data/logs/gemma4-audit/voice-hardware-ambient-private-v2.json",
+        "legacy/data/logs/gemma4-audit/voice-hardware-silence-private-v3.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-controlled-v1.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-global-v2.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-adapter-map-smoke-v7.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-b9980-40vision-idle120-global-v1.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-boundary-3072-controlled-v1.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-boundary-3328-controlled-v1.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-build-v2.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-build-v3.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-build-v4.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v4.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v5.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-smoke-global-nonlocal-v6.json",
+        "legacy/data/logs/gemma4-audit/vram-pressure-smoke-local-nonlocal-v3.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "stt_red_b9959_bf16_lexicon_pad500.json parser=json rows=1 bytes=17913 dist={\"scalar_keys\": [], \"list_lengths\": {\"rows\": 84}} | stt_red_b9959_f16.json parser=json rows=1 bytes=17649 dist={\"scalar_keys\": [], \"list_lengths\": {\"rows\": 84}} | stt_third_party_b9959_bf16.json parser=json rows=1 bytes=107105 dist={\"scalar_keys\": [], \"list_lengths\": {\"rows\": 180}} | tooling-v2-live-b9980-v2.json parser=json rows=1 bytes=5567 dist={\"scalar_keys\": [\"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"schema_version\", \"worker_exit_code\"], \"list_lengths\": {\"rows\": 8}} | tooling-v2-live-b9980.json parser=json rows=1 bytes=5617 dist={\"scalar_keys\": [\"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"schema_version\", \"worker_exit_code\"], \"list_lengths\": {\"rows\": 8}} | tooling-v2-live-dura…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "legacy/data/logs/gemma4-audit/stt_red_b9959_bf16_lexicon_pad500.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=82 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-130-baxy",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-129-baxy-baxy_legacy_data.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

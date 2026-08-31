@@ -1,0 +1,3922 @@
+{
+  "batch_id": "evidence_assets-093-baxy-baxy_art_research",
+  "source_id": "baxy",
+  "file_count": 48,
+  "hash_ok": 48,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/research/functiongemma_targeted_seed.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 228833,
+      "sha256": "688f7dfb7b5a5ef61b5bb137f7f55150cd3a64561fee939ab119fe0ac37ea4ce",
+      "rows": 80,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 80,
+          "family": 80,
+          "language": 80,
+          "operation": 80,
+          "schema": 80,
+          "source": 80,
+          "text": 80,
+          "tools": 80
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 226833,
+        "min_line_bytes": 1001,
+        "max_line_bytes": 5303,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"contract-authored-b1aff59fb5e4e746\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.mute\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v1\", \"text\": \"Deja en silencio lo…"
+          },
+          {
+            "offset": 1689,
+            "line": 2,
+            "text": "{\"case_id\": \"contract-authored-5aba49981bd43804\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.mute\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v1\", \"text\": \"Quita el mute de la…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 224856,
+            "line": 79,
+            "text": "{\"case_id\": \"contract-authored-400f4492737d1267\", \"family\": \"wifi\", \"language\": \"en\", \"operation\": \"wifi.connect\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v1\", \"text\": \"Connect the saved…"
+          },
+          {
+            "offset": 226833,
+            "line": 80,
+            "text": "{\"case_id\": \"contract-authored-58b225ef168b4af4\", \"family\": \"wifi\", \"language\": \"en\", \"operation\": \"wifi.connect\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v1\", \"text\": \"Connect that alrea…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_top5_lora_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 64975,
+      "sha256": "ee7e54fc26927085b04c156681bbe89245e646efb8b7c839c131eb0419cf68ac",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_family",
+          "by_language",
+          "candidate_operations",
+          "candidate_source",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "family_top_k",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 27,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "candidate_source",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "family_top_k",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 74
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 64974,
+        "cases_per_repeat": {
+          "min": 74,
+          "max": 74
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 39,
+          "max": 39
+        },
+        "exact_accuracy": {
+          "min": 0.527027,
+          "max": 0.527027
+        },
+        "family_top_k": {
+          "min": 5,
+          "max": 5
+        },
+        "load_seconds": {
+          "min": 1.293263,
+          "max": 1.293263
+        },
+        "peak_allocated_mib": {
+          "min": 929.2,
+          "max": 929.2
+        },
+        "peak_reserved_mib": {
+          "min": 1146.0,
+          "max": 1146.0
+        },
+        "repeats": {
+          "min": 1,
+          "max": 1
+        },
+        "samples": {
+          "min": 74,
+          "max": 74
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"candidate_source\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"family_top_k\", \"latenc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"candidate_source\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"family_top_k\", \"latenc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_top5_per_family_lora_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 201368,
+      "sha256": "03c6c8d377b27ffbbded5fe56aa82e9c0f58ad07ffb13f18a65d1892ae6ac9ce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "adapter",
+          "adapter_report",
+          "base_model",
+          "by_family",
+          "by_language",
+          "candidate_operations",
+          "candidate_source",
+          "cases_per_repeat",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "family_top_k",
+          "latency_seconds",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 27,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "adapter",
+          "candidate_source",
+          "cases_per_repeat",
+          "effects_executed",
+          "exact",
+          "exact_accuracy",
+          "family",
+          "family_top_k",
+          "load_seconds",
+          "measured_at_utc",
+          "oracle",
+          "oracle_sha256",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "repeats",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 74
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 201367,
+        "cases_per_repeat": {
+          "min": 74,
+          "max": 74
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 36,
+          "max": 36
+        },
+        "exact_accuracy": {
+          "min": 0.486486,
+          "max": 0.486486
+        },
+        "family_top_k": {
+          "min": 5,
+          "max": 5
+        },
+        "load_seconds": {
+          "min": 1.145055,
+          "max": 1.145055
+        },
+        "peak_allocated_mib": {
+          "min": 636.0,
+          "max": 636.0
+        },
+        "peak_reserved_mib": {
+          "min": 730.0,
+          "max": 730.0
+        },
+        "repeats": {
+          "min": 1,
+          "max": 1
+        },
+        "samples": {
+          "min": 74,
+          "max": 74
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"candidate_source\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"family_top_k\", \"latenc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"adapter\", \"adapter_report\", \"base_model\", \"by_family\", \"by_language\", \"candidate_operations\", \"candidate_source\", \"cases_per_repeat\", \"confusions\", \"effects_executed\", \"exact\", \"exact_accuracy\", \"family\", \"family_top_k\", \"latenc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_training_corpus.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4554858,
+      "sha256": "b27e871a49aacd0f1e527235422547a21ceb0fabcb01505a4f687ad3ed51ba18",
+      "rows": 1933,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 1933,
+          "family": 1933,
+          "language": 1933,
+          "operation": 1933,
+          "schema": 1933,
+          "source": 1933,
+          "text": 1933,
+          "tools": 1933
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4553266,
+        "min_line_bytes": 765,
+        "max_line_bytes": 5382,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"audio-seed-000232b74b943d00\", \"family\": \"audio\", \"language\": \"en\", \"operation\": \"audio.volume\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.volume\", \"text\": \"set the volume to 30 percent\", \"too…"
+          },
+          {
+            "offset": 1655,
+            "line": 2,
+            "text": "{\"case_id\": \"audio-seed-00292c436d6b87c9\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.volume\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.volume\", \"text\": \"Subi el volumen al 80 por ciento\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4551562,
+            "line": 1932,
+            "text": "{\"case_id\": \"failure-authored-fd721d4d23182cd0\", \"family\": \"browser\", \"language\": \"es\", \"operation\": \"browser.navigate.named\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Usa Op…"
+          },
+          {
+            "offset": 4553266,
+            "line": 1933,
+            "text": "{\"case_id\": \"failure-authored-fe09857b9b9e7ee1\", \"family\": \"clipboard\", \"language\": \"en\", \"operation\": \"clipboard.write.text\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Write…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_training_corpus.v1.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2114,
+      "sha256": "312c9c64ad30dd36541948a003aa8888e3ac92add5bc751981c4767f0b11a277",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "inputs",
+          "languages",
+          "maximum_examples_per_operation",
+          "minimum_examples_per_operation",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "maximum_examples_per_operation",
+          "minimum_examples_per_operation",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "list_lengths": {
+          "inputs": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2113,
+        "maximum_examples_per_operation": {
+          "min": 137,
+          "max": 137
+        },
+        "minimum_examples_per_operation": {
+          "min": 4,
+          "max": 4
+        },
+        "operations": {
+          "min": 169,
+          "max": 169
+        },
+        "rows": {
+          "min": 1933,
+          "max": 1933
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"inputs\", \"languages\", \"maximum_examples_per_operation\", \"minimum_examples_per_operation\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"inputs\", \"languages\", \"maximum_examples_per_operation\", \"minimum_examples_per_operation\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_training_corpus.v2.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 11356990,
+      "sha256": "6d9a9f6f2f8d23a92a30e36b5a1d880a7a36025ea6974ed4d24b155cde88f17f",
+      "rows": 4670,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 4670,
+          "family": 4670,
+          "language": 4670,
+          "operation": 4670,
+          "schema": 4670,
+          "source": 4670,
+          "text": 4670,
+          "tools": 4670
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11355398,
+        "min_line_bytes": 759,
+        "max_line_bytes": 5399,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"audio-seed-000232b74b943d00\", \"family\": \"audio\", \"language\": \"en\", \"operation\": \"audio.volume\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.volume\", \"text\": \"set the volume to 30 percent\", \"too…"
+          },
+          {
+            "offset": 1655,
+            "line": 2,
+            "text": "{\"case_id\": \"audio-seed-00292c436d6b87c9\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.volume\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.volume\", \"text\": \"Subi el volumen al 80 por ciento\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 11353694,
+            "line": 4669,
+            "text": "{\"case_id\": \"failure-authored-fd721d4d23182cd0\", \"family\": \"browser\", \"language\": \"es\", \"operation\": \"browser.navigate.named\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Usa Op…"
+          },
+          {
+            "offset": 11355398,
+            "line": 4670,
+            "text": "{\"case_id\": \"failure-authored-fe09857b9b9e7ee1\", \"family\": \"clipboard\", \"language\": \"en\", \"operation\": \"clipboard.write.text\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-targeted-v2\", \"text\": \"Write…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_training_corpus.v2.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2116,
+      "sha256": "bdfb4a747353e894811fb3322b7cc3f768b9aeb49bcd2e52b356f8dda54647eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "inputs",
+          "languages",
+          "maximum_examples_per_operation",
+          "minimum_examples_per_operation",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "maximum_examples_per_operation",
+          "minimum_examples_per_operation",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "list_lengths": {
+          "inputs": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2115,
+        "maximum_examples_per_operation": {
+          "min": 149,
+          "max": 149
+        },
+        "minimum_examples_per_operation": {
+          "min": 6,
+          "max": 6
+        },
+        "operations": {
+          "min": 170,
+          "max": 170
+        },
+        "rows": {
+          "min": 4670,
+          "max": 4670
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"inputs\", \"languages\", \"maximum_examples_per_operation\", \"minimum_examples_per_operation\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"inputs\", \"languages\", \"maximum_examples_per_operation\", \"minimum_examples_per_operation\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_training_corpus.v3.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 11497818,
+      "sha256": "9370207421d59fb3f464a50c33c504a6fd43335d35e71671829054b0a0aff77d",
+      "rows": 4740,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "case_id",
+          "family",
+          "language",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools"
+        ],
+        "key_freq": {
+          "case_id": 4740,
+          "family": 4740,
+          "language": 4740,
+          "operation": 4740,
+          "schema": 4740,
+          "source": 4740,
+          "text": 4740,
+          "tools": 4740
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11495771,
+        "min_line_bytes": 759,
+        "max_line_bytes": 5399,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"case_id\": \"audio-seed-000232b74b943d00\", \"family\": \"audio\", \"language\": \"en\", \"operation\": \"audio.volume\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.volume\", \"text\": \"set the volume to 30 percent\", \"too…"
+          },
+          {
+            "offset": 1655,
+            "line": 2,
+            "text": "{\"case_id\": \"audio-seed-00292c436d6b87c9\", \"family\": \"audio\", \"language\": \"es\", \"operation\": \"audio.volume\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"historical:audio.volume\", \"text\": \"Subi el volumen al 80 por ciento\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 11493718,
+            "line": 4739,
+            "text": "{\"case_id\": \"r4-repair-fc117282b36223d5\", \"family\": \"notification\", \"language\": \"es\", \"operation\": \"notification.cancel.latest\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-r4-repair-v1\", \"text\": \"Can…"
+          },
+          {
+            "offset": 11495771,
+            "line": 4740,
+            "text": "{\"case_id\": \"r4-repair-fda2a748f7c2ee95\", \"family\": \"notification\", \"language\": \"es\", \"operation\": \"notification.dismiss\", \"schema\": \"baxy.functiongemma-selection-row.v1\", \"source\": \"core-contract-authored-r4-repair-v1\", \"text\": \"Detén el…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_training_corpus.v3.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1586,
+      "sha256": "9b73f54b1af7e6532547f135ce21e39a37be5e66c43704ecc508cddc6661fa5f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "inputs",
+          "languages",
+          "maximum_examples_per_operation",
+          "minimum_examples_per_operation",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "maximum_examples_per_operation",
+          "minimum_examples_per_operation",
+          "operations",
+          "output",
+          "output_sha256",
+          "rows",
+          "schema"
+        ],
+        "list_lengths": {
+          "inputs": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1585,
+        "maximum_examples_per_operation": {
+          "min": 149,
+          "max": 149
+        },
+        "minimum_examples_per_operation": {
+          "min": 6,
+          "max": 6
+        },
+        "operations": {
+          "min": 170,
+          "max": 170
+        },
+        "rows": {
+          "min": 4740,
+          "max": 4740
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"inputs\", \"languages\", \"maximum_examples_per_operation\", \"minimum_examples_per_operation\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"inputs\", \"languages\", \"maximum_examples_per_operation\", \"minimum_examples_per_operation\", \"operations\", \"output\", \"output_sha256\", \"rows\", \"schema\", \"sources\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_verifier_corpus.v1.report.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1061,
+      "sha256": "df7c1699002b2bcc176078dae3707663ae2ad446739634e1c40390e1fbfbdd33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "base_rows",
+          "built_at_utc",
+          "catalog_hash",
+          "effects_executed",
+          "fit_base_rows",
+          "normalised_exact_dev_overlap",
+          "normalised_train_validation_overlap",
+          "runtime_manifest_changed",
+          "schema",
+          "source",
+          "source_sha256",
+          "train",
+          "train_rows",
+          "validation",
+          "validation_base_rows",
+          "validation_rows"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "base_rows",
+          "built_at_utc",
+          "catalog_hash",
+          "effects_executed",
+          "fit_base_rows",
+          "normalised_exact_dev_overlap",
+          "normalised_train_validation_overlap",
+          "runtime_manifest_changed",
+          "schema",
+          "source",
+          "source_sha256",
+          "train_rows",
+          "validation_base_rows",
+          "validation_rows"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1060,
+        "base_rows": {
+          "min": 1892,
+          "max": 1892
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "fit_base_rows": {
+          "min": 1506,
+          "max": 1506
+        },
+        "normalised_exact_dev_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "normalised_train_validation_overlap": {
+          "min": 0,
+          "max": 0
+        },
+        "train_rows": {
+          "min": 4501,
+          "max": 4501
+        },
+        "validation_base_rows": {
+          "min": 386,
+          "max": 386
+        },
+        "validation_rows": {
+          "min": 1154,
+          "max": 1154
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"base_rows\", \"built_at_utc\", \"catalog_hash\", \"effects_executed\", \"fit_base_rows\", \"normalised_exact_dev_overlap\", \"normalised_train_validation_overlap\", \"runtime_manifest_changed\", \"schema\", \"source\", \"source_sha256\", \"train\", \"t…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"base_rows\", \"built_at_utc\", \"catalog_hash\", \"effects_executed\", \"fit_base_rows\", \"normalised_exact_dev_overlap\", \"normalised_train_validation_overlap\", \"runtime_manifest_changed\", \"schema\", \"source\", \"source_sha256\", \"train\", \"t…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_verifier_scored_validation_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 564656,
+      "sha256": "86b05fcfd65d8596b2f225788b04ad2742c3baf4bed797c587d7e5c48b5e5331",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy",
+          "adapter",
+          "base_model",
+          "batch_size",
+          "by_negative_kind",
+          "by_verdict",
+          "cases",
+          "cases_sha256",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "forward_batch_seconds",
+          "forward_rows_per_second",
+          "measured_at_utc",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy",
+          "adapter",
+          "base_model",
+          "batch_size",
+          "cases",
+          "cases_sha256",
+          "effects_executed",
+          "exact",
+          "forward_rows_per_second",
+          "measured_at_utc",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 1154
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 564655,
+        "accuracy": {
+          "min": 0.817158,
+          "max": 0.817158
+        },
+        "batch_size": {
+          "min": 4,
+          "max": 4
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 943,
+          "max": 943
+        },
+        "forward_rows_per_second": {
+          "min": 11.288,
+          "max": 11.288
+        },
+        "peak_allocated_mib": {
+          "min": 2666.0,
+          "max": 2666.0
+        },
+        "peak_reserved_mib": {
+          "min": 12146.0,
+          "max": 12146.0
+        },
+        "samples": {
+          "min": 1154,
+          "max": 1154
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"adapter\", \"base_model\", \"batch_size\", \"by_negative_kind\", \"by_verdict\", \"cases\", \"cases_sha256\", \"confusions\", \"effects_executed\", \"exact\", \"forward_batch_seconds\", \"forward_rows_per_second\", \"measured_at_utc\", \"peak…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"adapter\", \"base_model\", \"batch_size\", \"by_negative_kind\", \"by_verdict\", \"cases\", \"cases_sha256\", \"confusions\", \"effects_executed\", \"exact\", \"forward_batch_seconds\", \"forward_rows_per_second\", \"measured_at_utc\", \"peak…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_verifier_tool_e5.v1.npz": {
+      "parser": "binary_inventory",
+      "bytes": 237383,
+      "sha256": "6ebb0629e524b3e07dba79034f7b75e2cfef5dc08cd6b9149aa2f9e5e404e866",
+      "format": "zip",
+      "magic_hex": "504b03042d000000080000002100fcc4",
+      "provenance": {
+        "source_id": "baxy",
+        "path": "artifacts/research/functiongemma_verifier_tool_e5.v1.npz"
+      },
+      "recipe": "identity from 09.5.1 queued hash + on-disk inventory; no retraining",
+      "consumers": "FunctionGemma finetune / llama-server tool-calling",
+      "associated_benchmark": "none recovered in this campaign",
+      "exists": true,
+      "works": false,
+      "existence_means_works": false,
+      "smoke": "skipped",
+      "extra": {},
+      "rows": 0,
+      "schema": {
+        "format": "zip"
+      },
+      "distribution": {},
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 237382
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 0,
+            "text": "magic=504b03042d000000080000002100fcc4 format=zip"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 237382,
+            "line": 0,
+            "text": "eof bytes=237383"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_verifier_train.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 4695250,
+      "sha256": "c75c7c89063fcf3db865b4ed5e651dfd0cfc60930b01ec2ac9bbcbe4f5d92430",
+      "rows": 4501,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "balance_key",
+          "base_case_id",
+          "base_operation",
+          "base_source",
+          "candidate_operation",
+          "case_id",
+          "language",
+          "negative_kind",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools",
+          "verdict"
+        ],
+        "key_freq": {
+          "balance_key": 4501,
+          "base_case_id": 4501,
+          "base_operation": 4501,
+          "base_source": 4501,
+          "candidate_operation": 4501,
+          "case_id": 4501,
+          "language": 4501,
+          "negative_kind": 4501,
+          "operation": 4501,
+          "schema": 4501,
+          "source": 4501,
+          "text": 4501,
+          "tools": 4501,
+          "verdict": 4501
+        }
+      },
+      "distribution": {
+        "status": {
+          "verdict=reject": 2995,
+          "verdict=accept": 1506
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4694219,
+        "min_line_bytes": 909,
+        "max_line_bytes": 1318,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"balance_key\": \"audio.volume|positive\", \"base_case_id\": \"audio-seed-000232b74b943d00\", \"base_operation\": \"audio.volume\", \"base_source\": \"historical:audio.volume\", \"candidate_operation\": \"audio.volume\", \"case_id\": \"verify-576a254d1e3a5f081…"
+          },
+          {
+            "offset": 951,
+            "line": 2,
+            "text": "{\"balance_key\": \"audio.status|negative\", \"base_case_id\": \"audio-seed-000232b74b943d00\", \"base_operation\": \"audio.volume\", \"base_source\": \"historical:audio.volume\", \"candidate_operation\": \"audio.status\", \"case_id\": \"verify-c2026b93f9f62390d…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 4693209,
+            "line": 4500,
+            "text": "{\"balance_key\": \"browser.navigate|negative\", \"base_case_id\": \"failure-authored-fd721d4d23182cd0\", \"base_operation\": \"browser.navigate.named\", \"base_source\": \"core-contract-authored-targeted-v2\", \"candidate_operation\": \"browser.navigate\", \"…"
+          },
+          {
+            "offset": 4694219,
+            "line": 4501,
+            "text": "{\"balance_key\": \"game.install.commit|negative\", \"base_case_id\": \"failure-authored-fd721d4d23182cd0\", \"base_operation\": \"browser.navigate.named\", \"base_source\": \"core-contract-authored-targeted-v2\", \"candidate_operation\": \"game.install.comm…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_verifier_validation.v1.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 1209945,
+      "sha256": "ca531cff688f57181be3cae1610223aaa12da6c836e5845c57abf1fa50a2b0a0",
+      "rows": 1154,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "balance_key",
+          "base_case_id",
+          "base_operation",
+          "base_source",
+          "candidate_operation",
+          "case_id",
+          "language",
+          "negative_kind",
+          "operation",
+          "schema",
+          "source",
+          "text",
+          "tools",
+          "verdict"
+        ],
+        "key_freq": {
+          "balance_key": 1154,
+          "base_case_id": 1154,
+          "base_operation": 1154,
+          "base_source": 1154,
+          "candidate_operation": 1154,
+          "case_id": 1154,
+          "language": 1154,
+          "negative_kind": 1154,
+          "operation": 1154,
+          "schema": 1154,
+          "source": 1154,
+          "text": 1154,
+          "tools": 1154,
+          "verdict": 1154
+        }
+      },
+      "distribution": {
+        "status": {
+          "verdict=reject": 768,
+          "verdict=accept": 386
+        },
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1208971,
+        "min_line_bytes": 912,
+        "max_line_bytes": 1300,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"balance_key\": \"audio.volume|positive\", \"base_case_id\": \"audio-seed-0b3270b2aa1f6bf5\", \"base_operation\": \"audio.volume\", \"base_source\": \"historical:audio.volume\", \"candidate_operation\": \"audio.volume\", \"case_id\": \"verify-678871f11fd4c0fc0…"
+          },
+          {
+            "offset": 954,
+            "line": 2,
+            "text": "{\"balance_key\": \"audio.status|negative\", \"base_case_id\": \"audio-seed-0b3270b2aa1f6bf5\", \"base_operation\": \"audio.volume\", \"base_source\": \"historical:audio.volume\", \"candidate_operation\": \"audio.status\", \"case_id\": \"verify-9309e58d0ba508c20…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 1207949,
+            "line": 1153,
+            "text": "{\"balance_key\": \"clipboard.read.text|negative\", \"base_case_id\": \"failure-authored-fe09857b9b9e7ee1\", \"base_operation\": \"clipboard.write.text\", \"base_source\": \"core-contract-authored-targeted-v2\", \"candidate_operation\": \"clipboard.read.text…"
+          },
+          {
+            "offset": 1208971,
+            "line": 1154,
+            "text": "{\"balance_key\": \"routine.read|negative\", \"base_case_id\": \"failure-authored-fe09857b9b9e7ee1\", \"base_operation\": \"clipboard.write.text\", \"base_source\": \"core-contract-authored-targeted-v2\", \"candidate_operation\": \"routine.read\", \"case_id\":…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/functiongemma_verifier_validation_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 593648,
+      "sha256": "96faaee6d7714b28bfcfe4cc2874840245ef4f3e4258a4a4686a391a0376dff4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accuracy",
+          "adapter",
+          "base_model",
+          "batch_size",
+          "by_negative_kind",
+          "by_verdict",
+          "cases",
+          "cases_sha256",
+          "confusions",
+          "effects_executed",
+          "exact",
+          "latency_seconds_per_batch",
+          "load_seconds",
+          "measured_at_utc",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "rows",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope",
+          "throughput_rows_per_second"
+        ],
+        "n_keys": 22,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "accuracy",
+          "adapter",
+          "base_model",
+          "batch_size",
+          "cases",
+          "cases_sha256",
+          "effects_executed",
+          "exact",
+          "load_seconds",
+          "measured_at_utc",
+          "peak_allocated_mib",
+          "peak_reserved_mib",
+          "runtime_manifest_changed",
+          "samples",
+          "schema",
+          "scope",
+          "throughput_rows_per_second"
+        ],
+        "list_lengths": {
+          "rows": 1154
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 593647,
+        "accuracy": {
+          "min": 0.785962,
+          "max": 0.785962
+        },
+        "batch_size": {
+          "min": 32,
+          "max": 32
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "exact": {
+          "min": 907,
+          "max": 907
+        },
+        "load_seconds": {
+          "min": 1.314156,
+          "max": 1.314156
+        },
+        "peak_allocated_mib": {
+          "min": 824.2,
+          "max": 824.2
+        },
+        "peak_reserved_mib": {
+          "min": 1048.0,
+          "max": 1048.0
+        },
+        "samples": {
+          "min": 1154,
+          "max": 1154
+        },
+        "throughput_rows_per_second": {
+          "min": 25.628,
+          "max": 25.628
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"adapter\", \"base_model\", \"batch_size\", \"by_negative_kind\", \"by_verdict\", \"cases\", \"cases_sha256\", \"confusions\", \"effects_executed\", \"exact\", \"latency_seconds_per_batch\", \"load_seconds\", \"measured_at_utc\", \"peak_alloca…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accuracy\", \"adapter\", \"base_model\", \"batch_size\", \"by_negative_kind\", \"by_verdict\", \"cases\", \"cases_sha256\", \"confusions\", \"effects_executed\", \"exact\", \"latency_seconds_per_batch\", \"load_seconds\", \"measured_at_utc\", \"peak_alloca…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/google_fleurs_stt_source_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4405,
+      "sha256": "77abe8156fe7170422b20e56b403f3e22bbe1bb8bedce6efc89f91d7cfd2caf9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acquiredAtUtc",
+          "canonicalSource",
+          "convertedParquetSnapshot",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "files",
+          "localRoot",
+          "measurementDiscipline",
+          "modelAudioDecoded",
+          "modelContaminationAudit",
+          "observedStructuralCoverage",
+          "parquetPayloadRowsRead",
+          "repositorySnapshot",
+          "role",
+          "schema",
+          "transcriptsInspected",
+          "wakeProgramTree"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "acquiredAtUtc",
+          "corpusSelectionFrozen",
+          "effectsExecuted",
+          "evaluationStatus",
+          "localRoot",
+          "modelAudioDecoded",
+          "parquetPayloadRowsRead",
+          "role",
+          "schema",
+          "transcriptsInspected"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4404,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acquiredAtUtc\", \"canonicalSource\", \"convertedParquetSnapshot\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationStatus\", \"files\", \"localRoot\", \"measurementDiscipline\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"obser…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acquiredAtUtc\", \"canonicalSource\", \"convertedParquetSnapshot\", \"corpusSelectionFrozen\", \"effectsExecuted\", \"evaluationStatus\", \"files\", \"localRoot\", \"measurementDiscipline\", \"modelAudioDecoded\", \"modelContaminationAudit\", \"obser…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/hyperspotter_baxy_feasibility.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2808,
+      "sha256": "1bb46c872f80cda90e1b1ab0b5eccaaa6d94056ba4947ad13d10d5e8ce1e059d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "best_development_threshold",
+          "candidate_status",
+          "effects_executed",
+          "latency",
+          "measured_at_utc",
+          "method",
+          "promotable",
+          "promotion_note",
+          "rejection",
+          "sample",
+          "schema",
+          "scores",
+          "threshold_0_5"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_status",
+          "effects_executed",
+          "measured_at_utc",
+          "promotable",
+          "promotion_note",
+          "rejection",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2807,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"best_development_threshold\", \"candidate_status\", \"effects_executed\", \"latency\", \"measured_at_utc\", \"method\", \"promotable\", \"promotion_note\", \"rejection\", \"sample\", \"schema\", \"scores\", \"threshold_0_5\"], \"n_keys\": 13, \"root\": \"obj…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"best_development_threshold\", \"candidate_status\", \"effects_executed\", \"latency\", \"measured_at_utc\", \"method\", \"promotable\", \"promotion_note\", \"rejection\", \"sample\", \"schema\", \"scores\", \"threshold_0_5\"], \"n_keys\": 13, \"root\": \"obj…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/hyperspotter_conformer_opened_wake_pilot_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 121530,
+      "sha256": "023f393e3883acaa247951b02055fd4be6695cc82468ae9154de1c6672f4dbb0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "checkpoint",
+          "contract",
+          "corpora",
+          "developmentPassed",
+          "effectsExecuted",
+          "filenamesOrTranscriptsRetained",
+          "inputsSha256",
+          "measuredAtUtc",
+          "promotionEligible",
+          "role",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "developmentPassed",
+          "effectsExecuted",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "promotionEligible",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {
+          "corpora": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 121529,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"checkpoint\", \"contract\", \"corpora\", \"developmentPassed\", \"effectsExecuted\", \"filenamesOrTranscriptsRetained\", \"inputsSha256\", \"measuredAtUtc\", \"promotion…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"checkpoint\", \"contract\", \"corpora\", \"developmentPassed\", \"effectsExecuted\", \"filenamesOrTranscriptsRetained\", \"inputsSha256\", \"measuredAtUtc\", \"promotion…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/hyperspotter_open_vocabulary_wake_pilot_binding_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3901,
+      "sha256": "f07e27d83e6e9521a109d5911997acbbb6562b637692253402eaba36f85c04fe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "contract",
+          "corpora",
+          "createdAtUtc",
+          "interpretation",
+          "jobs",
+          "preflightHistory",
+          "preregistrationSha256",
+          "programSha256",
+          "role",
+          "runtimeVersions",
+          "schema",
+          "sourceArchiveSha256",
+          "sourceCommit",
+          "sourceTreeSha256",
+          "testSha256"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "preregistrationSha256",
+          "programSha256",
+          "role",
+          "schema",
+          "sourceArchiveSha256",
+          "sourceCommit",
+          "sourceTreeSha256",
+          "testSha256"
+        ],
+        "list_lengths": {
+          "preflightHistory": 2,
+          "corpora": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3900
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contract\", \"corpora\", \"createdAtUtc\", \"interpretation\", \"jobs\", \"preflightHistory\", \"preregistrationSha256\", \"programSha256\", \"role\", \"runtimeVersions\", \"schema\", \"sourceArchiveSha256\", \"sourceCommit\", \"sourceTreeSha256\", \"testS…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contract\", \"corpora\", \"createdAtUtc\", \"interpretation\", \"jobs\", \"preflightHistory\", \"preregistrationSha256\", \"programSha256\", \"role\", \"runtimeVersions\", \"schema\", \"sourceArchiveSha256\", \"sourceCommit\", \"sourceTreeSha256\", \"testS…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/hyperspotter_open_vocabulary_wake_pilot_binding_whisper_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4258,
+      "sha256": "f4b5d8724c916ba9dda6af041f7e5f601932d16f91e60d0fdfc01a8de54e1739",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "contract",
+          "corpora",
+          "createdAtUtc",
+          "interpretation",
+          "jobs",
+          "preflightHistory",
+          "preregistrationSha256",
+          "programSha256",
+          "role",
+          "runtimeVersions",
+          "schema",
+          "sourceArchiveSha256",
+          "sourceCommit",
+          "sourceTreeSha256",
+          "testSha256"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "preregistrationSha256",
+          "programSha256",
+          "role",
+          "schema",
+          "sourceArchiveSha256",
+          "sourceCommit",
+          "sourceTreeSha256",
+          "testSha256"
+        ],
+        "list_lengths": {
+          "preflightHistory": 3,
+          "corpora": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4257
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contract\", \"corpora\", \"createdAtUtc\", \"interpretation\", \"jobs\", \"preflightHistory\", \"preregistrationSha256\", \"programSha256\", \"role\", \"runtimeVersions\", \"schema\", \"sourceArchiveSha256\", \"sourceCommit\", \"sourceTreeSha256\", \"testS…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"contract\", \"corpora\", \"createdAtUtc\", \"interpretation\", \"jobs\", \"preflightHistory\", \"preregistrationSha256\", \"programSha256\", \"role\", \"runtimeVersions\", \"schema\", \"sourceArchiveSha256\", \"sourceCommit\", \"sourceTreeSha256\", \"testS…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/hyperspotter_open_vocabulary_wake_pilot_preregistration_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2617,
+      "sha256": "d59a455671be79aa6a761e7f70f0555475f59b5f484058e556400386fa2bcd89",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidateArchitectures",
+          "contract",
+          "createdAtUtc",
+          "externalDirectory",
+          "interpretationRules",
+          "openedInputs",
+          "purpose",
+          "requiredPilotEvidence",
+          "role",
+          "schema",
+          "sources"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "createdAtUtc",
+          "externalDirectory",
+          "purpose",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {
+          "candidateArchitectures": 2,
+          "interpretationRules": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2616
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidateArchitectures\", \"contract\", \"createdAtUtc\", \"externalDirectory\", \"interpretationRules\", \"openedInputs\", \"purpose\", \"requiredPilotEvidence\", \"role\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidateArchitectures\", \"contract\", \"createdAtUtc\", \"externalDirectory\", \"interpretationRules\", \"openedInputs\", \"purpose\", \"requiredPilotEvidence\", \"role\", \"schema\", \"sources\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/hyperspotter_whisper_opened_wake_pilot_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 121056,
+      "sha256": "bb2d35a2cb7d9574091030e49ce2435b4b5f385b2d8e1c5dab76a318ad91afad",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "checkpoint",
+          "contract",
+          "corpora",
+          "developmentPassed",
+          "effectsExecuted",
+          "filenamesOrTranscriptsRetained",
+          "inputsSha256",
+          "measuredAtUtc",
+          "promotionEligible",
+          "role",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "developmentPassed",
+          "effectsExecuted",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "promotionEligible",
+          "role",
+          "schema"
+        ],
+        "list_lengths": {
+          "corpora": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 121055,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"checkpoint\", \"contract\", \"corpora\", \"developmentPassed\", \"effectsExecuted\", \"filenamesOrTranscriptsRetained\", \"inputsSha256\", \"measuredAtUtc\", \"promotion…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"checkpoint\", \"contract\", \"corpora\", \"developmentPassed\", \"effectsExecuted\", \"filenamesOrTranscriptsRetained\", \"inputsSha256\", \"measuredAtUtc\", \"promotion…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_embedding_speaker_generalization_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 34061,
+      "sha256": "7914408d2496ca97e37e02919d91d9f08737436060015cd7d9f9cccb7518f8b5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "conclusion_contract",
+          "effects_executed",
+          "measured_at_utc",
+          "models",
+          "product_operating_point",
+          "schema",
+          "scope",
+          "seed",
+          "sources",
+          "weights"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "conclusion_contract",
+          "effects_executed",
+          "measured_at_utc",
+          "product_operating_point",
+          "schema",
+          "scope",
+          "seed"
+        ],
+        "list_lengths": {
+          "models": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 34060,
+        "seed": {
+          "min": 20260804,
+          "max": 20260804
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"conclusion_contract\", \"effects_executed\", \"measured_at_utc\", \"models\", \"product_operating_point\", \"schema\", \"scope\", \"seed\", \"sources\", \"weights\"], \"n_keys\": 12, \"root\": \"obj…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"conclusion_contract\", \"effects_executed\", \"measured_at_utc\", \"models\", \"product_operating_point\", \"schema\", \"scope\", \"seed\", \"sources\", \"weights\"], \"n_keys\": 12, \"root\": \"obj…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_baxy_feasibility.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 11590,
+      "sha256": "062b128177fa7aa57bcec641418c7af4645f4cdaea7bbe3f722ac0b1fd6763dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "effects_executed",
+          "experiments",
+          "external_data",
+          "measured_at_utc",
+          "method",
+          "promotable",
+          "research_basis",
+          "scale_campaign",
+          "schema",
+          "source_sha256",
+          "upstream"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "effects_executed",
+          "measured_at_utc",
+          "promotable",
+          "schema"
+        ],
+        "list_lengths": {
+          "experiments": 2,
+          "research_basis": 10
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 11589,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"experiments\", \"external_data\", \"measured_at_utc\", \"method\", \"promotable\", \"research_basis\", \"scale_campaign\", \"schema\", \"source_sha256\", \"upstream\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"effects_executed\", \"experiments\", \"external_data\", \"measured_at_utc\", \"method\", \"promotable\", \"research_basis\", \"scale_campaign\", \"schema\", \"source_sha256\", \"upstream\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_candidate4_negative_test_ctc_cascade.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 637484,
+      "sha256": "c4c4443beaaec9d6c3e5f4b94f2692fdbb67c17ddf1638953d2ba711c8a2fc47",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "ctc_verifier",
+          "effects_executed",
+          "far_claim_supported",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "livekit",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "reason_far_claim_not_supported",
+          "records",
+          "runtime",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "effects_executed",
+          "far_claim_supported",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "reason_far_claim_not_supported",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "list_lengths": {
+          "records": 1452
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 637483,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"ctc_verifier\", \"effects_executed\", \"far_claim_supported\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"ctc_verifier\", \"effects_executed\", \"far_claim_supported\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha2…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_candidate4_negative_test_ctc_cascade_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 630551,
+      "sha256": "d8dd171e366754bf16d3295421e77564b5ab25ddd394ce6867063dbcc4828f8f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "ctc_verifier",
+          "effects_executed",
+          "far_claim_supported",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "livekit",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "reason_far_claim_not_supported",
+          "records",
+          "runtime",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "effects_executed",
+          "far_claim_supported",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "reason_far_claim_not_supported",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "list_lengths": {
+          "records": 1452
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 630550,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"ctc_verifier\", \"effects_executed\", \"far_claim_supported\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"ctc_verifier\", \"effects_executed\", \"far_claim_supported\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha2…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_candidate4_negative_test_ctc_cascade_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 612045,
+      "sha256": "9eaf01bc38493b4c4293371c2cc40a53b63f3ac2d9527db494fd9715f2d33146",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "ctc_verifier",
+          "effects_executed",
+          "far_claim_supported",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "livekit",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "reason_far_claim_not_supported",
+          "records",
+          "runtime",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "effects_executed",
+          "far_claim_supported",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "reason_far_claim_not_supported",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "list_lengths": {
+          "records": 1452
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 612044,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"ctc_verifier\", \"effects_executed\", \"far_claim_supported\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha2…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"ctc_verifier\", \"effects_executed\", \"far_claim_supported\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha2…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_candidate4_negative_test_parakeet.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 981727,
+      "sha256": "623b20febf79377a5e011ca6625f4096a8e073af9cd1bebbe3022b05acf629eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_seconds",
+          "blind_human_partition_accessed",
+          "clips",
+          "effects_executed",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "lexical_proposals",
+          "measured_at_utc",
+          "ordered_wav_set_sha256",
+          "parakeet",
+          "records",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_seconds",
+          "blind_human_partition_accessed",
+          "clips",
+          "effects_executed",
+          "feature_file",
+          "feature_sha256",
+          "independent_holdout",
+          "lexical_proposals",
+          "measured_at_utc",
+          "ordered_wav_set_sha256",
+          "schema",
+          "scope",
+          "wav_directory"
+        ],
+        "list_lengths": {
+          "records": 1452
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 981726,
+        "clips": {
+          "min": 1452,
+          "max": 1452
+        },
+        "audio_seconds": {
+          "min": 2904.0,
+          "max": 2904.0
+        },
+        "lexical_proposals": {
+          "min": 4,
+          "max": 4
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_seconds\", \"blind_human_partition_accessed\", \"clips\", \"effects_executed\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"lexical_proposals\", \"measured_at_utc\", \"ordered_wav_set_sha256\", \"parakeet\", \"records\", \"sc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_seconds\", \"blind_human_partition_accessed\", \"clips\", \"effects_executed\", \"feature_file\", \"feature_sha256\", \"independent_holdout\", \"lexical_proposals\", \"measured_at_utc\", \"ordered_wav_set_sha256\", \"parakeet\", \"records\", \"sc…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_ctc_cascade.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 47684,
+      "sha256": "75bcb7b6a93af37f4f27f67ab92b0c51548cce7a3651a8805331070e28056430",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "ctc_verifier",
+          "effects_executed",
+          "livekit",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "partition",
+          "preregistration_sha256",
+          "records",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "partition",
+          "preregistration_sha256",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 47683,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_verifier\", \"effects_executed\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_verifier\", \"effects_executed\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_ctc_cascade_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 74229,
+      "sha256": "c851f6330d93f564b7600016f65e80c1435cc27f3c6ee5a2f1b5af0c355c3cd3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "ctc_verifier",
+          "effects_executed",
+          "livekit",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "partition",
+          "preregistration_sha256",
+          "records",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "partition",
+          "preregistration_sha256",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 74228,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_verifier\", \"effects_executed\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_verifier\", \"effects_executed\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_ctc_cascade_v3.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 70466,
+      "sha256": "dd47b3ceb03d9ad168edf18838dd5fcbcc5c8a3d45479457f07a9f45ced7e709",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "ctc_verifier",
+          "effects_executed",
+          "livekit",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "partition",
+          "preregistration_sha256",
+          "records",
+          "runtime",
+          "schema"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "partition",
+          "preregistration_sha256",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 70465,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_verifier\", \"effects_executed\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"blind_human_partition_accessed\", \"candidate_frozen\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_verifier\", \"effects_executed\", \"livekit\", \"measured_at_utc\", \"metrics\", \"parakeet_audit\", \"parakeet_audit_sha…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_hard_negative_expanded_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7371,
+      "sha256": "c8aa24602d6044f5883362ffb0197d3e8b539df6ef450d978a05bb29644deec3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "positive_ipa_policy",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "positive_ipa_policy",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 6,
+          "records": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7370,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_parakeet_proposals.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18940,
+      "sha256": "8876d2225e2e877ec122a1c379db5030b01bc7e252686e40ed9784ee8ed52088",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "parakeet",
+          "partition",
+          "preregistration_sha256",
+          "purpose",
+          "records",
+          "schema"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "partition",
+          "preregistration_sha256",
+          "purpose",
+          "schema"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18939,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"parakeet\", \"partition\", \"preregistration_sha256\", \"purpose\", \"re…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"parakeet\", \"partition\", \"preregistration_sha256\", \"purpose\", \"re…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_positive_expanded_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 18254,
+      "sha256": "87bef14f54c18c4b84a2e099eaee367e75f8a8449520bd44fc28380a77cbb66c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "positive_ipa_policy",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_scores_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "positive_ipa_policy",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_label",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_partition",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 6,
+          "records": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18253,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_scores_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_ccby_development_positive_ipa.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17862,
+      "sha256": "412038066fef84930f0719dde6ed8f9a5deee87bafd9ee08a0d2413a84d9746e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "phoneme_recognizer",
+          "records",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "all_clips_exact_after_source_transform",
+          "blind_human_partition_accessed",
+          "candidate_model_training_started",
+          "checkpoint_resumed_record_count",
+          "class_label",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "selection_boundary_passed",
+          "source_filter",
+          "source_generation",
+          "source_manifest",
+          "source_manifest_schema",
+          "source_manifest_sha256",
+          "source_model",
+          "source_runtime"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "records": 14
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17861,
+        "checkpoint_resumed_record_count": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"all_clips_exact_after_source_transform\", \"blind_human_partition_accessed\", \"candidate_model_training_started\", \"checkpoint_resumed_record_count\", \"class_label\", \"effects_executed\", \"measur…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_ctc_cascade.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1657476,
+      "sha256": "a4976d849b7e2145b168e5f7b665d5b0095b544be8039c581f931a994a3f502a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "ctc_teacher",
+          "decoder",
+          "effects_executed",
+          "frozen_product_holdout",
+          "independent_from_synthetic_training",
+          "livekit_scan",
+          "livekit_scan_sha256",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "product_far_claim_supported",
+          "reason_product_far_claim_not_supported",
+          "records",
+          "runtime",
+          "schema",
+          "scope",
+          "thresholds"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "frozen_product_holdout",
+          "independent_from_synthetic_training",
+          "livekit_scan",
+          "livekit_scan_sha256",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "product_far_claim_supported",
+          "reason_product_far_claim_not_supported",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 2703
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1657475,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_teacher\", \"decoder\", \"effects_executed\", \"frozen_product_holdout\", \"independent_from_synthetic_training\", \"livekit_scan\", \"livekit_scan_sha256\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_teacher\", \"decoder\", \"effects_executed\", \"frozen_product_holdout\", \"independent_from_synthetic_training\", \"livekit_scan\", \"livekit_scan_sha256\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_ctc_cascade_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1652592,
+      "sha256": "e5c7c2d452eaef7ca94ba4d4a9b5167f4e219b735690b1de02c959264321b8c5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "ctc_teacher",
+          "decoder",
+          "effects_executed",
+          "frozen_product_holdout",
+          "independent_from_synthetic_training",
+          "livekit_scan",
+          "livekit_scan_sha256",
+          "measured_at_utc",
+          "metrics",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "product_far_claim_supported",
+          "reason_product_far_claim_not_supported",
+          "records",
+          "runtime",
+          "schema",
+          "scope",
+          "thresholds"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "frozen_product_holdout",
+          "independent_from_synthetic_training",
+          "livekit_scan",
+          "livekit_scan_sha256",
+          "measured_at_utc",
+          "parakeet_audit",
+          "parakeet_audit_sha256",
+          "product_far_claim_supported",
+          "reason_product_far_claim_not_supported",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 2703
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1652591,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_teacher\", \"decoder\", \"effects_executed\", \"frozen_product_holdout\", \"independent_from_synthetic_training\", \"livekit_scan\", \"livekit_scan_sha256\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"ctc_teacher\", \"decoder\", \"effects_executed\", \"frozen_product_holdout\", \"independent_from_synthetic_training\", \"livekit_scan\", \"livekit_scan_sha256\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_parakeet.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7119291,
+      "sha256": "dc97454156c9f903befcfabebd7b87250106d49592f218a3f50b410b68bdf84f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "decoder",
+          "effects_executed",
+          "livekit_scan",
+          "livekit_scan_sha256",
+          "measured_at_utc",
+          "metrics",
+          "parakeet",
+          "product_far_claim_supported",
+          "records",
+          "schema",
+          "scope",
+          "selection_threshold"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "livekit_scan",
+          "livekit_scan_sha256",
+          "measured_at_utc",
+          "product_far_claim_supported",
+          "schema",
+          "scope",
+          "selection_threshold"
+        ],
+        "list_lengths": {
+          "records": 1113
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7119290,
+        "selection_threshold": {
+          "min": 0.02,
+          "max": 0.02
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"decoder\", \"effects_executed\", \"livekit_scan\", \"livekit_scan_sha256\", \"measured_at_utc\", \"metrics\", \"parakeet\", \"product_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"decoder\", \"effects_executed\", \"livekit_scan\", \"livekit_scan_sha256\", \"measured_at_utc\", \"metrics\", \"parakeet\", \"product_…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_scan.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1775302,
+      "sha256": "f0981d8051edae644ffe805c3ea05067a2c41497576f4e4abf8701ce6ed973d8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "model",
+          "model_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_windows",
+          "proposal_threshold",
+          "records",
+          "retention_threshold",
+          "runtime",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "n_keys": 19,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "measured_at_utc",
+          "model",
+          "model_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_windows",
+          "proposal_threshold",
+          "retention_threshold",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 2703
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1775301,
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "step_seconds": {
+          "min": 0.25,
+          "max": 0.25
+        },
+        "retention_threshold": {
+          "min": 0.02,
+          "max": 0.02
+        },
+        "proposal_threshold": {
+          "min": 0.05,
+          "max": 0.05
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"model\", \"model_sha256\", \"product_far_claim_supported\", \"product_runtim…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_development_use\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"model\", \"model_sha256\", \"product_far_claim_supported\", \"product_runtim…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_scan_runtime0175_overlap_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1987529,
+      "sha256": "d99a8f79a2c8418d720d9aece1bb1f9593f111697ab9084aa2496d16c4f3532f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "metrics",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "records",
+          "retention_threshold",
+          "runtime",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "retention_threshold",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 2703
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1987528,
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "hop_samples": {
+          "min": 2560,
+          "max": 2560
+        },
+        "audio_frame_samples": {
+          "min": 512,
+          "max": 512
+        },
+        "retention_threshold": {
+          "min": 0.0175,
+          "max": 0.0175
+        },
+        "proposal_threshold": {
+          "min": 0.05,
+          "max": 0.05
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_scan_runtime0175_overlap_v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1987303,
+      "sha256": "0efeba59b2863841b4f434de0409cba95eb9b6ddb98bcbfab4b5465ae8c2a279",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "metrics",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "records",
+          "retention_threshold",
+          "runtime",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "retention_threshold",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 2703
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1987302,
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "hop_samples": {
+          "min": 2560,
+          "max": 2560
+        },
+        "audio_frame_samples": {
+          "min": 512,
+          "max": 512
+        },
+        "retention_threshold": {
+          "min": 0.0175,
+          "max": 0.0175
+        },
+        "proposal_threshold": {
+          "min": 0.035,
+          "max": 0.035
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_dev_clean_scan_runtime0175_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2039527,
+      "sha256": "7f871840a660d6eb9f45cc34f17ac84a832e1c33d64423ee5e916efc96b06d71",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "metrics",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "records",
+          "retention_threshold",
+          "runtime",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "retention_threshold",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 2703
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2039526,
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "hop_samples": {
+          "min": 2560,
+          "max": 2560
+        },
+        "audio_frame_samples": {
+          "min": 512,
+          "max": 512
+        },
+        "retention_threshold": {
+          "min": 0.0175,
+          "max": 0.0175
+        },
+        "proposal_threshold": {
+          "min": 0.05,
+          "max": 0.05
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_train_clean_100_hardnegative_development_v5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 20252526,
+      "sha256": "d3a1dd8458324b1e646167de43d426db0012439b8a97585e78c6421b08c040a1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "metrics",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "records",
+          "retention_threshold",
+          "runtime",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "n_keys": 25,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "audio_frame_samples",
+          "blind_human_partition_accessed",
+          "candidate_development_use",
+          "candidate_scored",
+          "corpus_manifest",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hop_samples",
+          "measured_at_utc",
+          "model",
+          "model_sha256",
+          "preregistration",
+          "preregistration_sha256",
+          "product_far_claim_supported",
+          "product_runtime_equivalent_schedule",
+          "product_runtime_equivalent_window_math",
+          "proposal_threshold",
+          "retention_threshold",
+          "schema",
+          "scope",
+          "step_seconds",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 28539
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 20252525,
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "hop_samples": {
+          "min": 2560,
+          "max": 2560
+        },
+        "audio_frame_samples": {
+          "min": 512,
+          "max": 512
+        },
+        "retention_threshold": {
+          "min": 0.0175,
+          "max": 0.0175
+        },
+        "proposal_threshold": {
+          "min": 0.035,
+          "max": 0.035
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio_frame_samples\", \"blind_human_partition_accessed\", \"candidate_development_use\", \"candidate_scored\", \"corpus_manifest\", \"corpus_manifest_sha256\", \"effects_executed\", \"hop_samples\", \"measured_at_utc\", \"metrics\", \"model\", \"mod…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_openslr12_train_clean_100_hardnegative_development_v5.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 62044,
+      "sha256": "675886523cffe8e4aaf33ab403b0430b04a7d0e40917426c4e96f737ad394ecb",
+      "rows": 2855,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61681,
+        "min_line_bytes": 19,
+        "max_line_bytes": 363
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "PROGRESS|10/28539"
+          },
+          {
+            "offset": 19,
+            "line": 2,
+            "text": "PROGRESS|20/28539"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 61659,
+            "line": 2854,
+            "text": "PROGRESS|28539/28539"
+          },
+          {
+            "offset": 61681,
+            "line": 2855,
+            "text": "{\"output\": \"D:/BAXY/source/artifacts/research/livekit_wakeword_openslr12_train_clean_100_hardnegative_development_v5.json\", \"metrics\": {\"utterances\": 28539, \"audio_seconds\": 362127.16672, \"audio_hours\": 100.59087964444444, \"windows_scored\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_piper_ipa_pilot.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17144,
+      "sha256": "3c19a380471ece78c7da476ca27bb8acfb1815a67937a2fdef19d5f1402836bf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "accepted_normalized_target_sequences",
+          "blind_human_partition_accessed",
+          "candidates",
+          "common_prefix_clip_count",
+          "decision",
+          "effects_executed",
+          "measured_at_utc",
+          "normalization",
+          "phoneme_recognizer",
+          "runtime",
+          "schema",
+          "scope",
+          "target_display_name",
+          "target_generator_text"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "common_prefix_clip_count",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "target_display_name",
+          "target_generator_text"
+        ],
+        "list_lengths": {
+          "accepted_normalized_target_sequences": 3,
+          "candidates": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17143,
+        "common_prefix_clip_count": {
+          "min": 1048,
+          "max": 1048
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidates\", \"common_prefix_clip_count\", \"decision\", \"effects_executed\", \"measured_at_utc\", \"normalization\", \"phoneme_recognizer\", \"runtime\", \"schema\", \"s…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"accepted_normalized_target_sequences\", \"blind_human_partition_accessed\", \"candidates\", \"common_prefix_clip_count\", \"decision\", \"effects_executed\", \"measured_at_utc\", \"normalization\", \"phoneme_recognizer\", \"runtime\", \"schema\", \"s…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_slerp_rejection.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4264,
+      "sha256": "87c8ebf4daf01a9ce824e4b61bbf382f7c98cf5a98ccfc90de8872bc53d1b3be",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "binary_validation",
+          "counts_at_stop",
+          "current_decision",
+          "decision_at_measured_at",
+          "deleted_files",
+          "effects_executed",
+          "measured_at_utc",
+          "preserved",
+          "rejected_configuration_sha256",
+          "rejected_output_directory",
+          "research_basis",
+          "schema",
+          "semantic_failure",
+          "subsequent_evidence",
+          "upstream"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "deleted_files",
+          "effects_executed",
+          "measured_at_utc",
+          "preserved",
+          "rejected_configuration_sha256",
+          "rejected_output_directory",
+          "schema"
+        ],
+        "list_lengths": {
+          "research_basis": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4263,
+        "deleted_files": {
+          "min": 0,
+          "max": 0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"binary_validation\", \"counts_at_stop\", \"current_decision\", \"decision_at_measured_at\", \"deleted_files\", \"effects_executed\", \"measured_at_utc\", \"preserved\", \"rejected_configuration_sha256\", \"rejected_output_directory\", \"research_ba…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"binary_validation\", \"counts_at_stop\", \"current_decision\", \"decision_at_measured_at\", \"deleted_files\", \"effects_executed\", \"measured_at_utc\", \"preserved\", \"rejected_configuration_sha256\", \"rejected_output_directory\", \"research_ba…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate1_ccby_development.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7174,
+      "sha256": "c55e5d7a7405c3347f90985ab1b8b0a422d3c4a39f5c83d0efd91942dfaae073",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "counts",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "records",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidate_freeze_sha256",
+          "corpus_manifest_sha256",
+          "effects_executed",
+          "hard_negative_rejection",
+          "measured_at_utc",
+          "model_sha256",
+          "partition",
+          "positive_recall",
+          "preregistration_sha256",
+          "schema",
+          "step_seconds",
+          "threshold",
+          "window_seconds"
+        ],
+        "list_lengths": {
+          "records": 18
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7173,
+        "threshold": {
+          "min": 0.45,
+          "max": 0.45
+        },
+        "window_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "step_seconds": {
+          "min": 0.25,
+          "max": 0.25
+        },
+        "positive_recall": {
+          "min": 0.21428571428571427,
+          "max": 0.21428571428571427
+        },
+        "hard_negative_rejection": {
+          "min": 1.0,
+          "max": 1.0
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate_freeze_sha256\", \"corpus_manifest_sha256\", \"counts\", \"effects_executed\", \"hard_negative_rejection\", \"measured_at_utc\", \"model_sha256\", \"partition\", \"positive_recall\", \"preregistration_sha256\", \"records\", \"schema\", \"step…"
+          }
+        ]
+      }
+    },
+    "artifacts/research/livekit_wakeword_voxcpm2_candidate1_operating_threshold.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2440,
+      "sha256": "ddf1b7527069b62ccae82daffef690fb4bdfa89d28817826ee2405208326c710",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "negative_features",
+          "onnxruntime",
+          "operating_point",
+          "positive_features",
+          "schema",
+          "score_quantiles",
+          "validation_hours"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "candidate_frozen",
+          "clip_duration_seconds",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "model",
+          "model_sha256",
+          "onnxruntime",
+          "schema",
+          "validation_hours"
+        ],
+        "list_lengths": {
+          "negative_features": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2439,
+        "clip_duration_seconds": {
+          "min": 2.0,
+          "max": 2.0
+        },
+        "validation_hours": {
+          "min": 17.52,
+          "max": 17.52
+        },
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"candidate_frozen\", \"clip_duration_seconds\", \"effects_executed\", \"measured_at_utc\", \"method\", \"model\", \"model_sha256\", \"negative_features\", \"onnxruntime\", \"operating_point\", \"positive_features\",…"
+          }
+        ]
+      }
+    }
+  }
+}

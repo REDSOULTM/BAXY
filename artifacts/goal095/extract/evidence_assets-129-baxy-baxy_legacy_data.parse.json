@@ -1,0 +1,5396 @@
+{
+  "batch_id": "evidence_assets-129-baxy-baxy_legacy_data",
+  "source_id": "baxy",
+  "file_count": 82,
+  "hash_ok": 82,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "legacy/data/logs/gemma4-audit/stt_red_b9959_bf16_lexicon_pad500.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17913,
+      "sha256": "a3dd93e594f43bc83f518b9297cd1e17b5dda0d4350dc1b08804fcacb0e2cb3a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summaries"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17912
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt_red_b9959_f16.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 17649,
+      "sha256": "4b2d547e64f38b391415b677aa4a752d4bf9c28c38da6750ba72eea9ba162993",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summaries"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 84
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17648
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/stt_third_party_b9959_bf16.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 107105,
+      "sha256": "372a317c4b2cd23e5777c2779291a2f50bbc0dc2f1d9579bec35f0beabb5c52d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "rows",
+          "summaries"
+        ],
+        "n_keys": 2,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [],
+        "list_lengths": {
+          "rows": 180
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 107104
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"rows\", \"summaries\"], \"n_keys\": 2, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-b9980-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5567,
+      "sha256": "6a30cfb5f90f60f9e6f0eb573af8a0a70175190b83cc7ff4cdab57fad82c8d03",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5566,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-b9980.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5617,
+      "sha256": "4dc2e24196960df7a7897ed9a1f06bb82c17e20ee07e8ad718b2b843575538e3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5616,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-01-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "b3c6ab42e3210dfda66bf9a346cd8adf9dd6f7a9d5f0fc17835825788834a8da",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-02-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "daa6165bc1412582be8282075b3d4cba9719cef9eeb3624e447bb511b49d0fd6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-03-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "c73efe2b1229e3fa3be0b5f94aca7d11e20ef227cd21ef2c783331a579eea717",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-04-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "2ab2e9199fe0b173ea5c5b2d47b81dc2ba7429372eca292a5cb114bc3c703b9e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-05-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "00228e0d83ad19019ce7ffc5a0695a23c574c6749cb57494539285055c407321",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-06-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "cc1035f418fc471197856abe765be59892790b09f4d30761f32d52b7e2842ec4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-07-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "d28c6bfde12996b296c9dba715a8728f77ad37190cdedc0479d1f7be2d9ac47d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-08-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7059,
+      "sha256": "d6cbf41060a2c21591eb5fb902ddf4633d275251cebb136434d4495886d181ed",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7058,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-09-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7061,
+      "sha256": "f33a7079d9690b1f4194ac556d244f50237a70599c59cecc56a0f57169967bec",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7060,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-10-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7061,
+      "sha256": "1ba188d2461d928f55982df09e67c7f21bd8947f4309a8730e5b7ea35f59c6db",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7060,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-11-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "eb10a21dc7e2d7dbb8727a01954a9ed5a6918bd16e987828dfe91bb73b195d33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-12-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "44c30be80b063d13e1f762cd1fed26cf72073f46d055f4c1ea4f1eec578927dc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-13-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "641ae6426d6a288a3950d22ed6e91ec76c104ed663ea1a18a2270eda3e4eb3ee",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-14-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "98c0024e5edc59a03956c4e01f28cb27721422247b6d9074f14dfdc1d4c0e030",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-15-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "bb9ba3318c01520ef7fbc92565689ee2b825002b0544cb8fa70b6ad6ae5ddadd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-16-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7063,
+      "sha256": "5d93cc0c7c2beb4408a6bbf582bae71f365cec12629eb35389fcc5609d36a3fd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7062,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-17-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7062,
+      "sha256": "12d151348a17cc8482c4582fa8e39a006adfdeb318e645a0f9dc86e935edc7e9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7061,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-18-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "c8b49467d2211be4513bf4f744d0db8ac88df255e6f92faf2c96bbf9f28623b0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-19-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7060,
+      "sha256": "185760d76fbc5ef03c4a3dd7ae859af030372fc501b8259777bf3b80ab588383",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7059,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-durable-20-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7061,
+      "sha256": "658c44d46a3da211f3d04ac6accfc00428cdabd0904edf2ec90c6d96207bfe7c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7060,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-helper.out.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 7,
+      "sha256": "5f14c516e0c7a2be0aa613a98a475138fe4e5824bd7715e51ae46652059c709b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 7,
+        "max_line_bytes": 7
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "READY"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "READY"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-owned-20260713-212355.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7059,
+      "sha256": "b34b58c89b959dd7f5340c8d0cd85dbd4c006678319307b6bd746c07e0b97848",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "generated_at",
+          "kind",
+          "metrics",
+          "post_cleanup",
+          "schema_version",
+          "server"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "schema_version"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7058,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"generated_at\", \"kind\", \"metrics\", \"post_cleanup\", \"schema_version\", \"server\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"generated_at\", \"kind\", \"metrics\", \"post_cleanup\", \"schema_version\", \"server\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-postreboot-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5621,
+      "sha256": "7d15d05a5ac39b17032f150c5b7aea98e33d604841e82468ba03bd2b57732534",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5620,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-01-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6036,
+      "sha256": "b8bd93fd419b4da3b2643dc648de42bf588643d00d2dd8f50332159fb816dcd6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6035,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-02-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6035,
+      "sha256": "975f553f82b73467a7785aa1edaf3ec7a2ba961acab3019b4109e8f4d0453525",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6034,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-03-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6035,
+      "sha256": "56e0774010e47b7c2ed8c3c9e73c12ae3564265c9acf3509ecb5afdeacfcaefb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6034,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-04-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6035,
+      "sha256": "63f5ca53c671675ea5917d4a6f39052938ff79f98676e50acb56f36b6fa021d0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6034,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-05-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6066,
+      "sha256": "b18a5894fd8325bf0b1c9f78c09e59aae4fb34fa04f159bb5b92034fa05dffc0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6065,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-06-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6036,
+      "sha256": "dabf0cc690b6a4c1bf2a2bf6938b85acde4a1fe1328a132ba47907e1f4b49131",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6035,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-07-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6035,
+      "sha256": "8b6fbe928f61c5037ccc1e0765f8f5d32282cdf2b0412505c8e282075ea0d629",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6034,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-08-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6034,
+      "sha256": "155e5eb8f4da4e873f7961581446936ccdc9ffc6df4e7f628e9c745bbc7ee30e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6033,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-09-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6035,
+      "sha256": "9c7f6647cb8f0c198262026fb6b75d32ed6cf4e3d8a5b2ca8909c4826f2b89bc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6034,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-10-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6036,
+      "sha256": "c42fd356da41dcc552847c9f3cffa0b1d3294ad1926d79ac00f0911dff071a59",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6035,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-11-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6036,
+      "sha256": "b27548c15864e07b91e7564126645a06b57e0e37246c538b452417453d7818d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6035,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-repeat-12-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6035,
+      "sha256": "cf9242a39138786ce23bec95097f53feac2d9b2e1f4c2c0b802135cc47e8e70f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6034,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-live-replaydiag-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6025,
+      "sha256": "9c8ffecbf98233f2396f8577efbe3da660eacc87c22945b95e45338424a45e85",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6024,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-173933.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6402,
+      "sha256": "1e70e9a4518a0bd09c0db0a10054831c86ed6e09f7c2b0553d0b597f926d440f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6401,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713-190505.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6400,
+      "sha256": "cab596f68ad52042853e2c928ad800ff0aff99143d60c902dd25683fcf60d229",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6399,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-offline-20260713.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4734,
+      "sha256": "cd83c4c55e42d63a4791ba6b3c9058bfd8c6117eb4d516a5aa2c9f362d9c09da",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4733,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-offline-hardened.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4731,
+      "sha256": "c68a52c81a35a6988cb264bd398095ebff21192902399ecab0261e02da994465",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4730,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-offline-integrated.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4474,
+      "sha256": "9800ea204309fc7a920c5a4f894e3c9060442ef938f0cb978a78fa156b5921f1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4473,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-offline-recheck.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4468,
+      "sha256": "bc470793a990fa986d2553f70edee6788227e53504c93c2515e3d916fb276de8",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4467,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-owned-live-20260713-173616.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7546,
+      "sha256": "3a784af9c062d8185b4786dc347a5a4e318fa121b5b1db138d191c5b24d3ba0d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7545,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/tooling-v2-owned-live-revalidation-20260713-202338.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7546,
+      "sha256": "04a487a69721a63c1d855e7603db1ba16ab663bfb05a7f4700f85115378f28ed",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7545,
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/uia-live-harness-cbd8a87d.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8-sig",
+      "bytes": 137,
+      "sha256": "26f2cf562320677c3fdc287a16a9793c502dcde35904271f615613b0cc5b36f1",
+      "rows": 1,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "event",
+          "token",
+          "pid",
+          "title",
+          "at"
+        ],
+        "key_freq": {
+          "event": 1,
+          "token": 1,
+          "pid": 1,
+          "title": 1,
+          "at": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 137,
+        "max_line_bytes": 137,
+        "numeric": {
+          "pid": {
+            "min": 52068.0,
+            "max": 52068.0
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"event\":\"started\",\"token\":\"cbd8a87d\",\"pid\":52068,\"title\":\"BAXY UIA Live Harness cbd8a87d\",\"at\":\"2026-07-13T06:03:07.3944763+00:00\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"event\":\"started\",\"token\":\"cbd8a87d\",\"pid\":52068,\"title\":\"BAXY UIA Live Harness cbd8a87d\",\"at\":\"2026-07-13T06:03:07.3944763+00:00\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4474,
+      "sha256": "8a44aa6dfcc098b4fd9063aef71aff26ae8666f469313bc606e67a175ea06a8f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4473,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4474,
+      "sha256": "6895394cb3e827991411dd41dd969ccc84f6ea06d2d09386e05240a66537cc8a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4473,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4474,
+      "sha256": "baade083b5b736884959a3f946f768f4c0e4c8c48483a69570493860ed1c0722",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4473,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4510,
+      "sha256": "fc405fcf03d2f2b3209995dd48317d72a79fb2e1ca3f8733161c6f384ff45580",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4509,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-sem0-1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4509,
+      "sha256": "197a891cc3259fcee86e47f3da4c472817680d8c39997620837d94b0ff8dc1ad",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4508,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-sem0-2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4511,
+      "sha256": "ff3410e0ee065071a3d02bb59986ea1f05175c350241249a0eab00c8e3b7b142",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4510,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-sem0-3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4510,
+      "sha256": "fc2ee51192f3c3905b1636d30f2ef1ab33a5f8006aed66998e46382f03d2e4ce",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4509,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-debug-sem0-4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4511,
+      "sha256": "f82f68cdfc00b0d7a247bbac07758093fc0ea831cacf870a5f9d9a36b169bda0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4510,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed-1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4783,
+      "sha256": "6a5fc8a8e5733c5bc03ec2fcd217bf32da6807c08bb89fe1303dff9f26fe1be9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4782,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed-2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4783,
+      "sha256": "4d33c87fc95dd9a78996096ef6d6e3e7b5db932f6ab974fb0439fea4b8e89570",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4782,
+        "offline_transport_calls": {
+          "min": 3,
+          "max": 3
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed-3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4735,
+      "sha256": "e6e811647def7a443f9b0b01918d44ddbda3e3995f80a5efa85d67bacc62e964",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4734,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed-4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4735,
+      "sha256": "ed0c4e92b8edb4ec932ac5ce78b4f8a140ead4234e9a818ead26f280d92898eb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4734,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4735,
+      "sha256": "2d57d8cbf4beabe99795505ba00b17443a48f22288d6eeb488a7d12fd4f43b6d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4734,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4735,
+      "sha256": "dff01380d8e45add3e5816f977af21d619e5179f96d2eb9933d3e7c8a7827097",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4734,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4734,
+      "sha256": "900477a8a336e5bbc74b674f9091ee5fd616c2dc07669fd60fda16894c8f9702",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4733,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/v2-parallel-fixed2-4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4733,
+      "sha256": "f9894c7187c36aa0b8aec54bc68a577be0ae09c2cd05c0e1ec5b369cee7ecab5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cleanup",
+          "configuration",
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "rows",
+          "schema_version",
+          "summary",
+          "worker_exit_code"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "generated_at",
+          "kind",
+          "mode",
+          "offline_transport_calls",
+          "schema_version",
+          "worker_exit_code"
+        ],
+        "list_lengths": {
+          "rows": 8
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4732,
+        "offline_transport_calls": {
+          "min": 4,
+          "max": 4
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        },
+        "worker_exit_code": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cleanup\", \"configuration\", \"generated_at\", \"kind\", \"mode\", \"offline_transport_calls\", \"rows\", \"schema_version\", \"summary\", \"worker_exit_code\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/voice-hardware-ambient-20260711.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1394,
+      "sha256": "63d60f72941c76caad374a1579ef69558d0a5ff051acfc128e5b4d5e0ced2614",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio",
+          "capture_elapsed_s",
+          "captured_at",
+          "device",
+          "duration_seconds",
+          "energy",
+          "failures",
+          "privacy",
+          "schema_version",
+          "stt",
+          "success",
+          "vad",
+          "wake",
+          "warnings"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capture_elapsed_s",
+          "captured_at",
+          "duration_seconds",
+          "schema_version",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1393,
+        "capture_elapsed_s": {
+          "min": 5.093,
+          "max": 5.093
+        },
+        "duration_seconds": {
+          "min": 5.0,
+          "max": 5.0
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"capture_elapsed_s\", \"captured_at\", \"device\", \"duration_seconds\", \"energy\", \"failures\", \"privacy\", \"schema_version\", \"stt\", \"success\", \"vad\", \"wake\", \"warnings\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"capture_elapsed_s\", \"captured_at\", \"device\", \"duration_seconds\", \"energy\", \"failures\", \"privacy\", \"schema_version\", \"stt\", \"success\", \"vad\", \"wake\", \"warnings\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/voice-hardware-ambient-private-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1235,
+      "sha256": "c6664131638e58e6c4dabdd09a456b292e97f742b31c7b15ba454ef675704255",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio",
+          "capture_elapsed_s",
+          "captured_at",
+          "device",
+          "duration_seconds",
+          "energy",
+          "failures",
+          "privacy",
+          "schema_version",
+          "stt",
+          "success",
+          "vad",
+          "wake",
+          "warnings"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capture_elapsed_s",
+          "captured_at",
+          "duration_seconds",
+          "schema_version",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1234,
+        "capture_elapsed_s": {
+          "min": 5.094,
+          "max": 5.094
+        },
+        "duration_seconds": {
+          "min": 5.0,
+          "max": 5.0
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"capture_elapsed_s\", \"captured_at\", \"device\", \"duration_seconds\", \"energy\", \"failures\", \"privacy\", \"schema_version\", \"stt\", \"success\", \"vad\", \"wake\", \"warnings\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"capture_elapsed_s\", \"captured_at\", \"device\", \"duration_seconds\", \"energy\", \"failures\", \"privacy\", \"schema_version\", \"stt\", \"success\", \"vad\", \"wake\", \"warnings\"], \"n_keys\": 14, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/voice-hardware-silence-private-v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1260,
+      "sha256": "d1f426793f05b0fd60f07f88821e454aabf9171a0b43bcb5e7166be2715f2008",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "audio",
+          "capture_elapsed_s",
+          "captured_at",
+          "device",
+          "duration_seconds",
+          "energy",
+          "expect_silence",
+          "failures",
+          "privacy",
+          "schema_version",
+          "stt",
+          "success",
+          "vad",
+          "wake",
+          "warnings"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capture_elapsed_s",
+          "captured_at",
+          "duration_seconds",
+          "expect_silence",
+          "schema_version",
+          "success"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1259,
+        "capture_elapsed_s": {
+          "min": 5.093,
+          "max": 5.093
+        },
+        "duration_seconds": {
+          "min": 5.0,
+          "max": 5.0
+        },
+        "schema_version": {
+          "min": 1,
+          "max": 1
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"capture_elapsed_s\", \"captured_at\", \"device\", \"duration_seconds\", \"energy\", \"expect_silence\", \"failures\", \"privacy\", \"schema_version\", \"stt\", \"success\", \"vad\", \"wake\", \"warnings\"], \"n_keys\": 15, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"audio\", \"capture_elapsed_s\", \"captured_at\", \"device\", \"duration_seconds\", \"energy\", \"expect_silence\", \"failures\", \"privacy\", \"schema_version\", \"stt\", \"success\", \"vad\", \"wake\", \"warnings\"], \"n_keys\": 15, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-controlled-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2341677,
+      "sha256": "eb735173eade4288063ce894e4d5697880a5f8c13d9e460684d6dd11b3956372",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2341676,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-40vision-idle120-global-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2358394,
+      "sha256": "fc79475a900e1d981362517cf00752983af02a8f6c8f232d31744bbe68133b00",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2358393,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-adapter-map-smoke-v7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 319249,
+      "sha256": "a423e79fe43026e4e590d61cb34b14e7bf1faf9ffd313673a8fbd956d7f47a26",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 319248,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-b9980-40vision-idle120-global-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 1789390,
+      "sha256": "3e3034aa05495a6e1cbee5cf4133298c773a93105f7d85d2d57c04ae6047284f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 1789389,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-boundary-3072-controlled-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 456546,
+      "sha256": "d7290455a774f7f0769fc8271997f8944a7af089242a02bfb9247fb4b8860fd4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 456545,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-boundary-3328-controlled-v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 441081,
+      "sha256": "d687fb427f8f6fbec19cf9b8a3f887118474286cd389e196a718cff7cc0a1308",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 441080,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-build-v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2561,
+      "sha256": "081735b3e23f89f97c79536afeafbd59e75a3c17c9ef953c4d8c3bf38760fc4e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baseline",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2560,
+        "schema_version": {
+          "min": 2,
+          "max": 2
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\": 16, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\": 16, \"root\"…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-build-v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2668,
+      "sha256": "a7df562bf9e72fc547ee9979334d9bfa15b2bd463dfdcf70d42456b9cc481d2e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baseline",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2667,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\": 16, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\": 16, \"root\"…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-build-v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 2686,
+      "sha256": "b7ccca11e8cf173a62ac8f8d36f2958f7ba00611e2a8a6ee5218a12edd24eae3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "baseline",
+          "control",
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 2685,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 427556,
+      "sha256": "ad28f27b1194f0f740b00da7c2bdd9261f3501f9ad5c9036139d09614e0c97f1",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 3,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 427555,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-smoke-controlled-v5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 456649,
+      "sha256": "a921e9631982c5c8b60fd9c56bd81a30651561c02057af4494924df9317430d4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 456648,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-smoke-global-nonlocal-v6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 447829,
+      "sha256": "30dc70db4448dfc90b455e6b291120e0ed375ee071e709bc55ceeec9a893b8dd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "control",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 0,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 447828,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"control\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\":…"
+          }
+        ]
+      }
+    },
+    "legacy/data/logs/gemma4-audit/vram-pressure-smoke-local-nonlocal-v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 301049,
+      "sha256": "21b3f566104cc3751d63380abd3ea6526d4bf6730428cd97b4a2bad1aefab0c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "baseline",
+          "build",
+          "claim_scope",
+          "cleanup",
+          "configuration",
+          "failures",
+          "fatal_error",
+          "finished_at",
+          "monitoring",
+          "pressure",
+          "schema_version",
+          "soak",
+          "started_at",
+          "success",
+          "test_kind",
+          "warnings"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "fatal_error",
+          "finished_at",
+          "schema_version",
+          "started_at",
+          "success",
+          "test_kind"
+        ],
+        "list_lengths": {
+          "failures": 1,
+          "warnings": 1
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 301048,
+        "schema_version": {
+          "min": 3,
+          "max": 3
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\": 16, \"root\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"baseline\", \"build\", \"claim_scope\", \"cleanup\", \"configuration\", \"failures\", \"fatal_error\", \"finished_at\", \"monitoring\", \"pressure\", \"schema_version\", \"soak\", \"started_at\", \"success\", \"test_kind\", \"warnings\"], \"n_keys\": 16, \"root\"…"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,2471 @@
+{
+  "batch_id": "evidence_assets-062-baxy-baxy_art_fixes",
+  "source_id": "baxy",
+  "file_count": 39,
+  "hash_ok": 39,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/fixes/current_catalog_review_product_probe_r23.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 566944,
+      "sha256": "689a150064246359d11b8e724c270aef8fee9067aff4f235c4ab973fe4f79634",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 566943,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r23.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296495,
+      "sha256": "a432e8d2ae0c9b8da2301eafedfaddfea440747b66260497d08e561b9a77d98f",
+      "rows": 294,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 294,
+          "phase": 294,
+          "raw_decision": 294,
+          "request_id": 294,
+          "schema": 294,
+          "stages": 294,
+          "final": 153,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294592,
+        "min_line_bytes": 209,
+        "max_line_bytes": 2453,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 294173,
+            "line": 293,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294592,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r24.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 566937,
+      "sha256": "e5daf10281628e3affa2b4b3453b76f8d9c4dcc357053b14ac6b71dd1d12e5bd",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 566936,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r25.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 566951,
+      "sha256": "5379400f155338d8ad2dc5b50a136cccb01bda0e407fd50c509bcf6bf91c4e33",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 566950,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r26_dependencies.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549378,
+      "sha256": "dbb997e49c5af5720f3993ff087234dad41c397128d7971fd51da9ee03cdac2c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549377,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r27_pairwise_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 567000,
+      "sha256": "f6849260543e1d7be711677da58d54f4f62566cba008bf575c44ad5a2e17989a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 566999,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r28_extended_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549358,
+      "sha256": "4b50d4ecaec17f92fe5963d4b7d76aaee073883728a5e45e5dbbed4d7456e3d4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549357,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r29_cross_tail_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549358,
+      "sha256": "907832a0789f656f4083c326e29ddc1c2dd3a9553d26091629e2afa2288d498f",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549357,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 600096,
+      "sha256": "a825ff79fb220d1331f80545f3cc3ee75745f91239dba1fb27b29e4fdbccaa7c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 600095,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r3.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 351521,
+      "sha256": "96c1dfe69831b05cc4eaafce9cd9cc849968a85f31e1f53e9451d93fa7633edc",
+      "rows": 302,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 302,
+          "phase": 302,
+          "raw_decision": 302,
+          "request_id": 302,
+          "schema": 302,
+          "stages": 302,
+          "final": 148,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 349943,
+        "min_line_bytes": 209,
+        "max_line_bytes": 2386,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 349391,
+            "line": 301,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.application.status\",\"window.focus\",\"window.maximize\",\"window.minimize\",\"window.move\",\"window.resize\",\"window.resolve\",\"window.restore\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_ki…"
+          },
+          {
+            "offset": 349943,
+            "line": 302,
+            "text": "{\"candidate_operations\":[\"window.active\",\"window.application.status\",\"window.focus\",\"window.maximize\",\"window.minimize\",\"window.move\",\"window.resize\",\"window.resolve\",\"window.restore\"],\"final\":{\"effect_operations\":[],\"intent_operations\":[]…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r30_action_tail_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549417,
+      "sha256": "0bc7373168353a5e4bab3aff23252127b15ce598e9b9debfe25dc8857800340c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549416,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r31_surface_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 567069,
+      "sha256": "25a51a7e6a45973f1c748f890c7d437677916112ff6d6375405e2ac37745810d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 567068,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r31_surface_final.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 296766,
+      "sha256": "b92200a4276587c3852beec16170dfc429414e5baaea3a3c94da2f7036050b0a",
+      "rows": 294,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 294,
+          "phase": 294,
+          "raw_decision": 294,
+          "request_id": 294,
+          "schema": 294,
+          "stages": 294,
+          "final": 153,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 294863,
+        "min_line_bytes": 209,
+        "max_line_bytes": 2453,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 294444,
+            "line": 293,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"\",\"effect_count\":\"one\",\"effect_operations\":[\"notification.cancel.latest\"],\"effect_verification\":\"recovered\",\"mode\":\"action\",\"…"
+          },
+          {
+            "offset": 294863,
+            "line": 294,
+            "text": "{\"candidate_operations\":[\"notification.cancel.latest\"],\"final\":{\"effect_operations\":[\"notification.cancel.latest\"],\"intent_operations\":[\"notification.cancel.latest\"],\"kind\":\"action\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"\",\"…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r32_clean_server.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549350,
+      "sha256": "c7270cc3a8ea4de96a8dcdcc2e050608bd3475eb02e10d10ec3659e1a54168df",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549349,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r33_lexical_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549311,
+      "sha256": "7be53732edadd45d179c36b1819887688b0e511aa243b021ab4d4815464097da",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549310,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r34_surface_lexical_final.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549386,
+      "sha256": "7cba739ca9e39e5da103fd2add55e9a6824389543f524f70b242bdd0b1295fbe",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549385,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r35_long_dependency.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 549308,
+      "sha256": "40b058889c50e7ad2f5c4e45902a393b3e65f39df31654b2b144ed5bf3eecdb5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 152
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 549307,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 539664,
+      "sha256": "197fb2884bd14cc1254dfc42cb1f282ace6fd8abd88cad5bac0277119aaee0f6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 539663,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r4.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 285641,
+      "sha256": "a6e852b4770c0d16e17f9921c1100a9ab9092ad8c7a3fdb21d984234aabab967",
+      "rows": 281,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 281,
+          "phase": 281,
+          "raw_decision": 281,
+          "request_id": 281,
+          "schema": 281,
+          "stages": 281,
+          "final": 148,
+          "error_type": 2,
+          "failure_kind": 2,
+          "recovery": 1
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 285275,
+        "min_line_bytes": 211,
+        "max_line_bytes": 2386,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 284909,
+            "line": 280,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-04\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          },
+          {
+            "offset": 285275,
+            "line": 281,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-05\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r5.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 519310,
+      "sha256": "1bd3e0735b0dd83fbd33485ac57c0ee7ec0293cdd23162773ac0b1369bf57c4c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 519309,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r5.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 268909,
+      "sha256": "6b9cf3af83d55030bb196cf479a05b7b85e608ab2bbf1df4bfeaf4817d3c8343",
+      "rows": 283,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 283,
+          "phase": 283,
+          "raw_decision": 283,
+          "request_id": 283,
+          "schema": 283,
+          "stages": 283,
+          "final": 148,
+          "error_type": 4,
+          "failure_kind": 4,
+          "recovery": 2
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 268543,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2193,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 268177,
+            "line": 282,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-04\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          },
+          {
+            "offset": 268543,
+            "line": 283,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-05\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r6.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 524479,
+      "sha256": "35e047dd332234e2949226dc11d9fd0624b3c522aec9db9f53d0b988221c46d9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 524478,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r6.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 275525,
+      "sha256": "1ab7fd30e297cae436e9fbc242eb6c16b05033f08075e8f807981dbfa4540b68",
+      "rows": 289,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 289,
+          "phase": 289,
+          "raw_decision": 289,
+          "request_id": 289,
+          "schema": 289,
+          "stages": 289,
+          "final": 148,
+          "error_type": 6,
+          "failure_kind": 6,
+          "recovery": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 275159,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2193,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 273159,
+            "line": 288,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          },
+          {
+            "offset": 275159,
+            "line": 289,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-05\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r7.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 524109,
+      "sha256": "450b63ba4091a88020ac89d9224fc134e012b4f3083a6544de2357bdd2016130",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 524108,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r7.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 275377,
+      "sha256": "7c657e3906f106ba29ed6358eb61d35b824d5270062748e72f07eb75c8451863",
+      "rows": 289,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 289,
+          "phase": 289,
+          "raw_decision": 289,
+          "request_id": 289,
+          "schema": 289,
+          "stages": 289,
+          "final": 148,
+          "error_type": 6,
+          "failure_kind": 6,
+          "recovery": 3
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 275011,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2193,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 273070,
+            "line": 288,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          },
+          {
+            "offset": 275011,
+            "line": 289,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-05\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r8.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 519101,
+      "sha256": "04df37e4040d2638780730ef3ce449142098777d1f183e20ec5610b71b4107c6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 519100,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r8.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 275660,
+      "sha256": "ab02eacc3c81bfd8ab6f859d56450e9e484f46f9d5093ec7997b26986d3345c2",
+      "rows": 301,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 301,
+          "phase": 301,
+          "raw_decision": 301,
+          "request_id": 301,
+          "schema": 301,
+          "stages": 301,
+          "final": 148,
+          "error_type": 14,
+          "failure_kind": 14,
+          "recovery": 7
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 275294,
+        "min_line_bytes": 212,
+        "max_line_bytes": 2193,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 274807,
+            "line": 300,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"clarify\"},\"phase\":\"recovery\",\"raw_decision\":null,\"recovery\":{\"failure_code\":\"turn_runtime_failure\",\"failure_kinds\":[\"runtime\",\"runtime\"],\"kind\":\"sema…"
+          },
+          {
+            "offset": 275294,
+            "line": 301,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-05\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r9.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 520518,
+      "sha256": "4847e5955e3008d053dcda36c35c3c2c4e291e708d977ac9863bfc3334cd8e46",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 147
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 520517,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_product_probe_r9.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 275271,
+      "sha256": "ef41cfe3cf0aa4b3865f0cffec236447cb7d5da6281b7ce33a8ed9d2bee3d5f2",
+      "rows": 298,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final",
+          "error_type",
+          "failure_kind",
+          "recovery"
+        ],
+        "key_freq": {
+          "candidate_operations": 298,
+          "phase": 298,
+          "raw_decision": 298,
+          "request_id": 298,
+          "schema": 298,
+          "stages": 298,
+          "final": 148,
+          "error_type": 12,
+          "failure_kind": 12,
+          "recovery": 6
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 274905,
+        "min_line_bytes": 210,
+        "max_line_bytes": 2193,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 272964,
+            "line": 297,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          },
+          {
+            "offset": 274905,
+            "line": 298,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[\"window.move\"],\"kind\":\"clarify\"},\"phase\":\"final\",\"raw_decision\":null,\"request_id\":\"current-review-window-05\",\"schema\":\"baxy.mind-turn-audit.v1\",\"stages\":[{\"eff…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_r6_remaining.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14393,
+      "sha256": "024f41d621fc57d867b5e3abab0f2a44f2c95d67922749ebb15f288127217d87",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "runtime_manifest_changed",
+          "schema",
+          "scope",
+          "source"
+        ],
+        "n_keys": 10,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "runtime_manifest_changed",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "rows": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14392,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"runtime_manifest_changed\", \"schema\", \"scope\", \"source\"], \"n_keys\": 10, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/current_catalog_review_r6_remaining.raw.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 9592,
+      "sha256": "675455c1568a6c1adf670b83e4583fea0b37e9ab16f5d273bbd51c019afe620d",
+      "rows": 8,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "candidate_operations",
+          "phase",
+          "raw_decision",
+          "request_id",
+          "schema",
+          "stages",
+          "final"
+        ],
+        "key_freq": {
+          "candidate_operations": 8,
+          "phase": 8,
+          "raw_decision": 8,
+          "request_id": 8,
+          "schema": 8,
+          "stages": 8,
+          "final": 4
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7651,
+        "min_line_bytes": 340,
+        "max_line_bytes": 2021,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"candidate_operations\":[],\"phase\":\"raw_attempt\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_applicable\",\"mode\":\"conversation\",\"operation\":null,\"question\":\"\",\"respons…"
+          },
+          {
+            "offset": 340,
+            "line": 2,
+            "text": "{\"candidate_operations\":[],\"final\":{\"effect_operations\":[],\"intent_operations\":[],\"kind\":\"conversation\"},\"phase\":\"final\",\"raw_decision\":{\"conversation_kind\":\"social\",\"effect_count\":\"zero\",\"effect_operations\":[],\"effect_verification\":\"not_a…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 6734,
+            "line": 7,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          },
+          {
+            "offset": 7651,
+            "line": 8,
+            "text": "{\"candidate_operations\":[\"filesystem.copy\",\"filesystem.create.directory\",\"filesystem.file.open.latest\",\"filesystem.folder.open\",\"filesystem.hash\",\"filesystem.known.duplicates\",\"filesystem.known.search\",\"filesystem.known.trash.named\",\"files…"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/dependency_grounding_matrix_r1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19590,
+      "sha256": "a5c2e0de2a150644c8c6bfe58d71c6949a0c2ecd37a176612cb802d55be7f268",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "rows": 19
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19589,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "total_seconds": {
+          "min": 16.789,
+          "max": 16.789
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/dependency_grounding_matrix_r2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 19205,
+      "sha256": "7514f194e446e289f49a5a189dd4ed4e8f3e6f9117d16023c68ab5f67284877a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "acceptance",
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "rows",
+          "runtime",
+          "schema",
+          "scope",
+          "source",
+          "total_seconds"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope",
+          "total_seconds"
+        ],
+        "list_lengths": {
+          "rows": 19
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 19204,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        },
+        "total_seconds": {
+          "min": 17.122,
+          "max": 17.122
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"acceptance\", \"authority\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"rows\", \"runtime\", \"schema\", \"scope\", \"source\", \"total_seconds\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/deterministic_scope_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7107,
+      "sha256": "75927ba32f19952fc0f5f51bbac762dbc1196bc2521daa8ce0110d58de73f189",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "action_turns",
+          "authority_unchanged",
+          "change",
+          "comparison",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "schema",
+          "traces"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority_unchanged",
+          "change",
+          "effects_executed",
+          "measured_at_utc",
+          "method",
+          "schema"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7106,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"action_turns\", \"authority_unchanged\", \"change\", \"comparison\", \"effects_executed\", \"measured_at_utc\", \"method\", \"schema\", \"traces\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"action_turns\", \"authority_unchanged\", \"change\", \"comparison\", \"effects_executed\", \"measured_at_utc\", \"method\", \"schema\", \"traces\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/deterministic_scope_adjudication_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12396,
+      "sha256": "0e74efcad23dc91dce9b8f71008866a0f870aefa01cdc8819b3439b143d4d561",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "boundary_candidate",
+          "boundary_today",
+          "cases",
+          "measured_at_utc",
+          "schema",
+          "totals"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "boundary_candidate",
+          "boundary_today",
+          "measured_at_utc",
+          "schema"
+        ],
+        "list_lengths": {
+          "cases": 42
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12395
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary_candidate\", \"boundary_today\", \"cases\", \"measured_at_utc\", \"schema\", \"totals\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"boundary_candidate\", \"boundary_today\", \"cases\", \"measured_at_utc\", \"schema\", \"totals\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/deterministic_scope_wired_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12119,
+      "sha256": "328bae234cfda7443f4761f12ae48a703a4d407f81d4229d02f0b664fc715302",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "authority",
+          "cases",
+          "measured_at_utc",
+          "schema",
+          "surface",
+          "totals"
+        ],
+        "n_keys": 6,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "authority",
+          "measured_at_utc",
+          "schema",
+          "surface"
+        ],
+        "list_lengths": {
+          "cases": 52
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12118
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"cases\", \"measured_at_utc\", \"schema\", \"surface\", \"totals\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"authority\", \"cases\", \"measured_at_utc\", \"schema\", \"surface\", \"totals\"], \"n_keys\": 6, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/e5_history_batch_gate_20260729.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 841776,
+      "sha256": "d83a1d5bb6fddccdc6ee37cb59b4d71b502989c93a278d7f3f33d34bb488d138",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "environment",
+          "experiments",
+          "full_workload_history_dedup_lexical_scan",
+          "inputs",
+          "promotion_rule",
+          "schema",
+          "scope",
+          "selection",
+          "status"
+        ],
+        "n_keys": 9,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "promotion_rule",
+          "schema",
+          "status"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 841775
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"environment\", \"experiments\", \"full_workload_history_dedup_lexical_scan\", \"inputs\", \"promotion_rule\", \"schema\", \"scope\", \"selection\", \"status\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"environment\", \"experiments\", \"full_workload_history_dedup_lexical_scan\", \"inputs\", \"promotion_rule\", \"schema\", \"scope\", \"selection\", \"status\"], \"n_keys\": 9, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/equivalent_overhead_ab_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 35771,
+      "sha256": "90c17a692bd8edac3df31a079873fb548657b2de33ebae37d0b8141cc176a7a2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "arms",
+          "cases",
+          "gpu_state_after",
+          "gpu_state_before",
+          "identical_outputs_pairs",
+          "observations",
+          "paired_delta_baxy_minus_direct",
+          "payload_mismatches",
+          "rounds",
+          "runtime",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "cases",
+          "rounds",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "observations": 64,
+          "payload_mismatches": 0
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 35770,
+        "cases": {
+          "min": 4,
+          "max": 4
+        },
+        "rounds": {
+          "min": 8,
+          "max": 8
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"cases\", \"gpu_state_after\", \"gpu_state_before\", \"identical_outputs_pairs\", \"observations\", \"paired_delta_baxy_minus_direct\", \"payload_mismatches\", \"rounds\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"arms\", \"cases\", \"gpu_state_after\", \"gpu_state_before\", \"identical_outputs_pairs\", \"observations\", \"paired_delta_baxy_minus_direct\", \"payload_mismatches\", \"rounds\", \"runtime\", \"schema\", \"scope\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/fixes/evidence_index_build_time_20260730.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 954,
+      "sha256": "6338cdfa94ffccce5194fb206fd3d312b28145569378967b6b0d69ee05dcdc49",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "cases_after_ready",
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "runtime",
+          "schema",
+          "status_timeline",
+          "variant"
+        ],
+        "n_keys": 7,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "index_ready_seconds_after_catalog",
+          "measured_at_utc",
+          "schema",
+          "variant"
+        ],
+        "list_lengths": {
+          "cases_after_ready": 0,
+          "status_timeline": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 953,
+        "index_ready_seconds_after_catalog": {
+          "min": 21.82,
+          "max": 21.82
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"cases_after_ready\", \"index_ready_seconds_after_catalog\", \"measured_at_utc\", \"runtime\", \"schema\", \"status_timeline\", \"variant\"], \"n_keys\": 7, \"root\": \"object\"}"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,2025 @@
+{
+  "schema": "baxy.goal095.evidence-ledger.v1",
+  "batch_id": "evidence_assets-011-carter",
+  "kind": "evidence_assets",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T05:38:37Z",
+  "closed_utc": "2026-08-31T05:39:46Z",
+  "estimated_tokens": 247850,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 61,
+  "subsystem": "carter_v2",
+  "subsystems": [
+    "carter_v2",
+    "carter_v5"
+  ],
+  "files": [
+    {
+      "path": "Carter_v2/artifacts/live_smoke_observed.json",
+      "sha256": "83abf99f9bab2c8181224cd3132861f50f83dad60236e5274f52b1736b92176d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/artifacts/live_smoke_observed.json"
+    },
+    {
+      "path": "Carter_v2/artifacts/live_smoke_synthetic.json",
+      "sha256": "009a9c97c3a15d007c0209d111ef652e30c9b4bc853a3d7df3ec4972672506a3",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/artifacts/live_smoke_synthetic.json"
+    },
+    {
+      "path": "Carter_v2/artifacts/live_smoke_universal.json",
+      "sha256": "10a82d7d8746e50ec074a76e48f3de3b23aab7c7b7ec04166c17d663262087df",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/artifacts/live_smoke_universal.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/investigaciones/comparadas/Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md",
+      "sha256": "e6f1409cf77ce8e0b52894903b699e3bb429760ec1d995a3b32bf1ca9da9971e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/investigaciones/comparadas/Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md",
+      "binary_format": ",md"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_all_results.json",
+      "sha256": "0db3972f39330db5d4542a2c7e6ba2f72fe76df56e6ce11aeccf7060c962a253",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_all_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_environment_readiness.json",
+      "sha256": "d390ef8aa376943dfe48b0c9ec9dfcbb287067177a9a8425842675d9d6c9ac28",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_environment_readiness.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_results.json",
+      "sha256": "a9a47e82aae0552bff1fe7f7bb426c78004aa079fc6ef8c355317d63846da6f4",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session10_results.json",
+      "sha256": "3058024907679b84014f480f5b6b06d4e95ee1bea8aeb9252e65fd251cf1c1eb",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session10_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session10_stdout.log",
+      "sha256": "014efc5f4a017088ae1851d093bc11a91260eaf4a50b22db8552c6d710999294",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "log:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session10_stdout.log"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session11_failed_results.json",
+      "sha256": "50ebb74c11f2d787934874b7c4e4dc9965a68500439b60443a679e03c1a98244",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session11_failed_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session11_results.json",
+      "sha256": "a8857a18a3c667a139193cc79dbd32a3c1a8cd48ece5ff4fde72f26083fd8d3a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session11_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session12_extended_results.json",
+      "sha256": "9fcb6d0c9c210ef492e0dcb9947b4ccad25f07fd3b2f82df389c404108f65df5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session12_extended_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session12_results.json",
+      "sha256": "2ed5b7889db8d55a57bf1e2e8dd5001860433ec94fdfbde351c197ced799dc62",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session12_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session15_results.json",
+      "sha256": "7c4275013e27ace430d8c5a6d01c08ab864b2d83649a82adac61c784b4e66fe1",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session15_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session16_results.json",
+      "sha256": "2dfeba2e66c811bdaf5448bb8c21d455fe8ede245cf04bc7940543abe080916d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session16_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session21_results.json",
+      "sha256": "d2481ebac6be473ef8252b43399c145eceb3bd6d99acf213174ea0bb3c1f3483",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session21_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session22b_results.json",
+      "sha256": "e5abd19e5340f09687343c42c6c40aad47b0196cb74d1e3563b0d07e94843275",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session22b_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session25_results.json",
+      "sha256": "aea59cb7b89ad63042bfbf89e57a6aad1a49bac50fd1772e15d4c8ac05b2950e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session25_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_session7_results.json",
+      "sha256": "7dbdffba142e07842987ce8b6ec4ac5c0202e511dd57c93bfd949a8f41f768d2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_session7_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/probes/probe_universal_results.json",
+      "sha256": "12a8e8720a5991ec8aa75ca3b2040ddc98ecb5d7c4361e00cf70844688a11a2a",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/probes/probe_universal_results.json"
+    },
+    {
+      "path": "Carter_v2/documentacion/sessions/audit_session13_findings.json",
+      "sha256": "81fd701566fd4c1e47a8b6eec1ab324b4413f40f59c5fa846c5b1ea11ac06e69",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/documentacion/sessions/audit_session13_findings.json"
+    },
+    {
+      "path": "Carter_v2/live_smoke_results.json",
+      "sha256": "1d4e66ed434132ae784f6ebbe5cafca9ea0eed99dd4b27a56c8201743c912e74",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/live_smoke_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_assets/merged.pdf",
+      "sha256": "3438a3efd0a9caf4983f4e596a1c3dbdad6a82365bde6dcb25ff36d9c34ed0f8",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/merged.pdf",
+      "binary_format": "pdf"
+    },
+    {
+      "path": "Carter_v2/probe_assets/merged_sample.pdf",
+      "sha256": "ed083da6bd1ba236a7a95f53d89ca783dc3985915872da8dbff67f50ad072fe6",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/merged_sample.pdf",
+      "binary_format": "pdf"
+    },
+    {
+      "path": "Carter_v2/probe_assets/png_output/sample_1.png",
+      "sha256": "2314dc03d4244bf25e0e6e6d87d8cc34ea5aa2ecd832939501c4fcd878dea29f",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/png_output/sample_1.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/probe_assets/resized_sample.png",
+      "sha256": "f34bd453947b77be02bdbbb1033426aa7b8ac9655516df8b91a4eb9cdf76abdc",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/resized_sample.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.csv",
+      "sha256": "5ed43747f8d8dcd37b26ffd54e79617a23aa3abe8992211ce387c739e998adb9",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "csv:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample.csv"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.docx",
+      "sha256": "8dd0bbd35edbf4f39c12c44118b9f5a57d8a1be2e334e8300f2a64aa48814d6a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample.docx",
+      "binary_format": "zip"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.jpg",
+      "sha256": "2e4fcdefb157f5837094712118a14bdc23818cb10f2df2a6acec63a66dafd187",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample.jpg",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.mp4",
+      "sha256": "6c2e2ccacecc5eb6069820d578b1aeded4fdbd81b13262db1b13ca173c70f204",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample.mp4",
+      "binary_format": "mp4"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.pdf",
+      "sha256": "167016f91a1b2ab534e1262e3e2ebc668d7032ccd632441b4100040a0114c4b9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample.pdf",
+      "binary_format": "pdf"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.wav",
+      "sha256": "82dbf13bb79438aaf1c26f3adff7dd98c5905390632e3cc3b9914a2be84563db",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample.wav",
+      "binary_format": "wav"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample_b.pdf",
+      "sha256": "5270c85c9e7933759b9f42d28c9a588c81a8d551027ecc94aaa85fadc5d100f9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample_b.pdf",
+      "binary_format": "pdf"
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample_converted.png",
+      "sha256": "e878950f8091ec010cf5cc723bdea027a8539cf7147cfea199c2f666232dcd4e",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/sample_converted.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/probe_assets/split_files/sample_1_1.pdf",
+      "sha256": "f94f81368926440356885c807b95d8b74fbef23cd88a6daccbdaa3470a467b2a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/split_files/sample_1_1.pdf",
+      "binary_format": "pdf"
+    },
+    {
+      "path": "Carter_v2/probe_assets/trimmed_sample.mp4",
+      "sha256": "ffdf55b3c5de0489a2f89d92a662656d6ad16ef65219387c8326123aee4d1caf",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets/trimmed_sample.mp4",
+      "binary_format": "mp4"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/audio.mp3",
+      "sha256": "6f271555987f76006aa377788ebe2947cd618c38212f07b4f5418dca0b3174f3",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/audio.mp3",
+      "binary_format": "mp3"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/data.xlsx",
+      "sha256": "9f67f09718fc52f848b9fba35330ea64c70ad0c10236e34747f9f668795b11f9",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/data.xlsx",
+      "binary_format": "zip"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/image.jpg",
+      "sha256": "9dacf9b93ef343cb1b10d45dcd84959c4448a68d0859d818cc3decfb7dbf619f",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/image.jpg",
+      "binary_format": "jpeg"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/probe.db",
+      "sha256": "2fcca3189412bc4a27ded545be7c32dcc8ceffa00829b0c04f7ef14618e92cd8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/probe.db"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/record.wav",
+      "sha256": "842a3c15b72245e0084f4d3467bc8a2dd2f4abc6f3ebe19f3ed2729ab9ccdb3d",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/record.wav",
+      "binary_format": "wav"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/s15_data/input.csv",
+      "sha256": "5cc38b6cdb76a2c366a0974de9775bc7ae46d1afdca52781d2ac56d6cde8d251",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "csv:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/s15_data/input.csv"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/s16_universal_memory.db",
+      "sha256": "886e46a42ecd153c018c3814b01d8879403f7bbaedbca610730b335a13cb207b",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/s16_universal_memory.db"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/sample_from_docx.pdf",
+      "sha256": "1868ea0e6cd8d086461af0883117ef09afd5f6255b390a70114258c2e9f55285",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/sample_from_docx.pdf",
+      "binary_format": "pdf"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/test_out.mp4",
+      "sha256": "83114ef58d9233fb7f40473f35190b3f92cda97768eed78973620df7343faa06",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/test_out.mp4",
+      "binary_format": "mp4"
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/window.png",
+      "sha256": "777fb72182f4038f228bd1d7ee6a41908455ad07d89348612c779c8273170b9a",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "blob-meta"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_assets_runtime/window.png",
+      "binary_format": "png"
+    },
+    {
+      "path": "Carter_v2/probe_fixed_results.json",
+      "sha256": "a586326232b286c71ea40f253d49769cce6987d5cc1ff6eb652a1860dfcef04f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_fixed_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_run10_results.json",
+      "sha256": "7442794a87e170a6ae1610993466e6589ac98e92fff0359de1e1ad0df8aefe59",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_run10_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_run11_results.json",
+      "sha256": "b6a9f53a5d3419051e92807dd962e444b65342d7ae13b7674edd79a7b9a527c6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_run11_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_run12_results.json",
+      "sha256": "7032c170ed7aa426b13bf66ed308f7606a4358755528994e9a905407e551cd91",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_run12_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_run7_results.json",
+      "sha256": "bc8ec7a6a3c9668e08ec6e087fa4eda711e2822fd51f921cfd489212680ef890",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_run7_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_run8_results.json",
+      "sha256": "383de738fb6d4d8afe47a64822e8f2ebbad5ef3fcccbfb540c02f85bbe2e3893",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_run8_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_run9_results.json",
+      "sha256": "bf03f520fc429d99353e43bf565d6041a2815a6c4bf26607cc79d352abeac29e",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_run9_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_text_baseline_results.json",
+      "sha256": "2ce6f6c29d3a8e7663c6494cfc32c2efb801a864367a3ff56642a2ee6af0300f",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_text_baseline_results.json"
+    },
+    {
+      "path": "Carter_v2/probe_vision_stack_results.json",
+      "sha256": "1461c19632fd638cc39e47043846227843c083a38b815f25431e77e74118e3b2",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#Carter_v2/probe_vision_stack_results.json"
+    },
+    {
+      "path": "carter_v5/audit/runs/bench_540_tier_10gb_20260511_171920_stubs.json",
+      "sha256": "4b1810d7559e32f94d70f94927aa3e833e4599ea48f68d2e688bb3ff0e4955fb",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#carter_v5/audit/runs/bench_540_tier_10gb_20260511_171920_stubs.json"
+    },
+    {
+      "path": "carter_v5/audit/runs/bench_540_tier_16gb_20260511_170121_stubs.json",
+      "sha256": "a250102dba18090c6e3d5c6ef179ce3d182f31845e9ea6e10ea2889555586ced",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#carter_v5/audit/runs/bench_540_tier_16gb_20260511_170121_stubs.json"
+    },
+    {
+      "path": "carter_v5/audit/runs/bench_540_tier_16gb_20260511_183805_stubs.json",
+      "sha256": "8c3f7b237022c6d2c67c8ebaa8f20b9fc9bb46527ba422eee9506db08e7043ea",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#carter_v5/audit/runs/bench_540_tier_16gb_20260511_183805_stubs.json"
+    },
+    {
+      "path": "carter_v5/audit/runs/bench_540_tier_16gb_20260511_184332_stubs.json",
+      "sha256": "f00d125174707ded7bf0f1a88be75c368b11ea853ad1ec4bbaef838dd3e444c5",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#carter_v5/audit/runs/bench_540_tier_16gb_20260511_184332_stubs.json"
+    },
+    {
+      "path": "carter_v5/audit/runs/bench_memory.db",
+      "sha256": "d54bf8db4f307d40f4a74a776d5dddf627e6cdc7969693b4ed1b28641669e772",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#carter_v5/audit/runs/bench_memory.db"
+    },
+    {
+      "path": "carter_v5/tools/schemas_individual.json",
+      "sha256": "d722f8fd23e40e0402537d7b02e1345c649fb308a0d331c2511536ca23043ef8",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "json:schema+counts+samples"
+      ],
+      "extract_ref": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json#carter_v5/tools/schemas_individual.json"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "evidence_assets-011-carter-01-Carter_v2-artifacts-live_smoke_observed.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/artifacts/live_smoke_observed.json",
+      "denominator": "1 files in group Carter_v2/artifacts/live_smoke_observed.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/artifacts/live_smoke_observed.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/artifacts/live_smoke_observed.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "live_smoke_observed.json parser=json rows=1 bytes=35095 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 13}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/artifacts/live_smoke_observed.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-02-Carter_v2-artifacts-live_smoke_synthetic.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/artifacts/live_smoke_synthetic.json",
+      "denominator": "1 files in group Carter_v2/artifacts/live_smoke_synthetic.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/artifacts/live_smoke_synthetic.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/artifacts/live_smoke_synthetic.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "live_smoke_synthetic.json parser=json rows=1 bytes=22445 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 10}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/artifacts/live_smoke_synthetic.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-03-Carter_v2-artifacts-live_smoke_universal.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/artifacts/live_smoke_universal.json",
+      "denominator": "1 files in group Carter_v2/artifacts/live_smoke_universal.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/artifacts/live_smoke_universal.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/artifacts/live_smoke_universal.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "live_smoke_universal.json parser=json rows=1 bytes=69681 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 31}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/artifacts/live_smoke_universal.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-04-Carter_v2-documentacion-investigaciones",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/documentacion/investigaciones",
+      "denominator": "1 files in group Carter_v2/documentacion/investigaciones; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/documentacion/investigaciones",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/documentacion/investigaciones/comparadas/Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md parser=binary_inventory rows=0 bytes=40951 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "Carter_v2/documentacion/investigaciones/comparadas/Gemini-Transformar CARTER OS en Jarvis Investigación Tecnica.,md",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-05-Carter_v2-documentacion-probes",
+      "card_kind": "metric",
+      "corpus": "Carter_v2/documentacion/probes",
+      "denominator": "16 files in group Carter_v2/documentacion/probes; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/documentacion/probes",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/documentacion/probes/probe_all_results.json",
+        "Carter_v2/documentacion/probes/probe_environment_readiness.json",
+        "Carter_v2/documentacion/probes/probe_results.json",
+        "Carter_v2/documentacion/probes/probe_session10_results.json",
+        "Carter_v2/documentacion/probes/probe_session10_stdout.log",
+        "Carter_v2/documentacion/probes/probe_session11_failed_results.json",
+        "Carter_v2/documentacion/probes/probe_session11_results.json",
+        "Carter_v2/documentacion/probes/probe_session12_extended_results.json",
+        "Carter_v2/documentacion/probes/probe_session12_results.json",
+        "Carter_v2/documentacion/probes/probe_session15_results.json",
+        "Carter_v2/documentacion/probes/probe_session16_results.json",
+        "Carter_v2/documentacion/probes/probe_session21_results.json",
+        "Carter_v2/documentacion/probes/probe_session22b_results.json",
+        "Carter_v2/documentacion/probes/probe_session25_results.json",
+        "Carter_v2/documentacion/probes/probe_session7_results.json",
+        "Carter_v2/documentacion/probes/probe_universal_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_all_results.json parser=json rows=1 bytes=22095 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 66}} | probe_environment_readiness.json parser=json rows=1 bytes=32038 dist={\"scalar_keys\": [\"external_mutations_enabled\", \"profile\", \"safe_mutation_mode\", \"session_actions_enabled\", \"timestamp\"], \"list_lengths\": {\"tests\": 167}} | probe_results.json parser=json rows=20 bytes=10662 dist={} | probe_session10_results.json parser=json rows=1 bytes=59961 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 7, \"results\": 137}} | probe_session10_stdout.log parser=log rows=679 bytes=33869 dist={\"fail_like\": 10, \"pass_like\": 120} | probe_session11_failed_results.json parser=json rows=1 bytes=690 dist={\"scalar_keys\": [\"errors\", \"fai…",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/documentacion/probes/probe_all_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-06-Carter_v2-documentacion-sessions",
+      "card_kind": "run",
+      "corpus": "Carter_v2/documentacion/sessions",
+      "denominator": "1 files in group Carter_v2/documentacion/sessions; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/documentacion/sessions",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/documentacion/sessions/audit_session13_findings.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "audit_session13_findings.json parser=json rows=25 bytes=16434 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/documentacion/sessions/audit_session13_findings.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-07-Carter_v2-live_smoke_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/live_smoke_results.json",
+      "denominator": "1 files in group Carter_v2/live_smoke_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/live_smoke_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/live_smoke_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "live_smoke_results.json parser=json rows=1 bytes=270686 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 83}}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/live_smoke_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-08-Carter_v2-probe_assets-merged.pdf",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/merged.pdf",
+      "denominator": "1 files in group Carter_v2/probe_assets/merged.pdf; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/merged.pdf",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/merged.pdf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "merged.pdf parser=binary_inventory rows=0 bytes=1047 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/merged.pdf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-09-Carter_v2-probe_assets-merged_sample.pdf",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/merged_sample.pdf",
+      "denominator": "1 files in group Carter_v2/probe_assets/merged_sample.pdf; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/merged_sample.pdf",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/merged_sample.pdf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "merged_sample.pdf parser=binary_inventory rows=0 bytes=1045 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/merged_sample.pdf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-10-Carter_v2-probe_assets-png_output",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/png_output",
+      "denominator": "1 files in group Carter_v2/probe_assets/png_output; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/png_output",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/png_output/sample_1.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample_1.png parser=binary_inventory rows=0 bytes=48759 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/png_output/sample_1.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-11-Carter_v2-probe_assets-resized_sample.png",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/resized_sample.png",
+      "denominator": "1 files in group Carter_v2/probe_assets/resized_sample.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/resized_sample.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/resized_sample.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "resized_sample.png parser=binary_inventory rows=0 bytes=2787 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/resized_sample.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-12-Carter_v2-probe_assets-sample.csv",
+      "card_kind": "corpus",
+      "corpus": "Carter_v2/probe_assets/sample.csv",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample.csv; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample.csv",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.csv"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample.csv parser=csv rows=2 bytes=25 dist={\"header_cols\": 2}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.csv",
+        "ranges": [
+          "csv:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-13-Carter_v2-probe_assets-sample.docx",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample.docx",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample.docx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample.docx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.docx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample.docx parser=binary_inventory rows=0 bytes=897 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.docx",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-14-Carter_v2-probe_assets-sample.jpg",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample.jpg",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample.jpg; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample.jpg",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.jpg"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample.jpg parser=binary_inventory rows=0 bytes=69 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.jpg",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-15-Carter_v2-probe_assets-sample.mp4",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample.mp4",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample.mp4; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample.mp4",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.mp4"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample.mp4 parser=binary_inventory rows=0 bytes=12741 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.mp4",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-16-Carter_v2-probe_assets-sample.pdf",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample.pdf",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample.pdf; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample.pdf",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.pdf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample.pdf parser=binary_inventory rows=0 bytes=596 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.pdf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-17-Carter_v2-probe_assets-sample.wav",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample.wav",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample.wav; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample.wav",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.wav"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample.wav parser=binary_inventory rows=0 bytes=4044 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.wav",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-18-Carter_v2-probe_assets-sample_b.pdf",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample_b.pdf",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample_b.pdf; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample_b.pdf",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample_b.pdf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample_b.pdf parser=binary_inventory rows=0 bytes=598 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample_b.pdf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-19-Carter_v2-probe_assets-sample_converted.png",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/sample_converted.png",
+      "denominator": "1 files in group Carter_v2/probe_assets/sample_converted.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/sample_converted.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/sample_converted.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample_converted.png parser=binary_inventory rows=0 bytes=69 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample_converted.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-20-Carter_v2-probe_assets-split_files",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/split_files",
+      "denominator": "1 files in group Carter_v2/probe_assets/split_files; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/split_files",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/split_files/sample_1_1.pdf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample_1_1.pdf parser=binary_inventory rows=0 bytes=677 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/split_files/sample_1_1.pdf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-21-Carter_v2-probe_assets-trimmed_sample.mp4",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets/trimmed_sample.mp4",
+      "denominator": "1 files in group Carter_v2/probe_assets/trimmed_sample.mp4; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets/trimmed_sample.mp4",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets/trimmed_sample.mp4"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "trimmed_sample.mp4 parser=binary_inventory rows=0 bytes=9731 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/trimmed_sample.mp4",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-22-Carter_v2-probe_assets_runtime-audio.mp3",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/audio.mp3",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/audio.mp3; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/audio.mp3",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/audio.mp3"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "audio.mp3 parser=binary_inventory rows=0 bytes=8897 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/audio.mp3",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-23-Carter_v2-probe_assets_runtime-data.xlsx",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/data.xlsx",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/data.xlsx; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/data.xlsx",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/data.xlsx"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "data.xlsx parser=binary_inventory rows=0 bytes=5440 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/data.xlsx",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-24-Carter_v2-probe_assets_runtime-image.jpg",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/image.jpg",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/image.jpg; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/image.jpg",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/image.jpg"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "image.jpg parser=binary_inventory rows=0 bytes=631 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/image.jpg",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-25-Carter_v2-probe_assets_runtime-probe.db",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_assets_runtime/probe.db",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/probe.db; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/probe.db",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/probe.db"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe.db parser=sqlite rows=0 bytes=48 dist={\"table_count\": 0, \"rows_total\": 0}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/probe.db",
+        "ranges": [
+          "sqlite:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-26-Carter_v2-probe_assets_runtime-record.wav",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/record.wav",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/record.wav; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/record.wav",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/record.wav"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "record.wav parser=binary_inventory rows=0 bytes=88244 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/record.wav",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-27-Carter_v2-probe_assets_runtime-s15_data",
+      "card_kind": "corpus",
+      "corpus": "Carter_v2/probe_assets_runtime/s15_data",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/s15_data; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/s15_data",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/s15_data/input.csv"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "input.csv parser=csv rows=2 bytes=29 dist={\"header_cols\": 2}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/s15_data/input.csv",
+        "ranges": [
+          "csv:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-28-Carter_v2-probe_assets_runtime-s16_universal_memory.db",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_assets_runtime/s16_universal_memory.db",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/s16_universal_memory.db; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/s16_universal_memory.db",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/s16_universal_memory.db"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "s16_universal_memory.db parser=sqlite rows=8 bytes=28672 dist={\"table_count\": 4, \"rows_total\": 8}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/s16_universal_memory.db",
+        "ranges": [
+          "sqlite:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-29-Carter_v2-probe_assets_runtime-sample_from_docx.pdf",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/sample_from_docx.pdf",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/sample_from_docx.pdf; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/sample_from_docx.pdf",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/sample_from_docx.pdf"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "sample_from_docx.pdf parser=binary_inventory rows=0 bytes=14686 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/sample_from_docx.pdf",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-30-Carter_v2-probe_assets_runtime-test_out.mp4",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/test_out.mp4",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/test_out.mp4; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/test_out.mp4",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/test_out.mp4"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "test_out.mp4 parser=binary_inventory rows=0 bytes=12895 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/test_out.mp4",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-31-Carter_v2-probe_assets_runtime-window.png",
+      "card_kind": "asset",
+      "corpus": "Carter_v2/probe_assets_runtime/window.png",
+      "denominator": "1 files in group Carter_v2/probe_assets_runtime/window.png; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_assets_runtime/window.png",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/window.png"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "window.png parser=binary_inventory rows=0 bytes=201725 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/window.png",
+        "ranges": [
+          "blob-meta"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-32-Carter_v2-probe_fixed_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_fixed_results.json",
+      "denominator": "1 files in group Carter_v2/probe_fixed_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_fixed_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_fixed_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_fixed_results.json parser=json rows=1 bytes=97902 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 23, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_fixed_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-33-Carter_v2-probe_run10_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_run10_results.json",
+      "denominator": "1 files in group Carter_v2/probe_run10_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_run10_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_run10_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_run10_results.json parser=json rows=1 bytes=77164 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 3, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_run10_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-34-Carter_v2-probe_run11_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_run11_results.json",
+      "denominator": "1 files in group Carter_v2/probe_run11_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_run11_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_run11_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_run11_results.json parser=json rows=1 bytes=76030 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 1, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_run11_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-35-Carter_v2-probe_run12_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_run12_results.json",
+      "denominator": "1 files in group Carter_v2/probe_run12_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_run12_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_run12_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_run12_results.json parser=json rows=1 bytes=75631 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 0, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_run12_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-36-Carter_v2-probe_run7_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_run7_results.json",
+      "denominator": "1 files in group Carter_v2/probe_run7_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_run7_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_run7_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_run7_results.json parser=json rows=1 bytes=77508 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 4, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_run7_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-37-Carter_v2-probe_run8_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_run8_results.json",
+      "denominator": "1 files in group Carter_v2/probe_run8_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_run8_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_run8_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_run8_results.json parser=json rows=1 bytes=77948 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 4, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_run8_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-38-Carter_v2-probe_run9_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_run9_results.json",
+      "denominator": "1 files in group Carter_v2/probe_run9_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_run9_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_run9_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_run9_results.json parser=json rows=1 bytes=77603 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 4, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_run9_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-39-Carter_v2-probe_text_baseline_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_text_baseline_results.json",
+      "denominator": "1 files in group Carter_v2/probe_text_baseline_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_text_baseline_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_text_baseline_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_text_baseline_results.json parser=json rows=1 bytes=75400 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 0, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_text_baseline_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-40-Carter_v2-probe_vision_stack_results.json",
+      "card_kind": "run",
+      "corpus": "Carter_v2/probe_vision_stack_results.json",
+      "denominator": "1 files in group Carter_v2/probe_vision_stack_results.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:Carter_v2/probe_vision_stack_results.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "Carter_v2/probe_vision_stack_results.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "probe_vision_stack_results.json parser=json rows=1 bytes=126804 dist={\"scalar_keys\": [\"errors\", \"failed\", \"passed\", \"profile\", \"readiness_file\", \"skipped\", \"timestamp\", \"total\"], \"list_lengths\": {\"failures\": 50, \"skips\": 2, \"results\": 167}}",
+      "outcome": "fracaso",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "Carter_v2/probe_vision_stack_results.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-41-carter_v5-audit-runs",
+      "card_kind": "run",
+      "corpus": "carter_v5/audit/runs",
+      "denominator": "5 files in group carter_v5/audit/runs; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:carter_v5/audit/runs",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "carter_v5/audit/runs/bench_540_tier_10gb_20260511_171920_stubs.json",
+        "carter_v5/audit/runs/bench_540_tier_16gb_20260511_170121_stubs.json",
+        "carter_v5/audit/runs/bench_540_tier_16gb_20260511_183805_stubs.json",
+        "carter_v5/audit/runs/bench_540_tier_16gb_20260511_184332_stubs.json",
+        "carter_v5/audit/runs/bench_memory.db"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "bench_540_tier_10gb_20260511_171920_stubs.json parser=json rows=1 bytes=253165 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 450}} | bench_540_tier_16gb_20260511_170121_stubs.json parser=json rows=1 bytes=84123 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 150}} | bench_540_tier_16gb_20260511_183805_stubs.json parser=json rows=1 bytes=39176 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 90}} | bench_540_tier_16gb_20260511_184332_stubs.json parser=json rows=1 bytes=58011 dist={\"scalar_keys\": [], \"list_lengths\": {\"results\": 90}} | bench_memory.db parser=sqlite rows=0 bytes=12288 dist={\"table_count\": 2, \"rows_total\": 0}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "provenance": {
+        "path": "carter_v5/audit/runs/bench_540_tier_10gb_20260511_171920_stubs.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "evidence_assets-011-carter-42-carter_v5-tools-schemas_individual.json",
+      "card_kind": "run",
+      "corpus": "carter_v5/tools/schemas_individual.json",
+      "denominator": "1 files in group carter_v5/tools/schemas_individual.json; per-file rows/bytes in measurement. Do not promote a ratio without this denominator.",
+      "version": "snapshot 09.5.0 carter head=9cf62d236cde",
+      "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+      "limitations": "Recovered metadata/results; not a contemporary rerun. Train/eval contamination, false positives and failed runs stay as records. Existence is not works. Provisional until 09.5.9.",
+      "identity": "carter:carter_v5/tools/schemas_individual.json",
+      "consumers": "historical artifact; consumers pending 09.5.9",
+      "associated_benchmark": "none recovered in this campaign",
+      "source_files": [
+        "carter_v5/tools/schemas_individual.json"
+      ],
+      "provisional": true,
+      "ranking_claim": false,
+      "equivalent_comparison": "",
+      "measurement": "schemas_individual.json parser=json rows=60 bytes=33410 dist={}",
+      "outcome": "contexto",
+      "works": false,
+      "current_owner": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "provenance": {
+        "path": "carter_v5/tools/schemas_individual.json",
+        "ranges": [
+          "json:schema+counts+samples"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria evidencia)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=61 drift=0 miss=0",
+  "next_evidence_assets_batch_id": "evidence_assets-012-probando_gemma4",
+  "next_prompt": "campaign:evidence_assets",
+  "inspect": "artifacts/goal095/extract/evidence_assets-011-carter.parse.json",
+  "smoke": "skipped; results recovered; existence is not works"
+}

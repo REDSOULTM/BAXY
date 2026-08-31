@@ -1,0 +1,3016 @@
+{
+  "batch_id": "evidence_assets-024-functiongemma-fg_curated",
+  "source_id": "functiongemma",
+  "file_count": 36,
+  "hash_ok": 36,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "finetune_llm/curated/batches/_batch_03_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 26358,
+      "sha256": "9b3211acefa3cae25c8d49bf570ff6797272c7ae581933edde142fa494ca2a1f",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 25801,
+        "min_line_bytes": 445,
+        "max_line_bytes": 628,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.78,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_105\", \"user_text\": \"recuerda que prefiero no usar taskkill /F\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"memory\"], \"also_valid\": [], \"correct_reply_style\": \"Anotado: evito taskkill /F y cierro procesos de forma n…"
+          },
+          {
+            "offset": 539,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_106\", \"user_text\": \"qué cosas importantes recuerdas sobre Carter?\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"memory\"], \"also_valid\": [], \"correct_reply_style\": \"Tengo guardado esto sobre Carter: [memorias relevan…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25299,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_153\", \"user_text\": \"abre notepad\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [], \"correct_reply_style\": \"Abri el Bloc de notas.\", \"reply_is_template\": false, \"original_was_correct\": false, \"co…"
+          },
+          {
+            "offset": 25801,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_154\", \"user_text\": \"cierra notepad que abriste\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"window\"], \"correct_reply_style\": \"Cerre el Bloc de notas.\", \"reply_is_template\": false, \"original_w…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_04.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 26818,
+      "sha256": "db6eef69f90a6480d0d099f57d6852e304e1088d3365288ebbc7b47c4de41f21",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26271,
+        "min_line_bytes": 432,
+        "max_line_bytes": 634,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_155\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre https://www.python.org\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected…"
+          },
+          {
+            "offset": 491,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_156\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"busca documentación oficial de Python\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25750,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_205\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre la app predeterminada de música\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null,…"
+          },
+          {
+            "offset": 26271,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_206\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"no abras nada, solo dime si Spotify está instalado\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_ori…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_04_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27022,
+      "sha256": "586ae466a95dcb48940326b44a0eddf6789af4b80539d0087907f4d716004854",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26485,
+        "min_line_bytes": 415,
+        "max_line_bytes": 684,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "confidence": {
+            "min": 0.7,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_155\", \"user_text\": \"abre https://www.python.org\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"browser\"], \"also_valid\": [\"browser_real\"], \"correct_reply_style\": \"Listo, abrí python.org en el navegador.\", \"reply_is_te…"
+          },
+          {
+            "offset": 532,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_156\", \"user_text\": \"busca documentación oficial de Python\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [], \"correct_reply_style\": \"La documentación oficial está en docs.python.org; te paso el e…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25902,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_205\", \"user_text\": \"abre la app predeterminada de música\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"media\"], \"correct_reply_style\": \"Abrí tu app de música predeterminada. Si no hay una clar…"
+          },
+          {
+            "offset": 26485,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_206\", \"user_text\": \"no abras nada, solo dime si Spotify está instalado\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"system\"], \"correct_reply_style\": \"Spotify está instalado. No abrí nada, sol…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_05.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27558,
+      "sha256": "e50f60209c8c370de2eaf01975012c7d5742dd8df82bab81c91dc4c1dd4be337",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26961,
+        "min_line_bytes": 432,
+        "max_line_bytes": 643,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_207\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"reinicia una app liviana que tú abriste\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": nul…"
+          },
+          {
+            "offset": 563,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_208\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre google.com\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_tools\": [\"w…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26371,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_256\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"dime si hay descargas activas en Steam\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null…"
+          },
+          {
+            "offset": 26961,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_257\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"no uses coordenadas fijas para Steam\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null,…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_05_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28223,
+      "sha256": "0ee21fad40d8bc2970c71e1adcbc1605dddd782d74de2e3ebb3ba0f21568b3d0",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27597,
+        "min_line_bytes": 420,
+        "max_line_bytes": 681,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_207\", \"user_text\": \"reinicia una app liviana que tú abriste\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"app\", \"app\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Cerré y volví a abrir la app que había…"
+          },
+          {
+            "offset": 601,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_208\", \"user_text\": \"abre google.com\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"browser\"], \"also_valid\": [], \"correct_reply_style\": \"Abrí google.com en el navegador.\", \"reply_is_template\": false, \"original_was_cor…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26995,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_256\", \"user_text\": \"dime si hay descargas activas en Steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [\"steam\", \"vision\"], \"correct_reply_style\": \"Revisé la sección de descargas de S…"
+          },
+          {
+            "offset": 27597,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_257\", \"user_text\": \"no uses coordenadas fijas para Steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Entendido: para Steam voy a usar UIA, visión y snapshots de la inter…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_06.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28678,
+      "sha256": "ef5233f8632f3dd1fd59d3a3b0b7d2bfcb72048c27555ab1521fc9fba58aa195",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 28054,
+        "min_line_bytes": 511,
+        "max_line_bytes": 640,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_258\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"vuelve desde tienda a biblioteca\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"exp…"
+          },
+          {
+            "offset": 561,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_259\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre propiedades de un juego solo si está seleccionado\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 27466,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_306\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"crea variable de entorno persistente CARTER_TEST=1\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_ori…"
+          },
+          {
+            "offset": 28054,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_307\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"modifica el registro para acelerar Windows\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_06_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27704,
+      "sha256": "ecc2aee7a619a544bf89ff6b5ef7f6f21bd94652c62fde451ed8c21126b2dddd",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27028,
+        "min_line_bytes": 459,
+        "max_line_bytes": 678,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.68,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_258\", \"user_text\": \"vuelve desde tienda a biblioteca\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Listo, cambié a la pestaña Biblioteca en Steam.\", \"…"
+          },
+          {
+            "offset": 587,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_259\", \"user_text\": \"abre propiedades de un juego solo si está seleccionado\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"No veo ningún juego seleccion…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26412,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_306\", \"user_text\": \"crea variable de entorno persistente CARTER_TEST=1\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"env\"], \"also_valid\": [\"system\"], \"correct_reply_style\": \"Persistir una variable de entorno toca tu…"
+          },
+          {
+            "offset": 27028,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_307\", \"user_text\": \"modifica el registro para acelerar Windows\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [\"registry\"], \"correct_reply_style\": \"\\\"Acelerar Windows\\\" por registro es muy vago y ries…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_07.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 28137,
+      "sha256": "650a6215bef7ce47d3c066630ece2995be87271bd1665e80d3e40ec6622a9dcc",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 27544,
+        "min_line_bytes": 468,
+        "max_line_bytes": 620,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_308\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"instala requests con pip\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_to…"
+          },
+          {
+            "offset": 583,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_309\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"actualiza todos los paquetes pip\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"exp…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26959,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_357\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"copia texto de Notepad al portapapeles\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null…"
+          },
+          {
+            "offset": 27544,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_358\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"pega texto en un archivo nuevo de Notepad\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": n…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_07_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 30510,
+      "sha256": "81cd76b82ccefc3391f1b07312a8bd9e1b68da70cdf1124742d452ff5045afda",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29848,
+        "min_line_bytes": 517,
+        "max_line_bytes": 689,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.7,
+            "max": 0.92
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_308\", \"user_text\": \"instala requests con pip\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"terminal\"], \"also_valid\": [\"package\"], \"correct_reply_style\": \"Voy a correr pip install requests. Confirmame el entorno o el…"
+          },
+          {
+            "offset": 626,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_309\", \"user_text\": \"actualiza todos los paquetes pip\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [\"terminal\"], \"correct_reply_style\": \"Actualizar todos los paquetes pip a la vez puede romper depend…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 29210,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_357\", \"user_text\": \"copia texto de Notepad al portapapeles\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [\"clipboard\", \"gui\"], \"correct_reply_style\": \"Enfoco Notepad y copio el texto al…"
+          },
+          {
+            "offset": 29848,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_358\", \"user_text\": \"pega texto en un archivo nuevo de Notepad\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"computer_use\"], \"also_valid\": [\"app\", \"clipboard\"], \"correct_reply_style\": \"Abro un Notepad nuevo, me asegu…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_08.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 30216,
+      "sha256": "3479d44aa212b40cafee682cab5285845b78f6586939683e04fe1e144c5be79b",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29570,
+        "min_line_bytes": 510,
+        "max_line_bytes": 659,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_359\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"busca el campo de búsqueda visible\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"e…"
+          },
+          {
+            "offset": 573,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_360\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"haz una captura antes y después del click\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": n…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 28961,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_408\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre Descargas, identifica último PDF y no lo abras\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_or…"
+          },
+          {
+            "offset": 29570,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_409\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"organiza archivos de sandbox por extensión y genera reporte\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"s…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_08_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 31913,
+      "sha256": "86a50528e8b829c40d5be6e50cdcb6b22aaac997cb5f618847c27d927799b102",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 31259,
+        "min_line_bytes": 554,
+        "max_line_bytes": 743,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 4.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.8
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_359\", \"user_text\": \"busca el campo de búsqueda visible\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"computer_use\"], \"also_valid\": [\"uia\", \"vision\"], \"correct_reply_style\": \"Busco el campo de búsqueda en pantalla co…"
+          },
+          {
+            "offset": 635,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_360\", \"user_text\": \"haz una captura antes y después del click\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"gui\", \"computer_use\", \"gui\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Capturo antes, hago e…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 30625,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_408\", \"user_text\": \"abre Descargas, identifica último PDF y no lo abras\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"filesystem\"], \"also_valid\": [], \"correct_reply_style\": \"Miré la carpeta Descargas y el último PDF…"
+          },
+          {
+            "offset": 31259,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_409\", \"user_text\": \"organiza archivos de sandbox por extensión y genera reporte\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"filesystem\"], \"also_valid\": [], \"correct_reply_style\": \"Agrupé los archivos del sandbox p…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_09.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27231,
+      "sha256": "ddd962e75b3b85d5780f77ac9e5438435439959fce3697c7f967feabf0a04094",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26774,
+        "min_line_bytes": 428,
+        "max_line_bytes": 638,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_410\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"ejecuta diagnóstico read-only de Carter y crea resumen\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status…"
+          },
+          {
+            "offset": 618,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_411\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"termina la misión dejando log, estado final y limpieza\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 26166,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_459\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre la cuestión del volumen\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expecte…"
+          },
+          {
+            "offset": 26774,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_460\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"cerrá steam\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_tools\": [\"windo…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_09_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 26704,
+      "sha256": "b6de41c63f5cbae225b919a4a1e39b04798aeea9ecd1f0b6f2c46a13152fd0fe",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26251,
+        "min_line_bytes": 422,
+        "max_line_bytes": 685,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.45,
+            "max": 0.92
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_410\", \"user_text\": \"ejecuta diagnóstico read-only de Carter y crea resumen\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"terminal\", \"filesystem\"], \"also_valid\": [], \"correct_reply_style\": \"Corrí el diagnóstico read-…"
+          },
+          {
+            "offset": 653,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_411\", \"user_text\": \"termina la misión dejando log, estado final y limpieza\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [\"filesystem\"], \"correct_reply_style\": \"Misión terminada: estado COMPLETED, de…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25622,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_459\", \"user_text\": \"abre la cuestión del volumen\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"device_settings\"], \"also_valid\": [\"audio\"], \"correct_reply_style\": \"¿Querés que abra el panel de sonido o que te ajuste…"
+          },
+          {
+            "offset": 26251,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_460\", \"user_text\": \"cerrá steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"window\"], \"also_valid\": [\"app\"], \"correct_reply_style\": \"Cierro Steam.\", \"reply_is_template\": false, \"original_was_correct\": false, \"corr…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_10.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 26700,
+      "sha256": "0a0b90c36dba19cc087e9d9a817079eb3eb230150074c5290e72dcd34ed54b9b",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26210,
+        "min_line_bytes": 452,
+        "max_line_bytes": 611,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_461\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"prende la musica\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_tools\": [\"…"
+          },
+          {
+            "offset": 563,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_462\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"apaga eso\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_tools\": [\"Cumple…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25599,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_509\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"baja volumen a 20\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_tools\": […"
+          },
+          {
+            "offset": 26210,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_510\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"abre app inexistente\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_tools\"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_10_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 27043,
+      "sha256": "eae38e559a1fa451103af09ab3f80b9fd3835790eabe7da2e9237e5edcc72d0c",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 26463,
+        "min_line_bytes": 452,
+        "max_line_bytes": 627,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.92
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_461\", \"user_text\": \"prende la musica\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [\"app\"], \"correct_reply_style\": \"Pongo música. Si querés una app o canción puntual, decime cuál.\", \"reply_is_…"
+          },
+          {
+            "offset": 576,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_462\", \"user_text\": \"apaga eso\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"¿Qué querés que apague: la música, el volumen, una ventana? No tengo claro el referente.\", \"rep…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 25921,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_509\", \"user_text\": \"baja volumen a 20\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [\"verify\"], \"correct_reply_style\": \"Bajé el volumen a 20.\", \"reply_is_template\": false, \"original_was_correc…"
+          },
+          {
+            "offset": 26463,
+            "line": 50,
+            "text": "{\"id\": \"carter_md_gt_510\", \"user_text\": \"abre app inexistente\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [], \"correct_reply_style\": \"No encuentro esa app instalada, asi que no pude abrirla. ¿La nombramos distinto…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_11.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 18374,
+      "sha256": "f5f71eddfa3c303aa63aafaa760f7a2dc5640a7aaf661574b6ba4b37cc1b5d59",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 18048,
+        "min_line_bytes": 275,
+        "max_line_bytes": 619,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_511\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"usa usuario actual para ruta\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expecte…"
+          },
+          {
+            "offset": 577,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_512\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"consulta una app por nombre en español/inglés\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 17609,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_559\", \"source\": \"carter_md_gt\", \"project\": \"carter\", \"user_text\": \"\\\"dame el time y abrí Spotify por favor\\\"\", \"prev_text\": \"\", \"tools_called\": [], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": n…"
+          },
+          {
+            "offset": 18048,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_1\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"pues estaba pensando si podias cerrar steam porfavor\", \"prev_text\": \"holas\", \"tools_called\": [\"app\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null,…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_11_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 24563,
+      "sha256": "050719c02874455a132fbf3a52e4e384322be369d873c9d609001afc09eeb6ef",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24021,
+        "min_line_bytes": 421,
+        "max_line_bytes": 650,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.25,
+            "max": 0.9
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"carter_md_gt_511\", \"user_text\": \"usa usuario actual para ruta\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"filesystem\"], \"also_valid\": [\"system\"], \"correct_reply_style\": \"Voy a usar tu carpeta de usuario real, no un nombre fijo…"
+          },
+          {
+            "offset": 650,
+            "line": 2,
+            "text": "{\"id\": \"carter_md_gt_512\", \"user_text\": \"consulta una app por nombre en español/inglés\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [], \"correct_reply_style\": \"Decime el nombre de la app y la busco, en el idioma qu…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 23426,
+            "line": 49,
+            "text": "{\"id\": \"carter_md_gt_559\", \"user_text\": \"\\\"dame el time y abrí Spotify por favor\\\"\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"system\", \"app\"], \"also_valid\": [], \"correct_reply_style\": \"Son las 14:35 y abrí Spotify.\", \"reply_is_templa…"
+          },
+          {
+            "offset": 24021,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_1\", \"user_text\": \"pues estaba pensando si podias cerrar steam porfavor\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"steam\"], \"correct_reply_style\": \"Listo, cerré Steam.\", \"reply_is_template\"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_12.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16837,
+      "sha256": "79a9c7b5074793bc9cdb458b02a9b9e9003ed7fcc7d2413980a18b1747370eb3",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16492,
+        "min_line_bytes": 289,
+        "max_line_bytes": 544,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_2\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"puedes reanudar el video que estoy viendo?\", \"prev_text\": \"muchas gracias\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null…"
+          },
+          {
+            "offset": 329,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_3\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Abre steam pls y ponme en la pagina de la tienda de marvel rivals\", \"prev_text\": \"puedes reanudar el video que estoy viendo?\", \"tools_called\": [\"steam\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16201,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_52\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Abre stea,\", \"prev_text\": \"Quien eres?\", \"tools_called\": [\"app\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected…"
+          },
+          {
+            "offset": 16492,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_53\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Abre opera gx y busca flash\", \"prev_text\": \"Pon el volumen del pc a 10\", \"tools_called\": [\"app\", \"browser\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_12_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 24435,
+      "sha256": "644b58be2489f9595352d42b539775dbd4d2851b90612a6b19b19ca54b8e0c59",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 23929,
+        "min_line_bytes": 346,
+        "max_line_bytes": 747,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "confidence": {
+            "min": 0.45,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_2\", \"user_text\": \"puedes reanudar el video que estoy viendo?\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [\"audio\"], \"correct_reply_style\": \"Listo, reanudé el video.\", \"reply_is_template\": f…"
+          },
+          {
+            "offset": 584,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_3\", \"user_text\": \"Abre steam pls y ponme en la pagina de la tienda de marvel rivals\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"steam\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Abri Steam y te dej…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 23472,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_52\", \"user_text\": \"Abre stea,\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"steam\"], \"correct_reply_style\": \"Abri Steam.\", \"reply_is_template\": false, \"original_was_correct\": true, \"correctio…"
+          },
+          {
+            "offset": 23929,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_53\", \"user_text\": \"Abre opera gx y busca flash\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"app\", \"browser\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Abri Opera GX y busque flash.\", \"reply_is_templ…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_13.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17353,
+      "sha256": "1a16690cbf08871a742d9541721997f73893a37e6f97fac791e3fdb11426db2e",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17013,
+        "min_line_bytes": 292,
+        "max_line_bytes": 594,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_54\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"cierra whatsapp\", \"prev_text\": \"Abre opera gx y busca flash\", \"tools_called\": [\"app\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_origi…"
+          },
+          {
+            "offset": 312,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_55\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"pon una cancion en spotify\", \"prev_text\": \"cierra whatsapp\", \"tools_called\": [\"media\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_orig…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16672,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_102\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"quiero ver daredevil born again en disney\", \"prev_text\": \"Quiero ver loki en disney\", \"tools_called\": [\"media\"], \"tool_args\": [], \"reply\": \"\", \"laten…"
+          },
+          {
+            "offset": 17013,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_103\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Investiga cuando salio gta 5\", \"prev_text\": \"quiero ver daredevil born again en disney\", \"tools_called\": [\"web\"], \"tool_args\": [], \"reply\": \"\", \"late…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_13_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 22282,
+      "sha256": "17388deaf4dcd0eb3f2a622d1e6052b17cd53f2e8b2e46f635151a88b89bfabe",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21872,
+        "min_line_bytes": 346,
+        "max_line_bytes": 746,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.5,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_54\", \"user_text\": \"cierra whatsapp\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"window\"], \"correct_reply_style\": \"Listo, cerré WhatsApp.\", \"reply_is_template\": false, \"original_was_correct\":…"
+          },
+          {
+            "offset": 366,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_55\", \"user_text\": \"pon una cancion en spotify\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [], \"correct_reply_style\": \"Puse una canción en Spotify.\", \"reply_is_template\": false, \"original_wa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21456,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_102\", \"user_text\": \"quiero ver daredevil born again en disney\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Puse Daredevil: Born Again en Disney+.\",…"
+          },
+          {
+            "offset": 21872,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_103\", \"user_text\": \"Investiga cuando salio gta 5\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [], \"correct_reply_style\": \"GTA 5 salió el 17 de septiembre de 2013. ¿Querés algún dato más?\", \"re…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_14.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17354,
+      "sha256": "40291f038bd14c494326b4d0a073f942864bcb98109c4551f9ce71fafebf61e4",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17020,
+        "min_line_bytes": 299,
+        "max_line_bytes": 585,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_104\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Si no sabes investiga\", \"prev_text\": \"Hablame de emilia perez la pelicula es buena?\", \"tools_called\": [\"web\"], \"tool_args\": [], \"reply\": \"\", \"latency…"
+          },
+          {
+            "offset": 337,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_105\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Cuando salio gta 5\", \"prev_text\": \"echo prueba\", \"tools_called\": [\"web\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16694,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_152\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Es dalia\", \"prev_text\": \"Quiero ver superman del 2025 en prime video\", \"tools_called\": [\"media\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"…"
+          },
+          {
+            "offset": 17020,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_153\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Hey Steam\", \"prev_text\": \"buenas, phrase_hook_test_1779208016 y dime la hora\", \"tools_called\": [\"steam\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_14_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 22168,
+      "sha256": "ac3701d93ee602abb452361103df60c633cc623c91a526417947e12226f07723",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21562,
+        "min_line_bytes": 351,
+        "max_line_bytes": 872,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 1.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.93
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_104\", \"user_text\": \"Si no sabes investiga\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [], \"correct_reply_style\": \"Dejame buscarlo. Emilia Pérez tuvo críticas muy divididas, te paso lo que enc…"
+          },
+          {
+            "offset": 419,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_105\", \"user_text\": \"Cuando salio gta 5\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [], \"correct_reply_style\": \"GTA 5 salió el 17 de septiembre de 2013.\", \"reply_is_template\": true, \"original_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21027,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_152\", \"user_text\": \"Es dalia\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [], \"correct_reply_style\": \"Perdón, no te entendí. ¿Me decís qué necesitás?\", \"reply_is_template\": false, \"original_was_cor…"
+          },
+          {
+            "offset": 21562,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_153\", \"user_text\": \"Hey Steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [], \"also_valid\": [[\"steam\"]], \"correct_reply_style\": \"Acá estoy. ¿Querés que abra Steam o que haga algo ahí?\", \"reply_is_template\": false,…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_15.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16142,
+      "sha256": "02a7aa07e78a3f4d326ff7a0eec8fd01488bd7d6a15fd13da2f94a2a40a14d12",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15812,
+        "min_line_bytes": 289,
+        "max_line_bytes": 372,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_154\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"hey gemma abre Steam\", \"prev_text\": \"hey gemma\", \"tools_called\": [\"steam\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null…"
+          },
+          {
+            "offset": 304,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_155\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"hey gemma háblame de OBS comportamientos de OBS pingüinos.\", \"prev_text\": \"hey gemma\", \"tools_called\": [\"system\"], \"tool_args\": [], \"reply\": \"\", \"lat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15490,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_203\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"opena Spotify por favor\", \"prev_text\": \"cuanto vale el dolar hoy\", \"tools_called\": [\"media\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"stat…"
+          },
+          {
+            "offset": 15812,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_204\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"pon el volumen a 80\", \"prev_text\": \"cuando diga buenos dias abre Spotify\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": nul…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_15_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 21931,
+      "sha256": "c94e572ffabe66484b751efface85df9c5dd6540f7b9c23b9b922e50c2b841eb",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 21571,
+        "min_line_bytes": 345,
+        "max_line_bytes": 639,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.4,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_154\", \"user_text\": \"hey gemma abre Steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [\"app\"], \"correct_reply_style\": \"Abriendo Steam.\", \"reply_is_template\": false, \"original_was_correct\": t…"
+          },
+          {
+            "offset": 363,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_155\", \"user_text\": \"hey gemma háblame de OBS comportamientos de OBS pingüinos.\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [\"knowledge\"], \"correct_reply_style\": \"Lo busco. La transcripción sa…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21070,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_203\", \"user_text\": \"opena Spotify por favor\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"media\"], \"correct_reply_style\": \"Abriendo Spotify.\", \"reply_is_template\": false, \"original_was_correc…"
+          },
+          {
+            "offset": 21571,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_204\", \"user_text\": \"pon el volumen a 80\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, volumen en 80.\", \"reply_is_template\": false, \"original_was_correct\": t…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_16.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16981,
+      "sha256": "286e786c7d600f9b7b8e0b48eaee7bdb3a61ff642e156dc1d4da7c90113ed870",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16642,
+        "min_line_bytes": 298,
+        "max_line_bytes": 381,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_205\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"sube el volumen y silencia las notificaciones\", \"prev_text\": \"que temperatura hay en Madrid\", \"tools_called\": [\"audio\", \"notification\"], \"tool_args\":…"
+          },
+          {
+            "offset": 381,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_206\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"solo el volumen\", \"prev_text\": \"y en Tokio?\", \"tools_called\": [\"system\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null,…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16274,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_253\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"llena el formulario de esta pagina\", \"prev_text\": \"entra a wikipedia y copiame el primer parrafo\", \"tools_called\": [\"browser_real\"], \"tool_args\": [],…"
+          },
+          {
+            "offset": 16642,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_254\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"instala Marvel Rivals en Steam\", \"prev_text\": \"llena el formulario de esta pagina\", \"tools_called\": [\"steam\"], \"tool_args\": [], \"reply\": \"\", \"latency…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_16_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 22592,
+      "sha256": "12ff87ae6eea1a30123a28e37e4e7bd6f310e6890b51ec1f08b4c09f47850255",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22189,
+        "min_line_bytes": 340,
+        "max_line_bytes": 657,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "confidence": {
+            "min": 0.68,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_205\", \"user_text\": \"sube el volumen y silencia las notificaciones\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"audio\", \"notification\"], \"also_valid\": [], \"correct_reply_style\": \"Subí el volumen y silencié las noti…"
+          },
+          {
+            "offset": 429,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_206\", \"user_text\": \"solo el volumen\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, ajusté solo el volumen.\", \"reply_is_template\": false, \"original_was_correc…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21583,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_253\", \"user_text\": \"llena el formulario de esta pagina\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"form_filler\"], \"also_valid\": [\"browser_real\"], \"correct_reply_style\": \"¿Con qué datos querés que complete el form…"
+          },
+          {
+            "offset": 22189,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_254\", \"user_text\": \"instala Marvel Rivals en Steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Empecé la instalación de Marvel Rivals en Steam.\", \"reply_is_templ…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_17.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16497,
+      "sha256": "c3c3b8fed6e104ce7618ae18b3d73ad6e00cca6926fe6ca0925ac3dc11de4203",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16180,
+        "min_line_bytes": 292,
+        "max_line_bytes": 423,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_255\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"cuanto pesa GTA V en mi disco\", \"prev_text\": \"instala Marvel Rivals en Steam\", \"tools_called\": [\"system\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\"…"
+          },
+          {
+            "offset": 336,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_256\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"lanza el ultimo juego que jugue\", \"prev_text\": \"cuanto pesa GTA V en mi disco\", \"tools_called\": [\"game_launcher\"], \"tool_args\": [], \"reply\": \"\", \"lat…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15865,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_304\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"ouvre le navigateur\", \"prev_text\": \"take a screenshot\", \"tools_called\": [\"browser\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_origin…"
+          },
+          {
+            "offset": 16180,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_305\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"schliesse das fenster\", \"prev_text\": \"ouvre le navigateur\", \"tools_called\": [\"window\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_ori…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_17_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 22521,
+      "sha256": "6a9565b046ae09d68d94463ec46d654d74b025a1d2b8286ef1f83d52dbc6e4a5",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22109,
+        "min_line_bytes": 366,
+        "max_line_bytes": 655,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 3.0
+          },
+          "confidence": {
+            "min": 0.55,
+            "max": 0.92
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_255\", \"user_text\": \"cuanto pesa GTA V en mi disco\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"system\"], \"also_valid\": [\"filesystem\"], \"correct_reply_style\": \"GTA V ocupa unos 95 GB en tu disco. Decime si querés q…"
+          },
+          {
+            "offset": 437,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_256\", \"user_text\": \"lanza el ultimo juego que jugue\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"game_launcher\"], \"also_valid\": [\"steam\"], \"correct_reply_style\": \"Tu último juego fue GTA V, lo estoy abriendo. Avis…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21694,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_304\", \"user_text\": \"ouvre le navigateur\", \"lang\": \"fr\", \"n_steps\": 1, \"correct_tools\": [\"browser\"], \"also_valid\": [\"app\"], \"correct_reply_style\": \"J'ouvre le navigateur. Dis-moi si tu veux une page en particulier.\", \"…"
+          },
+          {
+            "offset": 22109,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_305\", \"user_text\": \"schliesse das fenster\", \"lang\": \"de\", \"n_steps\": 1, \"correct_tools\": [\"window\"], \"also_valid\": [], \"correct_reply_style\": \"Ich habe das Fenster geschlossen. Sag mir, wenn du ein anderes meinst.\", \"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_18.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16446,
+      "sha256": "8a42007d85f0a8d232c112a9868514950156318a9373a20cb9be9364ce786741",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16130,
+        "min_line_bytes": 282,
+        "max_line_bytes": 438,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_306\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"abre chrome y busca gatos\", \"prev_text\": \"schliesse das fenster\", \"tools_called\": [\"browser\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"sta…"
+          },
+          {
+            "offset": 325,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_307\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"abre spotify y pon rock\", \"prev_text\": \"abre chrome y busca gatos\", \"tools_called\": [\"media\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"sta…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 15840,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_355\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"mutea\", \"prev_text\": \"abre steam\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expected_to…"
+          },
+          {
+            "offset": 16130,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_356\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"sube el volumen a 30\", \"prev_text\": \"pon musica en spotify\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_ori…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_18_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 22582,
+      "sha256": "70e3318bb38b32006df5c99f738642173577f75754feb8ee8062099f13e73217",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22219,
+        "min_line_bytes": 343,
+        "max_line_bytes": 739,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.5,
+            "max": 0.97
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_306\", \"user_text\": \"abre chrome y busca gatos\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"computer_use\"], \"also_valid\": [\"browser\"], \"correct_reply_style\": \"Listo, abrí Chrome y busqué gatos.\", \"reply_is_template…"
+          },
+          {
+            "offset": 579,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_307\", \"user_text\": \"abre spotify y pon rock\", \"lang\": \"es\", \"n_steps\": 2, \"correct_tools\": [\"app\", \"media\"], \"also_valid\": [\"computer_use\"], \"correct_reply_style\": \"Abrí Spotify y puse rock.\", \"reply_is_template\": fal…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 21868,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_355\", \"user_text\": \"mutea\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Listo, silencié el audio.\", \"reply_is_template\": false, \"original_was_correct\": true, \"corr…"
+          },
+          {
+            "offset": 22219,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_356\", \"user_text\": \"sube el volumen a 30\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Subí el volumen al 30.\", \"reply_is_template\": false, \"original_was_correct\":…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_19.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 16885,
+      "sha256": "5200d80e9e89388030c9964db3dd6a7dbf03b1e69ddd4645bd6619076bff9cef",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 16539,
+        "min_line_bytes": 291,
+        "max_line_bytes": 386,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_357\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"manda whatsapp a juan que llego\", \"prev_text\": \"saca un screenshot\", \"tools_called\": [\"whatsapp\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null,…"
+          },
+          {
+            "offset": 330,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_358\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"de que trata Dune\", \"prev_text\": \"cuanta bateria queda\", \"tools_called\": [\"web\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16218,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_405\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Quiero ver lo nuevos juegos de steam\", \"prev_text\": \"abre steam\", \"tools_called\": [\"steam\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"statu…"
+          },
+          {
+            "offset": 16539,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_406\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"Como son las reseñas del nuevo batman?\", \"prev_text\": \"Quiero ver lo nuevos juegos de steam\", \"tools_called\": [\"web\"], \"tool_args\": [], \"reply\": \"\",…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_19_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 23283,
+      "sha256": "3b56f115b95abe459c42f8a24c4a67e4b2dab1fa1f3da48c38b3f6ab0907d171",
+      "rows": 48,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 48,
+          "user_text": 48,
+          "lang": 48,
+          "n_steps": 48,
+          "correct_tools": 48,
+          "also_valid": 48,
+          "correct_reply_style": 48,
+          "reply_is_template": 48,
+          "original_was_correct": 48,
+          "correction_reason": 48,
+          "confidence": 48,
+          "category": 48,
+          "source": 48,
+          "project": 48
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 22851,
+        "min_line_bytes": 356,
+        "max_line_bytes": 598,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.5,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_357\", \"user_text\": \"manda whatsapp a juan que llego\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"whatsapp\"], \"also_valid\": [], \"correct_reply_style\": \"Le preparo el mensaje a Juan diciendo que ya llegaste. ¿Lo env…"
+          },
+          {
+            "offset": 424,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_358\", \"user_text\": \"de que trata Dune\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [[]], \"correct_reply_style\": \"Dune es una saga de ciencia ficción de Frank Herbert ambientada en un planeta d…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 22421,
+            "line": 47,
+            "text": "{\"id\": \"gemma4_corpus_403\", \"user_text\": \"Quiero ver lo nuevos juegos de steam\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"steam\"], \"also_valid\": [], \"correct_reply_style\": \"Abro la sección de novedades de Steam para que veas los jueg…"
+          },
+          {
+            "offset": 22851,
+            "line": 48,
+            "text": "{\"id\": \"gemma4_corpus_404\", \"user_text\": \"Como son las reseñas del nuevo batman?\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"web\"], \"also_valid\": [], \"correct_reply_style\": \"Busco las reseñas del nuevo Batman para contarte qué opinan,…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_20.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 17459,
+      "sha256": "f939247d283e7c51b95df408965f29674f2487eacbc5ff976e79dde946c0f2d5",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 17136,
+        "min_line_bytes": 295,
+        "max_line_bytes": 468,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_407\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"quiero escuchar daredevil en disney\", \"prev_text\": \"mhhhh y porque?\", \"tools_called\": [\"media\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"s…"
+          },
+          {
+            "offset": 325,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_408\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"abre marvel rivalds\", \"prev_text\": \"Gracias\", \"tools_called\": [\"app\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"ex…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 16812,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_455\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"turn the volume to 55 percent\", \"prev_text\": \"set the volume to 45\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"st…"
+          },
+          {
+            "offset": 17136,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_456\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"change volume to 65\", \"prev_text\": \"turn the volume to 55 percent\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"sta…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_20_out.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 25368,
+      "sha256": "8f7b78a88863387d71ff810e43b4f97fd21613cb552be933348e3550210f8e13",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "user_text",
+          "lang",
+          "n_steps",
+          "correct_tools",
+          "also_valid",
+          "correct_reply_style",
+          "reply_is_template",
+          "original_was_correct",
+          "correction_reason",
+          "confidence",
+          "category",
+          "source",
+          "project"
+        ],
+        "key_freq": {
+          "id": 50,
+          "user_text": 50,
+          "lang": 50,
+          "n_steps": 50,
+          "correct_tools": 50,
+          "also_valid": 50,
+          "correct_reply_style": 50,
+          "reply_is_template": 50,
+          "original_was_correct": 50,
+          "correction_reason": 50,
+          "confidence": 50,
+          "category": 50,
+          "source": 50,
+          "project": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 24926,
+        "min_line_bytes": 427,
+        "max_line_bytes": 682,
+        "numeric": {
+          "n_steps": {
+            "min": 1.0,
+            "max": 2.0
+          },
+          "confidence": {
+            "min": 0.6,
+            "max": 0.95
+          }
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_407\", \"user_text\": \"quiero escuchar daredevil en disney\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"media\"], \"also_valid\": [], \"correct_reply_style\": \"Te abro Daredevil en Disney+. Si no arranca solo, decime y lo…"
+          },
+          {
+            "offset": 519,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_408\", \"user_text\": \"abre marvel rivalds\", \"lang\": \"es\", \"n_steps\": 1, \"correct_tools\": [\"app\"], \"also_valid\": [\"steam\", \"game_launcher\"], \"correct_reply_style\": \"Abriendo Marvel Rivals.\", \"reply_is_template\": false, \"…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 24474,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_455\", \"user_text\": \"turn the volume to 55 percent\", \"lang\": \"en\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Done, volume set to 55%.\", \"reply_is_template\": false, \"original_wa…"
+          },
+          {
+            "offset": 24926,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_456\", \"user_text\": \"change volume to 65\", \"lang\": \"en\", \"n_steps\": 1, \"correct_tools\": [\"audio\"], \"also_valid\": [], \"correct_reply_style\": \"Done, volume set to 65%.\", \"reply_is_template\": false, \"original_was_correct\"…"
+          }
+        ]
+      }
+    },
+    "finetune_llm/curated/batches/_batch_21.jsonl": {
+      "parser": "jsonl",
+      "encoding": "utf-8",
+      "bytes": 15179,
+      "sha256": "779b2d4f01290bfcf16b53b41fb45fd57b49af4a201ad7ebd8d321dda88856f4",
+      "rows": 50,
+      "empty_lines": 0,
+      "schema": {
+        "keys": [
+          "id",
+          "source",
+          "project",
+          "user_text",
+          "prev_text",
+          "tools_called",
+          "tool_args",
+          "reply",
+          "latency_ms",
+          "status_original",
+          "expected_tools",
+          "expected_note",
+          "ts"
+        ],
+        "key_freq": {
+          "id": 50,
+          "source": 50,
+          "project": 50,
+          "user_text": 50,
+          "prev_text": 50,
+          "tools_called": 50,
+          "tool_args": 50,
+          "reply": 50,
+          "latency_ms": 50,
+          "status_original": 50,
+          "expected_tools": 50,
+          "expected_note": 50,
+          "ts": 50
+        }
+      },
+      "distribution": {
+        "status": {},
+        "error_rows": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14885,
+        "min_line_bytes": 288,
+        "max_line_bytes": 325,
+        "numeric": {}
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"id\": \"gemma4_corpus_457\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"coloca o volume em 75\", \"prev_text\": \"change volume to 65\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_orig…"
+          },
+          {
+            "offset": 315,
+            "line": 2,
+            "text": "{\"id\": \"gemma4_corpus_458\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"ajusta o volume para 85\", \"prev_text\": \"coloca o volume em 75\", \"tools_called\": [\"audio\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 14587,
+            "line": 49,
+            "text": "{\"id\": \"gemma4_corpus_506\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"open Telegram\", \"prev_text\": \"abrí Telegram\", \"tools_called\": [\"app\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"ex…"
+          },
+          {
+            "offset": 14885,
+            "line": 50,
+            "text": "{\"id\": \"gemma4_corpus_507\", \"source\": \"gemma4_corpus\", \"project\": \"gemma4\", \"user_text\": \"abrí Word\", \"prev_text\": \"open Telegram\", \"tools_called\": [\"app\"], \"tool_args\": [], \"reply\": \"\", \"latency_ms\": null, \"status_original\": null, \"expect…"
+          }
+        ]
+      }
+    }
+  }
+}

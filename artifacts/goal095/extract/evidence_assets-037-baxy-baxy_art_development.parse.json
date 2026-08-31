@@ -1,0 +1,4715 @@
+{
+  "batch_id": "evidence_assets-037-baxy-baxy_art_development",
+  "source_id": "baxy",
+  "file_count": 66,
+  "hash_ok": 66,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": {
+    "artifacts/development/baxy_endpoint_lexical_v24a_opened_endpoint_suffix_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 139642,
+      "sha256": "b998497efcaf9c56893687254e7d5c48295bce550c8c6f94fa29d839fcec46b2",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 139641,
+        "elapsedWallSeconds": {
+          "min": 205.00150650000433,
+          "max": 205.00150650000433
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_lexical_v24a_opened_endpoint_suffix_v1_development_v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 98,
+      "sha256": "c6d60d60225adffda3fe5388e342025b77536853ad656eadcd281d6d103af244",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 98,
+        "max_line_bytes": 98
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"negativeFalseActivations\": \"0/192\", \"positive\": \"80/96\", \"totalP95Seconds\": 1.110540800000308}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"negativeFalseActivations\": \"0/192\", \"positive\": \"80/96\", \"totalP95Seconds\": 1.110540800000308}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_lexical_v24a_opened_physical_v16_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 71486,
+      "sha256": "7ead65d87363fa66f3c18f235086df56110625f97aa2e82038e5edc21603bcec",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 71485,
+        "elapsedWallSeconds": {
+          "min": 104.56558299998869,
+          "max": 104.56558299998869
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_lexical_v24a_opened_physical_v16_development_v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 98,
+      "sha256": "6f3d16f5fd8de4e24b57f47df48bd8003d67ae88817fe450c25a6a3bdaa0fc8e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 98,
+        "max_line_bytes": 98
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"negativeFalseActivations\": \"0/96\", \"positive\": \"38/48\", \"totalP95Seconds\": 0.9049182000162546}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"negativeFalseActivations\": \"0/96\", \"positive\": \"38/48\", \"totalP95Seconds\": 0.9049182000162546}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_lexical_v24b_opened_endpoint_suffix_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 138894,
+      "sha256": "8cc1712116a5d2e2c8fc95e2dbdb718de21ff88b693a41baeb8cf55562fa6f6b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 138893,
+        "elapsedWallSeconds": {
+          "min": 197.3281381999841,
+          "max": 197.3281381999841
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_lexical_v24b_opened_endpoint_suffix_v1_development_v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 99,
+      "sha256": "64a18a014b7f7565dd13c21f9ae238365ffd73e2e79c7f763917febe2242482b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 99,
+        "max_line_bytes": 99
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"negativeFalseActivations\": \"0/192\", \"positive\": \"89/96\", \"totalP95Seconds\": 0.9279672999691684}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"negativeFalseActivations\": \"0/192\", \"positive\": \"89/96\", \"totalP95Seconds\": 0.9279672999691684}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_scoregated_v24a_opened_human_v14_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 74593,
+      "sha256": "e11cb91cf6217f05cd4f883f62ca2291279971e124d9687508590fd800f7a3f3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 74592,
+        "elapsedWallSeconds": {
+          "min": 89.45151260000421,
+          "max": 89.45151260000421
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_scoregated_v25a_opened_endpoint_confusable_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 62336,
+      "sha256": "34916dd6d6c227486d55bccb725478b386ab66a7e0aa1c41eb0fa06849ef1d02",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 62335,
+        "elapsedWallSeconds": {
+          "min": 102.0240036000032,
+          "max": 102.0240036000032
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_scoregated_v25a_opened_endpoint_suffix_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 145834,
+      "sha256": "6f6344cd82b86dec3e4e2a2daa17aa785f950bd5e2c91feac239845d86c8ab1b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 145833,
+        "elapsedWallSeconds": {
+          "min": 225.0872548999905,
+          "max": 225.0872548999905
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_scoregated_v25a_opened_human_v14_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76517,
+      "sha256": "3008d07e2edae30d23351393f29f0b82afc102717fa3bf24424ad26811c76a1b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76516,
+        "elapsedWallSeconds": {
+          "min": 99.41024480000488,
+          "max": 99.41024480000488
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_strict_v24a_opened_endpoint_confusable_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 63881,
+      "sha256": "2aa2e46883ec66cd72bfea7666f6592a1e09fc21e659bfc161c273a42571daff",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 63880,
+        "elapsedWallSeconds": {
+          "min": 98.86008820001734,
+          "max": 98.86008820001734
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_strict_v24a_opened_endpoint_suffix_v1_development_v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 145797,
+      "sha256": "02858feef1bd19a50a41c3eac11f1abc9de13ca948f005c1433076ac4e786394",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 145796,
+        "elapsedWallSeconds": {
+          "min": 214.62102580000646,
+          "max": 214.62102580000646
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_strict_v24a_opened_human_v14_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 76357,
+      "sha256": "d994a65262213facf6ec64361aee4d77eca0902dacf2b468ab84859dc70b53fc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 76356,
+        "elapsedWallSeconds": {
+          "min": 93.04493530001491,
+          "max": 93.04493530001491
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_suffix_physical_capture_v1.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 291,
+      "sha256": "e0c08be6a1bf8e3f41b2a508eb3dbef0dd7bd7a5f3d0403f282a38e5fa077887",
+      "rows": 16,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 256,
+        "min_line_bytes": 16,
+        "max_line_bytes": 35
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "positive:20/96"
+          },
+          {
+            "offset": 16,
+            "line": 2,
+            "text": "positive:40/96"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 238,
+            "line": 15,
+            "text": "negative:192/192"
+          },
+          {
+            "offset": 256,
+            "line": 16,
+            "text": "{\"negative\": 192, \"positive\": 96}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_v25a_opened_physical_v20_development_diagnostic_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 62225,
+      "sha256": "e944e86774ffe1b961b7d18c4672b96fa293ed4fba6c2ca680ecb8d5982ce757",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 62224,
+        "elapsedWallSeconds": {
+          "min": 73.70667829999002,
+          "max": 73.70667829999002
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_v25a_source_quality_full_v1.log": {
+      "parser": "log",
+      "encoding": "utf-16-le",
+      "bytes": 29364,
+      "sha256": "93f27f3554c085375508239cbf000b81f84b3630a97fc3fee67e667e81663486",
+      "rows": 189,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 29286,
+        "min_line_bytes": 4,
+        "max_line_bytes": 348
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "﻿source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified"
+          },
+          {
+            "offset": 274,
+            "line": 2,
+            "text": "source_quality_stage_started: powershell-source"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 29200,
+            "line": 188,
+            "text": "source_quality_stage_passed: python-tests"
+          },
+          {
+            "offset": 29286,
+            "line": 189,
+            "text": "source_quality_gate_passed: mode=Full"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_voice_runtime_v25a_opened_endpoint_confusable_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 51822,
+      "sha256": "b09d023b7e2e25c1511d473be011fc07748e210f12a5d94a22806da383aecc11",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 51821,
+        "elapsedWallSeconds": {
+          "min": 99.16464770000312,
+          "max": 99.16464770000312
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_voice_runtime_v25a_opened_endpoint_suffix_v1_development_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 124652,
+      "sha256": "a3760bf00092f0881617c7ae13f229391bc6c3ec2decb73a768294811675cf98",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 124651,
+        "elapsedWallSeconds": {
+          "min": 158.5196533999988,
+          "max": 158.5196533999988
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_endpoint_voice_runtime_v25a_opened_human_v14_regression_v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 61406,
+      "sha256": "0925912d7c274d7f6475af4cb006b01c405cdb88d1117bcd4977341b0dbd161a",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "assets",
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "contract",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 61405,
+        "elapsedWallSeconds": {
+          "min": 54.76303249999182,
+          "max": 54.76303249999182
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"assets\", \"blindHumanPartitionAccessed\", \"candidateFrozen\", \"contract\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\"]…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_exclusive_expanded_route_guard_confusable_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3756,
+      "sha256": "07f58b0b1925c1336401d56cc7f04830a5168681fa1db9d52e8f1eae49e726cb",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "contract",
+          "developmentPassed",
+          "effectsExecuted",
+          "inputsSha256",
+          "label",
+          "measuredAtUtc",
+          "negative",
+          "noPositiveRegression",
+          "positive",
+          "preregistrationSha256",
+          "promotionEligible",
+          "schema",
+          "zeroNegativeFalseActivations"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "developmentPassed",
+          "effectsExecuted",
+          "label",
+          "measuredAtUtc",
+          "noPositiveRegression",
+          "preregistrationSha256",
+          "promotionEligible",
+          "schema",
+          "zeroNegativeFalseActivations"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3755,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"contract\", \"developmentPassed\", \"effectsExecuted\", \"inputsSha256\", \"label\", \"measuredAtUtc\", \"negative\", \"noPositiveRegression\", \"positive\", \"preregistrationSha256\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"contract\", \"developmentPassed\", \"effectsExecuted\", \"inputsSha256\", \"label\", \"measuredAtUtc\", \"negative\", \"noPositiveRegression\", \"positive\", \"preregistrationSha256\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_exclusive_expanded_route_guard_confusable_20260811.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 189,
+      "sha256": "3f5aa945e1ac10a8c39c1032e1f2ded68eddfa258416f61a1fd85aa9abb7a5c7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 189,
+        "max_line_bytes": 189
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\":\"endpoint_confusable\",\"positive\":16,\"negative\":7,\"passed\":false,\"output\":\"D:\\\\BAXY\\\\source\\\\artifacts\\\\development\\\\baxy_exclusive_expanded_route_guard_confusable_20260811.json\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\":\"endpoint_confusable\",\"positive\":16,\"negative\":7,\"passed\":false,\"output\":\"D:\\\\BAXY\\\\source\\\\artifacts\\\\development\\\\baxy_exclusive_expanded_route_guard_confusable_20260811.json\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_exclusive_expanded_route_guard_human_v14_20260811.stderr.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 1045,
+      "sha256": "5ee67d3da33462f165b70707ccfadb830b57b132ae418393f7f23f967ca6de44",
+      "rows": 16,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 3,
+        "pass_like": 0
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 990,
+        "min_line_bytes": 29,
+        "max_line_bytes": 135
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "Traceback (most recent call last):"
+          },
+          {
+            "offset": 36,
+            "line": 2,
+            "text": "File \"D:\\BAXY\\source\\experiments\\wake_validation\\evaluate_exclusive_expanded_route_guard_v1.py\", line 408, in <module>"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 923,
+            "line": 15,
+            "text": "raise ValueError(\"exclusive_expanded_logmel_replay_mismatch\")"
+          },
+          {
+            "offset": 990,
+            "line": 16,
+            "text": "ValueError: exclusive_expanded_logmel_replay_mismatch"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_exclusive_expanded_route_guard_preregistration_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4077,
+      "sha256": "6f9c2783914a5d78a80f9db0fc66e49d87e3cb3e149357d65eca5c93927db70d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidateManifest",
+          "candidateManifestSha256",
+          "contract",
+          "createdAtUtc",
+          "effectsExecuted",
+          "interpretationRules",
+          "jobs",
+          "program",
+          "programSha256",
+          "purpose",
+          "role",
+          "schema",
+          "sttDirectory",
+          "sttSha256"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "candidateManifest",
+          "candidateManifestSha256",
+          "createdAtUtc",
+          "effectsExecuted",
+          "program",
+          "programSha256",
+          "purpose",
+          "role",
+          "schema",
+          "sttDirectory"
+        ],
+        "list_lengths": {
+          "interpretationRules": 3
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4076,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidateManifest\", \"candidateManifestSha256\", \"contract\", \"createdAtUtc\", \"effectsExecuted\", \"interpretationRules\", \"jobs\", \"program\", \"programSha256\", \"purpose\", \"role\", \"schema\", \"sttDirectory\", \"sttSha256\"], \"n_keys\": 14, \"r…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidateManifest\", \"candidateManifestSha256\", \"contract\", \"createdAtUtc\", \"effectsExecuted\", \"interpretationRules\", \"jobs\", \"program\", \"programSha256\", \"purpose\", \"role\", \"schema\", \"sttDirectory\", \"sttSha256\"], \"n_keys\": 14, \"r…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_exclusive_expanded_route_guard_v20_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 14763,
+      "sha256": "684246825123657abf37f28b649d5058194395035aea0551ac4478452ced3e79",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "contract",
+          "developmentPassed",
+          "effectsExecuted",
+          "inputsSha256",
+          "label",
+          "measuredAtUtc",
+          "negative",
+          "noPositiveRegression",
+          "positive",
+          "preregistrationSha256",
+          "promotionEligible",
+          "schema",
+          "zeroNegativeFalseActivations"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateRuntimeModified",
+          "developmentPassed",
+          "effectsExecuted",
+          "label",
+          "measuredAtUtc",
+          "noPositiveRegression",
+          "preregistrationSha256",
+          "promotionEligible",
+          "schema",
+          "zeroNegativeFalseActivations"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 14762,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"contract\", \"developmentPassed\", \"effectsExecuted\", \"inputsSha256\", \"label\", \"measuredAtUtc\", \"negative\", \"noPositiveRegression\", \"positive\", \"preregistrationSha256\", \"pr…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateRuntimeModified\", \"contract\", \"developmentPassed\", \"effectsExecuted\", \"inputsSha256\", \"label\", \"measuredAtUtc\", \"negative\", \"noPositiveRegression\", \"positive\", \"preregistrationSha256\", \"pr…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_exclusive_expanded_route_guard_v20_20260811.stdout.log": {
+      "parser": "log",
+      "encoding": "utf-8",
+      "bytes": 182,
+      "sha256": "b473a2ed74842ae17d12aedd5c3bf2249ee94f97f48b31653c47542e302d3cde",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "line"
+        ],
+        "kind": "text-log"
+      },
+      "distribution": {
+        "fail_like": 0,
+        "pass_like": 1
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 0,
+        "min_line_bytes": 182,
+        "max_line_bytes": 182
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\":\"opened_physical_v20\",\"positive\":36,\"negative\":0,\"passed\":false,\"output\":\"D:\\\\BAXY\\\\source\\\\artifacts\\\\development\\\\baxy_exclusive_expanded_route_guard_v20_20260811.json\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"label\":\"opened_physical_v20\",\"positive\":36,\"negative\":0,\"passed\":false,\"output\":\"D:\\\\BAXY\\\\source\\\\artifacts\\\\development\\\\baxy_exclusive_expanded_route_guard_v20_20260811.json\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_fusion_v25a_opened_physical_v20_development_diagnostic_20260811.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 38070,
+      "sha256": "a89ebe723df2530b069e03108f5217c3e4617104044f8f8a6128f3153311d3f5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "negative",
+          "positive",
+          "promotable",
+          "schema",
+          "scope",
+          "sourceReports"
+        ],
+        "n_keys": 11,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 38069,
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"measuredAtUtc\", \"negative\", \"positive\", \"promotable\", \"schema\", \"scope\", \"sourceReports\"], \"n_keys\": 11, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_fusion_physical_room_human_development_full_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3824,
+      "sha256": "6e2026c4cdd088fd59fc5af7c25894b1af6b9dbcdc6951acd7da04756a90551c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "negativeDecisionMargins",
+          "physicalPath",
+          "positive",
+          "positiveDecisionMargins",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3823,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivationsPerHourObserved": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "elapsedWallSeconds": {
+          "min": 96.1341204000637,
+          "max": 96.1341204000637
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"posi…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"posi…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_fusion_physical_room_human_development_smoke_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3125,
+      "sha256": "9cbef8b87e70715e2fcec8f013204f7cfd7322092dcde952bec4d9345a87f879",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "physicalPath",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3124,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivationsPerHourObserved": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "elapsedWallSeconds": {
+          "min": 35.17965879989788,
+          "max": 35.17965879989788
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_fusion_physical_room_human_development_smoke_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3512,
+      "sha256": "1ce9873176948daf297744a82b14683e2809c3bca76f346df127476189920761",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "negativeDecisionMargins",
+          "physicalPath",
+          "positive",
+          "positiveDecisionMargins",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "n_keys": 20,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3511,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivationsPerHourObserved": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "elapsedWallSeconds": {
+          "min": 18.084978599916212,
+          "max": 18.084978599916212
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"posi…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"posi…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_fusion_physical_room_smoke_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3130,
+      "sha256": "430bffe26d3cf8da287e9380685c714c64baa7a50b8211a345862b2f1c13e817",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "physicalPath",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3129,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivationsPerHourObserved": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "elapsedWallSeconds": {
+          "min": 33.775104100001045,
+          "max": 33.775104100001045
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_fusion_physical_room_smoke_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3130,
+      "sha256": "21bf4416118b1154d321e3d6230a8faf10399f32c758adf910fba660bf6c8f0d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "physicalPath",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3129,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivationsPerHourObserved": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "elapsedWallSeconds": {
+          "min": 35.43210850004107,
+          "max": 35.43210850004107
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_fusion_physical_room_smoke_v1.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3126,
+      "sha256": "b51870741bc36d15220712fd9bbb243e308464fef934a869254783906f5e358c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "physicalPath",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "n_keys": 18,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivationsPerHourObserved",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3125,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivationsPerHourObserved": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "elapsedWallSeconds": {
+          "min": 33.271768199978396,
+          "max": 33.271768199978396
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivationsPerHourObserved\", \"measuredAtUtc\", \"model\", \"negative\", \"physicalPath\", \"positive\", \"promotable\", \"promo…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v11_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 68937,
+      "sha256": "e0b5d0866ac9fa5ed227b35c933fc4fc3da68c092427bec1a57c84c7353da959",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 68936,
+        "elapsedWallSeconds": {
+          "min": 4.835914300056174,
+          "max": 4.835914300056174
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v11_development_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75940,
+      "sha256": "f86d884177835de3c0f9b1a24acb4d7cb090852fb95bae76e6a96c3b33230ab6",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75939,
+        "elapsedWallSeconds": {
+          "min": 4.103832500055432,
+          "max": 4.103832500055432
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v11_development_v1.v3.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75941,
+      "sha256": "8614423f9abc50c1d32e20e47f23435caecc4f02d2d95326126cd37ec08ce75b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75940,
+        "elapsedWallSeconds": {
+          "min": 7.183229200076312,
+          "max": 7.183229200076312
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v11_development_v1.v4.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 75942,
+      "sha256": "079706c73950a4e6deb75638ecbc6d2176806eb66883aad78ee71b08bd143641",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 75941,
+        "elapsedWallSeconds": {
+          "min": 3.7931061000563204,
+          "max": 3.7931061000563204
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v7_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8250,
+      "sha256": "96a5f41bd72933ecdb2650c14af85b206c1b7773856c39c15afc514a11a7b9d5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8249,
+        "elapsedWallSeconds": {
+          "min": 0.04805139999371022,
+          "max": 0.04805139999371022
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v7_development_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8903,
+      "sha256": "d631a45bbf7c9fec939260f07383ae82127303dd033ff8388fb3b70243a18cda",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8902,
+        "elapsedWallSeconds": {
+          "min": 0.04713419999461621,
+          "max": 0.04713419999461621
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v8_validation_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8379,
+      "sha256": "15f09c88ab96dda964978ceee957a0df19b05d66e9a09e23c466ecfaeab37e4b",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8378,
+        "elapsedWallSeconds": {
+          "min": 1.4759493001038209,
+          "max": 1.4759493001038209
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v8_validation_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9012,
+      "sha256": "defdbd7250c466d3a039423485858159c15821c29e400461bb2f2c22ba038157",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9011,
+        "elapsedWallSeconds": {
+          "min": 0.06820999993942678,
+          "max": 0.06820999993942678
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_hyperspotter_logmel_lexical_cascade_raw_v9_validation_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 8878,
+      "sha256": "c7177979d15de2e6b7c918753eb407c4b64f79d47a2fd131df4aeb87c6c264d9",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 8877,
+        "elapsedWallSeconds": {
+          "min": 0.03822059999220073,
+          "max": 0.03822059999220073
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_lexical_wake_physical_room_human_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3961,
+      "sha256": "08c79572d1bb493e3e30a891581a2adab3207afe41265eb0fa7df279ea98c467",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "physicalPath",
+          "policies",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "schema",
+          "scope",
+          "stt"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3960,
+        "elapsedWallSeconds": {
+          "min": 69.14547780004796,
+          "max": 69.14547780004796
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 14, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 14, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_lexical_wake_physical_room_human_development_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5435,
+      "sha256": "375b9ee37591dd6c97b088d4d5920cf3d5177160bdf29b2795744def31313387",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "physicalPath",
+          "policies",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "schema",
+          "scope",
+          "stt"
+        ],
+        "n_keys": 14,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 4
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5434,
+        "elapsedWallSeconds": {
+          "min": 80.83851110003889,
+          "max": 80.83851110003889
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 14, \"root\": \"obje…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 14, \"root\": \"obje…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_multiverifier_wake_physical_room_opened_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 4007,
+      "sha256": "42d987fbaa2e63467e3cb56dd5f5aaf0322af0bcde4cc4241396f67569ca0dcc",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "physicalPath",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 4006,
+        "elapsedWallSeconds": {
+          "min": 68.81903169990983,
+          "max": 68.81903169990983
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPassed\", \"physicalPath\", \"policy\", \"positive\", \"prom…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPassed\", \"physicalPath\", \"policy\", \"positive\", \"prom…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_nemotron_lexical_wake_physical_room_human_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5438,
+      "sha256": "eb436d867db776d93b22f322ae8fd1c5118c94ecb689c3fb473c5873c15ff423",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "physicalPath",
+          "policies",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "schema",
+          "scope",
+          "stt"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5437,
+        "elapsedWallSeconds": {
+          "min": 96.25642950006295,
+          "max": 96.25642950006295
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 1…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_nemotron_lexical_wake_physical_room_human_development_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5692,
+      "sha256": "f8a561fac6c64b4ead785466f936aeae0157110e7c15821b0c3498dcf2668fd7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "architecture",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "negative",
+          "physicalPath",
+          "policies",
+          "positive",
+          "promotable",
+          "promotionBlockedBy",
+          "schema",
+          "scope",
+          "stt"
+        ],
+        "n_keys": 15,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "architecture",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 6
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5691,
+        "elapsedWallSeconds": {
+          "min": 81.80061320005916,
+          "max": 81.80061320005916
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 1…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"architecture\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"measuredAtUtc\", \"negative\", \"physicalPath\", \"policies\", \"positive\", \"promotable\", \"promotionBlockedBy\", \"schema\", \"scope\", \"stt\"], \"n_keys\": 1…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_opened_human_wake_parakeet_localization_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 15340,
+      "sha256": "218e2fbac7571df0db3575a1f78577a132bea9a082880ef264826457fa99bbe7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "filenamesOrTranscriptsRetained",
+          "localizedCount",
+          "measuredAtUtc",
+          "records",
+          "schema",
+          "scope",
+          "sourceCorpusSha256",
+          "sourceCount"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedSeconds",
+          "filenamesOrTranscriptsRetained",
+          "localizedCount",
+          "measuredAtUtc",
+          "schema",
+          "scope",
+          "sourceCorpusSha256",
+          "sourceCount"
+        ],
+        "list_lengths": {
+          "records": 22
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 15339,
+        "sourceCount": {
+          "min": 22,
+          "max": 22
+        },
+        "localizedCount": {
+          "min": 16,
+          "max": 16
+        },
+        "elapsedSeconds": {
+          "min": 57.96263399999589,
+          "max": 57.96263399999589
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"filenamesOrTranscriptsRetained\", \"localizedCount\", \"measuredAtUtc\", \"records\", \"schema\", \"scope\", \"sourceCorpusSha256\", \"sourceCount\"], \"n_ke…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"developmentOnly\", \"effectsExecuted\", \"elapsedSeconds\", \"filenamesOrTranscriptsRetained\", \"localizedCount\", \"measuredAtUtc\", \"records\", \"schema\", \"scope\", \"sourceCorpusSha256\", \"sourceCount\"], \"n_ke…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_openwakeword_raw_v7_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9406,
+      "sha256": "4be14a441ff56d767ef5bff055460a0f10bc3a51ae234ddf6486747e46a6e4a7",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "contract",
+          "counts",
+          "development_only",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "records",
+          "schema",
+          "scope",
+          "sources",
+          "timing"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "development_only",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9405,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"contract\", \"counts\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"sources\", \"timing\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"contract\", \"counts\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"sources\", \"timing\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_openwakeword_raw_v8_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9409,
+      "sha256": "d1c46e4f294ae607bec7546ee40df6209ee8b8505145e855323e481c8cd630ba",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "contract",
+          "counts",
+          "development_only",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "records",
+          "schema",
+          "scope",
+          "sources",
+          "timing"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "development_only",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9408,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"contract\", \"counts\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"sources\", \"timing\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"contract\", \"counts\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"sources\", \"timing\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_openwakeword_raw_v9_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 9390,
+      "sha256": "cc83b8f68b5cf96696fca1f350b211766bcc67a2be78246e6918ad9db03b459c",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blind_human_partition_accessed",
+          "contract",
+          "counts",
+          "development_only",
+          "effects_executed",
+          "measured_at_utc",
+          "metrics",
+          "records",
+          "schema",
+          "scope",
+          "sources",
+          "timing"
+        ],
+        "n_keys": 12,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blind_human_partition_accessed",
+          "development_only",
+          "effects_executed",
+          "measured_at_utc",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "records": 12
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 9389,
+        "effects_executed": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"contract\", \"counts\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"sources\", \"timing\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blind_human_partition_accessed\", \"contract\", \"counts\", \"development_only\", \"effects_executed\", \"measured_at_utc\", \"metrics\", \"records\", \"schema\", \"scope\", \"sources\", \"timing\"], \"n_keys\": 12, \"root\": \"object\"}"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_qbyt_physical_room_human_development_smoke_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3441,
+      "sha256": "682d128cdc11b9217f21958a887207ec6f3a3df29e4283f62ffee77763d07ab5",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivations",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "negativeDecisionMargins",
+          "physicalPath",
+          "positive",
+          "positiveDecisionMargins",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed",
+          "standaloneAuthorityClaimSupported"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivations",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed",
+          "standaloneAuthorityClaimSupported"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3440,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivations": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsedWallSeconds": {
+          "min": 12.716209499980323,
+          "max": 12.716209499980323
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivations\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"positive\", \"positiv…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivations\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"positive\", \"positiv…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_qbyt_physical_room_human_development_smoke_v1.v2.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3536,
+      "sha256": "56f09782129661dbed95b105541d314969fde8310833fb28aebb8ea0ca0a74d3",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivations",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "negativeDecisionMargins",
+          "physicalPath",
+          "positive",
+          "positiveDecisionMargins",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed",
+          "standaloneAuthorityClaimSupported"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivations",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed",
+          "standaloneAuthorityClaimSupported"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3535,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivations": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsedWallSeconds": {
+          "min": 61.4952970999293,
+          "max": 61.4952970999293
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivations\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"positive\", \"positiv…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivations\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"positive\", \"positiv…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_qbyt_rir_v3_physical_room_human_development_smoke_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 3540,
+      "sha256": "bd170c1cba343ba3f02e890a75b48561ea3dd885e89b3c8fc2e2b25607fbca39",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "candidate",
+          "capturedAudioRetained",
+          "corpus",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivations",
+          "measuredAtUtc",
+          "model",
+          "negative",
+          "negativeDecisionMargins",
+          "physicalPath",
+          "positive",
+          "positiveDecisionMargins",
+          "promotable",
+          "promotionBlockedBy",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed",
+          "standaloneAuthorityClaimSupported"
+        ],
+        "n_keys": 21,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "capturedAudioRetained",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "falseActivations",
+          "measuredAtUtc",
+          "promotable",
+          "recall",
+          "schema",
+          "scope",
+          "smokePassed",
+          "standaloneAuthorityClaimSupported"
+        ],
+        "list_lengths": {
+          "promotionBlockedBy": 5
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 3539,
+        "recall": {
+          "min": 0.0,
+          "max": 0.0
+        },
+        "falseActivations": {
+          "min": 0,
+          "max": 0
+        },
+        "elapsedWallSeconds": {
+          "min": 60.780615400057286,
+          "max": 60.780615400057286
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivations\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"positive\", \"positiv…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"candidate\", \"capturedAudioRetained\", \"corpus\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"falseActivations\", \"measuredAtUtc\", \"model\", \"negative\", \"negativeDecisionMargins\", \"physicalPath\", \"positive\", \"positiv…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_acoustic_ensemble_opened_clean_v7_validation_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7285,
+      "sha256": "7c0f12fa563557fb1a83fc72a7d24e055ac0695b55fc6ae64a856385a565c78d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7284,
+        "elapsedWallSeconds": {
+          "min": 14.568673399975523,
+          "max": 14.568673399975523
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_acoustic_ensemble_opened_v5_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7258,
+      "sha256": "121434ab4157a8c035a423f14507f86c0f32d347e3f7c6230ca1159e2f4d417e",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7257,
+        "elapsedWallSeconds": {
+          "min": 13.598980900016613,
+          "max": 13.598980900016613
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_acoustic_ensemble_opened_v6_validation_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7296,
+      "sha256": "0a386163d7783bc29d7309754989abae1fd337c328594a4cc3c5526c3e74ba90",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7295,
+        "elapsedWallSeconds": {
+          "min": 12.410934799932875,
+          "max": 12.410934799932875
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_denoiser_rolling_wake_opened_v7_v8_audit_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 54242,
+      "sha256": "0c8ea683abdee16c82cc5e18e866446731f86972612443482ab27fcd5e7df1a0",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "corpora",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "policy",
+          "promotable",
+          "schema",
+          "scope",
+          "variantSummary"
+        ],
+        "n_keys": 13,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {
+          "corpora": 2
+        }
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 54241,
+        "elapsedWallSeconds": {
+          "min": 105.67461099999491,
+          "max": 105.67461099999491
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpora\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"policy\", \"promotable\", \"schema\", \"scope\", \"variantSummary\"], \"n_k…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"corpora\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"policy\", \"promotable\", \"schema\", \"scope\", \"variantSummary\"], \"n_k…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_lexical_fusion_opened_clean_v7_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7188,
+      "sha256": "a837ec0d2e64b5f745836c600ff8d6a3ae59389cd965bce2f226f778e2d7ae95",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7187,
+        "elapsedWallSeconds": {
+          "min": 24.160236999974586,
+          "max": 24.160236999974586
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_lexical_hyperspotter_opened_clean_v7_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7165,
+      "sha256": "15f44c658b2fbc9d33e92c0065f094dadfb46008a405c6ba756d61465283b60d",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7164,
+        "elapsedWallSeconds": {
+          "min": 10.206236599944532,
+          "max": 10.206236599944532
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_lexical_hyperspotter_opened_clean_v8_validation_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 7142,
+      "sha256": "359158138888e90540752594686270a57573c28fcf9bcadb47cabadfc7243408",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedDevelopmentPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 16,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedDevelopmentPassed",
+          "promotable",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 7141,
+        "elapsedWallSeconds": {
+          "min": 9.791249000001699,
+          "max": 9.791249000001699
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedDevelopmentPass…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_rolling_multialias_diverse_v10_validation_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 12253,
+      "sha256": "5442751167640cfba2fcd1c28d172ea0deeabb74065ddec43bd1d46edb9aa189",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 12252,
+        "elapsedWallSeconds": {
+          "min": 22.609892899985425,
+          "max": 22.609892899985425
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_rolling_multialias_opened_clean_v7_development_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5912,
+      "sha256": "c9ca471878847f9b566deeed32e5540af218e9d00b0d9aea099d590b429d6703",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5911,
+        "elapsedWallSeconds": {
+          "min": 2.9886932999361306,
+          "max": 2.9886932999361306
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_rolling_multialias_opened_clean_v8_validation_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5922,
+      "sha256": "c59d5dd561fd5603aab7c7f2fd1ac2f183771fcf98f7392fc80868e44b7f81a4",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5921,
+        "elapsedWallSeconds": {
+          "min": 2.675416500074789,
+          "max": 2.675416500074789
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_rolling_multialias_opened_clean_v9_validation_v2.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 5914,
+      "sha256": "75d82632c3b960bba04c0f8d1aa5f3636ca862cdf3c1b6787da3dc9a0a8151cf",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 5913,
+        "elapsedWallSeconds": {
+          "min": 2.9122579999966547,
+          "max": 2.9122579999966547
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_rolling_multialias_opened_v7_physical_aux25_v3_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6083,
+      "sha256": "8d52ddc9bbc38c0cc280d3d47fc5b16f5d3bfcdc1a8af602bdbd7a4391a7e7aa",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6082,
+        "elapsedWallSeconds": {
+          "min": 3.014918400091119,
+          "max": 3.014918400091119
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    },
+    "artifacts/development/baxy_raw_rolling_multialias_opened_v8_physical_aux25_v3_development_v1.v1.json": {
+      "parser": "json",
+      "encoding": "utf-8",
+      "bytes": 6095,
+      "sha256": "914d38c8d28776069bda1ed4de9a7a3d7de22cad66f9688d8f27b8f967250258",
+      "rows": 1,
+      "schema": {
+        "keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "models",
+          "negative",
+          "openedCorpusPassed",
+          "policy",
+          "positive",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "n_keys": 17,
+        "root": "object"
+      },
+      "distribution": {
+        "scalar_keys": [
+          "blindHumanPartitionAccessed",
+          "candidateFrozen",
+          "corpusManifestSha256",
+          "developmentOnly",
+          "effectsExecuted",
+          "elapsedWallSeconds",
+          "filenamesOrTranscriptsRetained",
+          "measuredAtUtc",
+          "openedCorpusPassed",
+          "promotable",
+          "role",
+          "schema",
+          "scope"
+        ],
+        "list_lengths": {}
+      },
+      "extremes": {
+        "first_offset": 0,
+        "last_offset": 6094,
+        "elapsedWallSeconds": {
+          "min": 2.874945000046864,
+          "max": 2.874945000046864
+        },
+        "effectsExecuted": {
+          "min": 0,
+          "max": 0
+        }
+      },
+      "errors": [],
+      "samples": {
+        "head": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ],
+        "tail": [
+          {
+            "offset": 0,
+            "line": 1,
+            "text": "{\"keys\": [\"blindHumanPartitionAccessed\", \"candidateFrozen\", \"corpusManifestSha256\", \"developmentOnly\", \"effectsExecuted\", \"elapsedWallSeconds\", \"filenamesOrTranscriptsRetained\", \"measuredAtUtc\", \"models\", \"negative\", \"openedCorpusPassed\",…"
+          }
+        ]
+      }
+    }
+  }
+}
