@@ -61,6 +61,9 @@ def _fail_environment(reason: str) -> None:
 def _require_wake_detector(config):
     try:
         return AcousticWakeDetector(config)
+    except ModuleNotFoundError as error:
+        _fail_environment(f"livekit.wakeword is not on this machine ({error})")
+        raise AssertionError("unreachable")
     except WakeWordRuntimeError as error:
         _fail_environment(f"livekit.wakeword is not on this machine ({error})")
         raise AssertionError("unreachable")
@@ -92,6 +95,10 @@ def _inherited_wake_onnx() -> Path:
 
 
 def _require_parakeet() -> Path:
+    try:
+        import silero_vad  # noqa: F401
+    except ModuleNotFoundError as error:
+        _fail_environment(f"silero_vad is not on this machine ({error})")
     stt = resolve_stt_directory()
     if not _complete_stt_bundle(stt):
         _fail_environment("Parakeet bundle is not on this machine")
@@ -99,6 +106,10 @@ def _require_parakeet() -> Path:
 
 
 def _require_neural_tts() -> Path:
+    try:
+        import sounddevice  # noqa: F401
+    except ModuleNotFoundError as error:
+        _fail_environment(f"backend TTS (sounddevice) is not on this machine ({error})")
     path = resolve_neural_tts_model()
     if path is None or not path.is_file():
         _fail_environment("neural TTS model is not on this machine")

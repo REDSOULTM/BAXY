@@ -76,6 +76,7 @@ from scripts.goal095_0959_matrix import dump_json, load_campaign, load_json
 REPO = Path(__file__).resolve().parents[1]
 SCHEMA = "baxy.goal095.09511c-revalidate.v1"
 LEDGER_SCHEMA = "baxy.goal095.09511c-ledger.v1"
+VERSION = "v1"
 SYNTHESIS_REL = "artifacts/goal095/synthesis/09.5.11C_revalidar_07_09.v1.json"
 LEDGER_REL = "artifacts/goal095/ledger/revalidate-09.5.11C.json"
 MARKDOWN_REL = "documentacion/herencia/09_5_11C_REVALIDAR.md"
@@ -217,6 +218,66 @@ def aplazados_defers_11c_to_goal10(repo: Path = REPO) -> list[str]:
         if "10.0" in folded:
             hits.append("APLAZADOS.md names 09.5.11C together with 10.0")
     return hits
+
+
+def baseline_trace() -> dict[str, Any]:
+    """Why the four pre-campaign extract files stay out of this tree.
+
+    `bdb8919` dropped the two files that existed at `5405efa`. The blob
+    cache and Carter v2 fragments file were never versioned. 11C does not
+    consume them; hashes are not invented.
+    """
+    return {
+        "not_restored": [
+            {
+                "path": "artifacts/goal095/extract/_evidence_profile.txt",
+                "present_at": "5405efa",
+                "blob": "53e36625c8fef324ae21d7ce24cbfdc26f00c405",
+                "dropped_by": "bdb8919",
+                "reason": "pre-campaign evidence profile; 11C does not consume it",
+            },
+            {
+                "path": "scripts/_goal095_profile_evidence.py",
+                "present_at": "5405efa",
+                "blob": "f1ff21f16e572cf6a3be7ce47f764691b017e4ca",
+                "dropped_by": "bdb8919",
+                "reason": "pre-campaign generator; 11C does not consume it",
+            },
+        ],
+        "never_versioned": [
+            {
+                "path": "artifacts/goal095/extract/_schema_agent_blobs/",
+                "present_in_5405efa": False,
+                "identity": "artifacts/goal095/sources/baxy_schema_agent.keep.sha256.jsonl",
+                "identity_blob": "0205119bcc86e1ecdcca54e9c2133551cf085ae9",
+                "reason": "derived git-blob cache; hashes not invented",
+            },
+            {
+                "path": "artifacts/goal095/extract/code_tests-002-carter-carter_legacy_Carter_v2.fragments.txt",
+                "present_in_5405efa": False,
+                "source": "artifacts/goal095/extract/code_tests-002-carter-carter_legacy_Carter_v2.inspect.json",
+                "source_blob": "3d02a3549f9e4e232e3d7211a8e78c983b863670",
+                "generator": "scripts/_goal095_code002_fragments.py",
+                "reason": "derived extract; hashes not invented",
+            },
+        ],
+    }
+
+
+def _require_voice_interpreter_modules() -> None:
+    missing: list[str] = []
+    try:
+        import silero_vad  # noqa: F401
+    except ModuleNotFoundError:
+        missing.append("silero_vad")
+    try:
+        import sounddevice  # noqa: F401
+    except ModuleNotFoundError:
+        missing.append("sounddevice")
+    if missing:
+        raise EnvironmentFailure(
+            f"{', '.join(missing)} is not on this interpreter"
+        )
 
 
 def in_scope_source_skips(repo: Path = REPO) -> list[str]:
@@ -932,6 +993,7 @@ def _live_voice_engines_inprocess() -> dict[str, Any]:
 
 
 def live_voice_engines() -> dict[str, Any]:
+    _require_voice_interpreter_modules()
     if _livekit_in_this_interpreter():
         return _live_voice_engines_inprocess()
     if (os.environ.get(_WAKE_RUNTIME_MARKER) or "").strip():
@@ -1059,11 +1121,23 @@ def _result_for(spec: dict[str, Any], holdouts: dict[str, Any]) -> str:
         )
     if kind == "voice":
         voice = holdouts["voice"]
+        engines = voice["engines"]
+        if not spec.get("holdout"):
+            return spec["historical_result"]
+        if not voice.get("holds"):
+            detail = engines.get("environment_failure") or "voice holdout failed"
+            return (
+                "FALLO_DE_AMBIENTE "
+                f"stt={engines.get('stt_complete')} "
+                f"tts_neural={engines.get('tts_neural')} "
+                f"wake={engines.get('wake_onnx_present')} "
+                f"detail={detail}"
+            )
         return (
-            f"stt={voice['engines']['stt_complete']} "
-            f"tts_neural={voice['engines']['tts_neural']} "
-            f"wake={voice['engines']['wake_onnx_present']} "
-            f"noise_fa={voice['engines']['noise_false_activation']}"
+            f"stt={engines['stt_complete']} "
+            f"tts_neural={engines['tts_neural']} "
+            f"wake={engines['wake_onnx_present']} "
+            f"noise_fa={engines['noise_false_activation']}"
         )
     if kind == "provenance":
         prov = holdouts["provenance"]
@@ -1095,21 +1169,31 @@ def build_report(
         "not_rerun": campaigns_not_rerun(),
         "in_scope_source_skips": in_scope_source_skips(repo),
     }
+    missions = holdouts["missions"]
+    signal = holdouts["first_signal"]
+    voice = holdouts["voice"]
+    reproducibility_block = holdouts["reproducibility"]
     criteria = []
     for spec in criterion_specs():
         row = dict(spec)
         row["result"] = _result_for(spec, holdouts)
         row["status"] = "holds"
+        if spec.get("scored_kind") == "voice" and spec.get("holdout") and not voice.get("holds"):
+            row["status"] = "FALLO_DE_AMBIENTE"
         criteria.append(row)
-    missions = holdouts["missions"]
-    signal = holdouts["first_signal"]
-    voice = holdouts["voice"]
     return {
         "schema": SCHEMA,
+        "version": VERSION,
         "goal": "09.5.11C",
         "closed_utc": closed_utc,
         "owner_prompt": OWNER_PROMPT,
         "next_human_prompt": NEXT_PROMPT,
+        "reproducibility": {
+            "command": reproducibility_block.get("command"),
+            "result": reproducibility_block.get("result"),
+            "passed": reproducibility_block.get("passed"),
+        },
+        "baseline_trace": baseline_trace(),
         "required_human_launches": 1,
         "transplant_pending": 0,
         "transplant_claimed": 0,
@@ -1150,6 +1234,10 @@ def validate_report(report: dict[str, Any], repo: Path = REPO) -> list[str]:
     errors: list[str] = []
     if report.get("schema") != SCHEMA:
         errors.append(f"schema {report.get('schema')!r} != {SCHEMA}")
+    if not str(report.get("version") or "").strip():
+        errors.append("version is empty")
+    elif report.get("version") != VERSION:
+        errors.append(f"version {report.get('version')!r} != {VERSION}")
     if report.get("next_human_prompt") != NEXT_PROMPT:
         errors.append(f"next_human_prompt expected {NEXT_PROMPT}")
     if report.get("owner_prompt") != OWNER_PROMPT:
@@ -1272,13 +1360,20 @@ def validate_report(report: dict[str, Any], repo: Path = REPO) -> list[str]:
         errors.append(f"transplant not empty in provenance: {transplant_counts}")
 
     repro = holdouts.get("reproducibility") or {}
+    top_repro = report.get("reproducibility") or {}
+    result_text = str(repro.get("result") or top_repro.get("result") or "")
+    if not result_text.strip():
+        errors.append("reproducibility.result is empty")
+    if str(top_repro.get("result") or "") != str(repro.get("result") or ""):
+        errors.append("top-level reproducibility.result does not match holdouts")
     if repro.get("passed"):
-        result_text = str(repro.get("result") or "")
         if "source_quality_gate_passed: mode=Full" not in result_text:
             errors.append("reproducibility passed without Full")
         folded = result_text.casefold()
         if "xfail" in folded or "fallback" in folded:
             errors.append("reproducibility closed with xfail/fallback")
+        if "skip" in folded:
+            errors.append("reproducibility closed with skip")
 
     text = json.dumps(report, ensure_ascii=False)
     if "c:\\users\\" in text.casefold() or "d:\\perfil\\" in text.casefold():
@@ -1316,6 +1411,18 @@ def write_ledger(
         "markdown_ref": MARKDOWN_REL,
         "owner_prompt": OWNER_PROMPT,
         "next_prompt": NEXT_PROMPT,
+        "next_human_prompt": report.get("next_human_prompt") or NEXT_PROMPT,
+        "full_gate": {
+            "command": (report.get("reproducibility") or {}).get("command")
+            or (holdouts.get("reproducibility") or {}).get("command"),
+            "result": (report.get("reproducibility") or {}).get("result")
+            or (holdouts.get("reproducibility") or {}).get("result"),
+            "passed": bool(
+                (report.get("reproducibility") or {}).get("passed")
+                if (report.get("reproducibility") or {}).get("passed") is not None
+                else (holdouts.get("reproducibility") or {}).get("passed")
+            ),
+        },
         "required_human_launches": 1,
         "deferred_to_goal10": [],
         "live_src_changed": True,
@@ -1353,7 +1460,11 @@ def write_markdown(repo: Path, report: dict[str, Any]) -> None:
     lines = [
         "# Goal 09.5.11C — Revalidar Goals 07–09",
         "",
-        f"Cerrado {report['closed_utc'][:10]}. Fuente de verdad machine-readable:",
+        (
+            f"Pausado {report['closed_utc'][:10]} en FALLO_DE_AMBIENTE. Fuente de verdad machine-readable:"
+            if not voice["holds"]
+            else f"Cerrado {report['closed_utc'][:10]}. Fuente de verdad machine-readable:"
+        ),
         f"[`../{SYNTHESIS_REL}`](../../{SYNTHESIS_REL}).",
         f"Ledger: [`../{LEDGER_REL}`](../../{LEDGER_REL}).",
         "",
@@ -1391,8 +1502,14 @@ def write_markdown(repo: Path, report: dict[str, Any]) -> None:
         "",
         "### Voz (Goal 09)",
         "",
-        f"STT complete={voice['engines']['stt_complete']}; TTS neural={voice['engines']['tts_neural']};",
-        f"wake present={voice['engines']['wake_onnx_present']}; noise FA={voice['engines']['noise_false_activation']}.",
+        (
+            f"FALLO_DE_AMBIENTE. {voice['engines'].get('environment_failure')}"
+            if not voice["holds"]
+            else (
+                f"STT complete={voice['engines']['stt_complete']}; TTS neural={voice['engines']['tts_neural']}; "
+                f"wake present={voice['engines']['wake_onnx_present']}; noise FA={voice['engines']['noise_false_activation']}."
+            )
+        ),
         "WAV inyectado, no micrófono. Interrupción: NeuralSpeechOutput.cancel.",
         "",
         "### Campañas no reejecutadas",
@@ -1431,8 +1548,16 @@ def write_handoff(repo: Path, report: dict[str, Any], errors: list[str]) -> None
         "Demostrar que los trasplantes conservan Goals 07–09.",
         "",
         "## Estado",
-        "Hecho: matriz 07–09, holdouts misiones/primera señal/voz, next=09.5.12.",
-        "En curso: nada. Sin empezar: 09.5.12.",
+        (
+            "Pausado: FALLO_DE_AMBIENTE de voz en py -3.12. next=09.5.12."
+            if not voice["holds"]
+            else "Hecho: matriz 07–09, holdouts misiones/primera señal/voz, next=09.5.12."
+        ),
+        (
+            "En curso: 09.5.11C espera silero_vad y sounddevice en el intérprete de pytest. Sin empezar: 09.5.12 no se ejecuta."
+            if not voice["holds"]
+            else "En curso: nada. Sin empezar: 09.5.12."
+        ),
         "",
         "## Decisiones tomadas",
         "- Cola transplant vacía no exime holdouts 07–09.",
@@ -1466,7 +1591,12 @@ def write_handoff(repo: Path, report: dict[str, Any], errors: list[str]) -> None
         f"- validate_report errors={errors}",
         "",
         "## Problemas pendientes",
-        "Ninguno de 09.5.11C. No ejecutar 09.5.12 en esta meta.",
+        (
+            "FALLO_DE_AMBIENTE: py -3.12 no importa silero_vad ni sounddevice. "
+            "No declarar 09.5.11C completo. No ejecutar 09.5.12 hasta que el comando dueño sea verde."
+            if errors or not voice["holds"]
+            else "Ninguno de 09.5.11C. No ejecutar 09.5.12 en esta meta."
+        ),
         "",
         "## Siguiente accion recomendada",
         "`documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md` (sesión nueva, un pegado).",

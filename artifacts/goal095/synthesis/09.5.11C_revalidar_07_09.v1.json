@@ -1,9 +1,50 @@
 {
   "schema": "baxy.goal095.09511c-revalidate.v1",
+  "version": "v1",
   "goal": "09.5.11C",
   "closed_utc": "2026-08-31T15:13:06Z",
   "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
   "next_human_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
+  "reproducibility": {
+    "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+    "result": ".\\scripts\\test_source_quality.ps1 -Mode Full -> static+dotnet passed; python-tests failed (exit -1). Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 8 passed, 7 failed (FALLO_DE_AMBIENTE silero_vad/sounddevice). Not passed.",
+    "passed": false
+  },
+  "baseline_trace": {
+    "not_restored": [
+      {
+        "path": "artifacts/goal095/extract/_evidence_profile.txt",
+        "present_at": "5405efa",
+        "blob": "53e36625c8fef324ae21d7ce24cbfdc26f00c405",
+        "dropped_by": "bdb8919",
+        "reason": "pre-campaign evidence profile; 11C does not consume it"
+      },
+      {
+        "path": "scripts/_goal095_profile_evidence.py",
+        "present_at": "5405efa",
+        "blob": "f1ff21f16e572cf6a3be7ce47f764691b017e4ca",
+        "dropped_by": "bdb8919",
+        "reason": "pre-campaign generator; 11C does not consume it"
+      }
+    ],
+    "never_versioned": [
+      {
+        "path": "artifacts/goal095/extract/_schema_agent_blobs/",
+        "present_in_5405efa": false,
+        "identity": "artifacts/goal095/sources/baxy_schema_agent.keep.sha256.jsonl",
+        "identity_blob": "0205119bcc86e1ecdcca54e9c2133551cf085ae9",
+        "reason": "derived git-blob cache; hashes not invented"
+      },
+      {
+        "path": "artifacts/goal095/extract/code_tests-002-carter-carter_legacy_Carter_v2.fragments.txt",
+        "present_in_5405efa": false,
+        "source": "artifacts/goal095/extract/code_tests-002-carter-carter_legacy_Carter_v2.inspect.json",
+        "source_blob": "3d02a3549f9e4e232e3d7211a8e78c983b863670",
+        "generator": "scripts/_goal095_code002_fragments.py",
+        "reason": "derived extract; hashes not invented"
+      }
+    ]
+  },
   "required_human_launches": 1,
   "transplant_pending": 0,
   "transplant_claimed": 0,
@@ -172,12 +213,13 @@
       "engines": {
         "stt_complete": true,
         "tts_present": true,
-        "tts_neural": true,
+        "tts_neural": false,
         "wake_onnx_present": true,
         "noise_false_activation": false,
         "doubtful_question": true,
         "doubtful_command": false,
-        "holds": true
+        "holds": false,
+        "environment_failure": "py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds."
       },
       "artifacts": {
         "stt_kinds": [
@@ -195,7 +237,7 @@
         "not_dotnet": true,
         "holds": true
       },
-      "holds": true
+      "holds": false
     },
     "campaigns": {
       "artifact": "artifacts/goal095/revalidate/goal09511c_campaigns.json",
@@ -231,14 +273,16 @@
         },
         {
           "name": "test_goal09_voice_engines",
-          "passed": 7,
-          "failed": 0,
+          "passed": 2,
+          "failed": 5,
           "skipped": 0,
-          "command": "runtime-python pytest tests/test_goal09_voice_engines.py -q"
+          "command": "py -3.12 -m pytest tests/test_goal09_voice_engines.py -q"
         }
       ],
-      "in_scope_failures_or_skips": [],
-      "holds": true
+      "in_scope_failures_or_skips": [
+        "test_goal09_voice_engines"
+      ],
+      "holds": false
     },
     "provenance": {
       "queue_evidence": {
@@ -291,8 +335,8 @@
     },
     "reproducibility": {
       "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
-      "result": "source_quality_gate_passed: mode=Full",
-      "passed": true
+      "result": ".\\scripts\\test_source_quality.ps1 -Mode Full -> static+dotnet passed; python-tests failed (exit -1). Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 8 passed, 7 failed (FALLO_DE_AMBIENTE silero_vad/sounddevice). Not passed.",
+      "passed": false
     },
     "not_rerun": [
       {
@@ -323,10 +367,10 @@
     "r6_orphan": 0,
     "first_signal_hold": true,
     "asserted_result": false,
-    "voice_hold": true,
-    "stt_complete": true,
-    "tts_neural": true,
-    "campaigns_hold": true
+    "voice_hold": false,
+    "stt_complete": false,
+    "tts_neural": false,
+    "campaigns_hold": false
   },
   "criteria": [
     {
@@ -593,8 +637,8 @@
       "command": "py -m pytest tests/test_goal09_voice_engines.py -q",
       "historical_result": "WAV inyectado + motores registrados. No micrófono vivo.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
-      "status": "holds"
+      "result": "FALLO_DE_AMBIENTE stt=False tts_neural=False wake_onnx=True detail=py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds.",
+      "status": "FALLO_DE_AMBIENTE"
     },
     {
       "id": "09-frontera-proceso-manifiesto",
@@ -609,7 +653,7 @@
       "command": null,
       "historical_result": "engines_in_python_sidecar=true. STT/TTS/wake SHA en runtime.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "result": "engines_in_python_sidecar=true. STT/TTS/wake SHA en runtime.",
       "status": "holds"
     },
     {
@@ -625,7 +669,7 @@
       "command": null,
       "historical_result": "FAR 2,00 h sellada. Umbral 0,5 no se retoca. No se reabre el holdout.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "result": "FAR 2,00 h sellada. Umbral 0,5 no se retoca. No se reabre el holdout.",
       "status": "holds"
     },
     {
@@ -641,8 +685,8 @@
       "command": "test_end_of_speech_to_first_signal_is_under_budget",
       "historical_result": "EOU p50 0,21 s, máx 0,31 s. Revalidado con PCM inyectado.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
-      "status": "holds"
+      "result": "FALLO_DE_AMBIENTE stt=False tts_neural=False wake_onnx=True detail=py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds.",
+      "status": "FALLO_DE_AMBIENTE"
     },
     {
       "id": "09-interrupcion",
@@ -657,8 +701,8 @@
       "command": "test_neural_speak_starts_and_cancel_stops_mid_utterance",
       "historical_result": "NeuralSpeechOutput.cancel corta. Holdout físico de altavoz, no micrófono.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
-      "status": "holds"
+      "result": "FALLO_DE_AMBIENTE stt=False tts_neural=False wake_onnx=True detail=py -3.12 missing silero_vad and sounddevice; NeuralSpeechOutput.start last_error=tts_unavailable:ModuleNotFoundError. livekit.wakeword, sherpa_onnx and onnxruntime are present. Registered mind-runtime python has silero_vad and sounddevice and TTS start succeeds.",
+      "status": "FALLO_DE_AMBIENTE"
     },
     {
       "id": "09-accesibilidad-sin-pantalla",
@@ -673,7 +717,7 @@
       "command": null,
       "historical_result": "Toda respuesta se dice. Confirmaciones sí/no por MissionInput. Interruptor de escucha por voz.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "result": "Toda respuesta se dice. Confirmaciones sí/no por MissionInput. Interruptor de escucha por voz.",
       "status": "holds"
     },
     {
@@ -703,7 +747,7 @@
       "command": null,
       "historical_result": "idle_listen.json 60 s, STT/TTS en CPU, VRAM del decisor intacta.",
       "scored_kind": "voice",
-      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "result": "idle_listen.json 60 s, STT/TTS en CPU, VRAM del decisor intacta.",
       "status": "holds"
     },
     {

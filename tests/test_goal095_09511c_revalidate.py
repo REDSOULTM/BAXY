@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,7 @@ from scripts.goal095_09511c_revalidate import (
     OWNER_PROMPT,
     SCHEMA,
     SYNTHESIS_REL,
+    VERSION,
     EnvironmentFailure,
     aplazados_defers_11c_to_goal10,
     in_scope_source_skips,
@@ -40,6 +42,12 @@ def test_shipped_09511c_report_is_the_repo_artifact() -> None:
     assert path.read_text(encoding="utf-8").startswith("{")
     report = load_report(REPO)
     assert report["schema"] == SCHEMA
+    assert report["version"] == VERSION
+    assert str(report["reproducibility"]["result"]).strip()
+    assert report["next_human_prompt"] == NEXT_PROMPT
+    ledger = json.loads((REPO / LEDGER_REL).read_text(encoding="utf-8"))
+    assert ledger["next_human_prompt"] == NEXT_PROMPT
+    assert str((ledger.get("full_gate") or {}).get("result") or "").strip()
     assert (REPO / LEDGER_REL).is_file()
     assert (REPO / MARKDOWN_REL).is_file()
     assert (REPO / HANDOFF_REL).is_file()

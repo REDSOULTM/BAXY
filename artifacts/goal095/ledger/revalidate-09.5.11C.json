@@ -2,26 +2,39 @@
   "schema": "baxy.goal095.09511c-ledger.v1",
   "batch_id": "revalidate-09.5.11C",
   "kind": "revalidate",
-  "status": "complete",
+  "status": "blocked",
   "goal": "09.5.11C",
   "closed_utc": "2026-08-31T15:13:06Z",
   "report_ref": "artifacts/goal095/synthesis/09.5.11C_revalidar_07_09.v1.json",
   "markdown_ref": "documentacion/herencia/09_5_11C_REVALIDAR.md",
   "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
   "next_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
+  "next_human_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
+  "full_gate": {
+    "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+    "result": ".\\scripts\\test_source_quality.ps1 -Mode Full -> static+dotnet passed; python-tests failed (exit -1). Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 8 passed, 7 failed (FALLO_DE_AMBIENTE silero_vad/sounddevice). Not passed.",
+    "passed": false
+  },
   "required_human_launches": 1,
   "deferred_to_goal10": [],
   "live_src_changed": true,
-  "errors": [],
+  "errors": [
+    "voice holdout does not hold",
+    "product TTS is not neural",
+    "in-scope campaign skip/fail: test_goal09_voice_engines",
+    "09-wake-stt-tts-maquina: status 'FALLO_DE_AMBIENTE' is not holds",
+    "09-eou-primera-senal: status 'FALLO_DE_AMBIENTE' is not holds",
+    "09-interrupcion: status 'FALLO_DE_AMBIENTE' is not holds"
+  ],
   "holdout_summary": {
     "missions_hold": true,
     "r6_orphan": 0,
     "first_signal_hold": true,
     "asserted_result": false,
-    "voice_hold": true,
-    "stt_complete": true,
-    "tts_neural": true,
-    "campaigns_hold": true
+    "voice_hold": false,
+    "stt_complete": false,
+    "tts_neural": false,
+    "campaigns_hold": false
   },
   "missions": {
     "holds": true,
@@ -32,9 +45,9 @@
     "asserted_result": false
   },
   "voice": {
-    "holds": true,
-    "stt_complete": true,
-    "tts_neural": true
+    "holds": false,
+    "stt_complete": false,
+    "tts_neural": false
   },
   "provenance": {
     "transplant": {

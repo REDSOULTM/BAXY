@@ -1,12 +1,13 @@
 # Goal 09.5.11C — Revalidar Goals 07–09
 
-Cerrado 2026-08-31. Fuente de verdad machine-readable:
+Pausado 2026-08-31 en FALLO_DE_AMBIENTE. Fuente de verdad machine-readable:
 [`../artifacts/goal095/synthesis/09.5.11C_revalidar_07_09.v1.json`](../../artifacts/goal095/synthesis/09.5.11C_revalidar_07_09.v1.json).
 Ledger: [`../artifacts/goal095/ledger/revalidate-09.5.11C.json`](../../artifacts/goal095/ledger/revalidate-09.5.11C.json).
 
 Siguiente prompt humano:
 [`../sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md`](../sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md).
 No remite a 09.5.11C, 09.5.11B, 09.5.11A, 09.5.10 ni 10.0.
+09.5.11C no está cerrado: el comando dueño en `py -3.12` no prueba STT/TTS.
 
 ## Cola transplant
 
@@ -38,9 +39,11 @@ measure_first_signal_latency no se reabrió: runtime no trasplantado.
 
 ### Voz (Goal 09)
 
-STT complete=True; TTS neural=True;
-wake present=True; noise FA=False.
-WAV inyectado, no micrófono. Interrupción: NeuralSpeechOutput.cancel.
+FALLO_DE_AMBIENTE. `py -3.12` no importa `silero_vad` ni `sounddevice`.
+Wake onnx presente; noise FA=False en el detector in-process.
+No se afirma stt=True ni tts_neural=True: el pytest dueño falló.
+El runtime de producto (`BAXYRuntime` python) sí importa ambos y TTS start
+devuelve True; eso no sustituye el comando dueño.
 
 ### Campañas no reejecutadas
 
@@ -53,6 +56,10 @@ WAV inyectado, no micrófono. Interrupción: NeuralSpeechOutput.cancel.
 ### Procedencia y reproducibilidad
 
 Procedencia: sparse_not_invented=True; transplant {'pending': 0, 'claimed': 0, 'complete': 0, 'total': 0}.
-Reproducibilidad: `.\scripts\test_source_quality.ps1 -Mode Full` → source_quality_gate_passed: mode=Full.
+Reproducibilidad: `.\scripts\test_source_quality.ps1 -Mode Full` → static+dotnet passed; python-tests failed (exit -1). No se afirma passed.
+Los cuatro extractos pre-campaña no se restauran: `_evidence_profile.txt` y
+`_goal095_profile_evidence.py` existieron en `5405efa` y los retiró `bdb8919`;
+`_schema_agent_blobs/` y el fragments de Carter v2 nunca estuvieron en git
+(hashes not invented).
 
 Cero aplazos al Goal 10.
