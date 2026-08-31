@@ -2,9 +2,9 @@
   "schema": "baxy.goal095.09511c-ledger.v1",
   "batch_id": "revalidate-09.5.11C",
   "kind": "revalidate",
-  "status": "blocked",
+  "status": "complete",
   "goal": "09.5.11C",
-  "closed_utc": "2026-08-31T17:32:16Z",
+  "closed_utc": "2026-08-31T18:21:27Z",
   "report_ref": "artifacts/goal095/synthesis/09.5.11C_revalidar_07_09.v1.json",
   "markdown_ref": "documentacion/herencia/09_5_11C_REVALIDAR.md",
   "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
@@ -12,15 +12,13 @@
   "next_human_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
   "full_gate": {
     "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
-    "result": "Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 15 passed in 46.70s. Full not re-run this verification.",
-    "passed": false
+    "result": "source_quality_gate_passed: mode=Full",
+    "passed": true
   },
   "required_human_launches": 1,
   "deferred_to_goal10": [],
   "live_src_changed": true,
-  "errors": [
-    "reproducibility holdout is not green"
-  ],
+  "errors": [],
   "holdout_summary": {
     "missions_hold": true,
     "r6_orphan": 0,

@@ -2,13 +2,13 @@
   "schema": "baxy.goal095.09511c-revalidate.v1",
   "version": "v1",
   "goal": "09.5.11C",
-  "closed_utc": "2026-08-31T17:32:16Z",
+  "closed_utc": "2026-08-31T18:21:27Z",
   "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
   "next_human_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
   "reproducibility": {
     "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
-    "result": "Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 15 passed in 46.70s. Full not re-run this verification.",
-    "passed": false
+    "result": "source_quality_gate_passed: mode=Full",
+    "passed": true
   },
   "baseline_trace": {
     "not_restored": [
@@ -52,7 +52,7 @@
   "live_src_changed": true,
   "src_change": {
     "owner": "src/baxy_mind/voice_aec.py",
-    "reason": "AudioDucker.duck/restore catch missing comtypes so optional ducking cannot abort capture (voice.py:2515)."
+    "reason": "AudioDucker.duck/restore wrap _com_apartment inside the existing try so optional ducking cannot abort capture (voice.py:2515). Get-BaxySha256/Get-FileSha256/wake installer hash via .NET SHA256. STT program tree resealed after voice_aec.py."
   },
   "estado_del_arte_added": false,
   "corpus": {
@@ -332,8 +332,8 @@
     },
     "reproducibility": {
       "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
-      "result": "Owner py -3.12 pytest tests/test_goal095_09511c_revalidate.py tests/test_goal09_voice_engines.py -q: 15 passed in 46.70s. Full not re-run this verification.",
-      "passed": false
+      "result": "source_quality_gate_passed: mode=Full",
+      "passed": true
     },
     "not_rerun": [
       {
