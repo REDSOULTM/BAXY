@@ -73,15 +73,17 @@ def test_shipped_09511c_matrix_has_every_07_09_row_and_names_12() -> None:
     assert "09.5.11B" not in report["next_human_prompt"]
     assert "10.0" not in report["next_human_prompt"]
     assert report["deferred_to_goal10"] == []
-    handoff = (REPO / HANDOFF_REL).read_text(encoding="utf-8")
-    siguiente = handoff.split("## Siguiente accion recomendada", 1)[1]
-    assert "09.5.12_INTEGRAR_Y_REPLANIFICAR.md" in siguiente
-    assert "09.5.11C_REVALIDAR_07_09.md" not in siguiente
-    assert "10.0_BASE_VERDE.md" not in siguiente
     markdown = (REPO / MARKDOWN_REL).read_text(encoding="utf-8")
     assert "09.5.12_INTEGRAR_Y_REPLANIFICAR.md" in markdown.split(
         "Siguiente prompt humano", 1
     )[1]
+    handoff = (REPO / HANDOFF_REL).read_text(encoding="utf-8")
+    siguiente = handoff.split("## Siguiente accion recomendada", 1)[1]
+    assert (
+        "09.5.12_INTEGRAR_Y_REPLANIFICAR.md" in siguiente
+        or "10.0_BASE_VERDE.md" in siguiente
+    )
+    assert "09.5.11C_REVALIDAR_07_09.md" not in siguiente
 
 
 def test_live_planner_veto_and_r6_postconditions() -> None:

@@ -15,9 +15,12 @@ otra capacidad aislada: es demostrar que todas ellas forman un compañero que se
 usa normalmente y no decepciona.
 
 El Goal 09.5 reconcilia antes todas las versiones de Carter, schemas y BAXY que
-existan en la máquina, trasplanta las mejores piezas y revalida 01–09. Por eso el
-10 consume `documentacion/herencia/00_MAPA.md` y el ledger 09.5 ya actualizados:
-no vuelve a inventar una misión que algún intento anterior resolvió.
+existan en la máquina, trasplanta las mejores piezas y revalida 01–09. 09.5.12
+publicó el mapa: herencia previa, delta nuevo, piezas trasplantadas (cero lotes)
+y rechazos. Por eso el 10 consume `documentacion/herencia/00_MAPA.md` y el ledger
+09.5 ya actualizados: no vuelve a inventar una misión que algún intento anterior
+resolvió. El delta 09.5 va a checkpoints internos de `10.0`–`10.18`; no hay
+prompts 10.x nuevos.
 
 El Goal 10 conserva las dos obligaciones de sus versiones anteriores:
 

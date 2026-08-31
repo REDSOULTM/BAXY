@@ -7,6 +7,11 @@ Goal 01, cerrado el **2026-08-16**. Los otros diez goals deberían poder leer s�
 este documento. El único anexo es [`D_ADAPTADORES_POR_APP.md`](D_ADAPTADORES_POR_APP.md),
 que lista fichero por fichero los adaptadores por aplicación.
 
+> **Actualización 09.5.12 (2026-08-31):** el linaje reconciliado está en
+> [§11](#11-reconciliacion-095). Las fechas y conclusiones del Goal 01
+> (**2026-08-16**) no se reescriben. Herencia previa, delta nuevo, piezas
+> trasplantadas (cero lotes) y rechazos quedan nombrados aparte.
+
 > **Lo más importante que encontró este goal, en una línea:** la medición que
 > justificaba consolidar el catálogo a 16 herramientas **existe y dice lo
 > contrario de lo que se creía**. Está en [§6](#6-el-problema-de-la-comprensión).
@@ -405,3 +410,156 @@ Para que nadie lo dé por hecho:
 - **El planner completo del router** (ejemplares + abstención + cabeza por
   herramienta) no se pudo ejecutar: importa de `gemma4_agent`. Sólo se ejecutó el
   encoder.
+
+<!-- goal095-12-generated:begin -->
+## 11. Reconciliación 09.5 <a id="11-reconciliacion-095"></a>
+
+Actualización **09.5.12**, cerrada 2026-08-31. No borra las fechas ni las conclusiones del Goal 01 (**2026-08-16**): §1–§10 siguen siendo el mapa que los Goals 02–09 leyeron. Este apartado nombra las cuatro clases del linaje reconciliado: herencia previa, delta nuevo, piezas trasplantadas (cero lotes) y rechazos.
+
+# Reconciliación 09.5 — linaje publicado
+
+Generado por `scripts/goal095_09512_integrate.py` desde manifiestos y síntesis. Goal 01 cerrado el **2026-08-16**. No copia secretos, binarios ni corpus privados.
+
+## Las cuatro clases
+
+### Herencia previa
+
+Fuentes ya contempladas el 2026-08-16: `Carter OS AI`, `Probando Gemma 4`, `FunctionGemma`, `BAXY`, biblioteca 1.350 documentos, mapa `00_MAPA.md` §1–§10. Schema Agent se audita en el historial Git de `BAXY`, no como carpeta hermana. `JRVS` y `Probando schemas` siguen fuera.
+
+### Delta nuevo
+
+Manifiesto 09.5.1: 28373 archivos hasheados; cola 19512; duplicados 8348; cobertura previa 513; faltantes 0; solapes 0. Cobertura 100 %.
+Llegó material intelectual adicional en los mismos árboles, la etapa Schema Agent dentro de `BAXY`, y la declaración de fuente dispersa (GGUF/datasets/checkpoints de Probando Gemma 4 omitidos a propósito; hashes individuales not invented).
+
+### Piezas trasplantadas
+
+Cero lotes. `pending=0` `claimed=0` `complete=0` `total=0`. Decisión 09.5.9/10: `conservar_actual`. Un trasplante vacío es un hecho medido, no un hueco a rellenar.
+
+09.5.5–09.5.8 no hallaron pieza histórica que gane al vivo en conducta, pruebas, recursos y arquitectura a la vez. Cero reusar_exacto, cero adaptar, cero medir_antes de herencia: unload-on-idle y arranque frío son mediciones de producto del Goal 10.2 sobre el keep-warm/process_lifecycle vigentes, no un vram_manager/Ollama/ui_field que transplantar. Los GGUF/datasets/checkpoints dispersos de Probando Gemma 4 no se nombran para reutilizar (hashes not invented). Cada lote de herencia habría tenido que retirar el mecanismo vivo en el mismo cambio; no hay tal lote. Rechazos protegidos (FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído) no reentran.
+
+### Rechazos
+
+Protegidos (no reentran): `functiongemma-270m-ft`, `qwen-vl`, `ollama-runtime`, `auto_approve`, `soak-24h-as-requirement`, `gemma-native-audio`.
+
+Decisiones 09.5.9 por terminal: {"conservar_actual": 61, "rechazar": 35}.
+
+## Campañas
+
+| Campaña | pending | claimed | complete | total |
+|---|---:|---:|---:|---:|
+| `docs` | 0 | 0 | 25 | 25 |
+| `code_tests` | 0 | 0 | 477 | 477 |
+| `evidence_assets` | 0 | 0 | 132 | 132 |
+| `transplant` | 0 | 0 | 0 | 0 |
+
+## Hashes de manifiesto 09.5.0 (reproducibles)
+
+- `functiongemma` `ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa` (match)
+- `probando_gemma4` `72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71` (match)
+
+## Tarjetas 09.5.9 → valor 10/11
+
+| Id | Decisión | valor_10_11 |
+|---|---|---|
+| `llm_decisor` | `conservar_actual` | 10.0/10.7 comprensión y prosa |
+| `cuantizacion` | `conservar_actual` | 10.2 techo VRAM |
+| `runtime_inferencia` | `conservar_actual` | 10.0 runtime |
+| `encoder_recuperador` | `conservar_actual` | 10.7/03 revalidación shortlist |
+| `puerta_abstencion` | `conservar_actual` | 10.7 abstención honesta |
+| `catalogo_tipado` | `conservar_actual` | 10.1 corpus / 11 contratos |
+| `verificador_identidad` | `conservar_actual` | 10.7 no inventar operaciones |
+| `functiongemma-270m-ft` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `gemma4-e2b-qat` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `gemma4-e4b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `gemma4-26b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `gemma4-31b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen3.5-4b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen3.5-0.8b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen3-4b-instruct-2507` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen3-8b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen2.5-7b-instruct` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `hermes3-8b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `phi-4-mini` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `lfm2.5-1.2b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `embeddinggemma-300m` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `minilm-l12-tool2vec` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen3-embedding-0.6b` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `bge-m3` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `cross-encoder-reranker` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `ollama-runtime` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `agent-function-schema` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `q2-quant-gemma` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `kva-abstain-head` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen-vl` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `qwen-asr` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `gemma-native-audio` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `wake_word` | `conservar_actual` | 10.11 audio / 10.2 presencia |
+| `falsos_disparos` | `conservar_actual` | 10.2 presencia (no retocar 0,5) |
+| `ruido` | `conservar_actual` | 10.11 |
+| `vad` | `conservar_actual` | 10.11 primera señal oído |
+| `stt` | `conservar_actual` | 10.11 |
+| `nombres_propios` | `conservar_actual` | 10.11 (aplazado, no bloquea) |
+| `bilingue_spanglish` | `conservar_actual` | 10.7 / 10.11 |
+| `tts` | `conservar_actual` | 10.11 |
+| `primera_senal_oido` | `conservar_actual` | 10.2 / 08 |
+| `barge_in` | `conservar_actual` | 10.11 |
+| `audio_ducking` | `conservar_actual` | 10.11 |
+| `dispositivos_audio` | `conservar_actual` | 10.2 preflight |
+| `modelos_assets_voz` | `conservar_actual` | 10.0 / 10.11 |
+| `voz_latencia` | `conservar_actual` | 10.2 / 10.11 |
+| `voz_recursos` | `conservar_actual` | 10.2 |
+| `presencia` | `conservar_actual` | 10.2 presencia diaria |
+| `tools` | `conservar_actual` | 10.1 / 10.16 |
+| `skills` | `conservar_actual` | 10.16 no es un segundo motor |
+| `microagentes` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `uia_ocr_vision` | `conservar_actual` | 10.10 apps/ventanas/visión |
+| `adapters_providers` | `conservar_actual` | 10.10 / 10.12 (no hereda allowlist) |
+| `planes` | `conservar_actual` | 10.16 misiones |
+| `confirmacion` | `conservar_actual` | 10.17 identidad |
+| `verificacion` | `conservar_actual` | 10.0 / 11 verificación |
+| `steam_media` | `conservar_actual` | 10.12 / 10.16 |
+| `archivos` | `conservar_actual` | 10.14 |
+| `apps` | `conservar_actual` | 10.10 |
+| `navegador` | `conservar_actual` | 10.9 / 10.15 |
+| `office` | `conservar_actual` | 10.14 |
+| `comunicacion` | `conservar_actual` | 10.15 |
+| `sistema` | `conservar_actual` | 10.13 |
+| `conectividad` | `conservar_actual` | 10.13 |
+| `mision_compuesta` | `conservar_actual` | 10.16 |
+| `routers_en_serie` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `listas_hardcodeadas_por_app` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `respuestas_fijas` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `exitos_no_verificados` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `simple-app-open-notepad` | `conservar_actual` | 10.16 C10 |
+| `simple-audio-volume` | `conservar_actual` | 10.16 |
+| `simple-note-create` | `conservar_actual` | 10.16 / 10.14 |
+| `chained-steam-library` | `conservar_actual` | 10.16 |
+| `chained-open-then-volume` | `conservar_actual` | 10.16 |
+| `historical-carter-v2-compound-smoke` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `runtime_servidor` | `conservar_actual` | 10.0 |
+| `carga_descarga_modelos` | `conservar_actual` | 10.2 mide presencia; 09.5.9 no transplanta unload |
+| `vram_ram_cpu` | `conservar_actual` | 10.2 |
+| `latencia_llm` | `conservar_actual` | 10.2 / 10.7 |
+| `arranque` | `conservar_actual` | 10.2 mide arranque; 09.5.9 conserva el vivo |
+| `watchdog` | `conservar_actual` | 10.2 |
+| `estabilidad` | `conservar_actual` | 10.2 idle corto, no 24 h |
+| `field_ui_accesibilidad` | `conservar_actual` | 10.17 |
+| `vision_camara` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `memoria_proactividad` | `conservar_actual` | 10.14 |
+| `journal` | `conservar_actual` | 10.0 / 11 |
+| `setup_publish` | `conservar_actual` | 10.0 |
+| `privacidad` | `conservar_actual` | 10.17 |
+| `seguridad` | `conservar_actual` | 10.17 |
+| `diagnosticos` | `conservar_actual` | 10.2 |
+| `auto_approve` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `soak-24h-as-requirement` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `residual_docs` | `conservar_actual` | recordatorio, no lote |
+| `residual_code_foreign` | `rechazar` | protege 10–11 de repetir un mecanismo medido |
+| `residual_code_predecessor` | `conservar_actual` | no lote |
+| `residual_evidence` | `conservar_actual` | no lote; 10.1 no reparsea 09.5.4 |
+
+Las 9.268 tarjetas de auditoría 09.5.2–09.5.4 viven en `artifacts/goal095/ledger/` y `artifacts/goal095/synthesis/09.5.9_card_assignment.v1.json`. No se copian árboles fuente, GGUF, datasets ni secretos a `biblioteca/`.
+
+
+Huecos del Goal 01 §10 que 09.5 cubrió sin reescribirlos: corpus y assets tienen terminal 09.5.4 (`parseado_completo` / `binario_inventariado` / `excluido_razonado`); `carter_v5` se leyó en la campaña `docs`/`code_tests`; el planner FunctionGemma sigue rechazado. Lo que sigue siendo medición de producto (unload-on-idle, arranque frío, cascada de visión como política, 200 turnos) no se convierte en lote de trasplante.
+<!-- goal095-12-generated:end -->

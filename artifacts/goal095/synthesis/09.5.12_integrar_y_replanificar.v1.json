@@ -1,0 +1,180 @@
+{
+  "schema": "baxy.goal095.09512-integrate.v1",
+  "version": "v1",
+  "goal": "09.5.12",
+  "closed_utc": "2026-08-31T19:35:03Z",
+  "owner_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
+  "next_human_prompt": "documentacion/sprints/10.0_BASE_VERDE.md",
+  "coverage": {
+    "percent": 100.0,
+    "manifest_files": 28373,
+    "queued": 19512,
+    "duplicates": 8348,
+    "prior_coverage": 513,
+    "covered": 28373,
+    "missing": 0,
+    "overlaps": 0,
+    "ledger_files": 19850,
+    "terminals": true
+  },
+  "campaigns": {
+    "docs": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 25,
+      "total": 25
+    },
+    "code_tests": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 477,
+      "total": 477
+    },
+    "evidence_assets": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 132,
+      "total": 132
+    },
+    "transplant": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 0,
+      "total": 0
+    }
+  },
+  "transplant": {
+    "lots": 0,
+    "empty_reason": "09.5.5–09.5.8 no hallaron pieza histórica que gane al vivo en conducta, pruebas, recursos y arquitectura a la vez. Cero reusar_exacto, cero adaptar, cero medir_antes de herencia: unload-on-idle y arranque frío son mediciones de producto del Goal 10.2 sobre el keep-warm/process_lifecycle vigentes, no un vram_manager/Ollama/ui_field que transplantar. Los GGUF/datasets/checkpoints dispersos de Probando Gemma 4 no se nombran para reutilizar (hashes not invented). Cada lote de herencia habría tenido que retirar el mecanismo vivo en el mismo cambio; no hay tal lote. Rechazos protegidos (FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído) no reentran.",
+    "protected_rejects": [
+      "functiongemma-270m-ft",
+      "qwen-vl",
+      "ollama-runtime",
+      "auto_approve",
+      "soak-24h-as-requirement",
+      "gemma-native-audio"
+    ]
+  },
+  "decisions": {
+    "conservar_actual": 61,
+    "rechazar": 35
+  },
+  "four_classes": [
+    "herencia previa",
+    "delta nuevo",
+    "piezas trasplantadas",
+    "rechazos"
+  ],
+  "manifest_hashes": {
+    "functiongemma": {
+      "rel": "artifacts/goal095/sources/FunctionGemma.sha256.jsonl",
+      "actual": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+      "expected": "ff150df27808ca19c7a80fe40127011ef050be170b83bcd28bacf8d56f619eaa",
+      "match": true
+    },
+    "probando_gemma4": {
+      "rel": "artifacts/goal095/sources/Probando_Gemma_4.sha256.jsonl",
+      "actual": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+      "expected": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+      "match": true
+    }
+  },
+  "appendix_sha256": "fc59d22f1878a7f927818e066b6ae5a93d6068f3f4e80f56e082aec3951610c7",
+  "executable_prompts": [
+    "10.0_BASE_VERDE.md",
+    "10.1_CORPUS_Y_COLA.md",
+    "10.2_PRESENCIA_Y_RECURSOS.md",
+    "10.3_USO_REAL_A.md",
+    "10.4_USO_REAL_B.md",
+    "10.5_USO_REAL_C.md",
+    "10.6_USO_REAL_D.md",
+    "10.7_CONVERSACION.md",
+    "10.8_HECHOS_LOCALES.md",
+    "10.9_WEB_Y_ACTUALIDAD.md",
+    "10.10_APPS_VENTANAS_VISION.md",
+    "10.11_AUDIO.md",
+    "10.12_MEDIA_STREAMING_JUEGOS.md",
+    "10.13_SISTEMA_CONECTIVIDAD.md",
+    "10.14_PRODUCTIVIDAD_MEMORIA.md",
+    "10.15_COMUNICACION_NAVEGACION.md",
+    "10.16_MISIONES_COMPUESTAS.md",
+    "10.17_IDENTIDAD_VIVA.md",
+    "10.18_INTEGRACION.md",
+    "11.1_COLA_DE_CIERRE.md",
+    "11.2_CONTRATOS_RUNTIME.md",
+    "11.3_REQUISITOS_A.md",
+    "11.4_REQUISITOS_B.md",
+    "11.5_REQUISITOS_C.md",
+    "11.6_REQUISITOS_D.md",
+    "11.7_REQUISITOS_E.md",
+    "11.8_REQUISITOS_F.md",
+    "11.9_NO_RUNTIME_A.md",
+    "11.10_NO_RUNTIME_B.md",
+    "11.11_ERRORES_MENTE_KERNEL.md",
+    "11.12_ERRORES_PROVIDERS_ESTADO.md",
+    "11.13_REGRESION_01_06.md",
+    "11.14_REGRESION_07_10.md",
+    "11.15_HIGIENE_IDENTIDAD.md",
+    "11.16_FULL_Y_CIERRE.md"
+  ],
+  "orden": [
+    "10.0_BASE_VERDE.md",
+    "10.1_CORPUS_Y_COLA.md",
+    "10.2_PRESENCIA_Y_RECURSOS.md",
+    "10.3_USO_REAL_A.md",
+    "10.4_USO_REAL_B.md",
+    "10.5_USO_REAL_C.md",
+    "10.6_USO_REAL_D.md",
+    "10.7_CONVERSACION.md",
+    "10.8_HECHOS_LOCALES.md",
+    "10.9_WEB_Y_ACTUALIDAD.md",
+    "10.10_APPS_VENTANAS_VISION.md",
+    "10.11_AUDIO.md",
+    "10.12_MEDIA_STREAMING_JUEGOS.md",
+    "10.13_SISTEMA_CONECTIVIDAD.md",
+    "10.14_PRODUCTIVIDAD_MEMORIA.md",
+    "10.15_COMUNICACION_NAVEGACION.md",
+    "10.16_MISIONES_COMPUESTAS.md",
+    "10.17_IDENTIDAD_VIVA.md",
+    "10.18_INTEGRACION.md",
+    "11.1_COLA_DE_CIERRE.md",
+    "11.2_CONTRATOS_RUNTIME.md",
+    "11.3_REQUISITOS_A.md",
+    "11.4_REQUISITOS_B.md",
+    "11.5_REQUISITOS_C.md",
+    "11.6_REQUISITOS_D.md",
+    "11.7_REQUISITOS_E.md",
+    "11.8_REQUISITOS_F.md",
+    "11.9_NO_RUNTIME_A.md",
+    "11.10_NO_RUNTIME_B.md",
+    "11.11_ERRORES_MENTE_KERNEL.md",
+    "11.12_ERRORES_PROVIDERS_ESTADO.md",
+    "11.13_REGRESION_01_06.md",
+    "11.14_REGRESION_07_10.md",
+    "11.15_HIGIENE_IDENTIDAD.md",
+    "11.16_FULL_Y_CIERRE.md"
+  ],
+  "prompt_errors": [],
+  "reproducibility": {
+    "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+    "result": "source_quality_gate_passed: mode=Full; python 8760 passed, 10 skipped (ambient); Integration 2828 pass, 1 skip opt-in; EXIT=0",
+    "passed": true
+  },
+  "languages_in_scope": [
+    "es",
+    "en",
+    "spanglish"
+  ],
+  "bars": {
+    "200_turnos": true,
+    "n10_m10_min": "1.947/808",
+    "k11_min": 2036,
+    "identidad": true,
+    "full": true,
+    "ambiente": "FALLO_DE_AMBIENTE",
+    "window": "500k"
+  },
+  "slices_added": 0,
+  "enabled_next": "documentacion/sprints/10.0_BASE_VERDE.md",
+  "errors": []
+}

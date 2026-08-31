@@ -9,6 +9,8 @@ al dueño un bucle manual.
 
 Acceso directo en orden a todos los prompts ejecutables:
 [`00_ORDEN_DESDE_09_5.md`](00_ORDEN_DESDE_09_5.md).
+09.5.12 cerró el 2026-08-31; el siguiente lanzamiento es
+[`10.0_BASE_VERDE.md`](10.0_BASE_VERDE.md).
 
 ## Con qué modelo se lanza cada uno
 

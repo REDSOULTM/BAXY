@@ -11,7 +11,12 @@ el PC y reanudar la meta desde su cursor. Los prompts de campaña recorren sus
 unidades internas, compactan y continúan solos: una unidad no exige volver a pegar
 el enlace.
 
-## Fase 09.5 — recuperar todo el linaje
+**09.5.12 cerró el 2026-08-31.** El linaje reconciliado está publicado. Siguiente
+lanzamiento: `10.0_BASE_VERDE.md` (lista de abajo, una sola vez). Los `09.5.x` no
+se relanzan. No se añadieron prompts ni slices 10.x/11.x; el delta 09.5 va a
+checkpoints internos de los ficheros que ya existían.
+
+## Fase 09.5 — cerrada (no se relanza)
 
 1. [09.5.0 — Fuentes y ambiente](09.5.0_FUENTES_Y_AMBIENTE.md)
 2. [09.5.1 — Manifiesto y colas](09.5.1_MANIFIESTO_Y_COLAS.md)
@@ -29,10 +34,7 @@ el enlace.
 14. [09.5.11C — Revalidar Goals 07–09](09.5.11C_REVALIDAR_07_09.md)
 15. [09.5.12 — Integrar y replanificar 10–11](09.5.12_INTEGRAR_Y_REPLANIFICAR.md)
 
-Al cerrar 09.5.12, vuelve a abrir este archivo: esa sesión debe actualizar la lista
-si la evidencia nueva obliga a añadir, retirar o dividir algún prompt 10.x/11.x.
-
-## Goal 10 — uso diario y aceptación
+## Prompts ejecutables restantes
 
 1. [10.0 — Base verde](10.0_BASE_VERDE.md)
 2. [10.1 — Corpus y cola](10.1_CORPUS_Y_COLA.md)
@@ -53,25 +55,22 @@ si la evidencia nueva obliga a añadir, retirar o dividir algún prompt 10.x/11.
 17. [10.16 — Misiones compuestas](10.16_MISIONES_COMPUESTAS.md)
 18. [10.17 — Identidad viva](10.17_IDENTIDAD_VIVA.md)
 19. [10.18 — Integración del Goal 10](10.18_INTEGRACION.md)
-
-## Goal 11 — validación y cierre
-
-1. [11.1 — Cola de cierre](11.1_COLA_DE_CIERRE.md)
-2. [11.2 — Contratos runtime](11.2_CONTRATOS_RUNTIME.md)
-3. [11.3 — Requisitos A](11.3_REQUISITOS_A.md)
-4. [11.4 — Requisitos B](11.4_REQUISITOS_B.md)
-5. [11.5 — Requisitos C](11.5_REQUISITOS_C.md)
-6. [11.6 — Requisitos D](11.6_REQUISITOS_D.md)
-7. [11.7 — Requisitos E](11.7_REQUISITOS_E.md)
-8. [11.8 — Requisitos F](11.8_REQUISITOS_F.md)
-9. [11.9 — No-runtime A](11.9_NO_RUNTIME_A.md)
-10. [11.10 — No-runtime B](11.10_NO_RUNTIME_B.md)
-11. [11.11 — Errores de mente y kernel](11.11_ERRORES_MENTE_KERNEL.md)
-12. [11.12 — Errores de providers y estado](11.12_ERRORES_PROVIDERS_ESTADO.md)
-13. [11.13 — Regresión Goals 01–06](11.13_REGRESION_01_06.md)
-14. [11.14 — Regresión Goals 07–10](11.14_REGRESION_07_10.md)
-15. [11.15 — Higiene e identidad](11.15_HIGIENE_IDENTIDAD.md)
-16. [11.16 — Full y cierre final](11.16_FULL_Y_CIERRE.md)
+20. [11.1 — Cola de cierre](11.1_COLA_DE_CIERRE.md)
+21. [11.2 — Contratos runtime](11.2_CONTRATOS_RUNTIME.md)
+22. [11.3 — Requisitos A](11.3_REQUISITOS_A.md)
+23. [11.4 — Requisitos B](11.4_REQUISITOS_B.md)
+24. [11.5 — Requisitos C](11.5_REQUISITOS_C.md)
+25. [11.6 — Requisitos D](11.6_REQUISITOS_D.md)
+26. [11.7 — Requisitos E](11.7_REQUISITOS_E.md)
+27. [11.8 — Requisitos F](11.8_REQUISITOS_F.md)
+28. [11.9 — No-runtime A](11.9_NO_RUNTIME_A.md)
+29. [11.10 — No-runtime B](11.10_NO_RUNTIME_B.md)
+30. [11.11 — Errores de mente y kernel](11.11_ERRORES_MENTE_KERNEL.md)
+31. [11.12 — Errores de providers y estado](11.12_ERRORES_PROVIDERS_ESTADO.md)
+32. [11.13 — Regresión Goals 01–06](11.13_REGRESION_01_06.md)
+33. [11.14 — Regresión Goals 07–10](11.14_REGRESION_07_10.md)
+34. [11.15 — Higiene e identidad](11.15_HIGIENE_IDENTIDAD.md)
+35. [11.16 — Full y cierre final](11.16_FULL_Y_CIERRE.md)
 
 Cuando 11.16 cierra todos sus criterios, **BAXY está listo para uso diario**. No
 queda un goal oculto, una repetición del 11 ni una validación manual posterior para

@@ -24,7 +24,7 @@ clase —incluido el delta— recibe su oráculo correcto.
 |---|---|---|
 | 11.1 | Congelar cola de cierre | `K11` (≥2.036) + APLAZADOS asignados sin solapes |
 | 11.2 | Contratos runtime | baseline 218 misiones + 2 conversaciones, más delta 09.5 |
-| 11.3–11.8 | Requisitos A–F | baseline 1.421 + delta, ≤240 por sesión; 09.5.12 añade slices si hacen falta |
+| 11.3–11.8 | Requisitos A–F | baseline 1.421 + delta, ≤240 por sesión; 09.5.12 no añade slices: el overflow va a checkpoints internos de 11.3–11.8 |
 | 11.9–11.10 | Contratos no-runtime A–B | ingeniería, fallos, no-acción, preferencias y seguridad |
 | 11.11 | Errores de mente/kernel | inválido, timeout, autorización, duplicación |
 | 11.12 | Errores de providers/estado | mentira, disco, proceso, persistencia, UI/voz |
