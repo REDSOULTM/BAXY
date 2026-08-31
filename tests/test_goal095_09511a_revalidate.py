@@ -72,11 +72,18 @@ def test_shipped_09511a_matrix_has_every_01_03c_row_and_names_11b() -> None:
     assert "09.5.11C" not in report["next_human_prompt"]
     assert "10.0" not in report["next_human_prompt"]
     assert report["deferred_to_goal10"] == []
+    # 11A's frozen close-out still names 11B. The live HANDOFF is the campaign
+    # cursor and 11B overwrites it to 11C; requiring 11B there is stale.
+    markdown = (REPO / MARKDOWN_REL).read_text(encoding="utf-8")
+    assert "09.5.11B_REVALIDAR_04_06.md" in markdown.split("Siguiente prompt humano", 1)[1]
     handoff = (REPO / HANDOFF_REL).read_text(encoding="utf-8")
     siguiente = handoff.split("## Siguiente accion recomendada", 1)[1]
-    assert "09.5.11B_REVALIDAR_04_06.md" in siguiente
     assert "09.5.11A_REVALIDAR_01_03C.md" not in siguiente
     assert "10.0_BASE_VERDE.md" not in siguiente
+    assert (
+        "09.5.11B_REVALIDAR_04_06.md" in siguiente
+        or "09.5.11C_REVALIDAR_07_09.md" in siguiente
+    )
 
 
 def test_shipped_corpus_is_the_frozen_es_en_spanglish_bytes() -> None:
