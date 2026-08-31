@@ -28,6 +28,7 @@ from scripts.goal095_docs_ledger import (
 )
 from scripts.goal095_evidence_campaign import (
     CAMPAIGN_CONTINUE,
+    DECIDE_PROMPT,
     MODELS_PROMPT,
     OWNER_PROMPT,
     RUNTIME_PROMPT,
@@ -40,7 +41,14 @@ SCHEMA = "baxy.goal095.evidence-ledger.v1"
 KIND = "evidence_assets"
 LEASE_SECONDS = 6 * 3600
 ALLOWED_NEXT_PROMPTS = frozenset(
-    {CAMPAIGN_CONTINUE, MODELS_PROMPT, VOICE_PROMPT, TOOLS_PROMPT, RUNTIME_PROMPT}
+    {
+        CAMPAIGN_CONTINUE,
+        MODELS_PROMPT,
+        VOICE_PROMPT,
+        TOOLS_PROMPT,
+        RUNTIME_PROMPT,
+        DECIDE_PROMPT,
+    }
 )
 TERMINALS = frozenset(
     {

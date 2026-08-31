@@ -1,0 +1,535 @@
+{
+  "schema": "baxy.goal095.0958-synthesis.v1",
+  "goal": "09.5.8",
+  "closed_utc": "2026-08-31T23:30:00Z",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + artifacts/goal095/extract/_09510_requirements.json + Goal 01 map (documentacion/herencia/00_MAPA.md) + Goal 03 costuras (documentacion/03_COSTURAS.md runtime/VRAM/latencia) + Goal 09 idle (09.5.6 recursos) + ADR-0003/0004/0005/0008 + live owners in docs/AI_CONTEXT_MAP.md and documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/01_MODELO_MENTAL_Y_OWNERSHIP.md; no biblioteca bodies; no source-tree walk",
+  "next_human_prompt": "documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md",
+  "live_runtime_changed": false,
+  "live_fieldui_dist_changed": false,
+  "live_setup_changed": false,
+  "goal09_reopened": false,
+  "soak_24h_requirement": false,
+  "invariants": {
+    "privacidad_local": true,
+    "accesibilidad_central": true,
+    "estados_terminales_honestos": true
+  },
+  "qwen_vl": {
+    "silenced": false,
+    "status": "rechazo_medido",
+    "piece": "Qwen-VL 2B como escalón de visión / computer-use (legacy qwen_vl.py); 09.5.7 lo aplazó aquí y no se silencia",
+    "metrics": "R-023: inventó juegos ambiguos; visual diff podía dar falso éxito. No es cámara de producto ni Field UI.",
+    "hardware": "Windows · BAXY legacy models · documentacion/05_FALLOS_Y_REGRESIONES.md R-023",
+    "corpus": "REG-023 corpus ambiguo/negativo; no es el Click X de Goal 07",
+    "kind": "benchmark",
+    "why_not_product": "El escalón de visión vivo es WindowsVisibleVisionLocator. Cámara-gaze de PG4 es POC aislado (validity requiere_remeidir). Qwen-VL queda como rechazo medido, no como segundo motor.",
+    "works": false,
+    "citations": [
+      {"card_id": "code_tests-436-baxy-05-legacy-models-qwen_vl.py", "batch_id": "code_tests-436-baxy"},
+      {"card_id": "docs-010-probando_gemma4-04-documentacion-05_vision_camara", "batch_id": "docs-010-probando_gemma4"}
+    ]
+  },
+  "sparse_assets": {
+    "ref": "artifacts/goal095/extract/_09510_requirements.json",
+    "ids": ["pg4-gguf-models", "pg4-training-datasets", "pg4-training-checkpoints"],
+    "individual_hashes": "not invented",
+    "rule": "ausencia deliberada no es pérdida medida ni FALLO_DE_AMBIENTE de 09.5.8: ningún candidato de trasplante exige el blob. Si 09.5.9 nombra reutilizar uno, 09.5.10 pausa en FALLO_DE_AMBIENTE por el asset exacto"
+  },
+  "ambiente": {
+    "status": "ok_for_synthesis",
+    "approving_simulation": false,
+    "fallo_de_ambiente": [],
+    "note": "Ningún dispositivo/asset requerido para cerrar esta síntesis falta. Existir no es works. Hashes individuales de blobs dispersos: not invented. No hay soak de 24 h como requisito."
+  },
+  "transplants": [],
+  "transplants_empty_reason": "El árbol vivo ya tiene llama-server como subproceso del sidecar (ADR-0005, Job Object), FieldUi dist sellado (ADR-0008), journal HMAC, Setup NativeAOT, process_lifecycle con reap acotado, GPU/app.status honestos y memoria protegida. Un watchdog NVML, ui_field de PG4, cámara-gaze, jarvis proactive, hf_publish, telemetry.py u Ollama como servicio duplicarían esa responsabilidad (segundo camino vivo) o violarían Identidad (salida de contenido, AUTO_APPROVE, accesibilidad como afterthought). Qwen-VL es rechazo medido R-023. Carga/descarga en idle y arranque frío son lotes de medición de Goal 10.2, no un framework histórico. 09.5.9 decide; aquí no se aplica nada.",
+  "areas": [
+    {
+      "id": "runtime_servidor",
+      "historical": "Carter: Ollama default (qwen2.5:7b) + openai API_KEY + AUTO_APPROVE; install_llama_service.ps1 como servicio Windows. PG4: llama-server health probe. BAXY anterior: sidecar Python + llama.cpp (ADR-0005).",
+      "live_owner": "src/baxy_mind/llm.py + process_lifecycle.py (llama-server subproceso 127.0.0.1 puerto efímero); Baxy.App MindRuntimeDiscovery; manifiesto baxy-mind-runtime-v1",
+      "goal10_consumer": "10.0_BASE_VERDE.md",
+      "decision": "conservar_actual",
+      "source": "ADR-0005 + docs-025-baxy-06-src-baxy_mind + carter-v2-runtime-env (rechazo de Ollama/cloud)",
+      "owner": "src/baxy_mind/llm.py",
+      "owning_test": "tests/test_registered_runtime_expectation_r281.py",
+      "mecanismo_reemplazado": "ninguno — el sidecar vivo ya es el runtime; no se reinstala Ollama ni el servicio Windows",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": true,
+        "hardware": "Windows · esta máquina · presupuesto producto 4 GiB VRAM",
+        "version": "llama.cpp b9980 CUDA 12.4 · manifiesto baxy-mind-runtime-v1",
+        "escenario": "Goal 03 + R281 runtime expectation; no es el default Ollama de Carter v2",
+        "denominador": "identidad de binario+SHA, no ranking de servidores",
+        "own_overhead": "IPC JSONL mente↔core; Job Object kill-on-close (ADR-0005). No es un segundo llama-server.",
+        "inference": "llama-server carga el GGUF y atiende POST /v1/chat/completions en loopback",
+        "incomparable_reason": ""
+      },
+      "citations": [
+        {"card_id": "carter-v2-runtime-env", "batch_id": "code_tests-001-carter"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"},
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"},
+        {"card_id": "docs-024-baxy-06-constraints-runtime-win-x64.txt", "batch_id": "docs-024-baxy"}
+      ]
+    },
+    {
+      "id": "carga_descarga_modelos",
+      "historical": "Carter v1 vram_manager.py; Carter v2 profile restart (test_profiles_restart); PG4 vram4: E4B-Q4 + mmproj no entra en 6 GB sin --no-mmproj-offload. Live: llama-server permanece cargado (warm).",
+      "live_owner": "src/baxy_mind/llm.py (carga al arranque del sidecar); no hay unload-on-idle de producto",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "medir",
+      "source": "code_tests-020-carter-09-Carter_v1-vram_manager.py + docs-010 vram4",
+      "owner": "src/baxy_mind/llm.py",
+      "owning_test": "tests/test_registered_runtime_expectation_r281.py",
+      "mecanismo_reemplazado": "ninguno ahora — un unload histórico no sustituye al keep-warm hasta que Goal 10.2 mida idle 15 min con y sin GGUF residente",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "Windows · esta máquina · techo de producto 4 GiB (no 16 GB de la 4060 Ti)",
+        "version": "llama.cpp b9980 · Qwen3-4B-Q4_K_M SHA 7485fe6f… · ctx 4096 · ngl 99",
+        "escenario": "carga al crear el sidecar; no hay corrida equivalente de unload-on-idle vs keep-warm",
+        "denominador": "tiempo de load y MiB residentes; no se comparan perfiles 6–24 GB de Carter",
+        "own_overhead": "spawn+warmup del sidecar y encoder E5 ~11 s load (Goal 03 defecto B, ya reparado)",
+        "inference": "KV/compute del GGUF ya residente; no hay cifra de descarga en el producto vivo",
+        "incomparable_reason": "vram_manager y restar de perfiles Carter no comparten hardware, versión de llama.cpp ni escenario de idle de Goal 10.2. No es un win del keep-warm."
+      },
+      "citations": [
+        {"card_id": "code_tests-020-carter-09-Carter_v1-vram_manager.py", "batch_id": "code_tests-020-carter"},
+        {"card_id": "docs-010-probando_gemma4-05-documentacion-06_vram_estabilidad", "batch_id": "docs-010-probando_gemma4"},
+        {"card_id": "docs-010-probando_gemma4-06-documentacion-06_vram_estabilidad-research", "batch_id": "docs-010-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "vram_ram_cpu",
+      "historical": "Carter hermes3:8b 4857 MiB en perfil 16 GB; PG4 informe 6 GB (E4B+mmproj=6.77 GB no entra); soak leak 142732 B < 5 MB (text-core v2, no comparable). Goal 09 idle 60 s RSS 1088 MB, GPU 510/16380, llama-server off.",
+      "live_owner": "llama-server (VRAM decisor) + STT/TTS CPU; Baxy.Providers.Windows/SystemStatus GpuStatus; FieldUi lee providers, no inventa GPU",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "conservar_actual",
+      "source": "09.5.5 qwen3-4b MVP pico ~3066/3072 MiB + 09.5.6 idle_listen.json",
+      "owner": "src/baxy_mind/llm.py + src/Baxy.Providers.Windows/SystemStatus/",
+      "owning_test": "tests/Baxy.Integration.Tests/GpuSystemStatusHandlerTests.cs",
+      "mecanismo_reemplazado": "ninguno — no se apila Qwen-ASR +2,71 GiB RSS ni un perfil 16 GB; ley 4 se conserva",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": true,
+        "hardware": "Windows · esta máquina · presupuesto producto 4 GiB VRAM (3072 MiB). La 4060 Ti 16 GB es el host, no el techo.",
+        "version": "llama.cpp b9980 CUDA 12.4 · Qwen3-4B-Q4_K_M · 2026-08-17 Goal 03 / MVP tournament",
+        "escenario": "MVP GPU pico del decisor; Goal 09 idle listen 60,016 s con llama-server off (oído CPU)",
+        "denominador": "MiB nvidia-smi vs presupuesto 3072; RSS MB del sidecar de voz n=59 samples",
+        "own_overhead": "Idle oído: RSS 1087,8 MB peak 1087,9; GPU 510/16380 MiB; llama_server_running=false. Qwen-ASR +2,71 GiB RSS sería capa extra (rechazado 09.5.6).",
+        "inference": "Qwen3-4B GPU pico ~3066/3072 MiB en presupuesto 4 GB. hermes3 4857 MiB y el informe 6 GB no son este presupuesto.",
+        "incomparable_reason": ""
+      },
+      "citations": [
+        {"card_id": "docs-022-baxy-05-experiments-mind_llm_tournament", "batch_id": "docs-022-baxy"},
+        {"card_id": "evidence_assets-105-baxy-04-experiments-mind_llm_tournament-results", "batch_id": "evidence_assets-105-baxy"},
+        {"card_id": "hermes3-fair-no-era-default", "batch_id": "docs-001-carter"},
+        {"card_id": "invariantes-rc-y-dieta", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "latencia",
+      "historical": "PG4: 10 de 16 s/turno eran sobrecarga propia (mapa Goal 01). Carter ultra-latency: outliers 32–131 s (C12.13 131374 ms); landing 'a' 23317→10509 ms pre-LLM. PG4 prefill: acción ~3.3 s → ~2.2 s en otro recinto.",
+      "live_owner": "src/baxy_mind/time_budget.py + llm_transport.py; 07_LATENCIA_END_TO_END.md separa mente / Core-provider / formulación / primer contenido",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "conservar_actual",
+      "source": "documentacion/03_COSTURAS.md runtime llama.cpp b9980 + ultra-latency-stretch-miss",
+      "owner": "src/baxy_mind/llm_transport.py",
+      "owning_test": "tests/Baxy.Kernel.Tests/FirstSignalTests.cs",
+      "mecanismo_reemplazado": "ninguno — no se copian budgets <5 ms de clasificador Carter como si fueran LLM",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": true,
+        "hardware": "Windows · esta máquina · GPU · presupuesto 4 GiB",
+        "version": "llama.cpp b9980 · Qwen3-4B-Q4_K_M SHA 7485fe6f… · 2026-08-17",
+        "escenario": "Goal 03 comprehension idle GPU, 122 turnos, corpus fresco SHA 761c1bc3… (124 dentro + 36 fuera, es/en/spanglish). Bajo carga: p50 3,7–4,0 s (09.5.5).",
+        "denominador": "p50/p90 segundos hasta la primera señal de decisión, n=122. Listón dueño: 3 s.",
+        "own_overhead": "PG4 10/16 s orquestación y Carter landing pre-LLM son OTRO stack: no se restan del p50 vivo. Encoder E5 memo 80–89 ms → 27,5 ms (07_LATENCIA). Voz first-signal EOU p50 0,21 s / TTS 0,02 s no es el p50 del LLM.",
+        "inference": "p50 2,18 s / p90 3,02 s sobre Qwen3-4B, 122 turnos. Gemma E2B p90 3,59 s en la misma población. Listón 3 s no se cumple bajo carga.",
+        "incomparable_reason": ""
+      },
+      "citations": [
+        {"card_id": "ultra-latency-stretch-miss", "batch_id": "docs-001-carter"},
+        {"card_id": "contexto-inyectado-sin-gate", "batch_id": "docs-001-carter"},
+        {"card_id": "docs-010-probando_gemma4-07-documentacion-07_latencia", "batch_id": "docs-010-probando_gemma4"},
+        {"card_id": "docs-022-baxy-06-experiments-mind_llm_tournament-results", "batch_id": "docs-022-baxy"}
+      ]
+    },
+    {
+      "id": "arranque",
+      "historical": "Technology tournament round_b_lifecycle (notas, no cold start de producto). Carter runtime stability: preload NEEDS_ENVIRONMENT. Live: Baxy.App crea Core y mente; process_lifecycle acota reap.",
+      "live_owner": "src/Baxy.App/CoreProcessClient.cs + src/baxy_mind/process_lifecycle.py + main.py",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "medir",
+      "source": "docs-019-baxy-28 ADR-0001/0005 lifecycle + process_lifecycle vivo",
+      "owner": "src/Baxy.App/CoreProcessClient.cs",
+      "owning_test": "tests/test_process_lifecycle.py",
+      "mecanismo_reemplazado": "ninguno — Goal 10.2 mide arranque en frío y un reinicio limpio; no se toma el tournament como tiempo de producto",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "Windows · esta máquina",
+        "version": "Baxy.App + baxy-core NativeAOT + sidecar Python 3.12 · manifiesto v1",
+        "escenario": "Goal 10.2 manda cold start + reinicio limpio + idle 15 min. Aquí no se ejecutó esa corrida.",
+        "denominador": "segundos hasta readiness (input habilitado, primer wake posible). No soak 24 h.",
+        "own_overhead": "spawn Core + mente + WebView2 + Job Object; encoder E5 ~11 s load histórico ya reparado",
+        "inference": "llama-server warmup forma parte del arranque en frío, no del p50 de un turno caliente",
+        "incomparable_reason": "No hay cifra de cold start del producto vivo alineada con hardware+versión+escenario. Las notas del tournament no son ese denominador."
+      },
+      "citations": [
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"},
+        {"card_id": "carter-v2-runtime-stability-performance", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"},
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"}
+      ]
+    },
+    {
+      "id": "watchdog",
+      "historical": "Carter v1 watchdog de VRAM; PG4 vram_watchdog.py + NVML pre-turno 250 ms (pynvml); test_tool_watchdog.py. Framework entero, no una utilidad aislada.",
+      "live_owner": "src/baxy_mind/process_lifecycle.py (reap acotado, códigos de cierre honestos); Baxy.App posee hijos y Job Object kill-on-close",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "conservar_actual",
+      "source": "code_tests-342-probando_gemma4-06-gemma4_agent-support-vram_watchdog.py (rechazo del framework)",
+      "owner": "src/baxy_mind/process_lifecycle.py",
+      "owning_test": "tests/test_process_lifecycle.py",
+      "mecanismo_reemplazado": "ninguno — el reap vivo ya vigila hijos; transplantar vram_watchdog.py apilaría un segundo vigilante NVML",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "n/a — no se compara NVML 250 ms contra reap de Job Object como si fueran el mismo instrumento",
+        "version": "process_lifecycle vivo vs vram_watchdog.py PG4",
+        "escenario": "hijo muerto / timeout no finito / llama-server que sale tras warmup",
+        "denominador": "terminal honesto, no un umbral de MiB NVML",
+        "own_overhead": "reap por fases acotadas; un timeout no finito no puede crear espera ilimitada (tests dueños)",
+        "inference": "el watchdog no infiere; no se cuenta como latencia de modelo",
+        "incomparable_reason": "NVML pre-turno y Job Object son mecanismos distintos. Extraer el framework entero por 250 ms viola 'pieza mínima'."
+      },
+      "citations": [
+        {"card_id": "code_tests-342-probando_gemma4-06-gemma4_agent-support-vram_watchdog.py", "batch_id": "code_tests-342-probando_gemma4"},
+        {"card_id": "code_tests-345-probando_gemma4-69-gemma4_agent-tests-test_vram_watchdog.py", "batch_id": "code_tests-345-probando_gemma4"},
+        {"card_id": "code_tests-345-probando_gemma4-30-gemma4_agent-tests-test_tool_watchdog.py", "batch_id": "code_tests-345-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "estabilidad",
+      "historical": "Carter soak leak 142732 B < 5 MB (text-core; pytest counts no comparables). PG4 _soak50.py. Runtime stability gate con preload NEEDS_ENVIRONMENT. Goal 10.2 manda idle 15 min, no soak 24 h.",
+      "live_owner": "Baxy.App lifecycle + process_lifecycle; Goal 10.2 publicará deltas CPU/RAM/VRAM/handles",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "conservar_actual",
+      "source": "code_tests-341-probando_gemma4-pg4_scripts-13-scripts-_soak50.py + invariantes-rc-y-dieta",
+      "owner": "src/Baxy.App/",
+      "owning_test": "tests/test_process_lifecycle.py",
+      "mecanismo_reemplazado": "ninguno — no se convierte soak de 24 h ni _soak50 en requisito; escenarios acotados (cold start, idle 15 min, reinicio) los mide 10.2",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "Windows · esta máquina",
+        "version": "producto vivo vs Carter text-core RC / PG4 _soak50",
+        "escenario": "idle 15 min con escucha (plan Goal 10.2). No 24 h.",
+        "denominador": "delta RSS/handles/VRAM atribuible a procesos BAXY; no leak 142732 B de otro corte de pytest",
+        "own_overhead": "presencia (bandeja, wake CPU) vs inferencia (llama-server residente)",
+        "inference": "no se mide aquí un turno; 10.2 separa idle de carga",
+        "incomparable_reason": "Soak Carter y _soak50 no comparten proceso, versión ni denominador con el producto vivo. No hay soak de 24 h como requisito."
+      },
+      "citations": [
+        {"card_id": "code_tests-341-probando_gemma4-pg4_scripts-13-scripts-_soak50.py", "batch_id": "code_tests-341-probando_gemma4-pg4_scripts"},
+        {"card_id": "invariantes-rc-y-dieta", "batch_id": "docs-001-carter"},
+        {"card_id": "carter-v2-runtime-stability-performance", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"}
+      ]
+    },
+    {
+      "id": "field_ui_accesibilidad",
+      "historical": "PG4 ui_field React (gemma4_agent/ui_field) y 2.927 líneas accessibility.py con modos normal/no_vidente/movilidad, gates 2026-05-26. BAXY 4a83f2d export restaurado literal (ADR-0008). Identidad: motor accesible siempre; modo sólo en la UI.",
+      "live_owner": "src/Baxy.FieldUi (dist sellado ADR-0008; no regenerar de paso); Baxy.App WebView2 + FieldUiBridge; voz en src/baxy_mind/voice.py",
+      "goal10_consumer": "10.17_IDENTIDAD_VIVA.md",
+      "decision": "conservar_actual",
+      "source": "ADR-0008 + docs-025-baxy-05-src-Baxy.FieldUi + Goal 01 mapa §3.A (diseño, no código PG4)",
+      "owner": "src/Baxy.FieldUi/",
+      "owning_test": "tests/Baxy.Integration.Tests/MainWindowShellContractTests.cs",
+      "mecanismo_reemplazado": "ninguno — no se rescata ui_field ni accessibility.py enteros; el dist sellado ya es la GUI; el modo UI lo consume 10.17",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "n/a — sello de blobs, no FPS",
+        "version": "FieldUi dist SHA fijados (index-CjozYCnU.css / index-D3QuhrLm.js) · ADR-0008 digest A05524E3…",
+        "escenario": "host WPF+WebView2 local; cero servidor HTTP; navegación externa bloqueada",
+        "denominador": "39/39 blobs + tests de digest; no MOS ni 10/10 de PG4 accessibility_eval",
+        "own_overhead": "WebView2 y bridge nativo; no clasifica ni crea operaciones",
+        "inference": "n/a — la UI no carga el GGUF",
+        "incomparable_reason": "Los gates PG4 de accesibilidad (10/10 voz, 6/6 narración) no se reejecutaron sobre FieldUi. El diseño de tres modos vive en Identidad; el código PG4 no se trasplanta."
+      },
+      "citations": [
+        {"card_id": "docs-019-baxy-02-artifacts-field-ui-4a83f2d-export-gui-ui_field", "batch_id": "docs-019-baxy"},
+        {"card_id": "docs-025-baxy-05-src-Baxy.FieldUi", "batch_id": "docs-025-baxy"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"},
+        {"card_id": "code_tests-346-probando_gemma4-01-gemma4_agent-ui_field-src", "batch_id": "code_tests-346-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "vision_camara",
+      "historical": "PG4 FASE1 control por mirada/gestos POC en vision_input/window_control.py (acierto monitor ≥95 % declarado, validity requiere_remeidir). requirements-camera.txt opcional. Carter vision tournament: smoke de PNG de color, no UI. Qwen-VL R-023.",
+      "live_owner": "visión de pantalla: cascada UIA→OCR→WindowsVisibleVisionLocator (09.5.7). Cámara: no hay operación de producto.",
+      "goal10_consumer": "10.10_APPS_VENTANAS_VISION.md",
+      "decision": "rechazar",
+      "source": "docs-010-probando_gemma4-04-documentacion-05_vision_camara + qwen_vl R-023",
+      "owner": "src/Baxy.Providers.Windows/Capture/ + visión de Click X (no cámara)",
+      "owning_test": "tests/Baxy.Providers.Windows.Tests (VisibleClickCascade*)",
+      "mecanismo_reemplazado": "ninguno — no se sustituye la cascada de pantalla por un POC de cámara ni por Qwen-VL",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "POC PG4 no reejecutado; esta máquina sin BAXY_VISION_ENDPOINT (09.5.7)",
+        "version": "window_control.py POC vs WindowsVisibleVisionLocator vivo",
+        "escenario": "10.10 es apps/ventanas/visión de pantalla, no webcam",
+        "denominador": "postcondición física de ventana, no overlay 9/10 del POC",
+        "own_overhead": "n/a — no hay pipeline de cámara en el producto",
+        "inference": "Qwen-VL no se silencia; es rechazo medido, no inferencia de producto",
+        "incomparable_reason": "Cifras de mirada/gestos no se reejecutaron. 10.10 consume visión de pantalla ya sintetizada en 09.5.7, no un framework de cámara."
+      },
+      "citations": [
+        {"card_id": "docs-010-probando_gemma4-04-documentacion-05_vision_camara", "batch_id": "docs-010-probando_gemma4"},
+        {"card_id": "docs-017-probando_gemma4-12-requirements-camera.txt", "batch_id": "docs-017-probando_gemma4"},
+        {"card_id": "voz-vision-andamiaje-no-torneo", "batch_id": "docs-001-carter"},
+        {"card_id": "code_tests-436-baxy-05-legacy-models-qwen_vl.py", "batch_id": "code_tests-436-baxy"}
+      ]
+    },
+    {
+      "id": "memoria_proactividad",
+      "historical": "Carter LLM_CONTEXT_MEMORY_PROBE 13/13 scripted tautológico. PG4 memoria jarvis: volcado plano, 52 % SQLite contaminada, bug mamá→grupo Música (grounding, no LLM). test_jarvis_proactive.py. Identidad: nunca actúa sin que se lo pidan.",
+      "live_owner": "src/Baxy.Providers.Windows/Memory/ (store privado, export, DPAPI); operaciones memory.* del catálogo. Cero inyección proactiva de turnos.",
+      "goal10_consumer": "10.14_PRODUCTIVIDAD_MEMORIA.md",
+      "decision": "conservar_actual",
+      "source": "docs-011-probando_gemma4-02-documentacion-08_memoria_jarvis-research + carter-v2-llm-context-memory-probe",
+      "owner": "src/Baxy.Providers.Windows/Memory/",
+      "owning_test": "tests/Baxy.Integration.Tests/MemoryAppFlowTests.cs",
+      "mecanismo_reemplazado": "ninguno — no se trae el loader proactivo; memoria visible/editable/borrable ya es el store vivo",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "n/a — persistencia local, no VRAM",
+        "version": "memory.* + BoundProtectedJsonCodec vs SQLite plana PG4",
+        "escenario": "CRUD de preferencia/reciente (10.14); no facts inyectados en turnos triviales (contexto-inyectado-sin-gate)",
+        "denominador": "relectura independiente tras save/forget; 13/13 scripted no cuenta",
+        "own_overhead": "no inyectar active-app ni facts no confirmados en input trivial (mecanismo reutilizable, ya en la mente)",
+        "inference": "la memoria no es un segundo LLM; consolidación offline de PG4 no se apila",
+        "incomparable_reason": "13/13 probe Carter es tautológico. El 52 % de contaminación PG4 no es el store HMAC vivo."
+      },
+      "citations": [
+        {"card_id": "docs-011-probando_gemma4-02-documentacion-08_memoria_jarvis-research", "batch_id": "docs-011-probando_gemma4"},
+        {"card_id": "carter-v2-llm-context-memory-probe", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"},
+        {"card_id": "code_tests-343-probando_gemma4-pg4_tests-71-gemma4_agent-tests-test_jarvis_proactive.py", "batch_id": "code_tests-343-probando_gemma4-pg4_tests"},
+        {"card_id": "contexto-inyectado-sin-gate", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "journal",
+      "historical": "Carter no tenía journal HMAC de invocación. BAXY anterior reconstruyó contratos+kernel+journal verificados (mapa Goal 01 intento 5). Fake-success fue el eje de la tesis.",
+      "live_owner": "src/Baxy.Kernel/Journal/ (FileInvocationJournal v2 autenticado, HMAC; v1 sin firma se conserva como no confiable)",
+      "goal10_consumer": "10.0_BASE_VERDE.md",
+      "decision": "conservar_actual",
+      "source": "fake-success-eje-de-tesis + live FileInvocationJournal",
+      "owner": "src/Baxy.Kernel/Journal/",
+      "owning_test": "tests/Baxy.Kernel.Tests/FileInvocationJournalTests.cs",
+      "mecanismo_reemplazado": "ninguno — no hay journal histórico que iguale integridad HMAC",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "n/a",
+        "version": "journal v2 HMAC · Baxy.Security.Windows key store",
+        "escenario": "replay, capacidad, integridad; Core falla cerrado ante integridad inválida",
+        "denominador": "autenticidad del archivo, no 'result.ok=True'",
+        "own_overhead": "HMAC por evento; no es latencia de inferencia",
+        "inference": "n/a",
+        "incomparable_reason": "No hay métrica histórica equivalente de journal autenticado. El fake-success (489 auto vs 417 manual) es el mecanismo de fracaso, no un benchmark de MiB."
+      },
+      "citations": [
+        {"card_id": "fake-success-eje-de-tesis", "batch_id": "docs-001-carter"},
+        {"card_id": "tesis-nicho-windows-verificable", "batch_id": "docs-001-carter"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"}
+      ]
+    },
+    {
+      "id": "setup_publish",
+      "historical": "PG4 hf_publish README de GGUF (no instalador). Carter no entregaba Setup.exe. BAXY: ADR-0003 paquete reproducible, ADR-0004 setup embebido transaccional; Baxy.Setup.exe NativeAOT.",
+      "live_owner": "src/Baxy.Setup/ + scripts/build_product.ps1 + package_product.ps1. Nivel 4 (publish, ciclo instalado) no está dentro de Full.",
+      "goal10_consumer": "10.0_BASE_VERDE.md",
+      "decision": "conservar_actual",
+      "source": "docs-019-baxy-32-contexto-08_entrega + ADR-0003/0004",
+      "owner": "src/Baxy.Setup/",
+      "owning_test": "tests/Baxy.Setup.Tests/InstallationEngineTests.cs",
+      "mecanismo_reemplazado": "ninguno — hf_publish no sustituye Baxy.Setup.exe; no se publica el modelo del usuario a Hugging Face",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "Windows x64",
+        "version": "Baxy.Setup NativeAOT · constraints-runtime-win-x64.txt",
+        "escenario": "instalación transaccional, rollback, uninstall; no el README de hf_publish",
+        "denominador": "Setup 477/477 en Full histórico (10.0); no stars de HF",
+        "own_overhead": "empaquetado y copia de dist FieldUi; no inferencia",
+        "inference": "n/a — Setup no carga el GGUF al instalar más que registrar rutas",
+        "incomparable_reason": "hf_publish es artefactos GGUF en un README, no un instalador Windows. No es un win omitido."
+      },
+      "citations": [
+        {"card_id": "docs-016-probando_gemma4-03-hf_publish", "batch_id": "docs-016-probando_gemma4"},
+        {"card_id": "docs-019-baxy-32-contexto-08_entrega", "batch_id": "docs-019-baxy"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"},
+        {"card_id": "docs-024-baxy-06-constraints-runtime-win-x64.txt", "batch_id": "docs-024-baxy"}
+      ]
+    },
+    {
+      "id": "privacidad",
+      "historical": "Carter v2 .env openai+API_KEY (salida a cloud). Carter v1 telemetry.py. Tesis: ventaja = privacidad local, no VLM. Identidad: puede entrar web, no puede salir contenido del usuario.",
+      "live_owner": "invariante 6 + Kernel risk privacy_sensitive + Baxy.Security.Windows DPAPI. FieldUi bloquea requests web externos (ADR-0008).",
+      "goal10_consumer": "10.17_IDENTIDAD_VIVA.md",
+      "decision": "conservar_actual",
+      "source": "carter-v2-runtime-env + code_tests-019 telemetry.py + tesis-nicho-windows-verificable",
+      "owner": "src/Baxy.Kernel/Policy/ + src/Baxy.Security.Windows/",
+      "owning_test": "tests/Baxy.Integration.Tests/MemoryAppFlowTests.cs",
+      "mecanismo_reemplazado": "ninguno — no se hereda telemetry.py ni API_KEY cloud",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "n/a — dirección de red, no MiB",
+        "version": "Identidad 2026-08-16 · ADR-0008 bloqueo de requests externos",
+        "escenario": "web.search inbound vs contenido de usuario outbound; memory_export_privacy",
+        "denominador": "cero POST de contenido de usuario a un host no local",
+        "own_overhead": "n/a",
+        "inference": "el modelo corre en la máquina; no hay API de pago resolviendo prosa",
+        "incomparable_reason": "No hay cifra histórica de 'bytes enviados'. El mecanismo (API_KEY cloud / telemetry) es rechazo, no un benchmark."
+      },
+      "citations": [
+        {"card_id": "carter-v2-runtime-env", "batch_id": "code_tests-001-carter"},
+        {"card_id": "code_tests-019-carter-carter_v1-18-Carter_v1-telemetry.py", "batch_id": "code_tests-019-carter-carter_v1"},
+        {"card_id": "tesis-nicho-windows-verificable", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "seguridad",
+      "historical": "Carter AUTO_APPROVE en .env; mute sin readback; fake-success. REG-011: riesgo por dinero, irreversibilidad, privacidad, privilegio. Live: ConfirmationAuthority ligada a invocationId.",
+      "live_owner": "src/Baxy.Kernel/Policy/ + Mission/ConfirmationAuthority + Baxy.Security.Windows",
+      "goal10_consumer": "10.17_IDENTIDAD_VIVA.md",
+      "decision": "conservar_actual",
+      "source": "carter-v2-runtime-env AUTO_APPROVE + fake-success-eje-de-tesis",
+      "owner": "src/Baxy.Kernel/Policy/",
+      "owning_test": "tests/Baxy.Kernel.Tests/ConfirmationAuthorityTests.cs",
+      "mecanismo_reemplazado": "ninguno — AUTO_APPROVE no sustituye confirmación ligada a la invocación exacta",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "n/a",
+        "version": "ConfirmationAuthority vivo · invariantes 3 y 4",
+        "escenario": "token de confirmación no reutilizable en otro invocationId",
+        "denominador": "estados terminales honestos, no pass_successful inflado",
+        "own_overhead": "ida y vuelta de confirmación; no es p50 de LLM",
+        "inference": "n/a",
+        "incomparable_reason": "No hay A/B de AUTO_APPROVE contra ConfirmationAuthority: el primero viola Identidad."
+      },
+      "citations": [
+        {"card_id": "carter-v2-runtime-env", "batch_id": "code_tests-001-carter"},
+        {"card_id": "fake-success-eje-de-tesis", "batch_id": "docs-001-carter"},
+        {"card_id": "tesis-nicho-windows-verificable", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "diagnosticos",
+      "historical": "PG4 scripts/_diag (19 markdowns de cacería, no runtime). llama_server_health_probe. Live: app.status interno, GpuSystemStatus, llama-server health en llm.py, FieldUi muestra CPU/RAM/GPU de providers (red/temp = no disponible, no inventado).",
+      "live_owner": "app.status (ProductCatalog interno) + SystemStatus GPU + llm.py health; ADR-0008 telemetría local",
+      "goal10_consumer": "10.2_PRESENCIA_Y_RECURSOS.md",
+      "decision": "conservar_actual",
+      "source": "docs-016-probando_gemma4-05-scripts-_diag + ADR-0008",
+      "owner": "src/Baxy.Providers.Windows/SystemStatus/",
+      "owning_test": "tests/Baxy.Integration.Tests/GpuSystemStatusHandlerTests.cs",
+      "mecanismo_reemplazado": "ninguno — _diag de investigación no entra al runtime; existir un log no es health de producto",
+      "second_live_path": false,
+      "invariants": {
+        "privacidad_local": true,
+        "accesibilidad_central": true,
+        "estados_terminales_honestos": true
+      },
+      "measurement": {
+        "comparable": false,
+        "hardware": "esta máquina · nvidia-smi vía provider",
+        "version": "GpuStatusScope Identity/Usage · app.status",
+        "escenario": "UI muestra no-disponible si falta dato; no inventa temperatura",
+        "denominador": "lectura de provider, no 19 ficheros _diag",
+        "own_overhead": "poll de GPU/status; no se cuenta como inferencia",
+        "inference": "health de llama-server es liveness, no un turno",
+        "incomparable_reason": "_diag son notas de cacería 2026-06-05, no un servicio de diagnóstico. No se comparan como si fueran app.status."
+      },
+      "citations": [
+        {"card_id": "docs-016-probando_gemma4-05-scripts-_diag", "batch_id": "docs-016-probando_gemma4"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"},
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"}
+      ]
+    }
+  ]
+}

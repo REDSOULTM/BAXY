@@ -398,7 +398,7 @@ def test_published_evidence_campaign_is_terminal() -> None:
     assert campaign["counts"]["claimed"] == 0
     assert campaign["counts"]["complete"] == 132
     assert campaign["next_human_prompt"] == (
-        "documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md"
+        "documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md"
     )
     assert OWNER not in str(campaign["next_human_prompt"])
     queue_ledger = load_json(QUEUE / "ledger.json")
@@ -430,9 +430,10 @@ def test_published_evidence_campaign_is_terminal() -> None:
     assert validate_ledger(last, batch_132) == []
     assert first["claimed_utc"]
     assert last["next_prompt"] == (
-        "documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md"
+        "documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md"
     )
     assert "09.5.4_AUDITAR_EVIDENCIA_LOTE.md" not in last["next_prompt"]
+    assert "09.5.8_RUNTIME_UI_RECURSOS.md" not in last["next_prompt"]
     raw = BATCH_LEDGER_001.read_text(encoding="utf-8").casefold()
     assert "c:\\users\\" not in raw
     assert "d:\\perfil\\" not in raw

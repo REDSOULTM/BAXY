@@ -147,7 +147,7 @@
     "evidence_assets-131-baxy-baxy_tests",
     "evidence_assets-132-baxy_schema_agent"
   ],
-  "next_human_prompt": "documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md",
+  "next_human_prompt": "documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md",
   "smoke": "skipped; historical results recovered from artifacts. existence is not works. physical re-test only if 09.5.9 chooses reuse — exact requirement in 09.5.10.",
   "updated_utc": "2026-08-31T05:48:42Z"
 }

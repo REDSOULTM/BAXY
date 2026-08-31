@@ -151,7 +151,7 @@
   "overlaps": 0,
   "hash_check": "inspect hash_ok=3 drift=0 miss=0",
   "next_evidence_assets_batch_id": null,
-  "next_prompt": "documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md",
+  "next_prompt": "documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md",
   "inspect": "artifacts/goal095/extract/evidence_assets-132-baxy_schema_agent.parse.json",
   "smoke": "skipped; results recovered; existence is not works"
 }

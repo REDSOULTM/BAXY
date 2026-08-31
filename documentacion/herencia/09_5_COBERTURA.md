@@ -117,8 +117,8 @@ Campana `evidence_assets` (09.5.4, 2026-08-31):
 - Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
 - Smoke contemporaneo omitido; resultados recuperados
 - Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
-- `next_human_prompt`: `09.5.8_RUNTIME_UI_RECURSOS.md` (09.5.7 cerrado)
-- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md` ni a `09.5.7_TOOLS_SKILLS_MISIONES.md`
+- `next_human_prompt`: `09.5.9_DECIDIR_HERENCIA.md` (09.5.8 cerrado)
+- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md` ni a `09.5.7_TOOLS_SKILLS_MISIONES.md` ni a `09.5.8_RUNTIME_UI_RECURSOS.md`
 
 Síntesis 09.5.5 (2026-08-31):
 
@@ -143,7 +143,14 @@ Síntesis 09.5.7 (2026-08-31):
 - 67/31/16/158 son linaje; el catálogo vivo 170/169/158 alcanzables no se encogió. Qwen-VL no se silencia (R-023).
 - Artefacto: `artifacts/goal095/synthesis/09.5.7_tools_skills_misiones.v1.json`
 
+Síntesis 09.5.8 (2026-08-31):
+
+- **25/25 + 477/477 + 132/132** siguen `pending=0` `claimed=0`. No relanzar 09.5.2–09.5.7.
+- 15/15 áreas (runtime, carga/descarga, VRAM/RAM/CPU, latencia, arranque, watchdog, estabilidad, Field UI/a11y, visión/cámara, memoria/proactividad, journal, setup/publish, privacidad, seguridad, diagnósticos). Cero trasplantes.
+- Recursos/latencia conservan hardware+versión+escenario+denominador; sobrecarga propia ≠ inferencia. Soak 24 h no es requisito. Qwen-VL no se silencia (R-023).
+- Artefacto: `artifacts/goal095/synthesis/09.5.8_runtime_ui_recursos.v1.json`
+
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.8_RUNTIME_UI_RECURSOS.md`.
-No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6 ni 09.5.7.
+Prompt humano distinto: `documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md`.
+No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6, 09.5.7 ni 09.5.8.

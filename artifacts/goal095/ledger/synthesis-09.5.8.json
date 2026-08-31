@@ -1,0 +1,24 @@
+{
+  "schema": "baxy.goal095.0958-ledger.v1",
+  "batch_id": "synthesis-09.5.8",
+  "kind": "synthesis",
+  "status": "complete",
+  "goal": "09.5.8",
+  "closed_utc": "2026-08-31T23:30:00Z",
+  "synthesis_ref": "artifacts/goal095/synthesis/09.5.8_runtime_ui_recursos.v1.json",
+  "markdown_ref": "documentacion/herencia/09_5_8_SINTESIS_RUNTIME.md",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + Goal 01/03/09 closeout + ADR-0003/0004/0005/0008 + _09510_requirements.json + live owners",
+  "campaigns_remain_closed": {
+    "docs": "25/25 pending=0 claimed=0",
+    "code_tests": "477/477 pending=0 claimed=0",
+    "evidence_assets": "132/132 pending=0 claimed=0"
+  },
+  "live_runtime_changed": false,
+  "live_fieldui_dist_changed": false,
+  "live_setup_changed": false,
+  "soak_24h_requirement": false,
+  "qwen_vl_silenced": false,
+  "transplants": [],
+  "fallo_de_ambiente": [],
+  "next_prompt": "documentacion/sprints/09.5.9_DECIDIR_HERENCIA.md"
+}
