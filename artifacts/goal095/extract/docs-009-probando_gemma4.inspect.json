@@ -1,0 +1,5333 @@
+{
+  "batch_id": "docs-009-probando_gemma4",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_docs_01_arquitectura",
+  "file_count": 39,
+  "hash_ok": 39,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/01_arquitectura/00_delta_inventory.md",
+      "queued_sha256": "17bf040c3e8ef2d473c5eb9638ad6bb969580d6db10b804e9efa69c6f913a421",
+      "size_queued": 10075,
+      "exists": true,
+      "disk_sha256": "17bf040c3e8ef2d473c5eb9638ad6bb969580d6db10b804e9efa69c6f913a421",
+      "disk_size": 10075,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 190,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "00 — Delta Inventory (post-plan)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "1. Conteo macro de cambios"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "2. Archivos NUEVOS por categoría"
+          },
+          {
+            "line": 18,
+            "level": 3,
+            "text": "2.1 Módulos extraídos de god classes (Sprint 5b + 6)"
+          },
+          {
+            "line": 33,
+            "level": 3,
+            "text": "2.2 Tests nuevos (Sprints 5a + 6 + restauración desde stash)"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "2.3 Scripts de probes manuales (recovery del stash, no plan)"
+          },
+          {
+            "line": 58,
+            "level": 3,
+            "text": "2.4 Otros nuevos"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "3. Archivos BORRADOS"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "4. Archivos MODIFICADOS clave"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "5. Estructura actual del paquete (post-plan)"
+          },
+          {
+            "line": 175,
+            "level": 2,
+            "text": "6. Resumen del impacto"
+          }
+        ],
+        "lead": "`gemma4_agent/scripts/`:",
+        "measures": [
+          {
+            "line": 89,
+            "text": "| `agent.py` | 2 968 | **1 930** | **−1 038 (−35 %)** | 5b.2.c + 6.2 + 6.3 + 6.4 |"
+          },
+          {
+            "line": 90,
+            "text": "| `tools.py` | 4 825 | 4 282 | −543 (−11 %) | 5b.1.a + 5b.1.b + 5b.1.d |"
+          },
+          {
+            "line": 108,
+            "text": "├── agent.py                     (1 930 LOC, era 2 968) [REDUCIDO −35%]"
+          },
+          {
+            "line": 162,
+            "text": "├── tools.py                     (4 282 LOC, era 4 825) [REDUCIDO −11%]"
+          },
+          {
+            "line": 178,
+            "text": "- **`agent.py` perdió −1 038 LOC (−35 %)** distribuidos en 4 módulos"
+          },
+          {
+            "line": 180,
+            "text": "- **`tools.py` perdió −543 LOC (−11 %)** distribuidos en 3 módulos"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 61,
+            "text": "- `intent_validator.py` y `grounding_gate.py` adelgazado — restaurados desde stash (Sprint 1 recovery), no eliminados en Sprint 3a porque `intent_validator` es regex-only (no NLI) y `grounding_gate` mantiene parte inline sin NLI."
+          }
+        ],
+        "ranges": [
+          "1-190",
+          "h:1",
+          "m:89"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/01_delta_system.md",
+      "queued_sha256": "ed40c7e014367126c5956b1cf1a0fab606ce6cc8086cfbabdf0fe5679567b828",
+      "size_queued": 14109,
+      "exists": true,
+      "disk_sha256": "ed40c7e014367126c5956b1cf1a0fab606ce6cc8086cfbabdf0fe5679567b828",
+      "disk_size": 14109,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 341,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "01 — Delta System (containers post-plan)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "1. Qué cambió a nivel de container"
+          },
+          {
+            "line": 9,
+            "level": 3,
+            "text": "1.1 Container eliminado: \"NLI stack\""
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "1.2 Container \"Agent Core\" descompuesto en 4 submódulos"
+          },
+          {
+            "line": 42,
+            "level": 3,
+            "text": "1.3 Container \"Tools / Knowledge\" parcialmente descompuesto"
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "1.4 Container \"Sessions/Routines\" simplificado"
+          },
+          {
+            "line": 74,
+            "level": 3,
+            "text": "1.5 Container \"Observability\" con 1 sink menos"
+          },
+          {
+            "line": 93,
+            "level": 3,
+            "text": "1.6 Container \"Routing & Validation\" reducido"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "2. Containers que NO cambiaron (conscientemente)"
+          },
+          {
+            "line": 132,
+            "level": 2,
+            "text": "3. Diagrama de containers actualizado (Fig 1.1 post-plan)"
+          },
+          {
+            "line": 239,
+            "level": 2,
+            "text": "4. Componentes que dejaron de existir (vs Fig 1.2 baseline)"
+          },
+          {
+            "line": 264,
+            "level": 2,
+            "text": "5. Resumen del impacto a nivel de container"
+          },
+          {
+            "line": 278,
+            "level": 2,
+            "text": "6. Crash recovery y resilience del subprocess llama-server"
+          },
+          {
+            "line": 286,
+            "level": 3,
+            "text": "6.1 Detección de crash"
+          },
+          {
+            "line": 301,
+            "level": 3,
+            "text": "6.2 Vision relaunch (anti-leak conocido)"
+          },
+          {
+            "line": 315,
+            "level": 3,
+            "text": "6.3 Restart limpio en cambio de profile"
+          },
+          {
+            "line": 322,
+            "level": 3,
+            "text": "6.4 Lo que NO existe (gaps conocidos)"
+          },
+          {
+            "line": 335,
+            "level": 3,
+            "text": "6.5 Gaps documentados para Sprint 8+"
+          }
+        ],
+        "lead": "El container que en el baseline contenía `capability_classifier.py` +",
+        "measures": [
+          {
+            "line": 12,
+            "text": "`nli_service.py` + `_ml_import_lock.py` (~600 LOC + 280 MB mDeBERTa"
+          },
+          {
+            "line": 14,
+            "text": "rate de 3.2 % (umbral de keep/kill = 20 %)."
+          },
+          {
+            "line": 60,
+            "text": "el dispatch pipeline pero quedó SKIP por cycle complejo. La red de"
+          },
+          {
+            "line": 113,
+            "text": "- **280 MB RAM liberada** (mDeBERTa ya no se carga)."
+          },
+          {
+            "line": 247,
+            "text": "Mod[(mDeBERTa 280MB)]"
+          },
+          {
+            "line": 271,
+            "text": "pendiente la 4ta — dispatch pipeline — con red de tests escrita)."
+          },
+          {
+            "line": 299,
+            "text": "grande para la VRAM disponible)."
+          },
+          {
+            "line": 318,
+            "text": "usa `profile_watcher` cuando un cambio VRAM-aware del perfil"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-341",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/02_delta_components.md",
+      "queued_sha256": "c1895a9dc9a01eb7b801cca97414e0a073778bf36f94e531f61f793d2cd0f08d",
+      "size_queued": 11748,
+      "exists": true,
+      "disk_sha256": "c1895a9dc9a01eb7b801cca97414e0a073778bf36f94e531f61f793d2cd0f08d",
+      "disk_size": 11748,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 273,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02 — Delta Components (módulos nuevos en detalle)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "1. Mapa de extracciones"
+          },
+          {
+            "line": 57,
+            "level": 2,
+            "text": "2. Detalle de cada módulo nuevo"
+          },
+          {
+            "line": 59,
+            "level": 3,
+            "text": "2.1 `agent_prompt.py` (560 LOC) — Sprint 5b.2c"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "2.2 `agent_guards.py` (371 LOC) — Sprint 6.2"
+          },
+          {
+            "line": 106,
+            "level": 3,
+            "text": "2.3 `agent_compaction.py` (223 LOC) — Sprint 6.3"
+          },
+          {
+            "line": 128,
+            "level": 3,
+            "text": "2.4 `agent_dispatch.py` (207 LOC) — Sprint 6.4"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "2.5 `app_resolver.py` (418 LOC) — Sprint 5b.1a"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "2.6 `ssrf_guard.py` (64 LOC) — Sprint 5b.1b"
+          },
+          {
+            "line": 170,
+            "level": 3,
+            "text": "2.7 `tool_schemas.py` (79 LOC) — Sprint 5b.1d"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "2.8 `_shared.py` (153 LOC) — Sprint 4.1 + 4.2"
+          },
+          {
+            "line": 198,
+            "level": 1,
+            "text": "_shared.py (sin dependencias del paquete — pure stdlib)"
+          },
+          {
+            "line": 206,
+            "level": 3,
+            "text": "2.9 `task_runner.py` (90 LOC) — Sprint 1.8"
+          },
+          {
+            "line": 222,
+            "level": 2,
+            "text": "3. Tabla resumen de impacto"
+          },
+          {
+            "line": 237,
+            "level": 2,
+            "text": "4. Tabla resumen de eliminaciones"
+          },
+          {
+            "line": 253,
+            "level": 2,
+            "text": "5. Módulos que se conservaron a propósito"
+          }
+        ],
+        "lead": "graph LR",
+        "measures": [
+          {
+            "line": 40,
+            "text": "ToolsOld -- \"Sprint 4.1/4.2\" --> SH"
+          },
+          {
+            "line": 41,
+            "text": "DomainOld -- \"Sprint 4.1/4.2 (compartido)\" --> SH"
+          },
+          {
+            "line": 102,
+            "text": "**Tests asociados:** `test_promise_guard.py` (21/21 verde tras"
+          },
+          {
+            "line": 241,
+            "text": "| `capability_classifier.py` | 303 | 3a.1 | Cache hit 3.2 % < 20 % umbral |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 124,
+            "text": "`_summarize_history_block` siguen en `Gemma4Agent` porque manejan"
+          }
+        ],
+        "ranges": [
+          "1-273",
+          "h:1",
+          "m:40"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/03_delta_classes.md",
+      "queued_sha256": "2a7c6b30406a27b1d4ff872ad71306f8ca5a7fe786a87ae3adaaf80cc0ef1de9",
+      "size_queued": 9974,
+      "exists": true,
+      "disk_sha256": "2a7c6b30406a27b1d4ff872ad71306f8ca5a7fe786a87ae3adaaf80cc0ef1de9",
+      "disk_size": 9974,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 329,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03 — Delta Classes (UML actualizado de god classes)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "1. `Gemma4Agent` (agent.py) — descompuesto en 4 colaboradores"
+          },
+          {
+            "line": 8,
+            "level": 3,
+            "text": "Antes (baseline)"
+          },
+          {
+            "line": 14,
+            "level": 3,
+            "text": "Después (HEAD)"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "2. `ToolRegistry` (tools.py) — 3 colaboradores extraídos"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "Antes (baseline)"
+          },
+          {
+            "line": 126,
+            "level": 3,
+            "text": "Después (HEAD)"
+          },
+          {
+            "line": 185,
+            "level": 2,
+            "text": "3. Clases ELIMINADAS"
+          },
+          {
+            "line": 208,
+            "level": 2,
+            "text": "4. Clases ADELGAZADAS (no eliminadas)"
+          },
+          {
+            "line": 210,
+            "level": 3,
+            "text": "`grounding_gate.py`"
+          },
+          {
+            "line": 224,
+            "level": 3,
+            "text": "`planner.py`"
+          },
+          {
+            "line": 229,
+            "level": 3,
+            "text": "`experience.py::ExperienceMemory`"
+          },
+          {
+            "line": 242,
+            "level": 2,
+            "text": "5. UML actualizado del cluster \"Agent Core\" (Fig 3.1 post-plan)"
+          },
+          {
+            "line": 315,
+            "level": 2,
+            "text": "6. Resumen del impacto en god classes"
+          }
+        ],
+        "lead": "- LOC: 1 852.",
+        "measures": [
+          {
+            "line": 182,
+            "text": "> ya escribió la red de tests (`test_tool_pipeline_helpers.py`) para"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 127,
+            "text": "- LOC: similares (la clase no se redujo internamente porque 5b.1c"
+          },
+          {
+            "line": 326,
+            "text": "colapsaron porque divergen genuinamente en threading model + output"
+          }
+        ],
+        "ranges": [
+          "1-329",
+          "h:1",
+          "m:182"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/05_delta_data.md",
+      "queued_sha256": "16cf82894e1c69c0d72c8e491fae959365832aab175b37703f8f8cde1562f4c9",
+      "size_queued": 8617,
+      "exists": true,
+      "disk_sha256": "16cf82894e1c69c0d72c8e491fae959365832aab175b37703f8f8cde1562f4c9",
+      "disk_size": 8617,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 221,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "05 — Delta Data (persistencia + state.json + 4 sinks → 3)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "1. Eliminación de Timeline (4 sinks → 3)"
+          },
+          {
+            "line": 8,
+            "level": 3,
+            "text": "Baseline: 4 sinks redundantes"
+          },
+          {
+            "line": 17,
+            "level": 3,
+            "text": "HEAD: 3 sinks"
+          },
+          {
+            "line": 33,
+            "level": 3,
+            "text": "Telemetry sigue opt-in default OFF"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "2. state.json — situación post-plan"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "Baseline (al momento de la auditoría)"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "HEAD (estado actual)"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "3. Schemas SQLite — schema drift en experience.sqlite"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "4. Inventario completo de persistencia (post-plan)"
+          },
+          {
+            "line": 109,
+            "level": 3,
+            "text": "4.1 SQLite (sin cambios estructurales)"
+          },
+          {
+            "line": 118,
+            "level": 3,
+            "text": "4.2 JSON (sin cambios estructurales)"
+          },
+          {
+            "line": 130,
+            "level": 3,
+            "text": "4.3 Logs y trazas (3 sinks ahora)"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "4.4 Outputs de tools (sin cambios)"
+          },
+          {
+            "line": 147,
+            "level": 3,
+            "text": "4.5 Binarios externos (sin cambios)"
+          },
+          {
+            "line": 155,
+            "level": 2,
+            "text": "5. Diagrama del flujo de persistencia (post-plan)"
+          },
+          {
+            "line": 209,
+            "level": 2,
+            "text": "6. Resumen"
+          }
+        ],
+        "lead": "gemma4_agent/data/traces.jsonl                    ← TraceLogger (Agent escribe directo)",
+        "measures": [
+          {
+            "line": 44,
+            "text": "- 538 KB, 468 resources de los cuales **392 (84 %) eran `closed`"
+          },
+          {
+            "line": 95,
+            "text": "Patrón `try/except sqlite3.OperationalError: pass` → idempotente"
+          },
+          {
+            "line": 123,
+            "text": "| `state.json` | `data/state.json` | `AgentState` | 84 % zombies pendientes de purge |"
+          },
+          {
+            "line": 176,
+            "text": "State[(state.json<br/>84% zombies)]"
+          },
+          {
+            "line": 220,
+            "text": "| Binarios externos | NLI mDeBERTa 280 MB + voice models | **solo voice models** (NLI eliminado) |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4",
+          "piper",
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-221",
+          "h:1",
+          "m:44"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/06_delta_dependencies.md",
+      "queued_sha256": "5392711928ae055a96fea48c574b6306cb56459bb134c91e59f6f1628977ecd9",
+      "size_queued": 5383,
+      "exists": true,
+      "disk_sha256": "5392711928ae055a96fea48c574b6306cb56459bb134c91e59f6f1628977ecd9",
+      "disk_size": 5383,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 153,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "06 — Delta Dependencies (grafo post-plan)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "1. requirements.txt — la diferencia más grande"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "2. pyproject.toml — entry points"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "3. Grafo interno — nodos eliminados"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "4. Grafo interno — nodos nuevos"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "5. Verificación de ciclos"
+          },
+          {
+            "line": 111,
+            "level": 2,
+            "text": "6. Tabla comparativa de god modules"
+          },
+          {
+            "line": 137,
+            "level": 2,
+            "text": "7. Resumen del impacto en deps"
+          }
+        ],
+        "lead": "**Baseline:** **NO existía.** Reproducir el proyecto era imposible",
+        "measures": [
+          {
+            "line": 148,
+            "text": "| LOC top god module | `agent.py` 2 968 | `agent.py` **1 930** (−35 %) |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 86,
+            "text": "Confirmar manualmente con (no incluyo scanner aquí porque agregar"
+          }
+        ],
+        "ranges": [
+          "1-153",
+          "h:1",
+          "m:148"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/08_findings_post_plan.md",
+      "queued_sha256": "09f73fba28e34887e82396d11d7316b23fd2ecb66c4563b614d9d4c453e0d587",
+      "size_queued": 16031,
+      "exists": true,
+      "disk_sha256": "09f73fba28e34887e82396d11d7316b23fd2ecb66c4563b614d9d4c453e0d587",
+      "disk_size": 16031,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 390,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "08 — Findings post-plan (deuda restante + Sprint 3b)"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "0. Resumen ejecutivo"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "0.1 Acciones de Sprint 7 (post-auditoría externa)"
+          },
+          {
+            "line": 57,
+            "level": 2,
+            "text": "0.2 Acciones de Sprint 8a (routing infra)"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "1. PENDIENTE: Sprint 3b (diferido por diseño)"
+          },
+          {
+            "line": 109,
+            "level": 3,
+            "text": "1.1 Por qué se difirió"
+          },
+          {
+            "line": 127,
+            "level": 3,
+            "text": "1.2 Cómo ejecutar Sprint 3b"
+          },
+          {
+            "line": 149,
+            "level": 3,
+            "text": "1.3 Estimación de LOC ahorrables (si Sprint 3b se ejecuta)"
+          },
+          {
+            "line": 163,
+            "level": 3,
+            "text": "1.4 Prompt de Sprint 3b (cuando lo necesites)"
+          },
+          {
+            "line": 176,
+            "level": 2,
+            "text": "2. Acciones MED del baseline aún NO atacadas"
+          },
+          {
+            "line": 182,
+            "level": 3,
+            "text": "2.1 `state.json` no purga `closed` resources (audit baseline §2.3 HIGH)"
+          },
+          {
+            "line": 199,
+            "level": 3,
+            "text": "2.2 `traces.jsonl` sin rotación (baseline §2.4)"
+          },
+          {
+            "line": 213,
+            "level": 3,
+            "text": "2.3 Migrar TraceLogger callers a BUS → LogRecorder (baseline §2.5)"
+          },
+          {
+            "line": 226,
+            "level": 3,
+            "text": "2.4 Lazy-load TOOL_RULES + CORE_PROMPT a `prompts/*.md` (baseline §2.11)"
+          },
+          {
+            "line": 242,
+            "level": 3,
+            "text": "2.5 Eliminar `_FALLBACKS_BY_LANG` para idiomas no ES/EN (parcial)"
+          },
+          {
+            "line": 246,
+            "level": 3,
+            "text": "2.6 Reducir AppResolver de 9 fuentes a 3-4 (baseline §2.14)"
+          },
+          {
+            "line": 262,
+            "level": 3,
+            "text": "2.7 SDK oficial MCP (baseline §2.13)"
+          },
+          {
+            "line": 278,
+            "level": 2,
+            "text": "3. God classes conservadas a propósito (NO son deuda)"
+          },
+          {
+            "line": 280,
+            "level": 3,
+            "text": "3.1 `ui/main_window.py` (1 430 LOC, 53 métodos)"
+          },
+          {
+            "line": 291,
+            "level": 3,
+            "text": "3.2 `ui/settings.py` (1 148 LOC, 22 métodos)"
+          },
+          {
+            "line": 300,
+            "level": 3,
+            "text": "3.3 `agent_runner.py` (552 LOC) + `ui/agent_thread.py` (220 LOC)"
+          },
+          {
+            "line": 312,
+            "level": 3,
+            "text": "3.4 `tracing.py` (67 LOC) + `telemetry.py` (443 LOC)"
+          },
+          {
+            "line": 319,
+            "level": 2,
+            "text": "4. Lo que NO se va a poder mejorar más sin cambios mayores"
+          },
+          {
+            "line": 323,
+            "level": 3,
+            "text": "4.1 `domain_tools.py` 10 489 LOC"
+          }
+        ],
+        "lead": "**El plan ejecutó 8 sprints (0-1-2-3a-4-5a-5b-6) y cerró formalmente",
+        "measures": [
+          {
+            "line": 38,
+            "text": "| `traces.jsonl` rotation preventiva | 7.3 | ✅ implementado (50 MB / 3 archives + 6 tests) |"
+          },
+          {
+            "line": 40,
+            "text": "| Fail-loud en `experience.sqlite` schema migration | 7.4 | ✅ implementado (`RuntimeError` con remediation + 3 tests) |"
+          },
+          {
+            "line": 67,
+            "text": "| Bootstrap del modelo e5-small ONNX (113 MB, 100 langs) | 8a.1 | ✅ `scripts/bootstrap_e5_small.py` (idempotente) |"
+          },
+          {
+            "line": 151,
+            "text": "Conservative (suponiendo que ~50 % de cada categoría sea borrable):"
+          },
+          {
+            "line": 153,
+            "text": "| Categoría | Si todo se borra | Si 50 % se borra |"
+          },
+          {
+            "line": 184,
+            "text": "**Estado actual:** sigue pendiente. 84 % de los `resources` eran"
+          },
+          {
+            "line": 201,
+            "text": "**Estado actual:** 1.7 MB en la muestra original, crece monótonamente."
+          },
+          {
+            "line": 211,
+            "text": "crece a >50 MB. Hoy no es urgente."
+          },
+          {
+            "line": 253,
+            "text": "Eliminar las que aportan <5 %."
+          },
+          {
+            "line": 260,
+            "text": "está lento (>500ms)."
+          },
+          {
+            "line": 343,
+            "text": "**Veredicto:** la red de tests de Sprint 6.5 quedó escrita por si"
+          },
+          {
+            "line": 361,
+            "text": "| Rotación de `traces.jsonl` | bajo | bajo | S | solo si crece >50MB |"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-390",
+          "h:1",
+          "m:38"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/ARCHITECTURE.md",
+      "queued_sha256": "f69d9a558c849269bbc886da7d169007a95c02c6e1eb85db99f4c6c76d9c1921",
+      "size_queued": 15982,
+      "exists": true,
+      "disk_sha256": "f69d9a558c849269bbc886da7d169007a95c02c6e1eb85db99f4c6c76d9c1921",
+      "disk_size": 15982,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 259,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Baxy — Arquitectura (verificada por la auditoría 2026-05-21)"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "El patrón que la auditoría confirmó (9 veces)"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Mapa de capas"
+          },
+          {
+            "line": 72,
+            "level": 2,
+            "text": "Invariantes por capa (qué NUNCA debe pasar)"
+          },
+          {
+            "line": 74,
+            "level": 3,
+            "text": "Hot-path del turno (`agent.run_content` → dispatch → verifiers)"
+          },
+          {
+            "line": 87,
+            "level": 3,
+            "text": "Always-on de audio (`audio_io` → `vad` → `wake` → `pipeline`)"
+          },
+          {
+            "line": 100,
+            "level": 3,
+            "text": "Persistencia (`state` / `experience` / `telemetry` / `sessions`)"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "Daemons / lifecycle (`llama_server` / `profile_watcher` / boot)"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "Diagnósticos (`tracing` / `telemetry` / `log_recorder` / `loop_detection`)"
+          },
+          {
+            "line": 131,
+            "level": 3,
+            "text": "Bus de eventos (`events_bus`)"
+          },
+          {
+            "line": 138,
+            "level": 2,
+            "text": "Flujo de un turno (texto)"
+          },
+          {
+            "line": 170,
+            "level": 2,
+            "text": "Adiciones recientes (2026-06-07 → 2026-06-10) — ancladas a su capa"
+          },
+          {
+            "line": 214,
+            "level": 2,
+            "text": "Tabla de correcciones acumuladas (27 bugs + 1 perf)"
+          },
+          {
+            "line": 250,
+            "level": 2,
+            "text": "Trampas concretas del repo (de CLAUDE.md, confirmadas)"
+          }
+        ],
+        "lead": "Este documento captura la arquitectura que la auditoría de tres sesiones",
+        "measures": [
+          {
+            "line": 80,
+            "text": "(20–150s según el presupuesto de tokens) en el call principal Y el retry. Sin"
+          },
+          {
+            "line": 81,
+            "text": "esto, un turno colgado heredaba 180s × 8 turnos = ~24min de freeze."
+          },
+          {
+            "line": 91,
+            "text": "31Hz) → ~74% menos CPU idle (medido), sin perder recall (ventana de 2s muestreada"
+          },
+          {
+            "line": 105,
+            "text": "y recrea una fresca. Fail-loud SOLO para schema-drift (RuntimeError)."
+          },
+          {
+            "line": 107,
+            "text": "poda rows > 30 días (medido: poda 50k en 49ms, queries siguen <16ms)."
+          },
+          {
+            "line": 109,
+            "text": "un corte de red no deja un `.onnx` truncado que brickee el TTS."
+          },
+          {
+            "line": 113,
+            "text": "(en Windows el hijo de Popen no muere con el padre → retendría 6GB VRAM). El"
+          },
+          {
+            "line": 115,
+            "text": "- **Singletons lazy thread-safe (r2/10/11):** encoder ST, reranker, tool_head,"
+          },
+          {
+            "line": 121,
+            "text": "- **Profile switch reinicia el server (r3):** cambiar de perfil VRAM hace"
+          },
+          {
+            "line": 122,
+            "text": "force_restart (no solo setea env vars) — el downgrade \"liberar VRAM para el"
+          },
+          {
+            "line": 126,
+            "text": "- **Nunca crashean lo que observan (r6/7):** tracing deshabilita ante un path"
+          },
+          {
+            "line": 148,
+            "text": "│                                 ~1.06ms warm)"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "piper",
+          "whisper",
+          "livekit",
+          "voxcpm"
+        ],
+        "hardware": [
+          "6GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 156,
+            "text": "│            verifier: verify_core.verify(...)  [try/except → confirmed F/None]"
+          },
+          {
+            "line": 252,
+            "text": "- **ONNX Runtime congela la PC** sin throttle (busy-wait). Usar"
+          }
+        ],
+        "ranges": [
+          "1-259",
+          "h:1",
+          "m:80"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/CONSOLIDACION_2026-06-10.md",
+      "queued_sha256": "d2293e6f9e3b32a8194d0ff21f5ac5647c5deebe6da8533e18147d0e66307b04",
+      "size_queued": 6113,
+      "exists": true,
+      "disk_sha256": "d2293e6f9e3b32a8194d0ff21f5ac5647c5deebe6da8533e18147d0e66307b04",
+      "disk_size": 6113,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 117,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Consolidación de arquitectura — 2026-06-10"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "1. Salud de invariantes y bordes — ✅ SANA"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "2. Documentación vs código real — DOC FIEL, falta cubrir lo reciente"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "3. Deuda técnica medida"
+          },
+          {
+            "line": 68,
+            "level": 3,
+            "text": "3.1 Archivos-dios (el patrón conocido, registrado y acotado)"
+          },
+          {
+            "line": 83,
+            "level": 3,
+            "text": "3.2 Lazy imports — 552 (anti-patrón medido)"
+          },
+          {
+            "line": 91,
+            "level": 3,
+            "text": "3.3 Tests rojos pre-existentes (6, todos ajenos al núcleo)"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "4. Resumen para la tesis"
+          }
+        ],
+        "lead": "Revisión de consolidación previa al cierre del proyecto. Cuatro frentes:",
+        "measures": [
+          {
+            "line": 19,
+            "text": "| `test_silent_except_ceiling` (except:pass que tragan lógica) | ✅ pasa (376) |"
+          },
+          {
+            "line": 72,
+            "text": "| `tools_pkg/tools.py` | 8058 / 8060 | +2 | clase `ToolRegistry`, métodos `t_*` | ALTO (métodos de clase → mixin/delegación) |"
+          },
+          {
+            "line": 73,
+            "text": "| `agent_core/agent.py` | 7341 / 7341 | 0 | núcleo del agente | ALTO (estado cruza fases) |"
+          },
+          {
+            "line": 74,
+            "text": "| `domain_tools/__init__.py` | 3358 / 3370 | +12 | media/whatsapp/audio | MEDIO (patrón sibling+shim existe) |"
+          },
+          {
+            "line": 75,
+            "text": "| `tools_pkg/ops_tools.py` | 2265 / 2300 | +35 | OCR/screenshot | MEDIO |"
+          }
+        ],
+        "dates": [
+          "2026-06-04"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 17,
+            "text": "| `test_architectural_invariants` (dispatch contiene errores, verifier no tumba el turno, diagnósticos no crashean lo que trazan) | ✅ pasa |"
+          }
+        ],
+        "ranges": [
+          "1-117",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/MAPA_TESIS.md",
+      "queued_sha256": "d0e1c5da6ab45f598d9c0648492e8a31f107cb452b9eab39f9f5c4b6fb67c4bb",
+      "size_queued": 8107,
+      "exists": true,
+      "disk_sha256": "d0e1c5da6ab45f598d9c0648492e8a31f107cb452b9eab39f9f5c4b6fb67c4bb",
+      "disk_size": 8107,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 132,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Baxy — Mapa de arquitectura (para la documentación de la tesis)"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "1. Las cinco capas"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "2. El router (la decisión central, sin hardcodes)"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "3. Flujo de un turno (paso a paso)"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "4. Invariantes (qué la arquitectura GARANTIZA)"
+          },
+          {
+            "line": 124,
+            "level": 2,
+            "text": "5. Restricciones de diseño (el \"por qué\" de muchas decisiones)"
+          }
+        ],
+        "lead": "Documento autocontenido y limpio: capas, flujo de un turno e invariantes.",
+        "measures": [
+          {
+            "line": 117,
+            "text": "| **Sin huérfanos** | el llama-server gestionado se cierra en `atexit` (no retiene 6 GB de VRAM); nunca mata uno externo del usuario |"
+          },
+          {
+            "line": 127,
+            "text": "la GPU (6 GB) la consume el LLM."
+          },
+          {
+            "line": 128,
+            "text": "- **Latencia tier-Alexa**: presupuesto de 4-5 s por turno de voz. Lo costoso va"
+          },
+          {
+            "line": 132,
+            "text": "- **Hardware modesto**: se asume una laptop típica (GPU de 6 GB o sin GPU dedicada)."
+          }
+        ],
+        "dates": [
+          "2026-06-10"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "piper"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 114,
+            "text": "| **Verifier no tumba el turno** | un verificador que crashea da `confirmado=False`, no propaga la excepción |"
+          },
+          {
+            "line": 126,
+            "text": "- **Todo local y OSS**: sin APIs de nube de pago. El STT corre en CPU+int8 porque"
+          }
+        ],
+        "ranges": [
+          "1-132",
+          "h:1",
+          "m:117"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/MAPA_descomposicion_archivos_dios.md",
+      "queued_sha256": "592c95be67ec6eaed65d273bcff4e97713651ac195e6642f5b98b5ab776b1483",
+      "size_queued": 6119,
+      "exists": true,
+      "disk_sha256": "592c95be67ec6eaed65d273bcff4e97713651ac195e6642f5b98b5ab776b1483",
+      "disk_size": 6119,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 86,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mapa de descomposición — archivos-dios (2026-06-01, **act. 2026-06-09**)"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Extracciones nuevas (2026-06-07 → 2026-06-09) — ✅ HECHAS"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Estado (LOC producción, **medido 2026-06-09**)"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Áreas extraíbles de `domain_tools/__init__.py` (con el patrón R2)"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Regla (enforced por `test_god_object_size_ceiling.py`)"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "NO hacer de noche / sin supervisión"
+          }
+        ],
+        "lead": "Continúa la auditoría arquitectural (commit a18dc63) y la serie R1–R8. Las extracciones",
+        "measures": [],
+        "dates": [
+          "2026-06-10"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-86",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/PLAN_CERRADO.md",
+      "queued_sha256": "4f19832e83dc6306af0f8d343d9372c82a153d7397d8e0d9597aac69f41ec5d7",
+      "size_queued": 9757,
+      "exists": true,
+      "disk_sha256": "4f19832e83dc6306af0f8d343d9372c82a153d7397d8e0d9597aac69f41ec5d7",
+      "disk_size": 9757,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 200,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan de optimización Baxy — Cerrado"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Métricas finales"
+          },
+          {
+            "line": 27,
+            "level": 3,
+            "text": "LOC totales"
+          },
+          {
+            "line": 33,
+            "level": 3,
+            "text": "Tests"
+          },
+          {
+            "line": 40,
+            "level": 3,
+            "text": "LOC por archivo clave"
+          },
+          {
+            "line": 51,
+            "level": 3,
+            "text": "Nuevos módulos (que antes no existían)"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "Eliminaciones notables"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "God classes restantes (acoplamiento intencional)"
+          },
+          {
+            "line": 80,
+            "level": 3,
+            "text": "Dominadas: `Gemma4Agent` + `ToolRegistry`"
+          },
+          {
+            "line": 95,
+            "level": 3,
+            "text": "Intactas (decisión explícita): `MainWindow` + `SettingsDialog`"
+          },
+          {
+            "line": 105,
+            "level": 3,
+            "text": "Bonus: workers (`AgentRunner` + `AgentWorker`)"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Lo que NO se hizo y por qué"
+          },
+          {
+            "line": 128,
+            "level": 2,
+            "text": "Lo que valdría hacer si vuelve a haber energía"
+          },
+          {
+            "line": 164,
+            "level": 2,
+            "text": "Cómo invocar los sprints (referencia)"
+          },
+          {
+            "line": 181,
+            "level": 2,
+            "text": "Lecciones del plan"
+          }
+        ],
+        "lead": "**Fecha de cierre:** 2026-05-17",
+        "measures": [
+          {
+            "line": 16,
+            "text": "| 5a | Red de tests de contrato para los 4 god classes | +1 993 LOC, +83 tests |"
+          },
+          {
+            "line": 17,
+            "text": "| 5b | Splits seguros (4 done, 6 skip por falta de red de tests) | +966 LOC mover |"
+          },
+          {
+            "line": 70,
+            "text": "| `capability_classifier.py` + `nli_service.py` + `_ml_import_lock.py` | 598 | 3a (NLI cache hit 3.2% < 20% kill) |"
+          },
+          {
+            "line": 82,
+            "text": "- **`Gemma4Agent`** (2 968 → 1 930 LOC, −35%): partido en"
+          },
+          {
+            "line": 87,
+            "text": "- **`ToolRegistry`** (parte de `tools.py` 4 825 → 4 282, −11%): extraídos"
+          },
+          {
+            "line": 134,
+            "text": "- Eliminar personas/microagents/skills que no aparezcan en ≥1%"
+          },
+          {
+            "line": 185,
+            "text": "regla \"GREEN → REFACTOR → GREEN\" detectó 5 tests rotos a tiempo en"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-200",
+          "h:1",
+          "m:16"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/README.md",
+      "queued_sha256": "1148f3b7026dd8ce985754ff89e8dcc7a280c5dd34e753a2ea6593fabae66818",
+      "size_queued": 3597,
+      "exists": true,
+      "disk_sha256": "1148f3b7026dd8ce985754ff89e8dcc7a280c5dd34e753a2ea6593fabae66818",
+      "disk_size": 3597,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 80,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "`docs/architecture/` — guía rápida"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Estructura"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "Cómo leer"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Estado del plan"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "Métricas de cierre"
+          }
+        ],
+        "lead": "docs/architecture/",
+        "measures": [
+          {
+            "line": 74,
+            "text": "| `agent.py` LOC | 2 968 | **1 930** (−35 %) |"
+          },
+          {
+            "line": 75,
+            "text": "| `tools.py` LOC | 4 825 | **4 282** (−11 %) |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-80",
+          "h:1",
+          "m:74"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/architecture_audit_2026_05_27.md",
+      "queued_sha256": "23110bf8c48a16d9ca00020ad6aaa17dc7e5e22c0960816ef1fc928615925495",
+      "size_queued": 30851,
+      "exists": true,
+      "disk_sha256": "23110bf8c48a16d9ca00020ad6aaa17dc7e5e22c0960816ef1fc928615925495",
+      "disk_size": 30851,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 736,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Auditoría arquitectural — Baxy (2026-05-27)"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "0. Resumen ejecutivo"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "1. Métricas duras (medidas, no opinión)"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "1.1 Tamaño"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "1.2 Top-10 archivos por LOC"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "1.3 Funciones de más de 100 LOC: **61** (top-10)"
+          },
+          {
+            "line": 91,
+            "level": 3,
+            "text": "1.4 Dependencias entre módulos"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "1.5 Ciclos de import (4 reales después de filtrar self-imports)"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "1.6 Smells crudos en prod (top)"
+          },
+          {
+            "line": 144,
+            "level": 3,
+            "text": "1.7 Volumen de las áreas funcionales"
+          },
+          {
+            "line": 155,
+            "level": 2,
+            "text": "2. Capas implícitas (lo que el código tiene de facto)"
+          },
+          {
+            "line": 212,
+            "level": 2,
+            "text": "3. Acoplamientos preocupantes (medidos)"
+          },
+          {
+            "line": 214,
+            "level": 3,
+            "text": "3.1 `agent.py` como god-object"
+          },
+          {
+            "line": 235,
+            "level": 3,
+            "text": "3.2 `tools.py` mezclando responsabilidades"
+          },
+          {
+            "line": 251,
+            "level": 3,
+            "text": "3.3 `domain_tools.py` con 327 funciones top-level"
+          },
+          {
+            "line": 262,
+            "level": 3,
+            "text": "3.4 Ciclos `agent ↔ agent_guards` y `llama_server ↔ llm_client`"
+          },
+          {
+            "line": 273,
+            "level": 2,
+            "text": "4. Patrones BUENOS del repo (a preservar y replicar)"
+          },
+          {
+            "line": 277,
+            "level": 3,
+            "text": "4.1 Tests con gates medibles (`tests/test_*_gate.py`)"
+          },
+          {
+            "line": 281,
+            "level": 3,
+            "text": "4.2 Sub-paquetes `voice/`, `ui/`, `computer_use_caps/`"
+          },
+          {
+            "line": 285,
+            "level": 3,
+            "text": "4.3 Memoria de gotchas en docs/ + CLAUDE.md"
+          },
+          {
+            "line": 289,
+            "level": 3,
+            "text": "4.4 Verificación honesta (caveats, `verified_by`, `evidence`)"
+          },
+          {
+            "line": 295,
+            "level": 3,
+            "text": "4.5 Computer_use_caps con registry/policy/detector"
+          },
+          {
+            "line": 300,
+            "level": 3,
+            "text": "4.6 Regla #3.5 (probar en vivo con el LLM)"
+          },
+          {
+            "line": 306,
+            "level": 2,
+            "text": "5. Anti-patrones concretos encontrados (con cita al código)"
+          }
+        ],
+        "lead": "**Alcance**: análisis arquitectural alto nivel del paquete `gemma4_agent/`",
+        "measures": [
+          {
+            "line": 20,
+            "text": "≤4 GB de VRAM, multi-modo, multi-idioma, hands-free) y lo hace con un nivel"
+          },
+          {
+            "line": 33,
+            "text": "| `planner.py` | 1,427 | -   | `select_tool_names` 535 LOC, `_suggest_tools` 524 LOC — 2 funciones = 75% del archivo |"
+          },
+          {
+            "line": 69,
+            "text": "`domain_tools.py` solo es **18%** de todo el código de prod. `tools.py` +"
+          },
+          {
+            "line": 70,
+            "text": "`agent.py` suman **18%** más. Cuatro archivos = **36% del repo**."
+          },
+          {
+            "line": 124,
+            "text": "308  try/except: pass                  (silencio intencional o no)"
+          },
+          {
+            "line": 142,
+            "text": "disfrazado?); 308 except-pass (¿silencian bugs?)."
+          },
+          {
+            "line": 238,
+            "text": "función, 52 try/except/pass, 47 except Exception+log, 25 type:ignore),"
+          },
+          {
+            "line": 328,
+            "text": "### 5.3 `try/except: pass` que silencia bugs reales"
+          },
+          {
+            "line": 339,
+            "text": "pass"
+          },
+          {
+            "line": 438,
+            "text": "(60 casos × 25 categorías) debe pasar 53/61 o más, sin tocar el ratio."
+          },
+          {
+            "line": 522,
+            "text": "status: str = \"ok\"            # \"ok\"|\"attempted\"|\"needs_user\"|\"failed\"|..."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 266,
+            "text": "**Riesgo**: son ciclos de import en módulos críticos. Hoy funcionan porque"
+          },
+          {
+            "line": 353,
+            "text": "Es **el peor archivo** en esta dimensión, y es PORQUE evita los ciclos"
+          },
+          {
+            "line": 480,
+            "text": "completa entre cada extracción de área. Espero **0 regresiones** porque"
+          }
+        ],
+        "ranges": [
+          "1-736",
+          "h:1",
+          "m:20"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_arquitectura/design/barge_in.md",
+      "queued_sha256": "2d318644435c6f760fc4c870259a663f5a41e73babeb6cd90ffd05e8f990d2d3",
+      "size_queued": 9661,
+      "exists": true,
+      "disk_sha256": "2d318644435c6f760fc4c870259a663f5a41e73babeb6cd90ffd05e8f990d2d3",
+      "disk_size": 9661,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 258,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Design — voice barge-in"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "1. Current state (cited from code)"
+          },
+          {
+            "line": 38,
+            "level": 2,
+            "text": "2. Proposed design"
+          },
+          {
+            "line": 40,
+            "level": 3,
+            "text": "2.1 New SPEAKING-state audio handler"
+          },
+          {
+            "line": 56,
+            "level": 3,
+            "text": "2.2 Sustained-speech detector"
+          },
+          {
+            "line": 63,
+            "level": 1,
+            "text": "State on the controller:"
+          },
+          {
+            "line": 81,
+            "level": 3,
+            "text": "2.3 Trigger action"
+          },
+          {
+            "line": 85,
+            "level": 1,
+            "text": "1. Stop the ongoing TTS immediately."
+          },
+          {
+            "line": 88,
+            "level": 1,
+            "text": "2. Drop any pending TTS chunks the LLM may still be streaming."
+          },
+          {
+            "line": 91,
+            "level": 1,
+            "text": "3. Reset the barge counter so the next SPEAKING starts clean."
+          },
+          {
+            "line": 94,
+            "level": 1,
+            "text": "4. State transition: SPEAKING → LISTENING. Skips WAKE_DETECTED"
+          },
+          {
+            "line": 95,
+            "level": 1,
+            "text": "because the user is already mid-sentence; treat this as a"
+          },
+          {
+            "line": 96,
+            "level": 1,
+            "text": "direct continuation, not a fresh wake."
+          },
+          {
+            "line": 99,
+            "level": 1,
+            "text": "5. Bus event so logs + metrics see it."
+          },
+          {
+            "line": 110,
+            "level": 1,
+            "text": "6. Side effect: the agent_runner / GUI receive the state change"
+          },
+          {
+            "line": 111,
+            "level": 1,
+            "text": "and abort any remaining LLM streaming (the existing"
+          },
+          {
+            "line": 112,
+            "level": 1,
+            "text": "cancel_turn semantics already cover this)."
+          },
+          {
+            "line": 115,
+            "level": 3,
+            "text": "2.4 What `StreamingTTS.stop()` already does"
+          },
+          {
+            "line": 127,
+            "level": 2,
+            "text": "3. Risks"
+          },
+          {
+            "line": 129,
+            "level": 3,
+            "text": "3.1 TTS audio echo (self-trigger)"
+          },
+          {
+            "line": 147,
+            "level": 3,
+            "text": "3.2 Ambient noise (TV, dog, traffic)"
+          },
+          {
+            "line": 160,
+            "level": 3,
+            "text": "3.3 Race condition with `begin_tts` follow-up"
+          },
+          {
+            "line": 172,
+            "level": 2,
+            "text": "4. Conservative variant (optional)"
+          },
+          {
+            "line": 183,
+            "level": 1,
+            "text": "Conservative gate: require the user say \"baxy\" again."
+          }
+        ],
+        "lead": "The external post-plan audit flagged that the voice controller drops",
+        "measures": [
+          {
+            "line": 20,
+            "text": "> `# En THINKING / SPEAKING / IDLE_DISABLED / FAILED ignoramos audio.`"
+          },
+          {
+            "line": 53,
+            "text": "synchronously inside the audio callback (~5 ms / 30 ms chunk)."
+          },
+          {
+            "line": 59,
+            "text": "through the mic would always pass the threshold. We need *sustained*"
+          },
+          {
+            "line": 65,
+            "text": "self._barge_threshold_chunks = 17  # ~500 ms at 30 ms chunks"
+          },
+          {
+            "line": 76,
+            "text": "500 ms is a deliberate compromise between false-positive resilience"
+          },
+          {
+            "line": 78,
+            "text": "implies <800 ms). The threshold should be tunable via env"
+          },
+          {
+            "line": 108,
+            "text": "pass"
+          },
+          {
+            "line": 141,
+            "text": "Vosk doesn't detect \"baxy\" in the 500 ms post-trigger, treat as"
+          },
+          {
+            "line": 149,
+            "text": "500 ms sustained ≈ \"someone talking near the mic, not a one-off"
+          },
+          {
+            "line": 240,
+            "text": "- All 5 tests above green."
+          },
+          {
+            "line": 242,
+            "text": "and the agent stops within 800 ms."
+          },
+          {
+            "line": 244,
+            "text": "`test_gx_features.py` still green (the SPEAKING transition contract"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-258",
+          "h:1",
+          "m:20"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/02_router/B2_corpus_multilingue_hallazgos_2026-06-10.md",
+      "queued_sha256": "ee3244c3d139ad1807fda0360c9bdac652d9704716b4bd09bf4c1103ff9da7b2",
+      "size_queued": 9060,
+      "exists": true,
+      "disk_sha256": "ee3244c3d139ad1807fda0360c9bdac652d9704716b4bd09bf4c1103ff9da7b2",
+      "disk_size": 9060,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 158,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "B2 — Corpus multilingüe de eval: construcción y hallazgos (2026-06-10)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Qué se hizo"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Hallazgos: B2 expuso huecos reales del router en EN/IT/DE"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Lección"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "El holdout \"bajó\" 0.9800→0.9751 — NO es regresión, es medir la verdad"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Hallazgo colateral: leakage parcial training↔eval (744 textos)"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "Ataque a los huecos (reentreno del encoder)"
+          },
+          {
+            "line": 88,
+            "level": 2,
+            "text": "Vol2 — completar cobertura de tools en EN/IT/DE"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Residual del gate de abstención (INTENTADO, no resuelto — impedimento)"
+          },
+          {
+            "line": 138,
+            "level": 2,
+            "text": "Conclusión: B2 base sólida establecida (ítem grande, multi-sesión)"
+          },
+          {
+            "line": 151,
+            "level": 2,
+            "text": "Estado"
+          }
+        ],
+        "lead": "El corpus de eval del router (`router_eval_corpus.curated.jsonl`) estaba sesgado",
+        "measures": [
+          {
+            "line": 10,
+            "text": "| es | 1471 | 79% |"
+          },
+          {
+            "line": 11,
+            "text": "| pt | 207 | 11% |"
+          },
+          {
+            "line": 12,
+            "text": "| fr | 150 | 8% |"
+          },
+          {
+            "line": 13,
+            "text": "| en | 27 | 1% |"
+          },
+          {
+            "line": 14,
+            "text": "| it | 4 | 0% |"
+          },
+          {
+            "line": 15,
+            "text": "| de | 2 | 0% |"
+          },
+          {
+            "line": 17,
+            "text": "Cobertura de las 15 tools top-ES en los idiomas huérfanos: **EN 6/15, IT 3/15,"
+          },
+          {
+            "line": 18,
+            "text": "DE 0/15**. Validar cualquier mejora multilingüe contra esto era ciego en EN/IT/DE."
+          },
+          {
+            "line": 28,
+            "text": "EN 89%, IT 85%, DE 78%. Los mismatches NO son ruido — son **huecos reales** que"
+          },
+          {
+            "line": 53,
+            "text": "EN/IT/DE** que antes no se medían (el corpus era 79% ES). El router siempre falló"
+          },
+          {
+            "line": 63,
+            "text": "se asigna por hash del texto, así que ~20% de esos 744 caen en holdout siendo"
+          },
+          {
+            "line": 64,
+            "text": "\"vistos en training\" → el holdout NO es 100% honesto (recall ligeramente"
+          }
+        ],
+        "dates": [
+          "2026-06-10"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 45,
+            "text": "eran invisibles porque no había ejemplos EN/IT/DE que los ejercitaran. B2 los"
+          }
+        ],
+        "ranges": [
+          "1-158",
+          "h:1",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/02_router/PLAN_MAESTRO_router.md",
+      "queued_sha256": "4eaedc4a5aa3dd3137ff1fee3f7144f0882de45f3296e1750bac32962746b182",
+      "size_queued": 27702,
+      "exists": true,
+      "disk_sha256": "4eaedc4a5aa3dd3137ff1fee3f7144f0882de45f3296e1750bac32962746b182",
+      "disk_size": 27702,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 294,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan Maestro — Router de tools al estado máximo (2026-05-29)"
+          },
+          {
+            "line": 32,
+            "level": 1,
+            "text": "MASTER PLAN — Router del gemma4_agent hacia su estado máximo"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "1. Estado actual del router (verdad terreno)"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "1.1 El pipeline (lo que ES hoy)"
+          },
+          {
+            "line": 59,
+            "level": 3,
+            "text": "1.2 Artefactos entrenados (verificados en disco esta sesión)"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "1.3 Corpus de evaluación (verificado)"
+          },
+          {
+            "line": 73,
+            "level": 3,
+            "text": "1.4 Precisión medida HOY (en vivo, esta sesión — fuente de verdad)"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "2. El norte: qué es un router \"perfecto\" aquí"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "3. Lo que el research ya estableció (NO re-litigar)"
+          },
+          {
+            "line": 127,
+            "level": 2,
+            "text": "4. Los gaps reales entre \"hoy\" y \"perfecto\""
+          },
+          {
+            "line": 131,
+            "level": 3,
+            "text": "GAP-1 — El corpus saturó: la evaluación dejó de discriminar (META-gap, el más grave)"
+          },
+          {
+            "line": 134,
+            "level": 3,
+            "text": "GAP-2 — Generalización multilingüe real NO está medida y FUGA (eje C)"
+          },
+          {
+            "line": 141,
+            "level": 3,
+            "text": "GAP-3 — MCP-prefer: el 4B prefiere tools familiares sobre MCP/específicas (eje D — el gap que pediste destacar)"
+          },
+          {
+            "line": 147,
+            "level": 3,
+            "text": "GAP-4 — Calibración fija, no adaptativa, sin held-out por idioma (eje C/B)"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "GAP-5 — Cap=5 es workaround de CUDA, no decisión de router (eje D/E)"
+          },
+          {
+            "line": 153,
+            "level": 3,
+            "text": "GAP-6 — Sin medición end-to-end router×Gemma (eje D)"
+          },
+          {
+            "line": 156,
+            "level": 3,
+            "text": "GAP-7 — Artefactos estáticos / sin loop de auto-mejora"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "GAP-8 — Sobre-especificación frágil del veto (robustez)"
+          },
+          {
+            "line": 164,
+            "level": 2,
+            "text": "5. El programa multi-sprint (el plan)"
+          },
+          {
+            "line": 170,
+            "level": 3,
+            "text": "SPRINT 0 — Recuperar capacidad de medir (desbloquea TODO)"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "SPRINT 1 — Medir end-to-end router×Gemma EN VIVO (eje D, regla #3.5)"
+          },
+          {
+            "line": 192,
+            "level": 3,
+            "text": "SPRINT 2 — Expansión de corpus multilingüe + dominio (eje C, alimenta train)"
+          },
+          {
+            "line": 201,
+            "level": 3,
+            "text": "SPRINT 3 — Reentrenar encoder FT sobre corpus multilingüe (eje C, palanca decisiva)"
+          },
+          {
+            "line": 210,
+            "level": 3,
+            "text": "SPRINT 4 — Calibración por idioma + abstain head v2 (ejes B/C)"
+          }
+        ],
+        "lead": "Confirmed — `whatsapp` is a real expected tool in 15 corpus rows, so the PT \"abre o WhatsApp\" miss is a genuine off-corpus generalization leak (the encoder didn't generalize the PT phrasing to the whatsapp tool). The git log returned nothing (corpus likely committed under a path move), but the artifact contents are confirmed live.",
+        "measures": [
+          {
+            "line": 23,
+            "text": "> ofrecer SOLO las tools necesarias — no meter ruido. Recall ya está ~99.6%; el gap real"
+          },
+          {
+            "line": 35,
+            "text": "> - **holdout: TOOL RECALL 277/278 = 0.9964 · NO-TOOL keep 86/86 = 1.0000**"
+          },
+          {
+            "line": 36,
+            "text": "> - **dev: 984/990 = 0.9939 · 378/379 = 0.9974**"
+          },
+          {
+            "line": 60,
+            "text": "- **Encoder FT** (`router_encoder_meta.json`): base `paraphrase-multilingual-MiniLM-L12-v2`, 3 epochs, batch 64, **4624 pares** de entrenamiento (sintéticos Tool2Vec + dev real; holdout excluido por hash estable). 384-dim, ~466 MB, NO commi"
+          },
+          {
+            "line": 68,
+            "text": "- **No-tool: 465 filas (26.8%)**; mediana **5 palabras**; **431 filas multi-tool** (≥2 expected)."
+          },
+          {
+            "line": 70,
+            "text": "- **Split:** SHA256(`router-eval-2026-05-20`+q) % 5 == 0 → holdout (20%). Dev=1369, holdout=364."
+          },
+          {
+            "line": 75,
+            "text": "[dev]      TOOL RECALL 984/990 = 0.9939   NO-TOOL keep 378/379 = 0.9974"
+          },
+          {
+            "line": 76,
+            "text": "[holdout]  TOOL RECALL 277/278 = 0.9964   NO-TOOL keep  86/86  = 1.0000"
+          },
+          {
+            "line": 77,
+            "text": "mean_subset (holdout)   = 4.58 tools (máx 6);  no-tool → {safety,session} 86/86"
+          },
+          {
+            "line": 93,
+            "text": "| **E. Latencia** | p95 CPU del router | ~30–50 ms (cascada actual) | ≤ 50 ms p95, ≤ 20 ms p50 | Presupuesto de voz tier-Alexa (4–5 s total); router debe vivir en decenas de ms |"
+          },
+          {
+            "line": 95,
+            "text": "**Definición operativa de \"máximo\":** A≥0.97 ∧ B≥0.95 ∧ **C≥0.90 con paridad de idioma ≤0.05** ∧ **D≥0.88 e2e** ∧ E≤50 ms p95, **sin que ningún subgrupo de idioma/dominio se degrade** (anti-regresión por slice, mandamiento #7 de CLAUDE.md)."
+          },
+          {
+            "line": 110,
+            "text": "- **Cross-encoder SÓLO offline/condicional**, nunca en hot-path por turno (350 ms/batch revienta presupuesto)."
+          }
+        ],
+        "dates": [
+          "2026-06-04",
+          "2026-05-29",
+          "2026-06-02",
+          "2026-05-20"
+        ],
+        "models": [
+          "gemma 4",
+          "e5-small",
+          "llama.cpp",
+          "piper",
+          "whisper",
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-294",
+          "h:1",
+          "m:23"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/02_router/README.md",
+      "queued_sha256": "60f810c7a5bd4b46f44f09c4a7bc77416c90132276d9f53cb98358f1ae5a0485",
+      "size_queued": 7514,
+      "exists": true,
+      "disk_sha256": "60f810c7a5bd4b46f44f09c4a7bc77416c90132276d9f53cb98358f1ae5a0485",
+      "disk_size": 7514,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 140,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Router de tools de Baxy — documentación completa"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Qué es el router"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Mapa de esta carpeta"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "Estado actual (artefactos regenerados 2026-06-02, holdout vigente)"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "Corpus curado (1733 filas, anti-overfit con holdout 20%)"
+          },
+          {
+            "line": 67,
+            "level": 3,
+            "text": "Logs reales del usuario (1071 pares, la verdad de campo)"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "Ruido conocido sin atacar (MEDIDO, en el backlog)"
+          },
+          {
+            "line": 83,
+            "level": 3,
+            "text": "Multilingüe"
+          },
+          {
+            "line": 87,
+            "level": 3,
+            "text": "Actualizaciones de routing (2026-06-05 → 2026-06-09)"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "⚠️ Aviso sobre el research histórico (OBSOLETO en parte)"
+          },
+          {
+            "line": 120,
+            "level": 2,
+            "text": "Arranque rápido (para el próximo agente)"
+          },
+          {
+            "line": 123,
+            "level": 1,
+            "text": "Medir el router contra el corpus curado (con holdout anti-overfit):"
+          },
+          {
+            "line": 126,
+            "level": 1,
+            "text": "Medir contra los LOGS REALES del usuario (la verdad de campo):"
+          },
+          {
+            "line": 129,
+            "level": 1,
+            "text": "Ver fallas concretas:"
+          },
+          {
+            "line": 132,
+            "level": 1,
+            "text": "Verificar en vivo los fixes recientes (necesita el server en :8080):"
+          }
+        ],
+        "lead": "El router decide, en cada turno de voz/texto, **qué subconjunto pequeño de",
+        "measures": [
+          {
+            "line": 21,
+            "text": "SPRINT5 (2026-06-02/03) las **reordena anti-primacy** (la tool de mayor"
+          },
+          {
+            "line": 68,
+            "text": "- **Recall: 89.1%** honesto (dominio-equivalente). NO es el 99.6% sintético:"
+          },
+          {
+            "line": 106,
+            "text": "BM25, bandas HIGH/MEDIUM/LOW, cap 8/16** (sobre todo"
+          },
+          {
+            "line": 111,
+            "text": "viejas (0.835 / 0.881) son de OTRO sistema. **No apliques esos fixes directo.**"
+          },
+          {
+            "line": 138,
+            "text": "- 0 regresión en el corpus curado (recall 0.9964 / NO-TOOL 1.0000) es no-negociable."
+          }
+        ],
+        "dates": [
+          "2026-06-04",
+          "2026-06-02",
+          "2026-05-29",
+          "2026-05-30",
+          "2026-05-21"
+        ],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 89,
+            "text": "contaminado): aprende `text→tool` del dataset del LLM, sin hardcode — p.ej."
+          }
+        ],
+        "ranges": [
+          "1-140",
+          "h:1",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/02_router/research/1_toolcalling.md",
+      "queued_sha256": "1affdf94892cd0e8d284de2f52dced808d1bd462bc0a38b8e6b2a94fbbb2f597",
+      "size_queued": 37953,
+      "exists": true,
+      "disk_sha256": "1affdf94892cd0e8d284de2f52dced808d1bd462bc0a38b8e6b2a94fbbb2f597",
+      "disk_size": 37953,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 362,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tool-calling fiable y structured output en Gemma 4 E4B-it (Q4_K_M) sobre llama.cpp sin reasoning"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Diagnóstico transversal (causa raíz del 2/6 → 6/6 con thinking)"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "1. GBNF / Grammar-constrained decoding en llama.cpp con `--jinja` (PRIORIDAD ALTA)"
+          },
+          {
+            "line": 26,
+            "level": 3,
+            "text": "1.1 Diagnóstico"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "1.2 Implicación para el 2/6 sin thinking"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "1.3 ¿GBNF custom puede sobreescribir lo que `--jinja` genera?"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "1.4 Overhead de la gramática en latencia"
+          },
+          {
+            "line": 84,
+            "level": 3,
+            "text": "1.5 Veredicto"
+          },
+          {
+            "line": 88,
+            "level": 3,
+            "text": "1.6 Flags y código concretos (llama.cpp build ~b9090)"
+          },
+          {
+            "line": 91,
+            "level": 1,
+            "text": "Configuración del servidor para Gemma 4 E4B-it con tool-calling nativo"
+          },
+          {
+            "line": 107,
+            "level": 1,
+            "text": "Verificar el formato detectado y el template:"
+          },
+          {
+            "line": 109,
+            "level": 1,
+            "text": "Esperado: \"peg-gemma4\" o \"Content-only\" si el template GGUF no incluye tool tokens."
+          },
+          {
+            "line": 110,
+            "level": 1,
+            "text": "Si sale \"Content-only\" debes pasar --chat-template-file con el template oficial de Gemma 4."
+          },
+          {
+            "line": 142,
+            "level": 2,
+            "text": "2. Sampling óptimo para tool-calling en SLMs <10B (PRIORIDAD ALTA)"
+          },
+          {
+            "line": 144,
+            "level": 3,
+            "text": "2.1 Diagnóstico"
+          },
+          {
+            "line": 154,
+            "level": 3,
+            "text": "2.2 Trade-off conversacional"
+          },
+          {
+            "line": 163,
+            "level": 3,
+            "text": "2.3 Valores concretos a probar (en este orden)"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "2.4 Recomendación oficial Google/Gemma sobre tool-calling"
+          },
+          {
+            "line": 180,
+            "level": 3,
+            "text": "2.5 Veredicto"
+          },
+          {
+            "line": 184,
+            "level": 3,
+            "text": "2.6 Smoke test sugerido (medir el usuario)"
+          },
+          {
+            "line": 198,
+            "level": 2,
+            "text": "3. El acoplamiento reasoning ↔ tool-call en SLMs 4B"
+          },
+          {
+            "line": 200,
+            "level": 3,
+            "text": "3.1 Por qué el thinking sube 2/6 → 6/6"
+          },
+          {
+            "line": 208,
+            "level": 3,
+            "text": "3.2 Sustitutos baratos"
+          }
+        ],
+        "lead": "- **Sí es viable desacoplar tool-calling de thinking** en este stack, pero la palanca dominante NO es la gramática (llama.cpp `--jinja` ya la activa por debajo en modo **lazy**, lo que NO cura el 2/6), sino dos cambios baratos: **(a) bajar drásticamente el sampling** en modo \"acción\" (`temperature=0.0` greedy o `temp≈0.2, top_k=1–5, top_p=1.0`) y **(b) sesgar el inicio de la respuesta** hacia el t",
+        "measures": [
+          {
+            "line": 78,
+            "text": "| Gramática lazy (`tool_choice=auto`)              | ~0 ms           | Despreciable hasta que aparece el trigger; luego sub-ms por token de masking      |"
+          },
+          {
+            "line": 79,
+            "text": "| Gramática non-lazy (`tool_choice=required`)      | +5–20 ms (compilación si schema nuevo) | sub-ms por token aplicado desde token 0                                            |"
+          },
+          {
+            "line": 80,
+            "text": "| `response_format=json_schema` con schemas grandes | +20–80 ms       | Igual que non-lazy una vez compilado                                              |"
+          },
+          {
+            "line": 93,
+            "text": "-m gemma-4-E4B-it-Q4_K_M.gguf \\"
+          },
+          {
+            "line": 150,
+            "text": "- TOOLDEC paper (Zhang et al., 2023, arXiv 2310.07075): usa greedy + constrained decoding y observa que un Mistral-Instruct sube de 0% a 52% en ToolEval. El greedy aquí es supuesto, no la palanca, pero confirma el régimen."
+          },
+          {
+            "line": 167,
+            "text": "| **A. Greedy puro**              | 0.0  | 1     | 1.0   | 0.0   | **+3–4/6** (objetivo 5–6/6 sin thinking) | Argumentos pueden quedar \"estancados\" si el modelo loopea; mitigar con `repeat_penalty=1.0` (NO subir) y EOG correcto |"
+          },
+          {
+            "line": 168,
+            "text": "| **B. Casi-greedy estable**      | 0.2  | 5     | 1.0   | 0.0   | +3/6                       | Mejor que A si A causa loops; ligeramente más entrópico                |"
+          },
+          {
+            "line": 169,
+            "text": "| **C. Min-p estricto**           | 0.7  | 0     | 1.0   | 0.1   | +2–3/6                     | Compromiso: mantiene algo de naturalidad incluso si emite prosa antes del trigger |"
+          },
+          {
+            "line": 170,
+            "text": "| **D. Defaults Gemma (baseline)**| 1.0  | 64    | 0.95  | 0.0   | 2/6 (medido por el usuario)| —                                                                      |"
+          },
+          {
+            "line": 190,
+            "text": "| Defaults Gemma + thinking activo (estado actual)    | 6/6 crisp                 | medido por el usuario | 4.3 s (medido)     |"
+          },
+          {
+            "line": 191,
+            "text": "| Defaults Gemma sin thinking                         | 2/6 crisp                 | -              | mucho menor        |"
+          },
+          {
+            "line": 212,
+            "text": "| **Greedy sampling**                                             | 0            | +3/6                                         | Ataca (1). Casi gratis.                                                                                       "
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "gemma 4",
+          "gemma4",
+          "e4b",
+          "functiongemma",
+          "gemma-4",
+          "qwen3"
+        ],
+        "hardware": [
+          "RTX 4090",
+          "16 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 20,
+            "text": "Thinking funciona porque hace **(1) + (2)** implícitamente a costa de 268 tokens. Replicarlo explícitamente cuesta ~0–8 tokens (prefill + sampling). **Esto es el resultado clave.**"
+          },
+          {
+            "line": 226,
+            "text": "**Reasoning NO es estrictamente necesario** — es un mecanismo costoso para hacer lo que sampling + prefill hacen barato. **VIABLE quitarlo si combinas ≥2 palancas baratas**."
+          }
+        ],
+        "ranges": [
+          "1-362",
+          "h:1",
+          "m:78"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/02_router/research/7_nlu.md",
+      "queued_sha256": "e6543c8a35abe3bdf36d9b16bc5c591f6e5129a0b8e2b9709778d64cb5e7b5d1",
+      "size_queued": 31765,
+      "exists": true,
+      "disk_sha256": "e6543c8a35abe3bdf36d9b16bc5c591f6e5129a0b8e2b9709778d64cb5e7b5d1",
+      "disk_size": 31765,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 330,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Multi-intent, Clarification, and Disfluency Handling for vram4 (Gemma 3 4B-it Q4_K_M) Voice Pipelines"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Key Findings"
+          },
+          {
+            "line": 10,
+            "level": 3,
+            "text": "Finding 1 — Gemma 3 4B has a structural disadvantage on multi-intent; fix it upstream, not by enlarging the model"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "Finding 2 — Ollama does not natively parse Gemma 3 tool calls; the reliability ceiling is real"
+          },
+          {
+            "line": 25,
+            "level": 3,
+            "text": "Finding 3 — Clarification works on vram4 if it's a one-shot JSON contract, not free-form dialogue"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "Finding 4 — Anaphora: a Python ring buffer beats prompting the 4B"
+          },
+          {
+            "line": 39,
+            "level": 3,
+            "text": "Finding 5 — Disfluency cleanup belongs in regex, not the LLM"
+          },
+          {
+            "line": 48,
+            "level": 3,
+            "text": "Finding 6 — Confidence via first-token logprob is the only viable single-pass signal at 4B"
+          },
+          {
+            "line": 60,
+            "level": 3,
+            "text": "Finding 7 — Compound dependent commands need a tiny planner, not a smarter LLM"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "Quantization caveat — Q4_K_M specifically"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Details — per research point"
+          },
+          {
+            "line": 78,
+            "level": 3,
+            "text": "Point 1: MULTI-INTENT (priority)"
+          },
+          {
+            "line": 94,
+            "level": 1,
+            "text": "voice/preproc/split.py"
+          },
+          {
+            "line": 122,
+            "level": 3,
+            "text": "Point 2: CLARIFICATION (priority)"
+          },
+          {
+            "line": 139,
+            "level": 1,
+            "text": "voice/clarify/policy.py"
+          },
+          {
+            "line": 175,
+            "level": 3,
+            "text": "Point 3: AMBIGUOUS / DEICTIC REFERENTS"
+          },
+          {
+            "line": 189,
+            "level": 1,
+            "text": "voice/state/entity_ring.py"
+          },
+          {
+            "line": 205,
+            "level": 3,
+            "text": "Point 4: STT DISFLUENCIES"
+          },
+          {
+            "line": 219,
+            "level": 1,
+            "text": "voice/preproc/disfluency.py"
+          },
+          {
+            "line": 226,
+            "level": 1,
+            "text": "Note: DO NOT delete \"po\", \"ya po\", \"cachái\" — these are Chilean discourse particles"
+          },
+          {
+            "line": 227,
+            "level": 1,
+            "text": "that often carry pragmatic meaning, not filler."
+          },
+          {
+            "line": 236,
+            "level": 1,
+            "text": "\"abre, abre a, abre Spotify\" → \"abre a abre Spotify\" → \"abre Spotify\""
+          },
+          {
+            "line": 241,
+            "level": 3,
+            "text": "Point 5: CONFIDENCE / \"I DIDN'T UNDERSTAND\""
+          }
+        ],
+        "lead": "- **Move multi-intent splitting and disfluency cleanup OUT of the LLM and into deterministic Python before Gemma sees it; then loop the 4B model N times on the resulting sub-commands.** A 4B causal decoder cannot match bidirectional 7B models on multi-intent classification, and regex pre-processing is roughly 28,120× faster than an LLM pass at comparable extraction accuracy (medRxiv, *Regex-Based ",
+        "measures": [
+          {
+            "line": 21,
+            "text": "- Keep the prompt-visible toolset ≤ 8 per turn (use your existing `semantic_router` to subset). Community model card reports \"12b-ft achieves 100% accuracy in this setup\" only at 5–8 tools, degrading at 15–22."
+          },
+          {
+            "line": 22,
+            "text": "- Per-call reliability compounds: a 95% per-call success rate yields ~66% over 8 chained steps (Promptquorum 2026: \"A 95% per-call rate over 8 steps lands successfully ~66% of the time. Plan for compounding — keep plan horizons short, use a"
+          },
+          {
+            "line": 54,
+            "text": "- Self-consistency sampling (k=5 × 4–5 s ≈ 20–25 s extra latency)."
+          },
+          {
+            "line": 55,
+            "text": "- A second judge model — won't fit alongside Gemma 3 4B + Parakeet + TTS in 16 GB."
+          },
+          {
+            "line": 56,
+            "text": "- Long chain-of-thought reasoning — Gemma at Q4_K_M's CoT degrades faster than dense FP16; Localbench reports \"Gemma degrades uniformly: even its best category at q8_0 (science, KL 0.108 for 31B) is worse than Qwen's worst.\""
+          },
+          {
+            "line": 72,
+            "text": "**Recommendation: prefer the official Gemma 3 4B-it QAT Q4_0 GGUF over community Q4_K_M if you can swap; if Q4_K_M is fixed, the architectural mitigations below carry more weight.**"
+          },
+          {
+            "line": 86,
+            "text": "| Trust the 4B to emit `parallel_tool_calls` as JSON array | 60–75% (mixed-tool, ≤ 8 tools); collapses with > 8 | 0 ms | High: drops one intent silently | **PARTIAL** — only ≤ 2 simple intents, ≤ 8 tools |"
+          },
+          {
+            "line": 87,
+            "text": "| Code splitter (connectors + imperatives) → N independent LLM calls | 90–95% on detected splits; depends on splitter recall | +5–10 ms (regex) + N × LLM | Low; per-call confidence available | **VIABLE — RECOMMENDED** |"
+          },
+          {
+            "line": 88,
+            "text": "| BERT-tiny multi-intent classifier as CPU-side pre-router | High (Joint BERT achieves 98.6% intent accuracy on Snips per Chen et al. arXiv:1902.10909) | +30–80 ms CPU | Low | **VIABLE as Stage-3 upgrade**, ~150 MB extra |"
+          },
+          {
+            "line": 89,
+            "text": "| Single bigger LLM (12B/27B) emitting parallel calls | 90%+ (orieg model card reports 100% for 12b-ft at 5–8 tools) | +6–8 s, won't fit | Low | **NON-VIABLE.** Substitute: 4B + code splitter |"
+          },
+          {
+            "line": 131,
+            "text": "| Code-driven gate (required slot None ⇒ ask) | ~100% on detected gaps | +0 ms | Low if turn cap enforced | **VIABLE — RECOMMENDED** |"
+          },
+          {
+            "line": 133,
+            "text": "| Multi-agent clarification-seeking scaffold (HF papers/2603.26233, \"Ask or Assume?\") — 69.40% on underspecified SWE-bench Verified | High | 2× LLM cost, second context | — | **NON-VIABLE on vram4.** Substitute: single LLM + code policy (ab"
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM",
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-330",
+          "h:1",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/_DIAGNOSTICO_logs_sesion_2026-06-10.md",
+      "queued_sha256": "826056eb7e6c1a1d6c65794571bbd55732111df49f4e9d9c094ff430fdd74c16",
+      "size_queued": 7059,
+      "exists": true,
+      "disk_sha256": "826056eb7e6c1a1d6c65794571bbd55732111df49f4e9d9c094ff430fdd74c16",
+      "disk_size": 7059,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 115,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Diagnóstico de los logs de sesión de voz (2026-06-10)"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Problema 1: TRANSCRIPCIÓN sale en inglés aunque las settings dicen español"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Problema 2: Baxy \"falló tanto\" con Steam (página de producto)"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Estado"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Hallazgo adicional (2026-06-10): el outlier de ~20s = cold-start del encoder (NO un loop)"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "Estado de la auditoría del modelo (candidatos #1-3)"
+          }
+        ],
+        "lead": "Análisis de la activity de la UI (5 capturas). Dos problemas distintos.",
+        "measures": [
+          {
+            "line": 35,
+            "text": "lento (1570ms vs 71ms p50) pero respeta el idioma fijo. Quizá solo cuando el"
+          },
+          {
+            "line": 47,
+            "text": "failed** → reply \"te muestro la hora\" (?!) → más browser fallido → cancel_turn."
+          },
+          {
+            "line": 48,
+            "text": "- intento B: `steam(store_page, appid:\"1234567890\")` → **steam failed** (appid"
+          },
+          {
+            "line": 83,
+            "text": "apareció un outlier: \"qué hora es\" tardaba **12-22s** la PRIMERA vez (vs 0.9-2s"
+          },
+          {
+            "line": 86,
+            "text": "- Descartado capa por capa: el LLM puro ~0.7s (warm), el tool `system.time`"
+          },
+          {
+            "line": 87,
+            "text": "0.01s, el eager NO bloquea (threads daemon), `is_eager_safe` 0.00s."
+          },
+          {
+            "line": 92,
+            "text": "loaded()` tarda **~8-11s la PRIMERA vez** (carga el sentence-transformer +"
+          },
+          {
+            "line": 96,
+            "text": "usuario. Comentario textual: \"This is the bulk of the ~14s cold start phase ..."
+          },
+          {
+            "line": 98,
+            "text": "12.9s a ~3.3s (LLM 0.7s + 2.6s prefill/estructuras, normal); 2do ~1s."
+          },
+          {
+            "line": 101,
+            "text": "solo aparece en tests sin runner o si el usuario habla en los primeros ~10s tras"
+          },
+          {
+            "line": 106,
+            "text": "warmup termine, o mostrar \"iniciando…\", para el caso \"usuario habla a los 3s de"
+          },
+          {
+            "line": 110,
+            "text": "- #1 KV-cache K q8_0: APLICADO (commit b7fba61)."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-115",
+          "h:1",
+          "m:35"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/REPORTE_NOCHE_STT_PARAKEET_2026_05_23.md",
+      "queued_sha256": "88f019b2d612abf3101a918f478afa4676f2a635162d40adcd310e2ffa2ee758",
+      "size_queued": 5844,
+      "exists": true,
+      "disk_sha256": "88f019b2d612abf3101a918f478afa4676f2a635162d40adcd310e2ffa2ee758",
+      "disk_size": 5844,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 107,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Reporte de la noche — STT Parakeet-TDT-v3 llevado al máximo (2026-05-23)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "TL;DR — qué conseguí"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Lo que hice, etapa por etapa (todo medido)"
+          },
+          {
+            "line": 32,
+            "level": 3,
+            "text": "Etapa 0 — motor base + optimizaciones gratis"
+          },
+          {
+            "line": 40,
+            "level": 3,
+            "text": "Etapa 1 — corrector fonético (la apuesta principal del plan)"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "Etapa 2 — hotwords/MBS: probado y descartado por evidencia"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "Robustez a ruido (tu idea de usar tus canciones)"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Lo que NO conseguí (honestidad sobre límites)"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Artefactos (todo reproducible)"
+          }
+        ],
+        "lead": "RED: trabajé toda la noche siguiendo `plan_sherpa_parakeet_cpu_optimizacion.md`.",
+        "measures": [
+          {
+            "line": 3,
+            "text": "RED: trabajé toda la noche siguiendo `plan_sherpa_parakeet_cpu_optimizacion.md`."
+          },
+          {
+            "line": 16,
+            "text": "| **Entity-Recall** (¿sobrevive el nombre propio?) | 70% | **81%** [70–89] |"
+          },
+          {
+            "line": 18,
+            "text": "| **Latencia p50** | 1593 ms | **74 ms** (21× más rápido) |"
+          },
+          {
+            "line": 35,
+            "text": "warm-up de 0.5 s al cargar."
+          },
+          {
+            "line": 48,
+            "text": "inventario grande, el corrector corrompía 20/180 frases de terceros"
+          },
+          {
+            "line": 52,
+            "text": "+ top artistas mundiales. Esto subió tu Entity-Recall de 64% → **81%**."
+          },
+          {
+            "line": 57,
+            "text": "- **Pero medido sobre todo el set, NO conviene**: greedy+corrector = 81% / 74ms"
+          },
+          {
+            "line": 58,
+            "text": "vence a hotwords+corrector = 78% / 98ms. Los hotwords sobre-sesgan (vuelven"
+          },
+          {
+            "line": 64,
+            "text": "**limpio 88%, 20 dB 88%, 10 dB 82%, 5 dB 85%.** Degradación suave = robusto a"
+          },
+          {
+            "line": 75,
+            "text": "`Reddit→red`. Esto **confirma la tesis del plan**: son límite estructural del"
+          },
+          {
+            "line": 79,
+            "text": "ya da el grueso de la ganancia y fp32 costaría ~2× latencia y ~1.8 GB RAM extra."
+          },
+          {
+            "line": 81,
+            "text": "Nota de medición justa: el Entity-Recall \"estricto\" es 81%, pero 2 de los 12"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 78,
+            "text": "beneficio no está probado para nombres propios — no lo toqué porque el corrector"
+          }
+        ],
+        "ranges": [
+          "1-107",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/asr_local_codeswitching_hardware.md",
+      "queued_sha256": "b273f233d45f3eb2e5fa8d6aff06a1de12380d17ac8d7e9e773dc49f501a1324",
+      "size_queued": 54304,
+      "exists": true,
+      "disk_sha256": "b273f233d45f3eb2e5fa8d6aff06a1de12380d17ac8d7e9e773dc49f501a1324",
+      "disk_size": 54304,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 228,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "**Informe de Investigación: Maximización de la Precisión ASR Local en Entornos de Code-Switching bajo Restricciones de Hardware**"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "**1\\. Análisis Estratégico y Priorización de Retorno de Inversión**"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "**Tabla 1: Matriz de Intervenciones Ordenadas por Retorno de Inversión (ROI)**"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "**2\\. Optimización del Motor de Decodificación e Inferencia (Evidencia Sólida)**"
+          },
+          {
+            "line": 31,
+            "level": 3,
+            "text": "**Recomendación 1: Transición de Prompting Contextual a Sesgo de Logits (hotwords)**"
+          },
+          {
+            "line": 42,
+            "level": 3,
+            "text": "**Recomendación 2: Ajuste Dimensional y Dinámica de Padding para Clips Cortos**"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "**3\\. Acondicionamiento de la Señal y Pre-Procesamiento en CPU (Evidencia Sólida)**"
+          },
+          {
+            "line": 57,
+            "level": 3,
+            "text": "**Recomendación 3: Cancelación de Eco Acústico (AEC) mediante WebRTC**"
+          },
+          {
+            "line": 67,
+            "level": 3,
+            "text": "**Recomendación 4: Supresión de Ruido Neuronal Ligera (RNNoise)**"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "**4\\. Corrección Léxica y Post-Procesamiento del Texto (Evidencia Sólida)**"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "**Recomendación 5: Hibridación de Algoritmos Fonéticos (Double Metaphone) y Distancia de Edición**"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "**Recomendación 6: Corrección Generativa de Errores (GEC) mediante el LLM Residente**"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "**5\\. Evaluación Exhaustiva de Arquitecturas y Modelos Alternativos OSS**"
+          },
+          {
+            "line": 106,
+            "level": 3,
+            "text": "**Análisis Comparativo de Candidatos Arquitecturales**"
+          },
+          {
+            "line": 116,
+            "level": 3,
+            "text": "**Recomendación 7: Postergación del Reemplazo Arquitectónico**"
+          },
+          {
+            "line": 125,
+            "level": 2,
+            "text": "**6\\. Estrategias de Adaptación de Dominio (Fine-Tuning Barato) y Prevención de Olvido (Evidencia Cualificada)**"
+          },
+          {
+            "line": 129,
+            "level": 3,
+            "text": "**Recomendación 8: Parameter-Efficient Fine-Tuning (LoRA / Soft Prompt Tuning)**"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "**Peligros de la Generación de Datos Sintéticos con Motores TTS**"
+          },
+          {
+            "line": 145,
+            "level": 2,
+            "text": "**7\\. Infraestructura de Evaluación y Métricas Analíticas Avanzadas**"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "**Recomendación 9: Transición a un Framework de Evaluación Basado en Entidades e Intención**"
+          },
+          {
+            "line": 160,
+            "level": 4,
+            "text": "**Obras citadas**"
+          }
+        ],
+        "lead": "El despliegue de sistemas de Reconocimiento Automático de Habla (ASR) en entornos locales y perimetrales (Edge Computing) enfrenta fricciones fundamentales dictadas por la física del hardware subyacente y la arquitectura de los modelos fundacionales. La especificación técnica analizada describe un escenario de alta exigencia: un procesador de arquitectura x86 de cuatro a ocho núcleos asumiendo la ",
+        "measures": [
+          {
+            "line": 19,
+            "text": "| **Decodificación** | Inyección de Sesgo Superficial (hotwords) | Alta (Fuerza vocabulario de dominio sin dañar gramática) | Constante (0 ms adicionales) | Nulo | Bajo |"
+          },
+          {
+            "line": 20,
+            "text": "| **Post-Procesamiento** | Corrección Fonética Double Metaphone \\+ Distancia de Edición | Alta (Resuelve anglicismos con fonética hispana) | \\< 10 ms (Algoritmo lineal) | Nulo | Medio |"
+          },
+          {
+            "line": 21,
+            "text": "| **Pre-Procesamiento** | Cancelación de Eco Acústico (WebRTC APM) | Alta (Resuelve fallos cortos y alucinaciones por \"barge-in\") | 5 \\- 15 ms | Bajo | Medio |"
+          },
+          {
+            "line": 22,
+            "text": "| **Pre-Procesamiento** | Supresión Neuronal de Ruido Ligera (RNNoise) | Media (Mejora WER en modelos \\< 300M parámetros) | 10 \\- 20 ms | Medio (Requiere calibración) | Medio |"
+          },
+          {
+            "line": 23,
+            "text": "| **Post-Procesamiento** | Generative Error Correction vía LLM Residente | Muy Alta (Comprensión semántica del comando) | 800 \\- 1200 ms | Medio (Riesgo de alucinación) | Bajo |"
+          },
+          {
+            "line": 25,
+            "text": "| **Modelo Acústico** | Migración a Arquitectura Ergodica (Moonshine v2) | Nula a Corto Plazo (Restricciones de licencia comercial) | \\- 300 ms (Mejora radical) | Alto (Restricciones de uso legal) | Alto |"
+          },
+          {
+            "line": 89,
+            "text": "* **(d) Riesgo para el Uso Universal:** Nulo. Actúa como un filtro determinista posterior a la red neuronal que solo interviene sobre listas blancas de comandos o aplicaciones."
+          },
+          {
+            "line": 110,
+            "text": "| **Whisper-small (CTranslate2)** | Línea Base (Reference) | Alta (1.5 \\- 2s) 44 | Excelente (Robusto Cross-Attention) | MIT (Libre) | **Mantener (Opción Principal)** |"
+          },
+          {
+            "line": 111,
+            "text": "| **Moonshine v2 (Base/Small)** | Superior o Equivalente | Extremadamente Baja (107 \\- 148 ms) 44 | Bueno 46 | **Moonshine Community License** (Prohíbe uso comercial en ES) 16 | **Descartado temporalmente por licencia** |"
+          },
+          {
+            "line": 200,
+            "text": "39. Noise-Robust Speech Transcription with Quantized Language Model Correction for Industrial Settings \\- SciTePress, fecha de acceso: mayo 22, 2026, [https://www.scitepress.org/Papers/2025/137042/137042.pdf](https://www.scitepress.org/Pape"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 34,
+            "text": "Para subsanar esta deficiencia arquitectónica, CTranslate2 y sus implementaciones derivadas (como faster-whisper) integran un mecanismo alternativo documentado como Sesgo Contextual Superficial (*Shallow Contextual Biasing*), expuesto a tra"
+          },
+          {
+            "line": 175,
+            "text": "14. Question about padding mask, and using model's encoder features · openai whisper · Discussion \\#307 \\- GitHub, fecha de acceso: mayo 22, 2026, [https://github.com/openai/whisper/discussions/307](https://github.com/openai/whisper/discuss"
+          }
+        ],
+        "ranges": [
+          "1-228",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/baseline_clean.txt",
+      "queued_sha256": "f8ec1e2da416568202d52bbc9eee9fbfc6536978b1c570d95a305119f0fae0c0",
+      "size_queued": 3518,
+      "exists": true,
+      "disk_sha256": "f8ec1e2da416568202d52bbc9eee9fbfc6536978b1c570d95a305119f0fae0c0",
+      "disk_size": 3518,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 70,
+        "headings": [
+          {
+            "line": 18,
+            "level": 3,
+            "text": "RED (n=84)"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "TERCEROS (n=60)"
+          }
+        ],
+        "lead": "(descartados 120 clips silenciosos/corruptos)",
+        "measures": [
+          {
+            "line": 2,
+            "text": "Clips: RED=84  TERCEROS=60  motores=['parakeet', 'parakeet_corr']"
+          },
+          {
+            "line": 5,
+            "text": "Parakeet listo en 1.7s"
+          },
+          {
+            "line": 6,
+            "text": "RED ...20/84"
+          },
+          {
+            "line": 7,
+            "text": "RED ...40/84"
+          },
+          {
+            "line": 8,
+            "text": "RED ...60/84"
+          },
+          {
+            "line": 9,
+            "text": "RED ...80/84"
+          },
+          {
+            "line": 10,
+            "text": "TERCEROS ...20/60"
+          },
+          {
+            "line": 11,
+            "text": "TERCEROS ...40/60"
+          },
+          {
+            "line": 12,
+            "text": "TERCEROS ...60/60"
+          },
+          {
+            "line": 19,
+            "text": "motor                 WER         EntRecall (Wilson 95%)   p50ms"
+          },
+          {
+            "line": 20,
+            "text": "parakeet           0.3352            41/64=64% [52%,75%]      71"
+          },
+          {
+            "line": 21,
+            "text": "parakeet_corr      0.3458            41/64=64% [52%,75%]      71"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-70",
+          "h:18",
+          "m:2"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/baseline_real_voice.txt",
+      "queued_sha256": "261e0822af6101da8abc3687f0af51a63066745903684431875de1b07b9bfc9a",
+      "size_queued": 5066,
+      "exists": true,
+      "disk_sha256": "261e0822af6101da8abc3687f0af51a63066745903684431875de1b07b9bfc9a",
+      "disk_size": 5066,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 101,
+        "headings": [
+          {
+            "line": 25,
+            "level": 3,
+            "text": "RED (n=84)"
+          },
+          {
+            "line": 31,
+            "level": 3,
+            "text": "TERCEROS (n=180)"
+          }
+        ],
+        "lead": "Clips: RED=84  TERCEROS=180  motores=['whisper', 'parakeet', 'parakeet_corr']",
+        "measures": [
+          {
+            "line": 1,
+            "text": "Clips: RED=84  TERCEROS=180  motores=['whisper', 'parakeet', 'parakeet_corr']"
+          },
+          {
+            "line": 4,
+            "text": "Parakeet listo en 1.9s"
+          },
+          {
+            "line": 6,
+            "text": "Whisper listo en 3.0s"
+          },
+          {
+            "line": 7,
+            "text": "RED ...20/84"
+          },
+          {
+            "line": 8,
+            "text": "RED ...40/84"
+          },
+          {
+            "line": 9,
+            "text": "RED ...60/84"
+          },
+          {
+            "line": 10,
+            "text": "RED ...80/84"
+          },
+          {
+            "line": 11,
+            "text": "TERCEROS ...20/180"
+          },
+          {
+            "line": 12,
+            "text": "TERCEROS ...40/180"
+          },
+          {
+            "line": 13,
+            "text": "TERCEROS ...60/180"
+          },
+          {
+            "line": 14,
+            "text": "TERCEROS ...80/180"
+          },
+          {
+            "line": 15,
+            "text": "TERCEROS ...100/180"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-101",
+          "h:25",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/biasing_options.md",
+      "queued_sha256": "d21cf72f23892255c38ed8a15852988a977cf79c2bdd20b1f6b14537742153f9",
+      "size_queued": 18718,
+      "exists": true,
+      "disk_sha256": "d21cf72f23892255c38ed8a15852988a977cf79c2bdd20b1f6b14537742153f9",
+      "disk_size": 18718,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 336,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "FASE 0 — Verificación de viabilidad: biasing de nombres propios en STT"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "0. Qué es `hotwords` HOY (verificado en el CÓDIGO instalado, no en docs)"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "1. Las 3 rutas — spike y veredicto"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "Ruta A — motor con biasing nativo (NeMo / Parakeet)"
+          },
+          {
+            "line": 68,
+            "level": 3,
+            "text": "Ruta B — fork CTranslate2 con el PR de shallow-fusion"
+          },
+          {
+            "line": 81,
+            "level": 3,
+            "text": "Ruta C — quedarse en faster-whisper, arreglar el overfitting del corrector"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "2. RECOMENDACIÓN (con datos) — y PARADA para decisión del user"
+          },
+          {
+            "line": 142,
+            "level": 3,
+            "text": "Ruta D — speech-to-phrase (closed-vocab FST/Kaldi) COMO SEGUNDO MOTOR"
+          },
+          {
+            "line": 183,
+            "level": 2,
+            "text": "1.5 REQUISITO QUE DECIDE TODO: open-vocabulary obligatorio (input de RED)"
+          },
+          {
+            "line": 224,
+            "level": 3,
+            "text": "⛔ Ruta E — DESCARTADA por RED (2026-05-23)"
+          },
+          {
+            "line": 237,
+            "level": 3,
+            "text": "(E original, archivada) — Whisper + reparación con el LLM residente"
+          },
+          {
+            "line": 271,
+            "level": 2,
+            "text": "2. RECOMENDACIÓN FINAL (con datos) — restricciones convergidas"
+          },
+          {
+            "line": 295,
+            "level": 3,
+            "text": "Qué se puede hacer DENTRO de las restricciones (Ruta C bien hecha)"
+          },
+          {
+            "line": 309,
+            "level": 3,
+            "text": "El techo honesto y qué lo superaría (mandato #3)"
+          },
+          {
+            "line": 321,
+            "level": 3,
+            "text": "DECISIÓN QUE NECESITO DE VOS (RED)"
+          }
+        ],
+        "lead": "**Conclusión: `hotwords` ≡ `initial_prompt`. Es prepend de tokens al prompt del",
+        "measures": [
+          {
+            "line": 14,
+            "text": "había confundido; RED y la doc oficial tenían razón."
+          },
+          {
+            "line": 55,
+            "text": "(OK). 600M params, ~2GB RAM. **GPU-optimizado; CPU \"not recommended for"
+          },
+          {
+            "line": 59,
+            "text": "- Restricción del proyecto: la RTX 4060 6GB la consume el LLM en prod; el target"
+          },
+          {
+            "line": 71,
+            "text": "ningún parámetro de biasing/logit. El PR sigue ABIERTO sin mergear (RED lo"
+          },
+          {
+            "line": 144,
+            "text": "(agregada tras el pedido de RED de investigar Rhasspy3. El sucesor moderno de"
+          },
+          {
+            "line": 158,
+            "text": "- **CPU-friendly** — corre <1s en Raspberry Pi 4 (HA chapter 9). Respeta STT-en-CPU."
+          },
+          {
+            "line": 185,
+            "text": "RED 2026-05-23: *\"un usuario no te va a decir sí o sí los comandos que ya"
+          },
+          {
+            "line": 226,
+            "text": "RED: *\"los LLM que corremos ya de por sí son muy pequeños; necesito que el"
+          },
+          {
+            "line": 249,
+            "text": "nombre esté en un grafo. Eso es exactamente lo que RED pide."
+          },
+          {
+            "line": 258,
+            "text": "modelo nuevo), cero migración de motor, cero Kaldi. Resuelve el requisito de RED."
+          },
+          {
+            "line": 260,
+            "text": "**En contra / a medir:** latencia (una llamada extra al LLM ~100-200ms, SOLO"
+          },
+          {
+            "line": 265,
+            "text": "**Veredicto E:** la mejor relación generalización-real / costo / requisito-RED."
+          }
+        ],
+        "dates": [
+          "2026-05-23"
+        ],
+        "models": [
+          "whisper",
+          "gemma4",
+          "e4b"
+        ],
+        "hardware": [
+          "RTX 4060",
+          "RTX 4060 6GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 99,
+            "text": "**Conclusión teórica dura:** un mecanismo list-free, por forma, tiene techo. La"
+          },
+          {
+            "line": 248,
+            "text": "nombres nuevos, comandos fuera de plantilla — porque ENTIENDE, no porque el"
+          },
+          {
+            "line": 304,
+            "text": "2. **Quitar el hardcode del prompt/hotwords** (Steam/YouTube/Netflix enumerados)"
+          }
+        ],
+        "ranges": [
+          "1-336",
+          "h:1",
+          "m:14"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/cadena_transcripcion_perfeccion_2026-06-11.md",
+      "queued_sha256": "3803c896fa34eefad71f543423a03d6843c4e92310550f3387fef2f6f6f9a7db",
+      "size_queued": 5895,
+      "exists": true,
+      "disk_sha256": "3803c896fa34eefad71f543423a03d6843c4e92310550f3387fef2f6f6f9a7db",
+      "disk_size": 5895,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 106,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Cadena de transcripción (wake→LLM): auditoría y perfeccionamiento (2026-06-11)"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Defectos encontrados (todos medidos antes/después)"
+          },
+          {
+            "line": 14,
+            "level": 3,
+            "text": "1. EOS por VAD muere con ruido de fondo — el peor"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "2. El piso de ruido se inflaba con la PROPIA voz (regresión cazada por el harness)"
+          },
+          {
+            "line": 44,
+            "level": 3,
+            "text": "3. Fondo lateral dentro de la captura"
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "4. Drop-list de alucinaciones descartaba palabras reales"
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "5. \"Baxy\" solo = descarte silencioso (sin paridad Alexa)"
+          },
+          {
+            "line": 71,
+            "level": 3,
+            "text": "6. Decoder: beam medido y DESCARTADO por la métrica de cadena"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "Números finales de cadena (84 comandos reales)"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "Lo que la cadena NO puede arreglar (fronteras conocidas)"
+          }
+        ],
+        "lead": "Auditoría completa del camino **wake → captura → fin-de-habla → STT →",
+        "measures": [
+          {
+            "line": 7,
+            "text": "`[silencio 1.5s][wake TTS \"baxy\"][pausa 0.25s][comando de VOZ REAL][cola]`,"
+          },
+          {
+            "line": 8,
+            "text": "sobre los 84 comandos RED, en silencio y con voces de fondo (LibriSpeech"
+          },
+          {
+            "line": 9,
+            "text": "held-out) a SNR 10/5 dB. Mide lo que vive el usuario: texto FINAL"
+          },
+          {
+            "line": 17,
+            "text": "de silencio del fin-de-habla jamás llega: **75/84 capturas nunca cerraron a"
+          },
+          {
+            "line": 18,
+            "text": "SNR 5** → en prod, CADA comando termina por timeout (8 s de espera) y el"
+          },
+          {
+            "line": 31,
+            "text": "comportamiento clásico. Resultado: atascadas **75/84 → 2/84** (SNR 5),"
+          },
+          {
+            "line": 32,
+            "text": "**3/84** (SNR 10); EOS p50 736 ms en silencio (igual que antes)."
+          },
+          {
+            "line": 37,
+            "text": "propia frase de wake (~20 chunks de voz, α=0.05) movía el piso ~64% hacia el"
+          },
+          {
+            "line": 40,
+            "text": "EMA hacia el **percentil 25** de una ventana rodante (~5 s) — el habla es a"
+          },
+          {
+            "line": 49,
+            "text": "fondo×1.25 (50 ms ventanas, pad 150 ms), análogo a `trim_silence` pero por"
+          },
+          {
+            "line": 73,
+            "text": "Sobre clips AISLADOS `modified_beam_search` gana (WER RED 0.334→0.312,"
+          },
+          {
+            "line": 74,
+            "text": "terceros idéntico 0.032, +13 ms). Sobre la CADENA REAL pierde: emitidos"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-106",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/etapa1a_es_metaphone.txt",
+      "queued_sha256": "c0dcdffc2c7dda494117deb4ee21293753f0aa8302255df63016330f5ffb7f1c",
+      "size_queued": 3608,
+      "exists": true,
+      "disk_sha256": "c0dcdffc2c7dda494117deb4ee21293753f0aa8302255df63016330f5ffb7f1c",
+      "disk_size": 3608,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 75,
+        "headings": [
+          {
+            "line": 23,
+            "level": 3,
+            "text": "RED (n=84)"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "TERCEROS (n=180)"
+          }
+        ],
+        "lead": "Clips: RED=84  TERCEROS=180  motores=['parakeet', 'parakeet_corr']",
+        "measures": [
+          {
+            "line": 1,
+            "text": "Clips: RED=84  TERCEROS=180  motores=['parakeet', 'parakeet_corr']"
+          },
+          {
+            "line": 4,
+            "text": "Parakeet listo en 1.8s"
+          },
+          {
+            "line": 5,
+            "text": "RED ...20/84"
+          },
+          {
+            "line": 6,
+            "text": "RED ...40/84"
+          },
+          {
+            "line": 7,
+            "text": "RED ...60/84"
+          },
+          {
+            "line": 8,
+            "text": "RED ...80/84"
+          },
+          {
+            "line": 9,
+            "text": "TERCEROS ...20/180"
+          },
+          {
+            "line": 10,
+            "text": "TERCEROS ...40/180"
+          },
+          {
+            "line": 11,
+            "text": "TERCEROS ...60/180"
+          },
+          {
+            "line": 12,
+            "text": "TERCEROS ...80/180"
+          },
+          {
+            "line": 13,
+            "text": "TERCEROS ...100/180"
+          },
+          {
+            "line": 14,
+            "text": "TERCEROS ...120/180"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-75",
+          "h:23",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/etapa1b_expanded_inv.txt",
+      "queued_sha256": "de08fab58de2dc65ed62800f5d8d9f0bb854f1a22f54a552523daaa066b92733",
+      "size_queued": 4491,
+      "exists": true,
+      "disk_sha256": "de08fab58de2dc65ed62800f5d8d9f0bb854f1a22f54a552523daaa066b92733",
+      "disk_size": 4491,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 92,
+        "headings": [
+          {
+            "line": 25,
+            "level": 3,
+            "text": "RED (n=84)"
+          },
+          {
+            "line": 31,
+            "level": 3,
+            "text": "TERCEROS (n=180)"
+          }
+        ],
+        "lead": "Clips: RED=84  TERCEROS=180  motores=['whisper', 'parakeet', 'parakeet_corr']",
+        "measures": [
+          {
+            "line": 1,
+            "text": "Clips: RED=84  TERCEROS=180  motores=['whisper', 'parakeet', 'parakeet_corr']"
+          },
+          {
+            "line": 4,
+            "text": "Parakeet listo en 1.7s"
+          },
+          {
+            "line": 6,
+            "text": "Whisper listo en 17.5s"
+          },
+          {
+            "line": 7,
+            "text": "RED ...20/84"
+          },
+          {
+            "line": 8,
+            "text": "RED ...40/84"
+          },
+          {
+            "line": 9,
+            "text": "RED ...60/84"
+          },
+          {
+            "line": 10,
+            "text": "RED ...80/84"
+          },
+          {
+            "line": 11,
+            "text": "TERCEROS ...20/180"
+          },
+          {
+            "line": 12,
+            "text": "TERCEROS ...40/180"
+          },
+          {
+            "line": 13,
+            "text": "TERCEROS ...60/180"
+          },
+          {
+            "line": 14,
+            "text": "TERCEROS ...80/180"
+          },
+          {
+            "line": 15,
+            "text": "TERCEROS ...100/180"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-92",
+          "h:25",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/faster_whisper_int8_cpu_optimizacion.md",
+      "queued_sha256": "ab176710b609f5dfdab73874fe8169d4430ed35e33249cdc855615770d82b370",
+      "size_queued": 78144,
+      "exists": true,
+      "disk_sha256": "ab176710b609f5dfdab73874fe8169d4430ed35e33249cdc855615770d82b370",
+      "disk_size": 78144,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1022,
+        "headings": [
+          {
+            "line": 64,
+            "level": 1,
+            "text": "tratado como silencio: se devuelve vacío"
+          },
+          {
+            "line": 254,
+            "level": 1,
+            "text": "Modo comando corto: latencia + estabilidad"
+          },
+          {
+            "line": 261,
+            "level": 1,
+            "text": "Modo dictado largo: accuracy"
+          },
+          {
+            "line": 320,
+            "level": 1,
+            "text": "Silero espera float32"
+          },
+          {
+            "line": 409,
+            "level": 1,
+            "text": "1. Filtro high-pass 80 Hz (eliminar rumble/DC)"
+          },
+          {
+            "line": 413,
+            "level": 1,
+            "text": "int16 -> float32 [-1, 1]"
+          },
+          {
+            "line": 415,
+            "level": 1,
+            "text": "High-pass"
+          },
+          {
+            "line": 417,
+            "level": 1,
+            "text": "Peak normalize a -1 dBFS si está bajito (opcional)"
+          },
+          {
+            "line": 473,
+            "level": 1,
+            "text": "Tras transcribir, hacer strip del prefijo"
+          },
+          {
+            "line": 531,
+            "level": 1,
+            "text": "Forzar JIT/kernel cache con un audio dummy"
+          },
+          {
+            "line": 554,
+            "level": 1,
+            "text": "Probar greedily la primera transcripción y, si tiene baja confidence, re-intentar con prefix"
+          },
+          {
+            "line": 561,
+            "level": 1,
+            "text": "Subtítulos / YouTube outros"
+          },
+          {
+            "line": 575,
+            "level": 1,
+            "text": "Saludos genéricos"
+          },
+          {
+            "line": 580,
+            "level": 1,
+            "text": "Música / aplausos"
+          },
+          {
+            "line": 585,
+            "level": 1,
+            "text": "Tags varios"
+          },
+          {
+            "line": 602,
+            "level": 1,
+            "text": "1. avg_logprob: confidence"
+          },
+          {
+            "line": 605,
+            "level": 1,
+            "text": "2. no_speech_prob"
+          },
+          {
+            "line": 608,
+            "level": 1,
+            "text": "3. compression_ratio (texto repetitivo)"
+          },
+          {
+            "line": 611,
+            "level": 1,
+            "text": "4. word density vs duración"
+          },
+          {
+            "line": 617,
+            "level": 1,
+            "text": "5. bag of hallucinations"
+          },
+          {
+            "line": 620,
+            "level": 1,
+            "text": "6. n-gram repetition"
+          },
+          {
+            "line": 677,
+            "level": 1,
+            "text": "Para CPU típica 8 cores físicos / 16 threads (no híbrida)"
+          },
+          {
+            "line": 689,
+            "level": 1,
+            "text": "También respeta OMP_NUM_THREADS para librerías auxiliares (numpy, scipy)"
+          },
+          {
+            "line": 715,
+            "level": 1,
+            "text": "1 s de silencio (suficiente para inicializar grafos sin disparar BoH)"
+          }
+        ],
+        "lead": "Resumen ejecutivo y diagnóstico del problema",
+        "measures": [
+          {
+            "line": 22,
+            "text": "La ausencia de un VAD/recorte previo hace que el padding de 0.3 s y, sobre todo, los snippets cortos post wake-word con cola de silencio o ruido residual, sean exactamente el caso patológico identificado en la literatura."
+          },
+          {
+            "line": 26,
+            "text": "1. Anti-alucinación en Whisper para audio corto (<2 s)"
+          },
+          {
+            "line": 27,
+            "text": "1. Anti-alucinación en Whisper para audio corto (<2 s)"
+          },
+          {
+            "line": 40,
+            "text": "El encoder procesa 30 s pero el decoder está entrenado para producir transcripciones del orden de 5–25 segundos típicamente; en 1–2 s tiene menos evidencia acústica para anclar la salida. Medium"
+          },
+          {
+            "line": 41,
+            "text": "La proporción señal/silencio en el log-mel es desfavorable: aprox. 3 % de la ventana contiene audio útil. Esto se acerca al régimen de \"audio mudo\" del que se sabe que dispara fabricaciones (issues #1606, #1783, #679 de openai/whisper)."
+          },
+          {
+            "line": 49,
+            "text": "Mejor estrategia: trimear el silencio agresivamente antes de pasarlo a Whisper, dejando ≤ 100 ms al principio y ≤ 200–300 ms al final. Si vienes de RMS-endpoint, ya tienes los índices de inicio/fin del speech: úsalos para hacer un crop tigh"
+          },
+          {
+            "line": 50,
+            "text": "No insertes silencio artificial al inicio para \"completar 30 s\". Whisper ya hace ese padding internamente con ceros. Insertar más silencio audible (no cero) puede activar todavía más al language head."
+          },
+          {
+            "line": 51,
+            "text": "Si el audio es < 1.0 s, considera rechazarlo antes de invocar Whisper (probablemente sea ruido o tos). Un asistente tipo Alexa no responde a clips de 200 ms."
+          },
+          {
+            "line": 91,
+            "text": "without_timestamps=False añade unos pocos tokens adicionales por segmento (overhead < 5 % en latencia con beam_size=1)."
+          },
+          {
+            "line": 107,
+            "text": "Word count vs duración: si el clip dura 0.8 s y la transcripción es > 8 palabras, casi seguro es alucinación."
+          },
+          {
+            "line": 206,
+            "text": "arXiv 2309.09552 (CB-Whisper, ICASSP 2024): contextual biasing + Open-Vocabulary Keyword Spotting sobre Whisper, hasta 80 % de mejora en recall de hot-words en Aishell."
+          },
+          {
+            "line": 207,
+            "text": "arXiv 2502.11572 (B-Whisper, 2025): \"biasing-Whisper\" con prompts estructurados consigue 60.8 % de mejora en U-WER de palabras raras (Artie Bias, VoxPopuli)."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "whisper"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 22,
+            "text": "La ausencia de un VAD/recorte previo hace que el padding de 0.3 s y, sobre todo, los snippets cortos post wake-word con cola de silencio o ruido residual, sean exactamente el caso patológico identificado en la literatura."
+          },
+          {
+            "line": 44,
+            "text": "1.2 Padding de silencio: cuánto, dónde y por qué"
+          },
+          {
+            "line": 50,
+            "text": "No insertes silencio artificial al inicio para \"completar 30 s\". Whisper ya hace ese padding internamente con ceros. Insertar más silencio audible (no cero) puede activar todavía más al language head."
+          },
+          {
+            "line": 218,
+            "text": "En CPU, el coste del beam search escala aprox. linealmente con beam_size porque cada step expande K hipótesis. Pasar de 5 a 1 reduce el coste del decoder ~3-5×."
+          },
+          {
+            "line": 343,
+            "text": "Si optas por usar silero-vad (mejor que vad_filter=True de faster-whisper, porque lo controlas tú):"
+          },
+          {
+            "line": 358,
+            "text": "speech_pad_ms=100,         # padding lateral mínimo, NO 400"
+          }
+        ],
+        "ranges": [
+          "1-1022",
+          "h:64",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/final_validation.txt",
+      "queued_sha256": "890a6d33ad567d3e5653d094700407d16ff2852dcd32a0528c42681c7bc7514b",
+      "size_queued": 3070,
+      "exists": true,
+      "disk_sha256": "890a6d33ad567d3e5653d094700407d16ff2852dcd32a0528c42681c7bc7514b",
+      "disk_size": 3070,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 67,
+        "headings": [
+          {
+            "line": 23,
+            "level": 3,
+            "text": "RED (n=84)"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "TERCEROS (n=180)"
+          }
+        ],
+        "lead": "Clips: RED=84  TERCEROS=180  motores=['parakeet', 'parakeet_corr']",
+        "measures": [
+          {
+            "line": 1,
+            "text": "Clips: RED=84  TERCEROS=180  motores=['parakeet', 'parakeet_corr']"
+          },
+          {
+            "line": 4,
+            "text": "Parakeet listo en 1.8s"
+          },
+          {
+            "line": 5,
+            "text": "RED ...20/84"
+          },
+          {
+            "line": 6,
+            "text": "RED ...40/84"
+          },
+          {
+            "line": 7,
+            "text": "RED ...60/84"
+          },
+          {
+            "line": 8,
+            "text": "RED ...80/84"
+          },
+          {
+            "line": 9,
+            "text": "TERCEROS ...20/180"
+          },
+          {
+            "line": 10,
+            "text": "TERCEROS ...40/180"
+          },
+          {
+            "line": 11,
+            "text": "TERCEROS ...60/180"
+          },
+          {
+            "line": 12,
+            "text": "TERCEROS ...80/180"
+          },
+          {
+            "line": 13,
+            "text": "TERCEROS ...100/180"
+          },
+          {
+            "line": 14,
+            "text": "TERCEROS ...120/180"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-67",
+          "h:23",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/inv1_toolcalling_medido_2026_05_23.md",
+      "queued_sha256": "565d91df6d1f40a8625377ee5abf079fbd15db9af43aa7f9ffdb93a0a2398112",
+      "size_queued": 1568,
+      "exists": true,
+      "disk_sha256": "565d91df6d1f40a8625377ee5abf079fbd15db9af43aa7f9ffdb93a0a2398112",
+      "disk_size": 1568,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 31,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Inv 1 (tool-calling) — MEDIDO en vram4 (2026-05-23)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Sampling dual greedy (palanca 1, APLICADO)"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "A/B clave: ¿el greedy cura el 2/6 SIN thinking?"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Prefill <|tool_call|> + few-shot (palancas 2 y 3): NO IMPLEMENTADAS"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Veredicto inv1: sampling greedy aplicado (gana latencia); prefill/few-shot"
+          }
+        ],
+        "lead": "Smoke E2E (apps+audio, thinking ON = camino de prod):",
+        "measures": [
+          {
+            "line": 7,
+            "text": "| tool-call | 12/12 | 12/12 |"
+          },
+          {
+            "line": 8,
+            "text": "| apps avg | 5.2s | 4.6s |"
+          },
+          {
+            "line": 9,
+            "text": "| audio avg | 3.8s | 3.1s |"
+          },
+          {
+            "line": 10,
+            "text": "-> greedy NO degrada y BAJA latencia ~15-18%. Se queda (default ON, gate"
+          },
+          {
+            "line": 15,
+            "text": "greedy OFF: 6/6 | greedy ON: 6/6"
+          },
+          {
+            "line": 16,
+            "text": "HALLAZGO HONESTO: el \"2/6 sin thinking\" NO se reproduce con comandos crisp +"
+          },
+          {
+            "line": 17,
+            "text": "tools claras. El 2/6 medido antes venía de un escenario más complejo (system"
+          },
+          {
+            "line": 19,
+            "text": "real del smoke, sin thinking ya da 6/6. La premisa de la investigación (greedy"
+          },
+          {
+            "line": 20,
+            "text": "cura 2/6) NO aplica acá — pero el greedy igual SE JUSTIFICA por la latencia."
+          },
+          {
+            "line": 23,
+            "text": "La investigación las marcó \"lift HIPOTÉTICO\". Como sin thinking ya damos 6/6 en"
+          },
+          {
+            "line": 26,
+            "text": "que aparezca un escenario real con tasa <6/6 sostenida. (CLAUDE.md: no agregar lo"
+          },
+          {
+            "line": 30,
+            "text": "descartados por falta de problema medible. Pendiente re-medir si el 2/6 aparece"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-31",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/latency_ab_measurements_2026_05_23.md",
+      "queued_sha256": "9e917a3a875a79747a4c6ed9d37a40f958a5b478fe4a36b6002e5d0967ba93c2",
+      "size_queued": 3655,
+      "exists": true,
+      "disk_sha256": "9e917a3a875a79747a4c6ed9d37a40f958a5b478fe4a36b6002e5d0967ba93c2",
+      "disk_size": 3655,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 71,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mediciones de latencia A/B (hardware real, RTX, 2026-05-23)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "1. -ub 1024 vs 512 (el informe prometía 2-3x): FALSO en nuestra GPU"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "2. Prefix-cache: el VERDADERO ROI (10x) — CONFIRMADO"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "3. Tamaño de prompt (decide la estrategia)"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Veredicto de implementación (medido)"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "D-flags: --ctx-checkpoints con swa-full — INFORME CONTRADICHO por el log (2026-05-23)"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "FR-CoT (thinking estructurado) — MEDIDO en NUESTRO E4B, net negativo (2026-05-23)"
+          }
+        ],
+        "lead": "Validación EMPÍRICA de las recomendaciones del informe de investigación, en",
+        "measures": [
+          {
+            "line": 4,
+            "text": "NUESTRO hardware (RTX 16GB, E4B-Q4, llama.cpp b9090+). Server de prueba en :8091"
+          },
+          {
+            "line": 10,
+            "text": "| 512 (actual) | 1682 ms |"
+          },
+          {
+            "line": 11,
+            "text": "| 1024 (propuesto) | 1668 ms |"
+          },
+          {
+            "line": 12,
+            "text": "**Mejora: 1%.** En GPU CUDA con flash-attn ya somos compute-bound; el ubatch"
+          },
+          {
+            "line": 19,
+            "text": "| Turno frío (prefijo nuevo) | 1126 ms |"
+          },
+          {
+            "line": 20,
+            "text": "| Prefijo ESTABLE reusado | 101-114 ms (**10x**) |"
+          },
+          {
+            "line": 21,
+            "text": "| Prefijo CAMBIADO al inicio (= subset de tools cambia) | 1036 ms (paga todo) |"
+          },
+          {
+            "line": 25,
+            "text": "turno y rompe el prefix-cache. Con prefijo estable: 1126->~100ms."
+          },
+          {
+            "line": 37,
+            "text": "- Resultado esperado: la mayoría de turnos pagan ~100ms de prefill (no ~1100ms)."
+          },
+          {
+            "line": 52,
+            "text": "de prueba antes de tocar prod. El sistema funciona (turno mediano 2s); riesgo > ROI."
+          },
+          {
+            "line": 62,
+            "text": "| apps | 6/6, 6.4s | 6/6, 5.0s ✓ |"
+          },
+          {
+            "line": 63,
+            "text": "| audio | 5/6, 5.2s | 6/6, 2.4s ✓✓ (2x más rápido) |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "e4b",
+          "llama.cpp",
+          "gemma 4"
+        ],
+        "hardware": [
+          "16GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-71",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/parakeet_beam_nombres_propios_decoding.md",
+      "queued_sha256": "c01cc6c6def49a86e5f6b1d09262f374402549fe8febf7b786c99d2e40c9f9f1",
+      "size_queued": 21496,
+      "exists": true,
+      "disk_sha256": "c01cc6c6def49a86e5f6b1d09262f374402549fe8febf7b786c99d2e40c9f9f1",
+      "disk_size": 21496,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 172,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Cómo meter el nombre propio inglés en el haz (beam) de Parakeet-TDT-0.6B-v3 (int8) sobre sherpa-onnx v1.13.2 en CPU"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Hallazgos clave (ordenados por probabilidad real de meter el nombre en el beam o de rescatarlo)"
+          },
+          {
+            "line": 10,
+            "level": 3,
+            "text": "Conclusión central: el límite del encoder"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "1) Corrector fonético post-hoc sobre inventario dinámico  ✅ **VERIFICADO — capa obligatoria**"
+          },
+          {
+            "line": 33,
+            "level": 3,
+            "text": "2) `blank_penalty` positivo  ✅ **VERIFICADO en código — palanca directa contra la fusión silábica**"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "3) `modified_beam_search` con `max_active_paths` 8 → 16 + hotwords  ⚠️ **EXPLOSIVO en v1.13.2 — esperar fix**"
+          },
+          {
+            "line": 75,
+            "level": 3,
+            "text": "4) `ys_log_probs` (confianza per-token) como disparador del rescate  ✅ **VERIFICADO — clave operativa**"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "5) Retranscripción del slot con timestamps  🔧 **VIABLE — esfuerzo medio**"
+          },
+          {
+            "line": 108,
+            "level": 3,
+            "text": "6) `HomophoneReplacer` (existe pero orientado a chino)"
+          },
+          {
+            "line": 112,
+            "level": 3,
+            "text": "7) `lm` + `lm_scale` (shallow fusion)  ❌ **NO FUNCIONA con Parakeet — DESCARTAR**"
+          },
+          {
+            "line": 122,
+            "level": 3,
+            "text": "8) `lodr_fst` + `lodr_scale` (LODR)  ❌ **NO FUNCIONA con Parakeet — DESCARTAR**"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "Tabla resumen: probabilidad de meter el nombre al beam / rescatarlo"
+          },
+          {
+            "line": 143,
+            "level": 2,
+            "text": "Recomendaciones (orden de implementación, accionable)"
+          },
+          {
+            "line": 163,
+            "level": 2,
+            "text": "Caveats"
+          }
+        ],
+        "lead": "- **La respuesta honesta: con el stack fijo (sherpa-onnx v1.13.2 + Parakeet-TDT-0.6B-v3 int8 en CPU), el rescate de nombres propios infrecuentes fusionados por el encoder es POST-HOC y determinista (corrector fonético sobre inventario dinámico), no un truco de decoding.** Las palancas de decoding que existen (`blank_penalty`, `max_active_paths` con hotwords, retranscripción del slot) ayudan parcia",
+        "measures": [
+          {
+            "line": 28,
+            "text": "- **Latencia:** la búsqueda fonética sobre un inventario ≤ 2.000 entradas con RapidFuzz indexado es <5 ms; despreciable frente a 110 ms del modelo."
+          },
+          {
+            "line": 29,
+            "text": "- **RAM:** ≤ 5 MB para el inventario y los hashes fonéticos."
+          },
+          {
+            "line": 68,
+            "text": "- Doblar de 8 a 16 típicamente añade 25–60% al tiempo de decodificación, no al cómputo del encoder (que es la mayoría del coste). Esperaría 130–160 ms con `max_active_paths=16`, 180–220 ms con 32, partiendo de tus 110 ms."
+          },
+          {
+            "line": 88,
+            "text": "- Para el resto del enunciado, no toques nada (mantienes el p50 de 110 ms)."
+          },
+          {
+            "line": 98,
+            "text": "3. Extraer 200 ms de contexto a cada lado del rango."
+          },
+          {
+            "line": 102,
+            "text": "**Coste:** un segundo pase de ~1.5 s de audio en CPU con Parakeet-int8 son ~50–80 ms adicionales **solo en el turno problemático**."
+          },
+          {
+            "line": 134,
+            "text": "| 1. Corrector fonético post-hoc (DM + Metáfono Español + RapidFuzz) | No (no necesita) | **Sí, alta** | <5 ms (solo slot) | Bajo | Recomendado SIEMPRE |"
+          },
+          {
+            "line": 135,
+            "text": "| 2. `blank_penalty` 0.5–1.5 | Parcial: descongela sílabas | — | 0 ms | Bajísimo | Recomendado SIEMPRE |"
+          },
+          {
+            "line": 136,
+            "text": "| 3. `modified_beam_search` + `max_active_paths=8–16` + hotwords | Parcial | — | +20–60% del decoding | Bajo | **Esperar fix posterior a v1.13.2** (PR #3589) |"
+          },
+          {
+            "line": 137,
+            "text": "| 4. `ys_log_probs` gating | — | Disparador del 1 y 5 | 0 ms | Bajo | Recomendado |"
+          },
+          {
+            "line": 138,
+            "text": "| 5. Retranscripción del slot | A veces | A veces | +50–80 ms solo turno problemático | Medio | Opcional |"
+          },
+          {
+            "line": 139,
+            "text": "| 6. HomophoneReplacer | No | Tabular exacto | 0 ms | Medio | No prioritario |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-172",
+          "h:1",
+          "m:28"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/parakeet_v3_uso_correcto_2026-06-10.md",
+      "queued_sha256": "db937f52be850a2dc8612f4500d76636918a31b4d504c86b3e542d83d150f8a1",
+      "size_queued": 9236,
+      "exists": true,
+      "disk_sha256": "db937f52be850a2dc8612f4500d76636918a31b4d504c86b3e542d83d150f8a1",
+      "disk_size": 9236,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 153,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Parakeet TDT 0.6B v3 — uso correcto vs nuestra implementación (2026-06-10)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Hallazgo central: el idioma NO se puede forzar (es de diseño)"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "La causa real del inglés: limitación OFICIAL en frases cortas"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "Nuestra implementación vs lo correcto (comparación)"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Cómo usarlo bien: mitigaciones del caso corto (ranked por ROI, MEDIR antes)"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "IMPLEMENTADO (2026-06-11): rescate LID frase-corta — medido"
+          },
+          {
+            "line": 148,
+            "level": 2,
+            "text": "Fuentes"
+          }
+        ],
+        "lead": "Investigación con fuentes oficiales (model card NVIDIA + sherpa-onnx) sobre cómo",
+        "measures": [
+          {
+            "line": 40,
+            "text": "Contraste: el WER de Parakeet en español con contexto es EXCELENTE (Fleurs 3.45%,"
+          },
+          {
+            "line": 41,
+            "text": "MLS 4.39%, CoVoST 3.41% — model card) → por eso da mejor transcripción que"
+          },
+          {
+            "line": 54,
+            "text": "| Audio normaliz. | int16→float32 /32768 | exactamente eso | ✅ |"
+          },
+          {
+            "line": 68,
+            "text": "Whisper-`language=es` (que SÍ fija idioma). Latencia extra (~1.5 s) SOLO en el"
+          },
+          {
+            "line": 69,
+            "text": "caso malo (frase corta mal detectada), no en el 95% bueno. Whisper ya está de"
+          },
+          {
+            "line": 82,
+            "text": "en el 95% normal. MEDIR en vivo (regla #3.5) antes de declarar."
+          },
+          {
+            "line": 88,
+            "text": "audio dura ≤3 s (env `GEMMA4_STT_LID_RESCUE_MAX_S`) y la salida PARECE inglés"
+          },
+          {
+            "line": 94,
+            "text": "- Validación textual sobre los fallos EN reales de los logs: 8/8 (los 4 flips"
+          },
+          {
+            "line": 96,
+            "text": "- Falsos positivos: **0 en 408 casos** (84 comandos RED + 84 truncados a 0.7s +"
+          },
+          {
+            "line": 97,
+            "text": "60 FLEURS truncados a 1.2s + 180 terceros). WER del corpus RED IDÉNTICO con"
+          },
+          {
+            "line": 99,
+            "text": "- Latencia extra SOLO en el caso malo: p50 ≈ 1.46 s (Whisper-small CPU)."
+          },
+          {
+            "line": 103,
+            "text": "- La zona del flip NO se reproduce offline con audio limpio (0/60 FLEURS"
+          }
+        ],
+        "dates": [
+          "2026-06-11"
+        ],
+        "models": [
+          "whisper",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-153",
+          "h:1",
+          "m:40"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/plan_sherpa_parakeet_cpu_optimizacion.md",
+      "queued_sha256": "ff18ea482ef1eab7f3dcd4f1a08f45b07e7db5f36cae694689762924b0e9d51b",
+      "size_queued": 25590,
+      "exists": true,
+      "disk_sha256": "ff18ea482ef1eab7f3dcd4f1a08f45b07e7db5f36cae694689762924b0e9d51b",
+      "disk_size": 25590,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 169,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan para maximizar el rendimiento de un asistente de voz local en español sobre sherpa-onnx 1.13.2 + Parakeet-TDT-0.6b-v3 (int8, greedy, CPU)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Hallazgos clave"
+          },
+          {
+            "line": 13,
+            "level": 3,
+            "text": "Modelos disponibles (verificados)"
+          },
+          {
+            "line": 20,
+            "level": 3,
+            "text": "Evidencia fp32 vs int8 (lo que existe y lo que NO existe)"
+          },
+          {
+            "line": 32,
+            "level": 3,
+            "text": "Hotwords y `modified_beam_search`"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Preprocesado / mel-fbanks"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Detalles por eje"
+          },
+          {
+            "line": 44,
+            "level": 3,
+            "text": "Axis 1 — Calidad de base / reducir fusiones del encoder"
+          },
+          {
+            "line": 57,
+            "level": 3,
+            "text": "Axis 2 — Latencia/throughput universal"
+          },
+          {
+            "line": 80,
+            "level": 1,
+            "text": "Para sherpa_onnx OfflineRecognizer: num_threads=n_threads, provider=\"cpu\""
+          },
+          {
+            "line": 86,
+            "level": 3,
+            "text": "Axis 3 — Pipeline de rescate post-hoc (la apuesta principal)"
+          },
+          {
+            "line": 93,
+            "level": 4,
+            "text": "Señal de disparo (en orden de probabilidad/precisión)"
+          },
+          {
+            "line": 102,
+            "level": 4,
+            "text": "Corrector fonético ES↔EN (núcleo del axis 3)"
+          },
+          {
+            "line": 119,
+            "level": 4,
+            "text": "Sherpa-onnx `homophone_replacer` (NO confundir)"
+          },
+          {
+            "line": 123,
+            "level": 4,
+            "text": "Re-transcripción de slot vía timestamps + hotwords (camino alternativo)"
+          },
+          {
+            "line": 133,
+            "level": 2,
+            "text": "Recomendaciones (plan escalonado)"
+          },
+          {
+            "line": 161,
+            "level": 2,
+            "text": "Caveats"
+          }
+        ],
+        "lead": "- **El cuello de botella estructural son las fusiones del encoder en nombres propios poco frecuentes (\"Boone→Moon\", \"Spotify→espotifai\") y NO hay evidencia pública de que pasar a fp32 las resuelva** — todos los reportes existentes (smcleod, grikdotnet, groxaxo, istupakov) son anecdóticos o sobre LibriSpeech inglés, y la literatura de cuantización en transducers (Q-ASR, arXiv:2103.16827v3) reporta ",
+        "measures": [
+          {
+            "line": 49,
+            "text": "| Normalización RMS + 16 kHz mono float32 exacto | Baja-media | sherpa-onnx ya lo hace internamente. No hay evidencia de mejora externa en Parakeet | <1 ms | Trying. No esperar mejora medible en fusiones |"
+          },
+          {
+            "line": 50,
+            "text": "| Denoising ligero (RNNoise/DeepFilterNet) | Baja para nombres propios | No mejora alucinaciones del encoder; sí ruidos de ambiente. ~10-30 ms y ~30-80 MB | Medio | No prioritario para \"Boone→Moon\" |"
+          },
+          {
+            "line": 53,
+            "text": "| **Hotwords con MBS (verificar #3589 en 1.13.2)** | Media-alta | PR #3589 mergeado en v1.13.1 según changelog; v1.13.2 lo hereda | Latencia +10-30 ms con `max_active_paths=4` | **Verificar empíricamente**. Si estable, es la mejor mejora de"
+          },
+          {
+            "line": 67,
+            "text": "| Thread spinning | `session.intra_op.allow_spinning=0` + `session.inter_op.allow_spinning=0` ahorra CPU entre comandos (asistente idle gran parte del tiempo) sin afectar latencia única, a cambio de ~0,5-1 ms extra al primer frame. **Recome"
+          },
+          {
+            "line": 70,
+            "text": "| Warm-up | 85-115 ms primera inferencia (medido). **Warm-up al iniciar** con buffer de ~0,5 s de silencio para que las p50 cuenten en frío. |"
+          },
+          {
+            "line": 72,
+            "text": "| Modelo más pequeño | Innecesario — ya 150 ms p50 « 300 ms |"
+          },
+          {
+            "line": 137,
+            "text": "2. Aplicar `num_threads = min(4, psutil.cpu_count(logical=False))` y `OMP_NUM_THREADS` consistente. Añadir warm-up de 0,5 s al iniciar el proceso."
+          },
+          {
+            "line": 147,
+            "text": "8. Replicar el setup del issue #3267 con la 1.13.2 actual: ¿persisten las alucinaciones a ~20-33 %? Si **no** (PR #3589 efectivo): añadir hotwords con el inventario completo como capa de prevención (no rescate), `modeling_unit=bpe`, `hotwor"
+          },
+          {
+            "line": 155,
+            "text": "- Si `modified_beam_search` en 1.13.2 sigue alucinando >5 %: descartar hotwords; el corrector fonético es el único camino."
+          },
+          {
+            "line": 156,
+            "text": "- Si tras Etapa 1 quedan >20 % de slots irrescatables (el nombre genuinamente NO está en el inventario): habilitar la re-transcripción de slot (Etapa 3.10) condicionada a MBS estable; si MBS no es estable, exponer un mensaje \"no entendí, ¿p"
+          },
+          {
+            "line": 157,
+            "text": "- Si el corrector deja >50 % de errores residuales **incluso con el nombre en el inventario**: el problema no es léxico sino acústico — entonces sí amerita probar fp32 (Etapa 3.11), midiendo caso por caso."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 67,
+            "text": "| Thread spinning | `session.intra_op.allow_spinning=0` + `session.inter_op.allow_spinning=0` ahorra CPU entre comandos (asistente idle gran parte del tiempo) sin afectar latencia única, a cambio de ~0,5-1 ms extra al primer frame. **Recome"
+          },
+          {
+            "line": 88,
+            "text": "**Premisa crítica del usuario**: el gating por `ys_log_probs < 0.85` no dispara en \"Benson Moon\" porque los tokens de \"Moon\" tienen prob 0,83-1,0. **El encoder está confiadamente equivocado**. La literatura confirma este fenómeno como probl"
+          },
+          {
+            "line": 127,
+            "text": "**Trade-off**: gana sobre el corrector fonético cuando el nombre **no está en el inventario** del usuario (porque hotwords es open-vocab con boost a BPE-tokens, mientras que el corrector requiere que el nombre esté en el inventario). Pero r"
+          },
+          {
+            "line": 138,
+            "text": "3. Desactivar thread spinning (`session.intra_op.allow_spinning=0`). Beneficio: idle CPU baja sin penalizar latencia."
+          }
+        ],
+        "ranges": [
+          "1-169",
+          "h:1",
+          "m:49"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/sherpa_parakeet_hotwords_nombres_propios.md",
+      "queued_sha256": "c6e040bb9219a5afc8a1239c567f2e3b9e8b5bf0f1a84de4d6f7cfd6adbdda91",
+      "size_queued": 23944,
+      "exists": true,
+      "disk_sha256": "c6e040bb9219a5afc8a1239c567f2e3b9e8b5bf0f1a84de4d6f7cfd6adbdda91",
+      "disk_size": 23944,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 188,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "sherpa-onnx 1.13.2 + Parakeet-TDT-0.6B-v3: cómo (y hasta dónde) forzar nombres propios ingleses dentro de español"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Key Findings"
+          },
+          {
+            "line": 16,
+            "level": 3,
+            "text": "Sobre los hotwords (Problema 1)"
+          },
+          {
+            "line": 38,
+            "level": 3,
+            "text": "Sobre la calidad base en Spanglish (Problema 2)"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Details"
+          },
+          {
+            "line": 61,
+            "level": 3,
+            "text": "Solución concreta al Problema 1, ordenada por probabilidad de éxito"
+          },
+          {
+            "line": 66,
+            "level": 1,
+            "text": "Requisito: instalar NeMo (sólo para esta operación, no en runtime)"
+          },
+          {
+            "line": 68,
+            "level": 1,
+            "text": "Bajar el script desde el repo de sherpa-onnx:"
+          },
+          {
+            "line": 148,
+            "level": 3,
+            "text": "Solución concreta al Problema 2, ordenada por probabilidad de éxito"
+          },
+          {
+            "line": 158,
+            "level": 2,
+            "text": "Recommendations"
+          },
+          {
+            "line": 179,
+            "level": 2,
+            "text": "Caveats"
+          }
+        ],
+        "lead": "- El motivo más probable de que `hotwords_score=3.0` empeore la salida es una combinación de tres cosas: (a) **formato de `bpe.vocab` incorrecto** (el modelo no trae `bpe.vocab` ni `bpe.model`, y un tokenizador BPE hecho a mano desde `tokens.txt` NO es compatible — sherpa-onnx espera el formato SentencePiece de dos columnas `pieza\\tlog_prob`); (b) **score demasiado alto** (los ejemplos oficiales u",
+        "measures": [
+          {
+            "line": 54,
+            "text": "- **Endurecer el VAD** y aceptar utterances más completas — `silero-vad` con `min_speech_duration=0.2` y `min_silence_duration=0.5` (defaults sensatos). Los clips de 1.7 s con anglicismos al final son los peores casos."
+          },
+          {
+            "line": 154,
+            "text": "**S6 — Subir contexto.** Si tu wake-word + comando son < 2 s, mete 200–300 ms de silencio padding al inicio. Parakeet TDT tiene tendencia a deleciones en el primer token (issue #2605: `doing` desaparece). Padding al inicio amortigua el efec"
+          },
+          {
+            "line": 163,
+            "text": "- Si WER nombres ≤ 15% → salta directo a S2 (rule_fsts) sobre los errores residuales y ya tienes el sistema."
+          },
+          {
+            "line": 164,
+            "text": "- Si WER nombres > 30% → sigue al paso 2."
+          },
+          {
+            "line": 169,
+            "text": "- Threshold de aceptación: WER nombres ↓ ≥ 20% **sin** subir latencia p50 por encima de 200 ms."
+          }
+        ],
+        "dates": [
+          "2023-02-20",
+          "2024-07-17"
+        ],
+        "models": [
+          "gemma 4",
+          "piper",
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 154,
+            "text": "**S6 — Subir contexto.** Si tu wake-word + comando son < 2 s, mete 200–300 ms de silencio padding al inicio. Parakeet TDT tiene tendencia a deleciones en el primer token (issue #2605: `doing` desaparece). Padding al inicio amortigua el efec"
+          }
+        ],
+        "ranges": [
+          "1-188",
+          "h:1",
+          "m:54"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/spike_sherpa_parakeet.md",
+      "queued_sha256": "348e2bf0ac56c707485c53f0c3269806e0d55b9cf64e5ddb19cad0c3eb58497a",
+      "size_queued": 15486,
+      "exists": true,
+      "disk_sha256": "348e2bf0ac56c707485c53f0c3269806e0d55b9cf64e5ddb19cad0c3eb58497a",
+      "disk_size": 15486,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 265,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "SPIKE — sherpa-onnx + Parakeet-TDT-0.6B-v3 int8 (medido en la máquina, 2026-05-23)"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Lo que SÍ se confirmó (a favor)"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Lo que NO funcionó (en contra — el motivo de migrar falla)"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "CAVEAT honesto sobre el audio del spike"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "VEREDICTO DEL SPIKE"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "UPDATE 2026-05-23 — re-test con `bpe.vocab` CORRECTO + score 1.5 (post-investigación)"
+          },
+          {
+            "line": 125,
+            "level": 2,
+            "text": "UPDATE 2 (2026-05-23) — A/B SOBRE VOZ REAL DE RED (Grabación 2, wake-anchored)"
+          },
+          {
+            "line": 169,
+            "level": 2,
+            "text": "UPDATE 3 (2026-05-23) — investigación \"meter el nombre en el beam\" + verificación en código"
+          },
+          {
+            "line": 210,
+            "level": 2,
+            "text": "UPDATE 4 (2026-05-23) — Etapa 0 de la investigación, VERIFICADA en máquina"
+          },
+          {
+            "line": 238,
+            "level": 2,
+            "text": "UPDATE 5 (2026-05-23, noche) — Etapa 2 MEDIDA: MBS-hotwords RECHAZADO por evidencia"
+          },
+          {
+            "line": 256,
+            "level": 2,
+            "text": "UPDATE 6 (2026-05-23) — Etapa 3 (slot re-transcription) PROBADA y NO IMPLEMENTADA"
+          }
+        ],
+        "lead": "- **pip-installable, CPU, sin compilar**: `pip install sherpa-onnx>=1.13.1` (1.13.2)",
+        "measures": [
+          {
+            "line": 9,
+            "text": "> RED recomendó como GANADORA. Medido contra clips reales+sintéticos existentes."
+          },
+          {
+            "line": 19,
+            "text": "wheel precompilado Windows/Py3.10. ✅ Carga en ~2s."
+          },
+          {
+            "line": 24,
+            "text": "- **LATENCIA EXCELENTE en comando corto** (audio ~1.7s, 4 threads, CPU):"
+          },
+          {
+            "line": 25,
+            "text": "- greedy: **p50 108ms / p95 163ms**"
+          },
+          {
+            "line": 26,
+            "text": "- modified_beam_search: **p50 120ms / p95 162ms**"
+          },
+          {
+            "line": 27,
+            "text": "- => **~10x más rápido que whisper-small** en CPU (que daba >1s). La"
+          },
+          {
+            "line": 30,
+            "text": "- **RAM**: greedy 773MB, hotwords (MBS) 1472MB. Cabe en CPU; no toca VRAM del LLM."
+          },
+          {
+            "line": 61,
+            "text": "existe dataset libre, held-out de RED pendiente). Es posible que sobre voz"
+          },
+          {
+            "line": 75,
+            "text": "que sólo RED puede dar: **voz real con anglicismos** (su held-out). Si sobre SU"
+          },
+          {
+            "line": 81,
+            "text": "con un A/B sobre voz real de RED (no sintética). El spike deja todo listo"
+          },
+          {
+            "line": 113,
+            "text": "Parakeet+hotwords-sobre-Piper.** El experimento decisivo es voz real de RED."
+          },
+          {
+            "line": 115,
+            "text": "**Lo que queda listo y verificado para cuando RED grabe:**"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 5,
+            "text": "> experimentos ASR de esa época; se preserva tal cual porque son mediciones de"
+          }
+        ],
+        "ranges": [
+          "1-265",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/stt_biasing_contextual_spanglish_cpu.md",
+      "queued_sha256": "915fe8111bd1b36d3ab196cf0d5a4b3e0379edf7a4d79ade884a1eca9e54fae6",
+      "size_queued": 19182,
+      "exists": true,
+      "disk_sha256": "915fe8111bd1b36d3ab196cf0d5a4b3e0379edf7a4d79ade884a1eca9e54fae6",
+      "disk_size": 19182,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 126,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "STT local con biasing contextual real para Spanglish en CPU — qué existe y qué no"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Hallazgos clave"
+          },
+          {
+            "line": 11,
+            "level": 3,
+            "text": "El biasing de sherpa-onnx es REAL (no es prompt-prepend)"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "sherpa-onnx es pip-installable cross-platform con wheels precompilados"
+          },
+          {
+            "line": 19,
+            "level": 3,
+            "text": "El modelo ideal para Spanish + Spanglish: `sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8`"
+          },
+          {
+            "line": 27,
+            "level": 3,
+            "text": "Gotcha #1 — bug de alucinación en MBS+TDT (RESUELTO en v1.13.1)"
+          },
+          {
+            "line": 31,
+            "level": 3,
+            "text": "Gotcha #2 — code-switching no está validado para Spanglish"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "Gotcha #3 — la latencia en comandos cortos NO mejora vs faster-whisper-small"
+          },
+          {
+            "line": 39,
+            "level": 3,
+            "text": "Alternativas reales investigadas y descartadas"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "Tabla de candidatos"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Detalle de los 2 ganadores"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "#1 — sherpa-onnx + Parakeet-TDT-0.6B-v3 int8 (PRIMARIO RECOMENDADO)"
+          },
+          {
+            "line": 97,
+            "level": 3,
+            "text": "#2 — Fallback: bookbot/sherpa-onnx-zipformer-streaming-robust-es-v0 (sólo si Parakeet-v3 no entra en RAM)"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "Recomendaciones"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "Caveats"
+          }
+        ],
+        "lead": "- **La única solución madura, pip-installable, CPU-only, open-vocab, con biasing contextual REAL (no prompt-prepend) y con modelo Spanish nativo es `sherpa-onnx` (k2-fsa) usando un modelo Zipformer-Transducer o Parakeet-TDT en `modified_beam_search` con archivo de hotwords**. El biasing es shallow-fusion vía autómata Aho-Corasick sobre los tokens BPE — no es post-corrección, es decodificación.",
+        "measures": [
+          {
+            "line": 47,
+            "text": "- **Vosk (Kaldi)**: tiene un modelo grande español (vosk-model-es-0.42, 1.4 GB) y \"vocabulary injection\" via grammar (closed-vocab), pero el biasing real con boost continuo y open-vocab no está expuesto en la API Python estable. Descartado "
+          },
+          {
+            "line": 110,
+            "text": "2. **Si WER en proper nouns baja >30 % con hotwords, latencia P95 <1.5 s y RAM <2.5 GB → migrar**. Mantener faster-whisper como motor secundario por si Parakeet falla en una frase específica."
+          },
+          {
+            "line": 121,
+            "text": "- **La cifra de latencia 0.325 RTF en frase corta** viene de un único benchmark oficial (`en.wav` 3.845 s, 2 threads, sin VAD warm-up). Con `num_threads=4` y warm-up adecuado puede bajar a ~0.1–0.15 RTF; con 1 thread sube. Hay que medir en "
+          }
+        ],
+        "dates": [
+          "2026-05-13"
+        ],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-126",
+          "h:1",
+          "m:47"
+        ]
+      }
+    }
+  ]
+}

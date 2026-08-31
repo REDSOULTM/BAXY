@@ -1,0 +1,2373 @@
+{
+  "batch_id": "docs-020-baxy",
+  "kind": "docs",
+  "source_id": "baxy",
+  "subsystem": "baxy_docs_00_POST_WAKE_RUNBOOK_2026-08-11.md",
+  "file_count": 18,
+  "hash_ok": 18,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/00_POST_WAKE_RUNBOOK_2026-08-11.md",
+      "queued_sha256": "0c3fdd6aa33918fc2d37bb91671523464a4d3fe732234872aa433a8d9dcb8597",
+      "size_queued": 11057,
+      "exists": true,
+      "disk_sha256": "0c3fdd6aa33918fc2d37bb91671523464a4d3fe732234872aa433a8d9dcb8597",
+      "disk_size": 11057,
+      "hash_match": true,
+      "head_sha256": "0c3fdd6aa33918fc2d37bb91671523464a4d3fe732234872aa433a8d9dcb8597",
+      "extract": {
+        "binary": false,
+        "lines": 236,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Cierre posterior a wake v17 — 2026-08-11"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Condición de entrada"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "1. Reparar el contrato del perfil CPU"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "2. Reparar la equivalencia de cierres sociales de Mind"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "3. Regresiones de desarrollo"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "4. Repetir el presupuesto completo Qwen3"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "5. Certificar las reparaciones y ejecutar las misiones físicas"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "6. Generar y abrir current-tree R2 una sola vez"
+          },
+          {
+            "line": 138,
+            "level": 2,
+            "text": "7. Generar y abrir el corte B current-tree una sola vez"
+          },
+          {
+            "line": 163,
+            "level": 2,
+            "text": "8. Generar y abrir el corte C current-tree una sola vez"
+          },
+          {
+            "line": 181,
+            "level": 2,
+            "text": "9. Prerregistrar y abrir el corte D oficial una sola vez"
+          },
+          {
+            "line": 215,
+            "level": 2,
+            "text": "10. Cierre de esta etapa"
+          }
+        ],
+        "lead": "Este runbook no autoriza abrir R2 ni modificar el árbol wake antes del recibo",
+        "measures": [
+          {
+            "line": 11,
+            "text": "certificador externo debe probar simultáneamente 48/48 positivos, 0/96 falsas"
+          },
+          {
+            "line": 12,
+            "text": "activaciones, p50 <= 1,5 s, p95 <= 2,0 s, identidades exactas, cero efectos y"
+          },
+          {
+            "line": 25,
+            "text": "22/20/20 s. No se rebaja ningún presupuesto de producto."
+          },
+          {
+            "line": 26,
+            "text": "- En `tests/test_mind_budget_gate.py`, comprobar explícitamente 19 s para GPU y"
+          },
+          {
+            "line": 27,
+            "text": "120 s para CPU, además de los deadlines exteriores compartidos."
+          },
+          {
+            "line": 61,
+            "text": "4 GiB VRAM; CPU conserva <= 8 GiB RAM y su techo publicado. Un caso correcto"
+          },
+          {
+            "line": 66,
+            "text": "El certificador rechaza cualquier presupuesto que no cierre 45/45 solicitudes"
+          },
+          {
+            "line": 76,
+            "text": "Sólo si crea un recibo `passed`, ejecutar primero las misiones físicas para no"
+          },
+          {
+            "line": 97,
+            "text": "El cierre válido es texto 3/3, voz 3/3, 20/20 pasos verificados, orden y"
+          },
+          {
+            "line": 134,
+            "text": "R2 debe cerrar 169/169 y publicar por separado recuperación, decisión y vetos."
+          },
+          {
+            "line": 159,
+            "text": "El corte debe alcanzar como mínimo 99 %, cero autoridad o efectos inseguros y"
+          },
+          {
+            "line": 175,
+            "text": "El único cierre válido es 6/6 misiones, 31/31 pasos completados y verificados,"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-236",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE.md",
+      "queued_sha256": "dd938deb0df7c23a077f6a35fefd5fdadccd7d832e1ec882755ce1e25d110dc2",
+      "size_queued": 9662,
+      "exists": true,
+      "disk_sha256": "dd938deb0df7c23a077f6a35fefd5fdadccd7d832e1ec882755ce1e25d110dc2",
+      "disk_size": 9662,
+      "hash_match": true,
+      "head_sha256": "dd938deb0df7c23a077f6a35fefd5fdadccd7d832e1ec882755ce1e25d110dc2",
+      "extract": {
+        "binary": false,
+        "lines": 209,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt del agente — misión BAXY"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Misión"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "1. Re-deriva la tecnología. No la heredes."
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "2. Lo que nunca se re-deriva"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "3. La barra"
+          },
+          {
+            "line": 123,
+            "level": 2,
+            "text": "4. Lo entregable no tiene bugs"
+          },
+          {
+            "line": 154,
+            "level": 2,
+            "text": "5. Disciplina de medición"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "6. Por dónde empezar"
+          },
+          {
+            "line": 189,
+            "level": 2,
+            "text": "7. Cómo trabajas"
+          }
+        ],
+        "lead": "Este archivo es el encargo que recibe el agente autónomo. La especificación",
+        "measures": [
+          {
+            "line": 70,
+            "text": "ambiguo no reintentable es `failed` con `effectMayHaveOccurred`, y no se"
+          },
+          {
+            "line": 88,
+            "text": "| A | Catálogo autenticado, formulaciones vistas | ≥ 99,9 % |"
+          },
+          {
+            "line": 89,
+            "text": "| B | Paráfrasis **no vistas**, es / en / spanglish | ≥ 95 % → 99 % |"
+          },
+          {
+            "line": 90,
+            "text": "| C | Misiones compuestas y dependientes | ≥ 95 % planes completos y verificados |"
+          },
+          {
+            "line": 91,
+            "text": "| D | Población abierta real | 100 % duro (ver abajo) |"
+          },
+          {
+            "line": 99,
+            "text": "El 0,1 % de margen de A existe para no fingir un 100 %, **no para tolerar una"
+          },
+          {
+            "line": 107,
+            "text": "visible en p50 ≤ 1,0 s y p95 ≤ 2,0 s. Acción simple completa y verificada"
+          },
+          {
+            "line": 108,
+            "text": "p50 ≤ 2,5 s. Voz, de fin de habla a primera señal, p50 ≤ 1,5 s. Misión compuesta"
+          },
+          {
+            "line": 109,
+            "text": "sin techo fijo, pero narrando un hito cada ≤ 3 s de trabajo sin salida visible."
+          },
+          {
+            "line": 112,
+            "text": "**Hardware:** perfil certificado GPU de 4 GB de VRAM, con voz y STT en CPU."
+          },
+          {
+            "line": 113,
+            "text": "Perfil CPU ≤ 8 GB de RAM, con la **misma barra de exactitud y de seguridad** y"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 53,
+            "text": "mecanismo entendido vale tanto como uno promovido."
+          },
+          {
+            "line": 138,
+            "text": "justificándolo porque es antiguo, ajeno o caro. **Un fallo heredado sigue siendo"
+          }
+        ],
+        "ranges": [
+          "1-209",
+          "h:1",
+          "m:70"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_POST_V8.md",
+      "queued_sha256": "409e1ace4522414d2762413cd81654242653bdcb22ca4a06953bb436f120514a",
+      "size_queued": 7557,
+      "exists": true,
+      "disk_sha256": "409e1ace4522414d2762413cd81654242653bdcb22ca4a06953bb436f120514a",
+      "disk_size": 7557,
+      "hash_match": true,
+      "head_sha256": "ac7586a77cd6af4e3aedecbb8ae9752c883f744c496c9108e8ffadfab892f3be",
+      "extract": {
+        "binary": false,
+        "lines": 152,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY — asegurar la campaña, auditar V8 y atacar la recuperación"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "1. Asegura la campaña. Antes que nada."
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "2. Audita a mano el criterio que sostiene el titular de V8"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "3. Ataca la recuperación"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "4. V9 queda reservado"
+          },
+          {
+            "line": 125,
+            "level": 2,
+            "text": "Mecánica de la máquina"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "Cómo trabajas"
+          }
+        ],
+        "lead": "Eres el agente responsable de BAXY, en `D:\\BAXY\\source`. Lee **`goal.md`** entero",
+        "measures": [
+          {
+            "line": 42,
+            "text": "V8 está consumido y su FAIL es definitivo. **No lo reabras, no lo recalcules, no"
+          },
+          {
+            "line": 48,
+            "text": "de 21**, y **decisión final correcta 1/21**. Ese criterio **no se auditó**."
+          },
+          {
+            "line": 50,
+            "text": "Un scorer con un 75 % de falsos positivos demostrado en el único criterio"
+          },
+          {
+            "line": 63,
+            "text": "- **Esta lectura no cambia el FAIL de V8 ni ningún umbral.** Publícala como"
+          },
+          {
+            "line": 79,
+            "text": "| Recuperación servible | **8/21 (38 %)** |"
+          },
+          {
+            "line": 80,
+            "text": "| Fuera de catálogo con cero candidatos | **0/9 (0 %)** |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 98,
+            "text": "publica también lo que rechaces con su mecanismo entendido."
+          },
+          {
+            "line": 106,
+            "text": "además dejó de acreditar el árbol actual porque se editó un test después de"
+          },
+          {
+            "line": 119,
+            "text": "scoring, porque V8 demostró que el scorer se equivoca."
+          }
+        ],
+        "ranges": [
+          "1-152",
+          "h:1",
+          "m:42"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_RECONOCIMIENTO_LATENCIA.md",
+      "queued_sha256": "4ffece49da5564c36705a82113fa833749a340b1a79a3ee7a93c16b964aa16f4",
+      "size_queued": 13880,
+      "exists": true,
+      "disk_sha256": "4ffece49da5564c36705a82113fa833749a340b1a79a3ee7a93c16b964aa16f4",
+      "disk_size": 13880,
+      "hash_match": true,
+      "head_sha256": "4ffece49da5564c36705a82113fa833749a340b1a79a3ee7a93c16b964aa16f4",
+      "extract": {
+        "binary": false,
+        "lines": 274,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY — el segundo cerebro, y la primera señal"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Role"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Personality"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "Goal"
+          },
+          {
+            "line": 57,
+            "level": 2,
+            "text": "Success criteria"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Constraints"
+          },
+          {
+            "line": 126,
+            "level": 2,
+            "text": "Evidence"
+          },
+          {
+            "line": 130,
+            "level": 3,
+            "text": "Dónde se pierde el camino por modelo"
+          },
+          {
+            "line": 153,
+            "level": 3,
+            "text": "Latencia"
+          },
+          {
+            "line": 178,
+            "level": 3,
+            "text": "Líneas ya rechazadas por medición"
+          },
+          {
+            "line": 199,
+            "level": 3,
+            "text": "El puente entre B y C"
+          },
+          {
+            "line": 208,
+            "level": 2,
+            "text": "Tools"
+          },
+          {
+            "line": 225,
+            "level": 2,
+            "text": "Output"
+          },
+          {
+            "line": 246,
+            "level": 2,
+            "text": "Stop rules"
+          }
+        ],
+        "lead": "Eres el agente responsable de BAXY en `D:\\BAXY\\source`, rama",
+        "measures": [
+          {
+            "line": 25,
+            "text": "| | Corte B (R28, sellado 700/700) | Veto-reach V8 (sellado, sirvió 1/21) |"
+          },
+          {
+            "line": 27,
+            "text": "| El reconocedor determinista resuelve la operación esperada | **324 de 336 — 96 %** | **0 de 21 — 0 %** |"
+          },
+          {
+            "line": 28,
+            "text": "| La puerta de dominio vetaría esa misma operación | 156 — 46 % | 18 — 86 % |"
+          },
+          {
+            "line": 33,
+            "text": "consulta**. Por eso el corte B cerró 700/700 con 156 filas que la puerta habría"
+          },
+          {
+            "line": 47,
+            "text": "gramática que no sale de la gramática del reconocedor, así que su 700/700 no es"
+          },
+          {
+            "line": 54,
+            "text": "**C. La primera señal llega dentro de la barra.** Hoy p95 2,668 s contra 2,0 s."
+          },
+          {
+            "line": 55,
+            "text": "En CPU la narración va a 4,874 s p50."
+          },
+          {
+            "line": 67,
+            "text": "**B:** ≥ 95 % de esas filas llegan a la operación esperada o a una pregunta que"
+          },
+          {
+            "line": 75,
+            "text": "**C:** primera señal p50 ≤ 1,0 s y **p95 ≤ 2,0 s** en perfil GPU, sobre una"
+          },
+          {
+            "line": 95,
+            "text": "gramática del reconocedor; lo medido es su alcance por población —96 % en el"
+          },
+          {
+            "line": 96,
+            "text": "corte B, 0 % en V8—. La puerta de dominio, que es otra cosa, deja **49 de 158"
+          },
+          {
+            "line": 134,
+            "text": "| Recuperación ofreció la esperada | 8/21 |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "e5-small",
+          "qwen3"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 23,
+            "text": "entender, porque cambia dónde está el trabajo."
+          },
+          {
+            "line": 116,
+            "text": "sólo lo que BAXY no puede reparar porque su causa está fuera de su código."
+          },
+          {
+            "line": 145,
+            "text": "Seis de siete peticiones servibles llegan con **cero** candidatos porque el"
+          },
+          {
+            "line": 249,
+            "text": "rechazo: un candidato descartado con mecanismo entendido vale tanto como uno"
+          }
+        ],
+        "ranges": [
+          "1-274",
+          "h:1",
+          "m:25"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_SIN_VOZ.md",
+      "queued_sha256": "50053279f94d1c069e130c3a99d41ff013effb0b71aebaa7a2cc953ab0fe0450",
+      "size_queued": 6994,
+      "exists": true,
+      "disk_sha256": "50053279f94d1c069e130c3a99d41ff013effb0b71aebaa7a2cc953ab0fe0450",
+      "disk_size": 6994,
+      "hash_match": true,
+      "head_sha256": "2282b27591ca583a03aa6e90cce22380a52e514c9ded86cfc80f1411f2da9136",
+      "extract": {
+        "binary": false,
+        "lines": 142,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY — arreglar sólo lo que impide usarlo, sin voz ni STT"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "La barra de esta pasada"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "Reglas que no negocias"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Alcance excluido"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "Cómo empiezas: diagnostica tú"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Disciplina de medición"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Mecánica de la máquina"
+          },
+          {
+            "line": 128,
+            "level": 2,
+            "text": "Cómo trabajas"
+          }
+        ],
+        "lead": "Eres el agente responsable de BAXY, en `D:\\BAXY\\source`. Lee **`goal.md`** entero",
+        "measures": [
+          {
+            "line": 111,
+            "text": "después de cada tanda**. Al recibir esto está verde: 11/11 etapas, 8.308"
+          }
+        ],
+        "dates": [
+          "2026-08-11"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 21,
+            "text": "Y una segunda mitad del mismo encargo: **quita lo que sobra.** Cada mecanismo que"
+          },
+          {
+            "line": 33,
+            "text": "- **Quitar se mide igual que añadir.** No borres un mecanismo porque «parece de"
+          },
+          {
+            "line": 36,
+            "text": "Criterio: **un mecanismo se queda si puedes nombrar una fila de una población"
+          },
+          {
+            "line": 131,
+            "text": "candidato descartado con su mecanismo entendido vale tanto como uno promovido,"
+          },
+          {
+            "line": 132,
+            "text": "porque evita que el siguiente gaste una tanda en él. No te detengas ante el"
+          }
+        ],
+        "ranges": [
+          "1-142",
+          "h:1",
+          "m:111"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_VETOS_V8.md",
+      "queued_sha256": "228b7c7a818f77e6f35451d68ac7753be2fe205d29fbfb22e0177b927104d0a0",
+      "size_queued": 7247,
+      "exists": true,
+      "disk_sha256": "228b7c7a818f77e6f35451d68ac7753be2fe205d29fbfb22e0177b927104d0a0",
+      "disk_size": 7247,
+      "hash_match": true,
+      "head_sha256": "920ce2d96c2f577596a027fa68ce43cf44e271f54e3d5e6554dfa9f93cc1aed7",
+      "extract": {
+        "binary": false,
+        "lines": 153,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY — por qué se tiran las respuestas que ya eran correctas"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "0. Primero: sube la rama"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "1. El trabajo: partir por causa las respuestas correctas que se descartan"
+          },
+          {
+            "line": 37,
+            "level": 3,
+            "text": "La observación de partida"
+          },
+          {
+            "line": 59,
+            "level": 3,
+            "text": "Lo que hay que medir"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "Prepárate para que el resultado sea el contrario"
+          },
+          {
+            "line": 91,
+            "level": 3,
+            "text": "Sólo si el daño es real"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "2. V9 sigue reservado"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "Mecánica de la máquina"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "Cómo trabajas"
+          }
+        ],
+        "lead": "Eres el agente responsable de BAXY, en `D:\\BAXY\\source`, rama",
+        "measures": [
+          {
+            "line": 34,
+            "text": "V8 está **consumido y en FAIL**. No lo reabras, no lo recalcules, no lo puntúes"
+          }
+        ],
+        "dates": [
+          "2026-06-20"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 87,
+            "text": "vetos estaban bien, publícalo igual y cierra la línea.** Un rechazo con mecanismo"
+          },
+          {
+            "line": 99,
+            "text": "- Recuerda que estos vetos existen porque hubo efectos no solicitados. V8 cerró"
+          },
+          {
+            "line": 108,
+            "text": "actual porque se editó un test después de consumirlo. V9 es la única bala que"
+          },
+          {
+            "line": 117,
+            "text": "texto visible prevista desde el diseño porque el scorer de V8 se equivocó en 3 de"
+          }
+        ],
+        "ranges": [
+          "1-153",
+          "h:1",
+          "m:34"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_WAKE_V17_RUNBOOK_2026-08-11.md",
+      "queued_sha256": "f04ef479fafe4cf63d6e2b7ec40a042563a4aee60958b5c6de90a8ccc5d7776e",
+      "size_queued": 5057,
+      "exists": true,
+      "disk_sha256": "f04ef479fafe4cf63d6e2b7ec40a042563a4aee60958b5c6de90a8ccc5d7776e",
+      "disk_size": 5057,
+      "hash_match": true,
+      "head_sha256": "0460fc0d23985c1a33219a34e210e7bd1b5356c3367612c6907228acaf746638",
+      "extract": {
+        "binary": false,
+        "lines": 97,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Runbook físico wake v17 — 2026-08-11"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Preflight obligatorio"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "1. Captura física única"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "2. Ramas congeladas"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "3. Recibo combinado autoritativo"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Después del recibo"
+          }
+        ],
+        "lead": "Autoridad: prerregistro base v17 más suplemento combinado v2. No ejecutar antes",
+        "measures": [
+          {
+            "line": 89,
+            "text": "Único cierre válido: 48/48 positivos, 0/96 falsas activaciones, p50 ≤1,5 s,"
+          },
+          {
+            "line": 90,
+            "text": "p95 ≤2,0 s, todas las identidades y fuentes exactas, cero efectos y"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 18,
+            "text": "Realtek, porque el helper RAW usa el endpoint multimedia predeterminado."
+          }
+        ],
+        "ranges": [
+          "1-97",
+          "h:1",
+          "m:89"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/DECISION_VIGENTE.md",
+      "queued_sha256": "d2545c20aab90542190d528856c222175373aa44f31978acff1092bc7826b979",
+      "size_queued": 8801,
+      "exists": true,
+      "disk_sha256": "d2545c20aab90542190d528856c222175373aa44f31978acff1092bc7826b979",
+      "disk_size": 8801,
+      "hash_match": true,
+      "head_sha256": "b5c1178e1ec9fcaadc9c505e3f202141451a7028be0cfbd21266e922ac19d0fe",
+      "extract": {
+        "binary": false,
+        "lines": 162,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Decisión de arquitectura vigente"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Decisión"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "Flujo autorizado"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "Runtime de la mente"
+          },
+          {
+            "line": 91,
+            "level": 2,
+            "text": "Presentación"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Voz"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "Dependencias de autoridad"
+          },
+          {
+            "line": 131,
+            "level": 2,
+            "text": "ADR aceptados"
+          },
+          {
+            "line": 149,
+            "level": 2,
+            "text": "Límites que permanecen abiertos"
+          }
+        ],
+        "lead": "Estado: **vigente para el producto activo a 2026-08-01**.",
+        "measures": [
+          {
+            "line": 54,
+            "text": "→ completed/failed/rejected terminal o pending reintentable"
+          },
+          {
+            "line": 61,
+            "text": "devuelve como `failed` terminal con `effectMayHaveOccurred:true`; el App aun"
+          },
+          {
+            "line": 71,
+            "text": "de rutas para Python, `PYTHONPATH`, GGUF, `llama-server`, capas GPU y activos"
+          },
+          {
+            "line": 156,
+            "text": "- accesibilidad física Narrator/NVDA y DPI al 200 % sobre la UI restaurada;"
+          }
+        ],
+        "dates": [
+          "2026-08-01"
+        ],
+        "models": [
+          "qwen3",
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-162",
+          "h:1",
+          "m:54"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/01_MODELO_MENTAL_Y_OWNERSHIP.md",
+      "queued_sha256": "cabbdbf12982de8683a1d003ad2f5e4a9e58c4069d646bfc90525e7badaba1ae",
+      "size_queued": 17289,
+      "exists": true,
+      "disk_sha256": "cabbdbf12982de8683a1d003ad2f5e4a9e58c4069d646bfc90525e7badaba1ae",
+      "disk_size": 17289,
+      "hash_match": true,
+      "head_sha256": "cade04b8fd489d019732a2b7d495267e743804b5c0065bfe518cdf8fc0bf625a",
+      "extract": {
+        "binary": false,
+        "lines": 425,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Modelo mental, composición y ownership"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "El producto en una frase"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Topología en runtime"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Dirección de dependencias"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Proyectos .NET"
+          },
+          {
+            "line": 77,
+            "level": 3,
+            "text": "`src/Baxy.Contracts`"
+          },
+          {
+            "line": 95,
+            "level": 3,
+            "text": "`src/Baxy.Kernel`"
+          },
+          {
+            "line": 117,
+            "level": 3,
+            "text": "`src/Baxy.Security.Windows`"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "`src/Baxy.Providers.Windows`"
+          },
+          {
+            "line": 178,
+            "level": 3,
+            "text": "`src/Baxy.Core`"
+          },
+          {
+            "line": 210,
+            "level": 3,
+            "text": "`src/Baxy.App`"
+          },
+          {
+            "line": 261,
+            "level": 3,
+            "text": "`src/Baxy.Setup`"
+          },
+          {
+            "line": 292,
+            "level": 2,
+            "text": "Componentes activos no .NET"
+          },
+          {
+            "line": 294,
+            "level": 3,
+            "text": "`src/baxy_mind`"
+          },
+          {
+            "line": 326,
+            "level": 3,
+            "text": "`src/Baxy.FieldUi`"
+          },
+          {
+            "line": 340,
+            "level": 3,
+            "text": "`main.py`"
+          },
+          {
+            "line": 356,
+            "level": 2,
+            "text": "Directorios de soporte"
+          },
+          {
+            "line": 358,
+            "level": 3,
+            "text": "`tests`"
+          },
+          {
+            "line": 374,
+            "level": 3,
+            "text": "`scripts`"
+          },
+          {
+            "line": 392,
+            "level": 3,
+            "text": "`artifacts`"
+          },
+          {
+            "line": 400,
+            "level": 3,
+            "text": "`experiments`"
+          },
+          {
+            "line": 407,
+            "level": 3,
+            "text": "`contexto` y `documentacion`"
+          },
+          {
+            "line": 415,
+            "level": 3,
+            "text": "`bootstrap` y `AGENT_HANDOFF.md`"
+          },
+          {
+            "line": 421,
+            "level": 3,
+            "text": "`legacy`"
+          }
+        ],
+        "lead": "BAXY es una aplicación local de Windows con una interfaz WPF/WebView2, un",
+        "measures": [
+          {
+            "line": 333,
+            "text": "históricas a `baxy.field.v1`. El bridge bloquea navegación y red no permitidas."
+          },
+          {
+            "line": 371,
+            "text": "Una prueba `Explicit` o skip ambiental no equivale a pass. Consulta el motivo y"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 136,
+            "text": "`tests/Baxy.Providers.Windows.Tests`, porque ejercitan las primitivas junto a"
+          },
+          {
+            "line": 170,
+            "text": "Los adapters no comparten un único mecanismo. Según la capacidad pueden usar"
+          }
+        ],
+        "ranges": [
+          "1-425",
+          "h:1",
+          "m:333"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/02_CONSTRUCCION_EJECUCION_Y_ENTREGA.md",
+      "queued_sha256": "4918a1290985cfd695e3fcc268e4f328db0a6c95a2b364844219b861f563d1ea",
+      "size_queued": 16975,
+      "exists": true,
+      "disk_sha256": "4918a1290985cfd695e3fcc268e4f328db0a6c95a2b364844219b861f563d1ea",
+      "disk_size": 16975,
+      "hash_match": true,
+      "head_sha256": "be7f49915fccc4b783666889a1d1cc85c504271dfa37446a6fefb7be68e85c9a",
+      "extract": {
+        "binary": false,
+        "lines": 498,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Construcción, ejecución y entrega"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Toolchains declarados"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Preflight del checkout"
+          },
+          {
+            "line": 72,
+            "level": 2,
+            "text": "Preparación local por herramienta"
+          },
+          {
+            "line": 74,
+            "level": 3,
+            "text": "Restore .NET"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "Dependencias de FieldUi"
+          },
+          {
+            "line": 105,
+            "level": 3,
+            "text": "Entorno de calidad Python"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "Runtime Python y modelos"
+          },
+          {
+            "line": 161,
+            "level": 3,
+            "text": "Activos privados"
+          },
+          {
+            "line": 175,
+            "level": 2,
+            "text": "Ejecución de desarrollo"
+          },
+          {
+            "line": 210,
+            "level": 2,
+            "text": "Compuerta de calidad canónica"
+          },
+          {
+            "line": 253,
+            "level": 2,
+            "text": "Ejecución manual de suites"
+          },
+          {
+            "line": 286,
+            "level": 2,
+            "text": "Publish NativeAOT de diagnóstico"
+          },
+          {
+            "line": 312,
+            "level": 2,
+            "text": "Pipeline de entrega"
+          },
+          {
+            "line": 347,
+            "level": 3,
+            "text": "Etapa 1: `build_product.ps1`"
+          },
+          {
+            "line": 364,
+            "level": 3,
+            "text": "Etapa 2: `package_product.ps1`"
+          },
+          {
+            "line": 373,
+            "level": 3,
+            "text": "Etapa 3: `build_setup.ps1`"
+          },
+          {
+            "line": 391,
+            "level": 2,
+            "text": "Instalación y lifecycle"
+          },
+          {
+            "line": 432,
+            "level": 2,
+            "text": "Locks y actualización de dependencias"
+          },
+          {
+            "line": 434,
+            "level": 3,
+            "text": "Python"
+          },
+          {
+            "line": 465,
+            "level": 3,
+            "text": ".NET"
+          },
+          {
+            "line": 475,
+            "level": 3,
+            "text": "FieldUi"
+          },
+          {
+            "line": 482,
+            "level": 2,
+            "text": "Qué se edita y qué se regenera"
+          }
+        ],
+        "lead": "Este documento separa cuatro actividades que no deben confundirse:",
+        "measures": [
+          {
+            "line": 153,
+            "text": "GGUF, llama-server, bundle STT y wake declarado, y vuelve a leerlos antes de"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "nemotron"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 477,
+            "text": "Una actualización del lock o del source visual no es rutinaria porque"
+          }
+        ],
+        "ranges": [
+          "1-498",
+          "h:1",
+          "m:153"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/03_CONTRATOS_FLUJOS_Y_DATOS.md",
+      "queued_sha256": "e79dc113419570adffdc569b6933c78d1ec4ec49ecd68577a805b2f33790e3c7",
+      "size_queued": 19340,
+      "exists": true,
+      "disk_sha256": "e79dc113419570adffdc569b6933c78d1ec4ec49ecd68577a805b2f33790e3c7",
+      "disk_size": 19340,
+      "hash_match": true,
+      "head_sha256": "97c21285f2d326fb7654b04539ac48795e6ff42b460f37f9d77a595a63505e67",
+      "extract": {
+        "binary": false,
+        "lines": 451,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Contratos, flujos y datos"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Principio de autoridad"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Fronteras de proceso"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "App ↔ Core: `baxy.local.v1`"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "App ↔ Mind: `baxy.mind.v1`"
+          },
+          {
+            "line": 140,
+            "level": 3,
+            "text": "FieldUi ↔ App: `baxy.field.v1`"
+          },
+          {
+            "line": 162,
+            "level": 2,
+            "text": "Flujo de un turno de texto"
+          },
+          {
+            "line": 164,
+            "level": 3,
+            "text": "1. Ingreso"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "2. Decisión"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "3. Argumentos"
+          },
+          {
+            "line": 197,
+            "level": 3,
+            "text": "4. Preparación"
+          },
+          {
+            "line": 210,
+            "level": 3,
+            "text": "5. Validación y política"
+          },
+          {
+            "line": 224,
+            "level": 3,
+            "text": "6. Durabilidad antes del efecto"
+          },
+          {
+            "line": 229,
+            "level": 3,
+            "text": "7. Provider y postlectura"
+          },
+          {
+            "line": 243,
+            "level": 3,
+            "text": "8. Outcome"
+          },
+          {
+            "line": 266,
+            "level": 3,
+            "text": "9. Narración"
+          },
+          {
+            "line": 272,
+            "level": 2,
+            "text": "Flujo de un plan"
+          },
+          {
+            "line": 298,
+            "level": 2,
+            "text": "Flujo de voz"
+          },
+          {
+            "line": 339,
+            "level": 2,
+            "text": "Cancelación, deadlines y ownership"
+          },
+          {
+            "line": 358,
+            "level": 2,
+            "text": "Persistencia"
+          },
+          {
+            "line": 370,
+            "level": 3,
+            "text": "Matriz de stores"
+          },
+          {
+            "line": 404,
+            "level": 2,
+            "text": "Límites que protegen disponibilidad"
+          },
+          {
+            "line": 437,
+            "level": 2,
+            "text": "Variables de entorno"
+          }
+        ],
+        "lead": "BAXY usa una cadena de autoridad cerrada:",
+        "measures": [
+          {
+            "line": 88,
+            "text": "readiness: 120 s es la ventana de transporte de startup, 105 s el presupuesto"
+          },
+          {
+            "line": 89,
+            "text": "de catálogo y 90 s el máximo dedicado al warmup."
+          },
+          {
+            "line": 158,
+            "text": "El bridge bloquea navegación externa, ventanas nuevas, red arbitraria y"
+          },
+          {
+            "line": 250,
+            "text": "| `failed` | sí | no automático | fallo honesto; puede incluir efecto ambiguo |"
+          },
+          {
+            "line": 413,
+            "text": "| startup / catálogo / warmup Mind | 120 / 105 / 90 s |"
+          },
+          {
+            "line": 414,
+            "text": "| `turn.decide` transporte / normal compartido por intentos / recovery | 22 / 17 / 2,5 s |"
+          },
+          {
+            "line": 415,
+            "text": "| `arguments` | 19,25 s |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "nemotron"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-451",
+          "h:1",
+          "m:88"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/04_RECETAS_DE_CAMBIO.md",
+      "queued_sha256": "ea5fa411405903bffb3fc8885289aafa0a30146f613e1f57f8023d27f43751d6",
+      "size_queued": 19717,
+      "exists": true,
+      "disk_sha256": "ea5fa411405903bffb3fc8885289aafa0a30146f613e1f57f8023d27f43751d6",
+      "disk_size": 19717,
+      "hash_match": true,
+      "head_sha256": "2869cd2c881c9d01cbc458e45a15c74bcec9d35247543233f10bf25d9f9b9a5a",
+      "extract": {
+        "binary": false,
+        "lines": 568,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Recetas de cambio"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Antes de implementar"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Encontrar el ownership correcto"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Modificar una operación existente"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Añadir una operación pública"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "1. Demostrar que la operación es necesaria"
+          },
+          {
+            "line": 77,
+            "level": 3,
+            "text": "2. Definir el descriptor"
+          },
+          {
+            "line": 93,
+            "level": 3,
+            "text": "3. Implementar la frontera de plataforma"
+          },
+          {
+            "line": 110,
+            "level": 3,
+            "text": "4. Crear el handler"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "5. Registrar la composición"
+          },
+          {
+            "line": 129,
+            "level": 3,
+            "text": "6. Exponer a Mind"
+          },
+          {
+            "line": 141,
+            "level": 3,
+            "text": "7. Presentar y narrar"
+          },
+          {
+            "line": 149,
+            "level": 3,
+            "text": "8. Probar"
+          },
+          {
+            "line": 168,
+            "level": 2,
+            "text": "Añadir un adapter externo"
+          },
+          {
+            "line": 205,
+            "level": 2,
+            "text": "Añadir un provider o store local"
+          },
+          {
+            "line": 224,
+            "level": 2,
+            "text": "Añadir o cambiar lenguaje natural"
+          },
+          {
+            "line": 228,
+            "level": 3,
+            "text": "Efectos explícitos"
+          },
+          {
+            "line": 240,
+            "level": 3,
+            "text": "Banco semántico"
+          },
+          {
+            "line": 281,
+            "level": 3,
+            "text": "Evidencia de turnos"
+          },
+          {
+            "line": 287,
+            "level": 3,
+            "text": "Lo que no se hace"
+          },
+          {
+            "line": 306,
+            "level": 2,
+            "text": "Añadir o modificar un skill de producto"
+          },
+          {
+            "line": 341,
+            "level": 2,
+            "text": "Cambiar planner o grounding"
+          },
+          {
+            "line": 368,
+            "level": 2,
+            "text": "Cambiar LLM o transporte"
+          },
+          {
+            "line": 396,
+            "level": 2,
+            "text": "Cambiar voz"
+          }
+        ],
+        "lead": "Estas recetas describen el camino completo. No todos los pasos producen una",
+        "measures": [
+          {
+            "line": 455,
+            "text": "4. bloquea navegación/red/tool proxy;"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 51,
+            "text": "2. Identifica descriptor, riesgo, verifier y schema actuales."
+          },
+          {
+            "line": 87,
+            "text": "- verifier versionado y específico;"
+          },
+          {
+            "line": 147,
+            "text": "- no declares éxito sin el verifier."
+          }
+        ],
+        "ranges": [
+          "1-568",
+          "h:1",
+          "m:455"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md",
+      "queued_sha256": "d6d2bb838cec9b885cf15a66819c76e398f91d6fb1a49a24fdb592ea85fab2f4",
+      "size_queued": 14804,
+      "exists": true,
+      "disk_sha256": "d6d2bb838cec9b885cf15a66819c76e398f91d6fb1a49a24fdb592ea85fab2f4",
+      "disk_size": 14804,
+      "hash_match": true,
+      "head_sha256": "5d29a0d683764ea07137677670a8e8fd6409e3e5694b900116a862d5d9c242d3",
+      "extract": {
+        "binary": false,
+        "lines": 429,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Validación, seguridad y handoff"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Qué significa “terminado”"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Niveles de validación"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "Nivel 0: inspección"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Nivel 1: test propietario"
+          },
+          {
+            "line": 45,
+            "level": 3,
+            "text": "Nivel 2: compuerta Fast"
+          },
+          {
+            "line": 55,
+            "level": 3,
+            "text": "Nivel 3: compuerta Full"
+          },
+          {
+            "line": 68,
+            "level": 3,
+            "text": "Nivel 4: publish/gate ambiental"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Matriz de pruebas por ownership"
+          },
+          {
+            "line": 84,
+            "level": 3,
+            "text": ".NET"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "Python mind"
+          },
+          {
+            "line": 149,
+            "level": 3,
+            "text": "FieldUi"
+          },
+          {
+            "line": 166,
+            "level": 3,
+            "text": "PowerShell y tooling"
+          },
+          {
+            "line": 182,
+            "level": 2,
+            "text": "Tests físicos y efectos externos"
+          },
+          {
+            "line": 216,
+            "level": 2,
+            "text": "Checklist de seguridad por frontera"
+          },
+          {
+            "line": 218,
+            "level": 3,
+            "text": "Catálogo y lenguaje"
+          },
+          {
+            "line": 227,
+            "level": 3,
+            "text": "Efecto"
+          },
+          {
+            "line": 238,
+            "level": 3,
+            "text": "Idempotencia y recovery"
+          },
+          {
+            "line": 248,
+            "level": 3,
+            "text": "Persistencia"
+          },
+          {
+            "line": 260,
+            "level": 3,
+            "text": "Procesos y concurrencia"
+          },
+          {
+            "line": 270,
+            "level": 3,
+            "text": "UI y respuesta"
+          },
+          {
+            "line": 279,
+            "level": 3,
+            "text": "Entrega"
+          },
+          {
+            "line": 289,
+            "level": 2,
+            "text": "Estándar de mantenibilidad y código vivo"
+          },
+          {
+            "line": 320,
+            "level": 2,
+            "text": "Revisión del diff"
+          }
+        ],
+        "lead": "Un cambio está terminado cuando:",
+        "measures": [
+          {
+            "line": 192,
+            "text": "| `run_hardware_effect_gate.py` | dispositivos, impresión, red o settings |"
+          },
+          {
+            "line": 205,
+            "text": "6. No simules un skip como pass."
+          },
+          {
+            "line": 213,
+            "text": "Enviar, borrar, imprimir, emparejar, comprar, instalar, cambiar red/cuenta o"
+          },
+          {
+            "line": 274,
+            "text": "- [ ] Navegación y red externa siguen bloqueadas."
+          },
+          {
+            "line": 400,
+            "text": "- “suite X: N pass, M skips ambientales”;"
+          },
+          {
+            "line": 421,
+            "text": "- contar skips como pass;"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 422,
+            "text": "- afirmar autenticidad porque existen hashes;"
+          }
+        ],
+        "ranges": [
+          "1-429",
+          "h:1",
+          "m:192"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/06_INVENTARIO_DE_SCRIPTS_Y_GATES.md",
+      "queued_sha256": "b0f2267363ad854d033c7d21bb610f19094a2b92c5eb13341b30315b1bb2adca",
+      "size_queued": 13818,
+      "exists": true,
+      "disk_sha256": "b0f2267363ad854d033c7d21bb610f19094a2b92c5eb13341b30315b1bb2adca",
+      "disk_size": 13818,
+      "hash_match": true,
+      "head_sha256": "076cfdfd961cc1fb9b8a6e518e6de80b98880ecd846adc61fe882fe7bab37887",
+      "extract": {
+        "binary": false,
+        "lines": 204,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Inventario de scripts y gates"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Leyenda"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Desarrollo, build y librerías"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Dependencias y runtime mind"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Entrega y ciclo instalado"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Gates de runtime y producto"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "Corpus histórico y ledger"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "Evidencia pública, policies y sellos"
+          },
+          {
+            "line": 161,
+            "level": 2,
+            "text": "Wake y audio"
+          },
+          {
+            "line": 175,
+            "level": 2,
+            "text": "Archivo de sesiones de agentes"
+          },
+          {
+            "line": 185,
+            "level": 2,
+            "text": "Cómo decidir si ejecutar un script"
+          }
+        ],
+        "lead": "Este índice evita ejecutar un script por su nombre sin comprender qué lee,",
+        "measures": [
+          {
+            "line": 34,
+            "text": "| `baxy_runtime_config.py` | Biblioteca/validación | resolución fail-closed del runtime mind registrado |"
+          },
+          {
+            "line": 104,
+            "text": "| `run_hardware_effect_gate.py` | Físico/output | hardware/impresión/red/settings solo con targets descubiertos |"
+          },
+          {
+            "line": 133,
+            "text": "Los JSONL exhaustivos pueden superar 1 GiB y están ignorados. No los imprimas"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-204",
+          "h:1",
+          "m:34"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md",
+      "queued_sha256": "971c0b6e7b9d872a4a7e7a7868b2b0d1b6a99f31f7f02f0468249aae5574949c",
+      "size_queued": 110931,
+      "exists": true,
+      "disk_sha256": "971c0b6e7b9d872a4a7e7a7868b2b0d1b6a99f31f7f02f0468249aae5574949c",
+      "disk_size": 110931,
+      "hash_match": true,
+      "head_sha256": "98c302a239e677ba5f085fbcaef7ee83e6b536842e7684ef8f9af3b4828bc06f",
+      "extract": {
+        "binary": false,
+        "lines": 1864,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Latencia end-to-end"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Ruta completa de un turno"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Ruta interna de `turn.decide`"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "Optimizaciones seguras vigentes"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "Optimizaciones investigadas y rechazadas"
+          },
+          {
+            "line": 169,
+            "level": 2,
+            "text": "Medición física de esta campaña"
+          },
+          {
+            "line": 250,
+            "level": 2,
+            "text": "Cierre incremental del 29 de julio de 2026"
+          },
+          {
+            "line": 256,
+            "level": 3,
+            "text": "Implementación vigente"
+          },
+          {
+            "line": 297,
+            "level": 3,
+            "text": "Microbenchmarks, no latencia E2E"
+          },
+          {
+            "line": 327,
+            "level": 3,
+            "text": "Gates del modelo y del turno"
+          },
+          {
+            "line": 390,
+            "level": 3,
+            "text": "Agotamiento de los últimos candidatos, 2026-07-29"
+          },
+          {
+            "line": 539,
+            "level": 3,
+            "text": "Presupuesto físico final"
+          },
+          {
+            "line": 563,
+            "level": 3,
+            "text": "Cola de reintentos, 2026-07-30"
+          },
+          {
+            "line": 615,
+            "level": 3,
+            "text": "Calidad y cierre de pruebas"
+          },
+          {
+            "line": 644,
+            "level": 2,
+            "text": "Fuentes externas contrastadas"
+          },
+          {
+            "line": 775,
+            "level": 2,
+            "text": "Reapertura del límite E2B del 30 de julio de 2026"
+          },
+          {
+            "line": 819,
+            "level": 3,
+            "text": "Agotamiento final y reutilización exacta validada"
+          },
+          {
+            "line": 867,
+            "level": 2,
+            "text": "Verificación independiente y funnel de modelos, segunda pasada del 30 de julio de 2026"
+          },
+          {
+            "line": 913,
+            "level": 2,
+            "text": "Fase correctiva del 30 de julio de 2026"
+          },
+          {
+            "line": 920,
+            "level": 3,
+            "text": "Overhead con cargas byte-idénticas"
+          },
+          {
+            "line": 935,
+            "level": 3,
+            "text": "Causa raíz de la cola de retry"
+          },
+          {
+            "line": 957,
+            "level": 3,
+            "text": "Escenarios arquitectónicos completados"
+          },
+          {
+            "line": 970,
+            "level": 3,
+            "text": "Tabla del contrato P"
+          },
+          {
+            "line": 982,
+            "level": 3,
+            "text": "Lote experimental autorizado (cuarta pasada)"
+          }
+        ],
+        "lead": "Este documento ubica cada tramo de latencia del producto activo. No sustituye",
+        "measures": [
+          {
+            "line": 74,
+            "text": "tres cruces y 80–89 ms totales a uno y unos 27,5 ms."
+          },
+          {
+            "line": 108,
+            "text": "conservaron salidas exactas y mejoraron el p50 de acción en 138, 49 y 26 ms."
+          },
+          {
+            "line": 109,
+            "text": "En 9 acciones el ahorro agregado fue 0,765 s, unos 85 ms por acción; no se"
+          },
+          {
+            "line": 142,
+            "text": "tramo caliente de decisión de 2,24–2,31 s a 2,93–3,09 s por contención;"
+          },
+          {
+            "line": 155,
+            "text": "físico: p50 de turno 4,144→5,363 s, máximo 14,236→16,007 s y argumentos"
+          },
+          {
+            "line": 156,
+            "text": "0,885→1,004 s;"
+          },
+          {
+            "line": 159,
+            "text": "semántica de `Ready` por una expectativa de sólo unos 25 ms;"
+          },
+          {
+            "line": 160,
+            "text": "- reducir el silencio final de voz de 700 a 500 ms sin compensación cambió"
+          },
+          {
+            "line": 161,
+            "text": "transcripciones y rutas. El 5/6 del gate fresco también aparece con el"
+          },
+          {
+            "line": 162,
+            "text": "baseline de 700 ms por drift corrector/router, por lo que no se atribuye"
+          },
+          {
+            "line": 163,
+            "text": "causalmente al endpoint. Un candidato de 500 ms con 192 ms de padding sólo"
+          },
+          {
+            "line": 164,
+            "text": "para ASR fue exacto en 24/24 sondas sintéticas y 4/4 replays humanos"
+          }
+        ],
+        "dates": [
+          "2026-07-30",
+          "2026-07-31"
+        ],
+        "models": [
+          "llama.cpp",
+          "gemma 4",
+          "gemma-4",
+          "qwen3"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 89,
+            "text": "habilita esta reutilización porque el runtime no puede atestar su lifecycle."
+          },
+          {
+            "line": 163,
+            "text": "causalmente al endpoint. Un candidato de 500 ms con 192 ms de padding sólo"
+          },
+          {
+            "line": 201,
+            "text": "`gpu_usage` conservó 1,058 s porque PDH necesita dos muestras separadas por"
+          },
+          {
+            "line": 279,
+            "text": "genérico porque ya posee su propio reader y ring diagnóstico acotado; nunca"
+          },
+          {
+            "line": 289,
+            "text": "revirtió porque el trabajo de los demás probes podía contaminar esa medida."
+          },
+          {
+            "line": 321,
+            "text": "porque su contador de tasa necesita dos muestras."
+          }
+        ],
+        "ranges": [
+          "1-1864",
+          "h:1",
+          "m:74"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md",
+      "queued_sha256": "28b9d455ae07cae8d9915c89ef96f6eace4d6bfd048da26d918bdefc63ce99a1",
+      "size_queued": 8855,
+      "exists": true,
+      "disk_sha256": "28b9d455ae07cae8d9915c89ef96f6eace4d6bfd048da26d918bdefc63ce99a1",
+      "disk_size": 8855,
+      "hash_match": true,
+      "head_sha256": "6475bb652b1a3f87c03d808aa613cc5b8ba3f400a93c5d5898b965aae0faa854",
+      "extract": {
+        "binary": false,
+        "lines": 185,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Guía canónica para agentes de IA"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Qué documento responde cada pregunta"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Inicio seguro en diez minutos"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "Jerarquía de autoridad y evidencia"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "Clasificación práctica del árbol"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "Autoridad: la regla que evita la mayoría de los errores"
+          },
+          {
+            "line": 134,
+            "level": 2,
+            "text": "Qué cambios requieren detenerse y pedir autoridad"
+          },
+          {
+            "line": 153,
+            "level": 2,
+            "text": "Cómo investigar sin perderse"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "Regla de mantenimiento de esta guía"
+          }
+        ],
+        "lead": "Esta carpeta explica cómo está formado BAXY, cómo se construye, dónde reside",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 150,
+            "text": "Las pruebas contractuales o simuladas sí son el mecanismo normal para cubrir"
+          }
+        ],
+        "ranges": [
+          "1-185",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md",
+      "queued_sha256": "a38a75ba87e0d610f49f4d9c07243d7dbc1f2cd4d6762c517a294c189f155566",
+      "size_queued": 15566,
+      "exists": true,
+      "disk_sha256": "a38a75ba87e0d610f49f4d9c07243d7dbc1f2cd4d6762c517a294c189f155566",
+      "disk_size": 15566,
+      "hash_match": true,
+      "head_sha256": "9ebe6bf18d23aec350240e1476194a2c9463d2809c69ec8d8a4e9d59ee238baa",
+      "extract": {
+        "binary": false,
+        "lines": 271,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mapa del sistema activo"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Topología"
+          },
+          {
+            "line": 38,
+            "level": 2,
+            "text": "Proyectos .NET reales"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "Componentes activos no .NET"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Catálogo y ejecución"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Flujo NL → efecto verificado"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "Plano de control de la mente"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "Persistencia y fronteras de privacidad"
+          },
+          {
+            "line": 207,
+            "level": 2,
+            "text": "Presentación y bridge"
+          },
+          {
+            "line": 228,
+            "level": 2,
+            "text": "Desarrollo y runtime registrado"
+          },
+          {
+            "line": 264,
+            "level": 2,
+            "text": "Lectura complementaria"
+          }
+        ],
+        "lead": "Estado: **mapa de implementación a 2026-07-28**.",
+        "measures": [
+          {
+            "line": 65,
+            "text": "| `scripts/baxy_runtime_config.py` | tooling canónico | Resolución fail-closed de manifest u overrides explícitos |"
+          },
+          {
+            "line": 85,
+            "text": "pero ya no forman un bloque indiferenciado: datos locales, sistema/red, audio,"
+          },
+          {
+            "line": 117,
+            "text": "reintentable queda `failed` con `effectMayHaveOccurred:true`."
+          },
+          {
+            "line": 121,
+            "text": "12. El journal completa únicamente `completed`, `failed` o `rejected`; el"
+          }
+        ],
+        "dates": [
+          "2026-07-28"
+        ],
+        "models": [
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 153,
+            "text": "receptor tiene vida de proceso porque Windows/Python no ofrecen cancelación"
+          },
+          {
+            "line": 199,
+            "text": "hoy es O(n): enumera el directorio en cada evaluación porque un resize in-place"
+          },
+          {
+            "line": 246,
+            "text": "porque su layout forma parte del contrato sellado de paquete. Los gates físicos"
+          }
+        ],
+        "ranges": [
+          "1-271",
+          "h:1",
+          "m:65"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md",
+      "queued_sha256": "fc13aa0a232af6ebfa8b12a9e4656f6c5c1599b2e3d14cb572e2f53791050b96",
+      "size_queued": 9404,
+      "exists": true,
+      "disk_sha256": "fc13aa0a232af6ebfa8b12a9e4656f6c5c1599b2e3d14cb572e2f53791050b96",
+      "disk_size": 9404,
+      "hash_match": true,
+      "head_sha256": "de0ee58660c14d32bc6c0656956337f9087f46663885d8657c0acc9cc7e43c86",
+      "extract": {
+        "binary": false,
+        "lines": 121,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mapa real del turno end-to-end (2026-07-30)"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Cadena de procesos y ownership"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Estado mutable, colas y cancelación (verificado)"
+          },
+          {
+            "line": 45,
+            "level": 2,
+            "text": "La frontera bifásica (hallazgo prioritario)"
+          },
+          {
+            "line": 61,
+            "level": 3,
+            "text": "Cuánta superficie queda expuesta (medido)"
+          },
+          {
+            "line": 89,
+            "level": 3,
+            "text": "Cobertura determinista promovida (2026-07-30)"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "Rutas y latencias por tipo de turno (medidas)"
+          }
+        ],
+        "lead": "Mapa respaldado por archivos y símbolos del checkout, construido durante la",
+        "measures": [
+          {
+            "line": 14,
+            "text": "| 2 | Orquestación UX | WPF UI thread + tasks | `MainWindowViewModel.cs` (3.111 líneas), `AppSurfaceNavigator` | publica mensaje completo; sin streaming | transporte no-LLM 1–2 ms |"
+          },
+          {
+            "line": 15,
+            "text": "| 3 | Host de sidecars | App, procesos hijos | `LocalJsonlSidecarProcess.cs` (drain stderr 8 KiB), `BoundedUtf8LineReader.cs`, `MindSidecarClient.cs` | JSONL UTF-8, framing acotado, budgets monotónicos | writer 7 ms/20k; reader 18 ms bench "
+          },
+          {
+            "line": 16,
+            "text": "| 4 | Mente (sidecar) | Python `baxy_mind.__main__` | `main()`: lane urgente vs serial; `catalog.configure` en ~2526 | `baxy.mind.v1` (hello, catalog, turn.decide, arguments, narrate, turn.evidence.status) | spawn→hello 0,49 s; catálogo 3,4"
+          },
+          {
+            "line": 19,
+            "text": "| 7 | Promoción semántica | hilo daemon `baxy-planner-e5-promotion` | `promote_planner_resources` (`__main__.py:2401`): espera build ≤185 s, `router.try_ready`, swap bajo `planner_resources_lock` | intercambia `PlannerCatalog` léxico→semánt"
+          },
+          {
+            "line": 22,
+            "text": "| 10 | Núcleo ejecutable | subproceso NativeAOT | `CoreProcessClient.cs` → `Baxy.Core/Program.cs` (composition root) | `baxy.local.v1`; catálogo 168 validado en hello | hello frío 1,889 s; ops calientes 0,03–0,19 s |"
+          },
+          {
+            "line": 23,
+            "text": "| 11 | Autoridad | dentro de Core | `Baxy.Kernel` (`ProductCatalog.cs`, schema/riesgo/confirmación, `RequestFingerprint`, journal/replay) | única fuente de autoridad; replay idempotente | fingerprint 365 ms/50k bench |"
+          },
+          {
+            "line": 25,
+            "text": "| 13 | Narración | mente + App | `narrate`/`message.compose` | LLM formula todo lo visible | narrate p50 0,19–0,25 s |"
+          },
+          {
+            "line": 42,
+            "text": "recuperación tras cancelar a mitad de decode cuesta +87 ms"
+          },
+          {
+            "line": 48,
+            "text": "plano evidencia+promoción. Hasta la promoción (~15–22 s), el prompt de P se"
+          },
+          {
+            "line": 52,
+            "text": "ventana: retraso de spawn (3 s desde esta campaña; 6 s antes) + **suelo E5 de"
+          },
+          {
+            "line": 53,
+            "text": "~19 s** (imports+modelo; medido standalone) + caché de vectores (~1–2 s) +"
+          },
+          {
+            "line": 57,
+            "text": "ejerce el default productivo de 3 s y el arranque inmediato del encoder es un"
+          }
+        ],
+        "dates": [
+          "2026-07-30"
+        ],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-121",
+          "h:1",
+          "m:14"
+        ]
+      }
+    }
+  ]
+}

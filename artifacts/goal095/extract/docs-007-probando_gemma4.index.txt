@@ -1,0 +1,24 @@
+batch_id=docs-007-probando_gemma4
+kind=docs
+file_count=18
+hash_ok=18 drift=0 miss=0
+subsystem=pg4_README.md
+---FILES---
+OK gemma4_agent/README.md	Carter Agent
+OK _tesis_curso/Chat de WhatsApp con 202610.8016  PORTAFOLIO DE PROYECTOS.txt	
+OK _tesis_curso/_CHECKPOINT_MAESTRO.md	CHECKPOINT MAESTRO — Tesis Seminario de Titulo (Carter/Gemma 4 Agent)
+OK _tesis_curso/_INVENTARIO_ENTREGABLES.md	Inventario de entregables (plan maestro de la tesis)
+OK _tesis_curso/entregables/00_preliminares.md	UNIVERSIDAD DE EJEMPLO
+OK _tesis_curso/entregables/01_introduccion_fundamentacion.md	Introducción
+OK _tesis_curso/entregables/02_alcance_objetivos_factibilidad.md	3. ALCANCE DEL PROYECTO
+OK _tesis_curso/entregables/03_propuesta_plan_proyecto.md	4. Propuesta de Solución
+OK _tesis_curso/entregables/04_diseno_ejecucion_cierre.md	6. DISEÑO DE ALTO NIVEL
+OK _tesis_curso/entregables/05_presentacion_oral.md	Presentación Oral Final — Baxy
+OK _tesis_curso/entregables/INFORME_FINAL_COMPLETO.md	INFORME FINAL — Baxy
+OK _tesis_curso/entregables/PORTAFOLIO_COMPLETO.md	UNIVERSIDAD DE EJEMPLO
+OK _tesis_curso/entregables/README.md	Entregables — Tesis Seminario de Título (Baxy)
+OK _tesis_curso/entregables/README.txt	
+OK _tesis_curso/entregables/_revision_adversarial.md	Revisión adversarial del INFORME_FINAL_COMPLETO.md
+OK _tesis_curso/entregables/artefactos_sueltos.md	Artefactos sueltos — Tesis "Baxy" (UNIEJ INSW410)
+OK _tesis_curso/entregables/bibliografia_verificada.md	Bibliografía verificada — Informe Final (Baxy)
+OK _tesis_curso/entregables/diagramas_mermaid.md	Diagramas en Mermaid — Tesis Baxy

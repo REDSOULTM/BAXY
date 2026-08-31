@@ -1,0 +1,47 @@
+batch_id=docs-014-probando_gemma4-pg4_docs__historico
+kind=docs
+file_count=41
+hash_ok=41 drift=0 miss=0
+subsystem=pg4_docs__historico
+---FILES---
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_latencia_prefill_cache.md	Prompt de investigación — Latencia de prefill / prefix-cache en Gemma 4 + llama.
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_encadenamiento_foco.md	Prompt de investigación — Router robusto + Encadenamiento multi-tool + Foco/maxi
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_y_encadenamiento.md	Prompt de investigación — Encadenamiento multi-paso + foco/maximize + latencia (
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_thinking_latencia.md	Prompt de investigación — Latencia del THINKING (no del prefill) en Gemma 4
+OK documentacion/_historico/prompts_research/STT_RESEARCH_PROMPT.md	Research Prompt — Maximizing Local Speech-to-Text Accuracy (Whisper-small, CPU, 
+OK documentacion/_historico/prompts_research/latency_golden_eras.md	Épocas de oro de Carter Agent — arqueología de latencia y calidad
+OK documentacion/_historico/prompts_research/latency_research_prompt.md	Prompt de investigación — Optimización de latencia de un asistente de voz local 
+OK documentacion/_historico/prompts_research/stt_precision_local_analisis.md	Análisis del MD sobre precisión local de STT
+OK documentacion/_historico/prompts_research/voice_pipeline_redesign_research_clarifications.md	Respuestas a las 3 preguntas clarificadoras (research prompt seguimiento)
+OK documentacion/_historico/prompts_research/voice_pipeline_redesign_research_prompt.md	Investigación: arquitectura óptima para voice pipeline (wake + STT) en agente lo
+OK documentacion/_historico/prompts_research/wake_custom_training_path.md	Wake-detection custom training path
+OK documentacion/_historico/router_arquitectura_retriever_hibrido_rrf.md	Tool-Routing para Gemma 4 local con 65 compound tools — Arquitectura Recomendada
+OK documentacion/_historico/router_audit_arquitectura_y_migracion.md	Gemma 4 Router Audit — Architecture, Diagnosis, and Migration Plan
+OK documentacion/_historico/router_calibracion_tight_cluster_band.md	TIGHT_CLUSTER Band — Calibration Recommendation
+OK documentacion/_historico/router_night_logbook_2026_05_20.md	Router Night Mission — Logbook (2026-05-20 → overnight)
+OK documentacion/_historico/router_plan_migracion_hacia_100.md	Pushing the Carter Agent's Tool Router to ~100%: A Technical Migration Plan
+OK documentacion/_historico/router_rebuild_2026_05_21.md	Router rebuild (2026-05-21) — applying the 4 deep-research reports
+OK documentacion/_historico/router_unificado_selectivo_investigacion.md	Router unificado y selectivo para Carter Agent
+OK documentacion/_historico/sprints/_overnight_log.md	Overnight Sprint 0 + 1 — Log
+OK documentacion/_historico/sprints/_sprint2_log.md	Sprint 2 — Log (instrumentation only)
+OK documentacion/_historico/sprints/_sprint2_usage_report.md	Sprint 2 — Trace usage report
+OK documentacion/_historico/sprints/_sprint3a_log.md	Sprint 3a — Log (minimal structural cuts)
+OK documentacion/_historico/sprints/_sprint4_log.md	Sprint 4 — Log (structural duplication removal)
+OK documentacion/_historico/sprints/_sprint5a_log.md	Sprint 5a — Log (tests-first for the 4 god classes)
+OK documentacion/_historico/sprints/_sprint5b_log.md	Sprint 5b — Log (splits with Sprint 5a safety net)
+OK documentacion/_historico/sprints/_sprint6_log.md	Sprint 6 — Log (unblock 5b skips + close plan)
+OK documentacion/_historico/sprints/_sprint7_log.md	Sprint 7 — Log (post-external-audit actions)
+OK documentacion/_historico/sprints/_sprint8a_log.md	Sprint 8a — Log (routing infra, sin regex)
+OK documentacion/_historico/sprints/_sprint8b_log.md	Sprint 8b — Log (Tool2Vec-style descriptions, sin tocar router default)
+OK documentacion/_historico/sprints/sprint8_wake_maximize_recall.md	Sprint 8 — Maximizar recall del wake-word "hey gemma"
+OK documentacion/_historico/sprints/sprint_0_and_1_tonight.md	PROMPT — Sprint 0 + Sprint 1 (correr esta noche, secuencial)
+OK documentacion/_historico/sprints/sprint_2_instrumentation.md	PROMPT — Sprint 2 (instrumentación de telemetría)
+OK documentacion/_historico/sprints/sprint_3a_minimal.md	PROMPT — Sprint 3a (mínimo estructural)
+OK documentacion/_historico/sprints/sprint_4_structural.md	PROMPT — Sprint 4 (refactor estructural sin tocar comportamiento)
+OK documentacion/_historico/sprints/sprint_5a_tests_first.md	PROMPT — Sprint 5a (tests-first para los 4 god classes)
+OK documentacion/_historico/sprints/sprint_5b_splits_with_safety_net.md	PROMPT — Sprint 5b (splits con red de seguridad de Sprint 5a)
+OK documentacion/_historico/sprints/sprint_6_unblock_and_finish.md	PROMPT — Sprint 6 (desbloquear y terminar el plan)
+OK documentacion/_historico/sprints/sprint_7_post_external_audit.md	PROMPT — Sprint 7 (acciones de la auditoría externa)
+OK documentacion/_historico/sprints/sprint_8a_routing_infra.md	PROMPT — Sprint 8a (infra del nuevo routing, sin regex)
+OK documentacion/_historico/sprints/sprint_8b_enrich_descriptions.md	PROMPT — Sprint 8b (enriquecer las 65 tool descriptions)
+OK documentacion/_historico/sprints/sprint_8c_blind_test_and_promote.md	PROMPT — Sprint 8c (blind test, tuning, promoción a default)

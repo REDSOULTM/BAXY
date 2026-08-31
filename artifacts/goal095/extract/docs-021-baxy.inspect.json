@@ -1,0 +1,401 @@
+{
+  "batch_id": "docs-021-baxy",
+  "kind": "docs",
+  "source_id": "baxy",
+  "subsystem": "baxy_docs_01_ARQUITECTURA",
+  "file_count": 3,
+  "hash_ok": 3,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md",
+      "queued_sha256": "f9d42d4006e31c8af653aa67bc5bf4b2ecafda1e2020858538c48083b2cef65e",
+      "size_queued": 588516,
+      "exists": true,
+      "disk_sha256": "f9d42d4006e31c8af653aa67bc5bf4b2ecafda1e2020858538c48083b2cef65e",
+      "disk_size": 588516,
+      "hash_match": true,
+      "head_sha256": "39feed1ddae7f49178e338f4d263e0fcab4872bd60f011dac91fe29ec4081ba5",
+      "extract": {
+        "binary": false,
+        "lines": 9689,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Registro de mantenibilidad"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Clasificación del repositorio"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Dependencias permitidas"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "Puntos oficiales de extensión"
+          },
+          {
+            "line": 71,
+            "level": 3,
+            "text": "Añadir una operación"
+          },
+          {
+            "line": 90,
+            "level": 3,
+            "text": "Añadir o sustituir un provider"
+          },
+          {
+            "line": 104,
+            "level": 3,
+            "text": "Añadir una pantalla"
+          },
+          {
+            "line": 129,
+            "level": 3,
+            "text": "Añadir una intención o formulación"
+          },
+          {
+            "line": 150,
+            "level": 2,
+            "text": "Baseline local"
+          },
+          {
+            "line": 152,
+            "level": 3,
+            "text": "Punto de partida"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "Último cierre integral y campaña actual"
+          },
+          {
+            "line": 192,
+            "level": 3,
+            "text": "Cierre de la envoltura social y de la despedida, 2026-07-31"
+          },
+          {
+            "line": 232,
+            "level": 3,
+            "text": "Medición de latencia del checkout, 2026-07-28"
+          },
+          {
+            "line": 343,
+            "level": 3,
+            "text": "Cierre incremental de latencia, 2026-07-29"
+          },
+          {
+            "line": 468,
+            "level": 4,
+            "text": "Agotamiento adicional de latencia, 2026-07-29"
+          },
+          {
+            "line": 572,
+            "level": 4,
+            "text": "Cierre incremental de cola, 2026-07-30"
+          },
+          {
+            "line": 651,
+            "level": 3,
+            "text": "Compuerta de calidad de fuente"
+          },
+          {
+            "line": 692,
+            "level": 2,
+            "text": "Lotes de cimentación terminados"
+          },
+          {
+            "line": 733,
+            "level": 2,
+            "text": "Hotspots y decisiones de corte"
+          },
+          {
+            "line": 746,
+            "level": 2,
+            "text": "Estado de hallazgos"
+          },
+          {
+            "line": 748,
+            "level": 3,
+            "text": "Resueltos"
+          },
+          {
+            "line": 818,
+            "level": 3,
+            "text": "Pendientes justificados"
+          },
+          {
+            "line": 839,
+            "level": 3,
+            "text": "Cambios públicos no abordados"
+          },
+          {
+            "line": 854,
+            "level": 2,
+            "text": "Gates físicos y ambientales pendientes"
+          }
+        ],
+        "lead": "Estado: **registro vivo de la campaña de cimentación, 2026-08-01**.",
+        "measures": [
+          {
+            "line": 165,
+            "text": "- Python: **1.132 pruebas + 367 subtests**, cero fallos, en 185,65 s."
+          },
+          {
+            "line": 183,
+            "text": "- Python: **1.298 pruebas + 382 subtests**, cero fallos, en 224,47 s."
+          },
+          {
+            "line": 190,
+            "text": "Las omisiones conservan su condición ambiental y no se cuentan como pass."
+          },
+          {
+            "line": 199,
+            "text": "subtests**, cero fallos, en 156,93 s. Son **+115** sobre las 1.984 del cierre"
+          },
+          {
+            "line": 207,
+            "text": "fallos — Contracts 54/0, Kernel 109/2, Providers 432/5, Setup 469/8,"
+          },
+          {
+            "line": 208,
+            "text": "Integration 1.218/3. Sin cambio frente al cierre anterior, como corresponde a"
+          },
+          {
+            "line": 222,
+            "text": "**382 subtests**, en 162,41 y 157,53 s; .NET **2.282 aprobadas** y **18"
+          },
+          {
+            "line": 223,
+            "text": "omisiones ambientales** —Contracts 54/0, Kernel 109/2, Providers 432/5,"
+          },
+          {
+            "line": 224,
+            "text": "Setup 469/8, Integration 1.218/3—; build Release con cero advertencias y cero"
+          },
+          {
+            "line": 234,
+            "text": "La campaña local de latencia usó el GGUF registrado"
+          },
+          {
+            "line": 235,
+            "text": "`gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf`, `llama-server` b9980, GPU RTX 3060"
+          },
+          {
+            "line": 242,
+            "text": "1,43–1,55 s, el veto 0,78–0,84 s y el idioma 0,395–0,422 s; la mediana del"
+          }
+        ],
+        "dates": [
+          "2026-08-01",
+          "2026-07-29",
+          "2026-07-28",
+          "2026-07-31",
+          "2026-07-30",
+          "2026-08-02",
+          "2026-08-03",
+          "2026-08-08"
+        ],
+        "models": [
+          "gemma-4",
+          "gemma 4",
+          "llama.cpp",
+          "qwen3",
+          "nemotron",
+          "whisper",
+          "e5-small",
+          "functiongemma"
+        ],
+        "hardware": [
+          "RTX 3060",
+          "VRAM",
+          "RTX 4060 Ti",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 281,
+            "text": "midieron 0,032–0,194 s. `gpu_usage` conservó 1,058 s porque el contador PDH"
+          },
+          {
+            "line": 323,
+            "text": "de voz a 500 ms porque cambió transcripciones/rutas. El 5/6 del gate fresco"
+          },
+          {
+            "line": 325,
+            "text": "candidato 500 ms + 192 ms de padding ASR fue exacto en la muestra sintética"
+          },
+          {
+            "line": 521,
+            "text": "candidato no alcanzó `ready` porque el GGUF registrado no contiene capas"
+          },
+          {
+            "line": 529,
+            "text": "empeoró 0,438/0,539 s y startup→respuesta 0,437/0,461 s. Se rechazó porque"
+          },
+          {
+            "line": 591,
+            "text": "como ruido/regresión neutral porque el cambio sólo actúa en retry. Evidencia:"
+          }
+        ],
+        "ranges": [
+          "1-9689",
+          "h:1",
+          "m:165"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/01_CONTRATO_PRODUCTO.md",
+      "queued_sha256": "7943a5312b66c41f4d8d289a6a304e6dba9b954d5d57b40e1c1f6becd44c9422",
+      "size_queued": 3344,
+      "exists": true,
+      "disk_sha256": "7943a5312b66c41f4d8d289a6a304e6dba9b954d5d57b40e1c1f6becd44c9422",
+      "disk_size": 3344,
+      "hash_match": true,
+      "head_sha256": "7943a5312b66c41f4d8d289a6a304e6dba9b954d5d57b40e1c1f6becd44c9422",
+      "extract": {
+        "binary": false,
+        "lines": 110,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Contrato de producto de BAXY"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Definición"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Personalidad"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Capacidades conceptuales"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Memoria"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "Confirmaciones"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Progreso"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Interfaz"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Criterio de verdad"
+          }
+        ],
+        "lead": "BAXY es un asistente local y privado para Windows. La persona habla o escribe",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-110",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/02_INDICE_FUENTES.md",
+      "queued_sha256": "56c5b97089a410c11f3fb81fc300a2b88db3518bf27e3b04721b59fc06514910",
+      "size_queued": 5897,
+      "exists": true,
+      "disk_sha256": "56c5b97089a410c11f3fb81fc300a2b88db3518bf27e3b04721b59fc06514910",
+      "disk_size": 5897,
+      "hash_match": true,
+      "head_sha256": "56c5b97089a410c11f3fb81fc300a2b88db3518bf27e3b04721b59fc06514910",
+      "extract": {
+        "binary": false,
+        "lines": 193,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Índice de fuentes históricas"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "1. BAXY archivado"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "2. Probando Gemma 4 y Carter"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "3. Visión de tesis"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "4. FunctionGemma"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "5. Conversaciones e informes de agentes"
+          },
+          {
+            "line": 176,
+            "level": 2,
+            "text": "Protocolo de extracción"
+          }
+        ],
+        "lead": "Ruta:",
+        "measures": [
+          {
+            "line": 115,
+            "text": "juegos, hábitos, búsqueda local, mantenimiento, multimedia, red, notas,"
+          },
+          {
+            "line": 148,
+            "text": "finales y hashes. La materia prima referenciada suma 5,10 GiB; los segmentos"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-193",
+          "h:1",
+          "m:115"
+        ]
+      }
+    }
+  ]
+}

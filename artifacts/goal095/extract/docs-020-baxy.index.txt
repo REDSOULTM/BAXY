@@ -1,0 +1,24 @@
+batch_id=docs-020-baxy
+kind=docs
+file_count=18
+hash_ok=18 drift=0 miss=0
+subsystem=baxy_docs_00_POST_WAKE_RUNBOOK_2026-08-11.md
+---FILES---
+OK documentacion/00_POST_WAKE_RUNBOOK_2026-08-11.md	Cierre posterior a wake v17 — 2026-08-11
+OK documentacion/00_PROMPT_AGENTE.md	Prompt del agente — misión BAXY
+OK documentacion/00_PROMPT_AGENTE_POST_V8.md	BAXY — asegurar la campaña, auditar V8 y atacar la recuperación
+OK documentacion/00_PROMPT_AGENTE_RECONOCIMIENTO_LATENCIA.md	BAXY — el segundo cerebro, y la primera señal
+OK documentacion/00_PROMPT_AGENTE_SIN_VOZ.md	BAXY — arreglar sólo lo que impide usarlo, sin voz ni STT
+OK documentacion/00_PROMPT_AGENTE_VETOS_V8.md	BAXY — por qué se tiran las respuestas que ya eran correctas
+OK documentacion/00_WAKE_V17_RUNBOOK_2026-08-11.md	Runbook físico wake v17 — 2026-08-11
+OK documentacion/01_ARQUITECTURA/DECISION_VIGENTE.md	Decisión de arquitectura vigente
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/01_MODELO_MENTAL_Y_OWNERSHIP.md	Modelo mental, composición y ownership
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/02_CONSTRUCCION_EJECUCION_Y_ENTREGA.md	Construcción, ejecución y entrega
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/03_CONTRATOS_FLUJOS_Y_DATOS.md	Contratos, flujos y datos
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/04_RECETAS_DE_CAMBIO.md	Recetas de cambio
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md	Validación, seguridad y handoff
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/06_INVENTARIO_DE_SCRIPTS_Y_GATES.md	Inventario de scripts y gates
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md	Latencia end-to-end
+OK documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md	Guía canónica para agentes de IA
+OK documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md	Mapa del sistema activo
+OK documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md	Mapa real del turno end-to-end (2026-07-30)

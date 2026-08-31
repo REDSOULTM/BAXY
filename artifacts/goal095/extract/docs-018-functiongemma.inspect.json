@@ -1,0 +1,494 @@
+{
+  "batch_id": "docs-018-functiongemma",
+  "kind": "docs",
+  "source_id": "functiongemma",
+  "subsystem": "fg_router",
+  "file_count": 4,
+  "hash_ok": 4,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "router/data/router_encoder_ft.bak_pre_retrain_2026-06-18/README.md",
+      "queued_sha256": "5d452c2898031c8a36eab52dd37eef44af2e33b1970ed5c2161c6712e4dce998",
+      "size_queued": 18176,
+      "exists": true,
+      "disk_sha256": "5d452c2898031c8a36eab52dd37eef44af2e33b1970ed5c2161c6712e4dce998",
+      "disk_size": 18176,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 390,
+        "headings": [
+          {
+            "line": 78,
+            "level": 1,
+            "text": "SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Model Details"
+          },
+          {
+            "line": 84,
+            "level": 3,
+            "text": "Model Description"
+          },
+          {
+            "line": 94,
+            "level": 3,
+            "text": "Model Sources"
+          },
+          {
+            "line": 100,
+            "level": 3,
+            "text": "Full Model Architecture"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "Usage"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "Direct Usage (Sentence Transformers)"
+          },
+          {
+            "line": 123,
+            "level": 1,
+            "text": "Download from the 🤗 Hub"
+          },
+          {
+            "line": 125,
+            "level": 1,
+            "text": "Run inference"
+          },
+          {
+            "line": 133,
+            "level": 1,
+            "text": "[3, 384]"
+          },
+          {
+            "line": 135,
+            "level": 1,
+            "text": "Get the similarity scores for the embeddings"
+          },
+          {
+            "line": 138,
+            "level": 1,
+            "text": "[3, 3]"
+          },
+          {
+            "line": 142,
+            "level": 3,
+            "text": "Direct Usage (Transformers)"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "Downstream Usage (Sentence Transformers)"
+          },
+          {
+            "line": 160,
+            "level": 3,
+            "text": "Out-of-Scope Use"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "Bias, Risks and Limitations"
+          },
+          {
+            "line": 172,
+            "level": 3,
+            "text": "Recommendations"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "Training Details"
+          },
+          {
+            "line": 179,
+            "level": 3,
+            "text": "Training Dataset"
+          },
+          {
+            "line": 181,
+            "level": 4,
+            "text": "Unnamed Dataset"
+          },
+          {
+            "line": 205,
+            "level": 3,
+            "text": "Training Hyperparameters"
+          },
+          {
+            "line": 206,
+            "level": 4,
+            "text": "Non-Default Hyperparameters"
+          },
+          {
+            "line": 212,
+            "level": 4,
+            "text": "All Hyperparameters"
+          },
+          {
+            "line": 330,
+            "level": 3,
+            "text": "Training Logs"
+          }
+        ],
+        "lead": "tags:",
+        "measures": [
+          {
+            "line": 27,
+            "text": "power plans, system settings — conectar/conectarse a una red WiFi"
+          },
+          {
+            "line": 331,
+            "text": "| Epoch  | Step | Training Loss |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-390",
+          "h:78",
+          "m:27"
+        ]
+      }
+    },
+    {
+      "path": "router/data/router_encoder_ft/README.md",
+      "queued_sha256": "e9d4c01c5737487888f383632511899ee849ac07e308d2207fa319492eca67f2",
+      "size_queued": 16249,
+      "exists": true,
+      "disk_sha256": "e9d4c01c5737487888f383632511899ee849ac07e308d2207fa319492eca67f2",
+      "disk_size": 16249,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 394,
+        "headings": [
+          {
+            "line": 82,
+            "level": 1,
+            "text": "SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Model Details"
+          },
+          {
+            "line": 88,
+            "level": 3,
+            "text": "Model Description"
+          },
+          {
+            "line": 98,
+            "level": 3,
+            "text": "Model Sources"
+          },
+          {
+            "line": 104,
+            "level": 3,
+            "text": "Full Model Architecture"
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "Usage"
+          },
+          {
+            "line": 115,
+            "level": 3,
+            "text": "Direct Usage (Sentence Transformers)"
+          },
+          {
+            "line": 127,
+            "level": 1,
+            "text": "Download from the 🤗 Hub"
+          },
+          {
+            "line": 129,
+            "level": 1,
+            "text": "Run inference"
+          },
+          {
+            "line": 137,
+            "level": 1,
+            "text": "[3, 384]"
+          },
+          {
+            "line": 139,
+            "level": 1,
+            "text": "Get the similarity scores for the embeddings"
+          },
+          {
+            "line": 142,
+            "level": 1,
+            "text": "[3, 3]"
+          },
+          {
+            "line": 146,
+            "level": 3,
+            "text": "Direct Usage (Transformers)"
+          },
+          {
+            "line": 154,
+            "level": 3,
+            "text": "Downstream Usage (Sentence Transformers)"
+          },
+          {
+            "line": 164,
+            "level": 3,
+            "text": "Out-of-Scope Use"
+          },
+          {
+            "line": 170,
+            "level": 2,
+            "text": "Bias, Risks and Limitations"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "Recommendations"
+          },
+          {
+            "line": 181,
+            "level": 2,
+            "text": "Training Details"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "Training Dataset"
+          },
+          {
+            "line": 185,
+            "level": 4,
+            "text": "Unnamed Dataset"
+          },
+          {
+            "line": 209,
+            "level": 3,
+            "text": "Training Hyperparameters"
+          },
+          {
+            "line": 210,
+            "level": 4,
+            "text": "Non-Default Hyperparameters"
+          },
+          {
+            "line": 216,
+            "level": 4,
+            "text": "All Hyperparameters"
+          },
+          {
+            "line": 334,
+            "level": 3,
+            "text": "Training Logs"
+          }
+        ],
+        "lead": "tags:",
+        "measures": [
+          {
+            "line": 335,
+            "text": "| Epoch  | Step | Training Loss |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-394",
+          "h:82",
+          "m:335"
+        ]
+      }
+    },
+    {
+      "path": "AGENTS.md",
+      "queued_sha256": "fe386a35c011bea9584f42d29ffddf742bd984d6e9851ac439b8e5e54926507c",
+      "size_queued": 9574,
+      "exists": true,
+      "disk_sha256": "fe386a35c011bea9584f42d29ffddf742bd984d6e9851ac439b8e5e54926507c",
+      "disk_size": 9574,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 170,
+        "headings": [],
+        "lead": "Eres Codex Opus 4.8 trabajando en modo autónomo de larga duración.",
+        "measures": [
+          {
+            "line": 15,
+            "text": "- **CHAMPION = run6 (full-FT, 5 epochs, lr5e-5, constant): tool-acc 88.3%** en holdout (base 12.5%),"
+          },
+          {
+            "line": 16,
+            "text": "99.7% calls bien formadas, no_tool 100%, 0 inventadas. Cuantizado a"
+          },
+          {
+            "line": 17,
+            "text": "`model/functiongemma-ft-270m-it-Q8_0.gguf` (278MB) y archivado en `finetune_llm/archive/run6_*`."
+          },
+          {
+            "line": 18,
+            "text": "- Trayectoria: base 12.5 → 20 → 60.3 → 67.3 → 80.7 → **88.3%**. Palancas clave (con evidencia):"
+          },
+          {
+            "line": 22,
+            "text": "- RUN7 EN CURSO (task bkcq49d0p): continuación a EPOCH 8 (resume desde checkpoint-9300), full-FT."
+          },
+          {
+            "line": 23,
+            "text": "Al terminar: archivar, evaluar epoch 6/7/8 con `eval_night.py` (greedy o sampling temp1/topk64/topp95)"
+          },
+          {
+            "line": 24,
+            "text": "vs 88.3%; promover el mejor + `quantize_fg.py`. Si overfittea, run6-5ep queda champion."
+          },
+          {
+            "line": 28,
+            "text": "`train_fg.py` flags `--full --rank --scheduler --lr --epochs --resume --no-clean`."
+          },
+          {
+            "line": 48,
+            "text": "Ejemplos ya aplicados: la receta oficial de Google (8 epochs/lr 5e-5/constant/full-FT) salió de"
+          },
+          {
+            "line": 123,
+            "text": "& $PY -u train_fg.py --epochs 1 > train_run.log 2>&1"
+          },
+          {
+            "line": 140,
+            "text": "5. Valida GGUF en runtime/router si las herramientas locales están listas."
+          },
+          {
+            "line": 150,
+            "text": "No entrenes epochs extra a ciegas. Entrena más solo si:"
+          }
+        ],
+        "dates": [
+          "2026-06-15",
+          "2026-06-16"
+        ],
+        "models": [
+          "functiongemma",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 44,
+            "text": "(\"X porque [fuente] mide/recomienda Y\")."
+          }
+        ],
+        "ranges": [
+          "1-170",
+          "m:15"
+        ]
+      }
+    },
+    {
+      "path": "CLAUDE.md",
+      "queued_sha256": "b45536d7bcbf3127aa2471f28ebbdf2592252d927533c56f31c09507bfcda9d6",
+      "size_queued": 9582,
+      "exists": true,
+      "disk_sha256": "b45536d7bcbf3127aa2471f28ebbdf2592252d927533c56f31c09507bfcda9d6",
+      "disk_size": 9582,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 170,
+        "headings": [],
+        "lead": "Eres Claude Code Opus 4.8 trabajando en modo autónomo de larga duración.",
+        "measures": [
+          {
+            "line": 15,
+            "text": "- **CHAMPION = run6 (full-FT, 5 epochs, lr5e-5, constant): tool-acc 88.3%** en holdout (base 12.5%),"
+          },
+          {
+            "line": 16,
+            "text": "99.7% calls bien formadas, no_tool 100%, 0 inventadas. Cuantizado a"
+          },
+          {
+            "line": 17,
+            "text": "`model/functiongemma-ft-270m-it-Q8_0.gguf` (278MB) y archivado en `finetune_llm/archive/run6_*`."
+          },
+          {
+            "line": 18,
+            "text": "- Trayectoria: base 12.5 → 20 → 60.3 → 67.3 → 80.7 → **88.3%**. Palancas clave (con evidencia):"
+          },
+          {
+            "line": 22,
+            "text": "- RUN7 EN CURSO (task bkcq49d0p): continuación a EPOCH 8 (resume desde checkpoint-9300), full-FT."
+          },
+          {
+            "line": 23,
+            "text": "Al terminar: archivar, evaluar epoch 6/7/8 con `eval_night.py` (greedy o sampling temp1/topk64/topp95)"
+          },
+          {
+            "line": 24,
+            "text": "vs 88.3%; promover el mejor + `quantize_fg.py`. Si overfittea, run6-5ep queda champion."
+          },
+          {
+            "line": 28,
+            "text": "`train_fg.py` flags `--full --rank --scheduler --lr --epochs --resume --no-clean`."
+          },
+          {
+            "line": 48,
+            "text": "Ejemplos ya aplicados: la receta oficial de Google (8 epochs/lr 5e-5/constant/full-FT) salió de"
+          },
+          {
+            "line": 123,
+            "text": "& $PY -u train_fg.py --epochs 1 > train_run.log 2>&1"
+          },
+          {
+            "line": 140,
+            "text": "5. Valida GGUF en runtime/router si las herramientas locales están listas."
+          },
+          {
+            "line": 150,
+            "text": "No entrenes epochs extra a ciegas. Entrena más solo si:"
+          }
+        ],
+        "dates": [
+          "2026-06-15",
+          "2026-06-16"
+        ],
+        "models": [
+          "functiongemma",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 44,
+            "text": "(\"X porque [fuente] mide/recomienda Y\")."
+          }
+        ],
+        "ranges": [
+          "1-170",
+          "m:15"
+        ]
+      }
+    }
+  ]
+}

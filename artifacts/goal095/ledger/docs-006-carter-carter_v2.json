@@ -1,0 +1,89 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-006-carter-carter_v2",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:32Z",
+  "closed_utc": "2026-08-31T04:29:33Z",
+  "estimated_tokens": 83380,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 3,
+  "subsystem": "carter_v2",
+  "files": [
+    {
+      "path": "Carter_v2/probe_run8_stdout.txt",
+      "sha256": "41531fd69863520cc0614d19bf1d59a668e1ddad0bfd49dde081a234b9a98ec2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-799",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run9_stdout.txt",
+      "sha256": "6788355f3eead47313ab3576a218bfc20d878190fc65964bdda30b3e16c148ed",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-799",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run_stdout.txt",
+      "sha256": "74b4ffbf0c85e5ffba1fe0efd0889372de379c3234bf2da477c15c82e4fe1f1c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1121",
+        "m:10"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-006-carter-carter_v2-01-Carter_v2",
+      "claim_kind": "documental",
+      "problem": "Carter_v2: \u001b[1m\u001b[96m======================================================",
+      "outcome": "contexto",
+      "solution_or_failure": "\u001b[1m\u001b[96m======================================================",
+      "causal_mechanism": "Reply: 'w1: Blocked because no candidate tool is available.' | category=NO_TOOL tools=[] reply='w1: Blocked because no candidate tool is available.'",
+      "measurement": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m | \u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español | \u001b[2mTools: ['system_get_time'] | 8.3s\u001b[0m | \u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m | \u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés | \u001b[2mTools: ['system_get_time'] | 2.6s\u001b[0m | \u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m | \u001b[92m[PASS]\u001b[0m \u001b[1…",
+      "provenance": {
+        "path": "Carter_v2/probe_run8_stdout.txt",
+        "ranges": [
+          "1-799",
+          "m:10"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_run8_stdout.txt",
+        "Carter_v2/probe_run9_stdout.txt",
+        "Carter_v2/probe_run_stdout.txt"
+      ],
+      "repeats": [
+        "Carter_v2/probe_run9_stdout.txt",
+        "Carter_v2/probe_run_stdout.txt"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=3 drift=0 miss=0",
+  "next_docs_batch_id": "docs-007-probando_gemma4",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-006-carter-carter_v2.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

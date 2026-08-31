@@ -1319,5 +1319,5 @@
   "biblioteca_delta_count": 57,
   "notes": "Afirmaciones de benches/transcripts son documentales. Reproducido en esta sesion: HEAD Carter OS AI, hashes SHA-256 de 72/72, 15/72 identicos a biblioteca/carter. Cero archivos fuera del lote.",
   "next_docs_batch_id": "docs-002-carter",
-  "next_prompt": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md"
+  "next_prompt": "campaign:docs"
 }

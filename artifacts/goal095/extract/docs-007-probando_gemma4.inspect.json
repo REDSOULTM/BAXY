@@ -1,0 +1,2618 @@
+{
+  "batch_id": "docs-007-probando_gemma4",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_README.md",
+  "file_count": 18,
+  "hash_ok": 18,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "gemma4_agent/README.md",
+      "queued_sha256": "ee503c9ce37aae06f4c51de9a32e86d53c844ed6e778dcf1ee1c64799db10bc6",
+      "size_queued": 11568,
+      "exists": true,
+      "disk_sha256": "ee503c9ce37aae06f4c51de9a32e86d53c844ed6e778dcf1ee1c64799db10bc6",
+      "disk_size": 11568,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 282,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Carter Agent"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Ejecutar"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Multimodal"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Memoria"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Tools compuestas incluidas"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "Resolucion dinamica de apps"
+          },
+          {
+            "line": 154,
+            "level": 2,
+            "text": "Misiones compuestas"
+          },
+          {
+            "line": 180,
+            "level": 2,
+            "text": "Modos de uso"
+          },
+          {
+            "line": 200,
+            "level": 2,
+            "text": "Verificacion y honestidad"
+          },
+          {
+            "line": 227,
+            "level": 2,
+            "text": "RAG local"
+          },
+          {
+            "line": 244,
+            "level": 2,
+            "text": "Opciones de llama-server"
+          },
+          {
+            "line": 263,
+            "level": 2,
+            "text": "Trazas y evaluacion"
+          }
+        ],
+        "lead": "Agente local desde cero para Gemma 4 en Windows. Usa `llama-server`",
+        "measures": [
+          {
+            "line": 10,
+            "text": "-m \"models\\E4B\\gemma-4-E4B-it-Q6_K.gguf\" `"
+          },
+          {
+            "line": 11,
+            "text": "--mmproj \"models\\E4B\\mmproj-F16.gguf\" `"
+          },
+          {
+            "line": 39,
+            "text": "Para 6-16 GB VRAM, `16384` es el perfil diario razonable. Usa 32768/65536/128000"
+          },
+          {
+            "line": 40,
+            "text": "solo cuando la VRAM y la latencia lo permitan."
+          },
+          {
+            "line": 206,
+            "text": "\"status\": \"done | attempted | needs_verification | failed\","
+          },
+          {
+            "line": 272,
+            "text": "- `mission_status`: PASS, PARTIAL, FAILED, UNVERIFIED o NEEDS_USER"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "gemma-4",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-282",
+          "h:1",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/Chat de WhatsApp con 202610.8016  PORTAFOLIO DE PROYECTOS.txt",
+      "queued_sha256": "216b4498880bcaeb563ef073eb2db047ffd88cade19f5683029cc4d16490f08e",
+      "size_queued": 11015,
+      "exists": true,
+      "disk_sha256": "216b4498880bcaeb563ef073eb2db047ffd88cade19f5683029cc4d16490f08e",
+      "disk_size": 11015,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 156,
+        "headings": [],
+        "lead": "13/3/26, 11:19 - Los mensajes y las llamadas están cifrados de extremo a extremo. Solo las personas en este chat pueden leerlos, escucharlos o compartirlos. *Más información*",
+        "measures": [
+          {
+            "line": 1,
+            "text": "13/3/26, 11:19 - Los mensajes y las llamadas están cifrados de extremo a extremo. Solo las personas en este chat pueden leerlos, escucharlos o compartirlos. *Más información*"
+          },
+          {
+            "line": 2,
+            "text": "9/3/26, 10:13 - ‎N. N. B. creó el grupo \"202610.8016 | PORTAFOLIO DE PROYECTOS\"."
+          },
+          {
+            "line": 3,
+            "text": "13/3/26, 11:19 - Te uniste mediante el enlace de invitación de este grupo."
+          },
+          {
+            "line": 4,
+            "text": "13/3/26, 23:49 - N. N. B.: https://www.instagram.com/reel/DVzZZJCDwvd/?igsh=MTNzZGtrMm5xdXYzNw=="
+          },
+          {
+            "line": 5,
+            "text": "19/3/26, 9:05 - Migue U: Profe, de casualidad tiene el ppt del viernes pasado?"
+          },
+          {
+            "line": 6,
+            "text": "19/3/26, 10:08 - +56 9 0000 0000: Pero en la grabacion no aparece la ppt ?"
+          },
+          {
+            "line": 7,
+            "text": "19/3/26, 10:19 - Migue U: Me imagino que si"
+          },
+          {
+            "line": 8,
+            "text": "19/3/26, 10:19 - Migue U: Pero para tener el material ps"
+          },
+          {
+            "line": 9,
+            "text": "19/3/26, 18:13 - Migue U: Entonces no ppt? :("
+          },
+          {
+            "line": 10,
+            "text": "19/3/26, 18:25 - +56 9 0000 0000: No ppt no work 😎"
+          },
+          {
+            "line": 11,
+            "text": "19/3/26, 18:26 - Migue U: Su huelga"
+          },
+          {
+            "line": 12,
+            "text": "19/3/26, 18:30 - +56 9 0000 0000: X2"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-156",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/_CHECKPOINT_MAESTRO.md",
+      "queued_sha256": "7fd7225efde054f0c83dd0c26122e5cba8dddcf88fc63d04a36e5cb7ff042fdd",
+      "size_queued": 11845,
+      "exists": true,
+      "disk_sha256": "7fd7225efde054f0c83dd0c26122e5cba8dddcf88fc63d04a36e5cb7ff042fdd",
+      "disk_size": 11845,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 39,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "CHECKPOINT MAESTRO — Tesis Seminario de Titulo (Carter/Gemma 4 Agent)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Material fuente (en _tesis_curso/)"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Entregables (se completa con el inventario del workflow wf_f9ae10e5)"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Estado: PASO 2 en curso (leyendo los 7 PDFs para el inventario exacto)"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Bloques generados"
+          }
+        ],
+        "lead": "Estado de cada entregable. Si la cuota corta, retomar leyendo esto + el inventario.",
+        "measures": [
+          {
+            "line": 4,
+            "text": "Proyecto = ESTE repo (asistente de voz local Windows, 4GB VRAM, Gemma 4 E2B-FT)."
+          }
+        ],
+        "dates": [
+          "2026-06-03",
+          "2026-06-02"
+        ],
+        "models": [
+          "gemma 4",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-39",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/_INVENTARIO_ENTREGABLES.md",
+      "queued_sha256": "a8c4dec33a3e6acc46c9e7a6098b6ecfb07dd65f8e4a9f80c04cc0d278a75aa2",
+      "size_queued": 29820,
+      "exists": true,
+      "disk_sha256": "a8c4dec33a3e6acc46c9e7a6098b6ecfb07dd65f8e4a9f80c04cc0d278a75aa2",
+      "disk_size": 29820,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 201,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Inventario de entregables (plan maestro de la tesis)"
+          },
+          {
+            "line": 9,
+            "level": 1,
+            "text": "INVENTARIO DE ENTREGABLES â Tesis \"Carter / Gemma 4 Agent\" (UNIEJ INSW410)"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "A. RESUMEN EJECUTIVO DEL PLAN DE GENERACIÃN"
+          },
+          {
+            "line": 28,
+            "level": 2,
+            "text": "B. INVENTARIO POR ENTREGABLE"
+          },
+          {
+            "line": 30,
+            "level": 3,
+            "text": "BLOQUE 0 â PÃGINAS PRELIMINARES (Portafolio) / Portada (Informe)"
+          },
+          {
+            "line": 44,
+            "level": 3,
+            "text": "BLOQUE 1 â INTRODUCCIÃN"
+          },
+          {
+            "line": 52,
+            "level": 3,
+            "text": "BLOQUE 2 â FUNDAMENTACIÃN DEL PROBLEMA (= CAP I/II Portafolio)"
+          },
+          {
+            "line": 64,
+            "level": 3,
+            "text": "BLOQUE 3 â ALCANCE DEL PROYECTO (= CAP II Portafolio)"
+          },
+          {
+            "line": 79,
+            "level": 3,
+            "text": "BLOQUE 4 â PROPUESTA DE SOLUCIÃN"
+          },
+          {
+            "line": 89,
+            "level": 3,
+            "text": "BLOQUE 5 â PLAN DE PROYECTO (= CAP III Portafolio)"
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "BLOQUE 6 â DISEÃO DE ALTO NIVEL (4+1 Vistas de Kruchten)"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "BLOQUE 7 â EJECUCIÃN DEL PROYECTO (3 Iteraciones) â­ EL BLOQUE MÃS PESADO"
+          },
+          {
+            "line": 127,
+            "level": 3,
+            "text": "BLOQUE 8 â CIERRE"
+          },
+          {
+            "line": 138,
+            "level": 3,
+            "text": "BLOQUE 9 â PRESENTACIÃN ORAL (Clase 7, examen)"
+          },
+          {
+            "line": 146,
+            "level": 2,
+            "text": "C. TÃCNICAS ESPECÃFICAS QUE EL CURSO EXIGE APLICAR (y cÃ³mo usarlas)"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "D. FORMATO Y REQUISITOS TRANSVERSALES (aplican a TODO el informe)"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "E. ORDEN DE GENERACIÃN RECOMENDADO (ruta crÃ­tica)"
+          },
+          {
+            "line": 196,
+            "level": 2,
+            "text": "F. ARTEFACTOS GRÃFICOS A PRODUCIR (lista cerrada)"
+          }
+        ],
+        "lead": "\"Tengo la estructura exacta del Informe Final (.docx), las VRAM medidas reales, competencia, arquitectura y lÃ­mites. Tengo todo lo necesario para producir el inventario consolidado y accionable. No necesito leer mÃ¡s: el material de las 7 clases ya estÃ¡ en el prompt, y el repo me dio los datos reales para llenar cada secciÃ³n.",
+        "measures": [
+          {
+            "line": 24,
+            "text": "**Buena noticia (medido en el repo):** ~70% del contenido tÃ©cnico ya existe escrito y medido en `documentacion/`. El trabajo NO es investigar de cero, es **redactar en formato acadÃ©mico UNIEJ + APA7** lo que ya estÃ¡ documentado con nÃºmer"
+          },
+          {
+            "line": 38,
+            "text": "| 0.5 | **Ãndice de Tablas + Ãndice de Figuras** | Preliminar | Auto. MÃ­nimo: Ishikawa, CANVAS, tabla homologaciÃ³n competencia, tabla objetivos+mÃ©tricas, matriz riesgos, las 4 vistas arquitectÃ³nicas, grÃ¡ficos VRAM/latencia. | .docx ("
+          },
+          {
+            "line": 73,
+            "text": "| 3.6 | **Factibilidad TÃ©cnica** | `Alcance > Factibilidades > TÃ©cnicas` | CAP I/II (viabilidad) | Probada: corre HOY en 4 GB (medido). Stack OSS (`AUDITORIA_licencias.md`). Hardware target: GTX 1650/RTX 3050 4GB o fallback CPU. | .md | *"
+          },
+          {
+            "line": 123,
+            "text": "**Para las 3 iteraciones se reutilizan los 16 grÃ¡ficos PNG ya generados** (`documentacion/graficos/`): VRAM por modelo, latencia por categorÃ­a, progresiÃ³n v1âv14, Vulkan vs CUDA, causas raÃ­z de fails, etc. â van como \"Evidencia\" y f"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "qwen3",
+          "whisper",
+          "piper",
+          "llama.cpp",
+          "voxcpm",
+          "livekit"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-201",
+          "h:1",
+          "m:24"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/00_preliminares.md",
+      "queued_sha256": "813eb85b4626d9d8a6fd24e721aae2814de5926b44030f488b185c9ea8529085",
+      "size_queued": 6564,
+      "exists": true,
+      "disk_sha256": "813eb85b4626d9d8a6fd24e721aae2814de5926b44030f488b185c9ea8529085",
+      "disk_size": 6564,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 127,
+        "headings": [
+          {
+            "line": 3,
+            "level": 1,
+            "text": "UNIVERSIDAD DE EJEMPLO"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "FACULTAD DE INGENIERÍA"
+          },
+          {
+            "line": 7,
+            "level": 3,
+            "text": "INGENIERÍA CIVIL INFORMÁTICA"
+          },
+          {
+            "line": 11,
+            "level": 1,
+            "text": "ASISTENTE DE VOZ DE ESCRITORIO LOCAL Y PRIVADO PARA WINDOWS EN HARDWARE MODESTO (≤ 4 GB DE VRAM) MEDIANTE UN MODELO GEMMA 4 E2B FINE-TUNEADO"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Declaración de Originalidad y Uso de Inteligencia Artificial"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "Abstract"
+          }
+        ],
+        "lead": "<div align=\"center\">",
+        "measures": [
+          {
+            "line": 76,
+            "text": "remotos, exige conectividad permanente, introduce latencia de red y, con frecuencia,"
+          },
+          {
+            "line": 85,
+            "text": "GGUF Q4_K_M y servido con la biblioteca de código abierto llama.cpp. El asistente"
+          },
+          {
+            "line": 114,
+            "text": "language model fine-tuned, quantized in GGUF Q4_K_M format, and served with the"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-127",
+          "h:3",
+          "m:76"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/01_introduccion_fundamentacion.md",
+      "queued_sha256": "2c80e2ebfaa5321117a224907ffd019fb84da8dcb0903fae8de3730884170802",
+      "size_queued": 25396,
+      "exists": true,
+      "disk_sha256": "2c80e2ebfaa5321117a224907ffd019fb84da8dcb0903fae8de3730884170802",
+      "disk_size": 25396,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 360,
+        "headings": [
+          {
+            "line": 12,
+            "level": 1,
+            "text": "Introducción"
+          },
+          {
+            "line": 83,
+            "level": 1,
+            "text": "Fundamentación del Problema"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 128,
+            "level": 2,
+            "text": "Situación Actual"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "Técnica de Identificación de la Problemática: Diagrama de Ishikawa"
+          },
+          {
+            "line": 231,
+            "level": 2,
+            "text": "Descripción de Causas"
+          },
+          {
+            "line": 239,
+            "level": 4,
+            "text": "Categoría Tecnología / Máquina (causa principal)"
+          },
+          {
+            "line": 265,
+            "level": 4,
+            "text": "Categoría Costo (causa principal, factor externo)"
+          },
+          {
+            "line": 279,
+            "level": 4,
+            "text": "Categoría Privacidad (causa principal)"
+          },
+          {
+            "line": 290,
+            "level": 4,
+            "text": "Categoría Conectividad (causa secundaria, factor externo)"
+          },
+          {
+            "line": 298,
+            "level": 4,
+            "text": "Categoría Idioma / Usuario (causa secundaria)"
+          },
+          {
+            "line": 309,
+            "level": 4,
+            "text": "Categoría Método (causa principal, factor interno)"
+          },
+          {
+            "line": 341,
+            "level": 1,
+            "text": "Referencias"
+          }
+        ],
+        "lead": "**Introducción y Fundamentación del Problema**",
+        "measures": [
+          {
+            "line": 21,
+            "text": "tasa de crecimiento anual compuesta (CAGR) cercana al 26,8 %, sostenida por más de 8.400"
+          },
+          {
+            "line": 34,
+            "text": "control, exige conectividad permanente a internet, introduce latencia de red y, en sus"
+          },
+          {
+            "line": 41,
+            "text": "opere en hardware modesto —específicamente en una tarjeta gráfica de apenas 4 GB de"
+          },
+          {
+            "line": 42,
+            "text": "memoria de video (VRAM)—**. El análisis comparativo de diez soluciones contemporáneas del"
+          },
+          {
+            "line": 66,
+            "text": "específicos se cumplieron: la ejecución del modelo dentro de 4 GB de VRAM, la fiabilidad en la"
+          },
+          {
+            "line": 90,
+            "text": "proyecta una expansión hasta los USD 59.900 millones en 2033 (CAGR ≈ 26,8 %), impulsada"
+          },
+          {
+            "line": 93,
+            "text": "Estados Unidos, una penetración mensual del 88,1 % entre los propietarios de teléfonos"
+          },
+          {
+            "line": 94,
+            "text": "inteligentes y un 60 % de uso semanal de la búsqueda por voz, frente al 45 % en 2024"
+          },
+          {
+            "line": 105,
+            "text": "riesgos de privacidad, costo, latencia y fiabilidad de red propios del enfoque en la nube;"
+          },
+          {
+            "line": 114,
+            "text": "en Estados Unidos reveló que cerca del 60 % de los usuarios manifestaba estar, al menos"
+          },
+          {
+            "line": 115,
+            "text": "ocasionalmente, preocupado por su privacidad al utilizar asistentes de voz; que el 49 %"
+          },
+          {
+            "line": 117,
+            "text": "activación; que el 68 % nunca había adoptado medida alguna para mejorar su privacidad; y,"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-360",
+          "h:12",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/02_alcance_objetivos_factibilidad.md",
+      "queued_sha256": "49e0cc6c8e5a2522d4b78cd3e01491d93d1a2a997c071db5abf9bf5238f32ef4",
+      "size_queued": 19996,
+      "exists": true,
+      "disk_sha256": "49e0cc6c8e5a2522d4b78cd3e01491d93d1a2a997c071db5abf9bf5238f32ef4",
+      "disk_size": 19996,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 328,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "3. ALCANCE DEL PROYECTO"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "3.1. Objetivo General"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "3.2. Objetivos Específicos"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "3.3. Métricas de los Objetivos (Tabla de Justificación)"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "3.4. Alternativas de Solución"
+          },
+          {
+            "line": 119,
+            "level": 3,
+            "text": "3.4.1. Arquitectura general"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "3.4.2. Selección de modelo y cuantización (datos de VRAM medidos)"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "3.4.3. Otras decisiones técnicas respaldadas por medición"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "3.5. Alcances y Limitaciones"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "3.5.1. Lo que el sistema SÍ hace (alcances)"
+          },
+          {
+            "line": 194,
+            "level": 3,
+            "text": "3.5.2. Lo que el sistema NO hace o no garantiza (limitaciones)"
+          },
+          {
+            "line": 219,
+            "level": 2,
+            "text": "3.6. Factibilidad Técnica"
+          },
+          {
+            "line": 249,
+            "level": 2,
+            "text": "3.7. Factibilidad Económica"
+          },
+          {
+            "line": 255,
+            "level": 3,
+            "text": "3.7.1. Costo operativo comparado"
+          },
+          {
+            "line": 267,
+            "level": 3,
+            "text": "3.7.2. Viabilidad de licencias (vendibilidad)"
+          },
+          {
+            "line": 285,
+            "level": 2,
+            "text": "3.8. Factibilidad Social"
+          },
+          {
+            "line": 290,
+            "level": 3,
+            "text": "3.8.1. Privacidad"
+          },
+          {
+            "line": 300,
+            "level": 3,
+            "text": "3.8.2. Accesibilidad e inclusión"
+          },
+          {
+            "line": 312,
+            "level": 3,
+            "text": "3.8.3. Democratización y universalidad"
+          }
+        ],
+        "lead": "El presente capítulo delimita el alcance del proyecto *Baxy*,",
+        "measures": [
+          {
+            "line": 18,
+            "text": "consumo de memoria de video (VRAM) igual o inferior a 4 GB—, empleando un modelo"
+          },
+          {
+            "line": 19,
+            "text": "de lenguaje Gemma 4 E2B fine-tuneado y cuantizado (formato GGUF Q4_K_M) servido"
+          },
+          {
+            "line": 26,
+            "text": "(\"Desarrollar\"), la variable medible (consumo de VRAM ≤ 4 GB, operación local),"
+          },
+          {
+            "line": 41,
+            "text": "voz dentro de un presupuesto de 4 GB de VRAM, demostrando la viabilidad del"
+          },
+          {
+            "line": 53,
+            "text": "4. **Garantizar** la operación 100 % local y privada del asistente, sin"
+          },
+          {
+            "line": 78,
+            "text": "| OE1 — Operar en 4 GB | Los LLM útiles requieren GPU de 8–24 GB o nube | LLM + visión + voz residentes en GPU de entrada | Delta de VRAM al cargar el modelo (MiB) | ≤ 4.096 MiB (4 GB) | **3.371 MiB (≈3,36 GB)** con E2B-Q4_K_M |"
+          },
+          {
+            "line": 86,
+            "text": "> tiempo que **no son intercambiables**: (a) **p50 global por turno ≈ 1,22 s** —mediana"
+          },
+          {
+            "line": 88,
+            "text": "> (b) **latencia por acción con *tool-call* ≈ 2,2 s** —turnos que invocan una herramienta,"
+          },
+          {
+            "line": 89,
+            "text": "> tras la optimización de caché de prefijo—; y (c) **p50 ≈ 2,5 s sobre el *replay* de los"
+          },
+          {
+            "line": 91,
+            "text": "> del presupuesto tier-Alexa de 4–5 s; se citan con su nombre propio para evitar"
+          },
+          {
+            "line": 96,
+            "text": "> herramientas en un 47 % de los casos, lo cual es un artefacto del arnés de"
+          },
+          {
+            "line": 97,
+            "text": "> medición y no del modelo. La cifra de *accuracy* de selección (≈75 % en E2B frente a"
+          }
+        ],
+        "dates": [
+          "2026-06-02"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "e4b",
+          "whisper",
+          "piper",
+          "livekit"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 44,
+            "text": "2. **Desarrollar** un mecanismo de invocación de herramientas (*tool-calling*)"
+          },
+          {
+            "line": 130,
+            "text": "La alternativa (A) se descartó porque viola las tres restricciones de producto"
+          },
+          {
+            "line": 136,
+            "text": "producción mediante el mecanismo de reintento forzado de herramienta y el"
+          }
+        ],
+        "ranges": [
+          "1-328",
+          "h:1",
+          "m:18"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/03_propuesta_plan_proyecto.md",
+      "queued_sha256": "94776c38959f9bfec7d62feebe0785bb8ef3debb68777624dfe3c8a35577aa5d",
+      "size_queued": 28143,
+      "exists": true,
+      "disk_sha256": "94776c38959f9bfec7d62feebe0785bb8ef3debb68777624dfe3c8a35577aa5d",
+      "disk_size": 28143,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 330,
+        "headings": [
+          {
+            "line": 15,
+            "level": 1,
+            "text": "4. Propuesta de Solución"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "4.1 Descripción de la solución"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "4.2 Diagrama de Contexto"
+          },
+          {
+            "line": 112,
+            "level": 1,
+            "text": "5. Plan de Proyecto"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "5.1 Metodología de Gestión"
+          },
+          {
+            "line": 149,
+            "level": 2,
+            "text": "5.2 Metodología de Desarrollo"
+          },
+          {
+            "line": 184,
+            "level": 2,
+            "text": "5.3 Plan de Monitoreo y Control"
+          },
+          {
+            "line": 223,
+            "level": 2,
+            "text": "5.4 Plan de Gestión de Riesgos"
+          },
+          {
+            "line": 252,
+            "level": 2,
+            "text": "5.5 Planificación (fases del desarrollo)"
+          },
+          {
+            "line": 294,
+            "level": 3,
+            "text": "Carta Gantt (cronograma de fases e iteraciones)"
+          },
+          {
+            "line": 316,
+            "level": 1,
+            "text": "Referencias"
+          }
+        ],
+        "lead": "**Propuesta de Solución y Plan de Proyecto**",
+        "measures": [
+          {
+            "line": 22,
+            "text": "equipo con una tarjeta gráfica de cuatro gigabytes de memoria de video (4 GB de VRAM) o,"
+          },
+          {
+            "line": 29,
+            "text": "formato GGUF con cuantización Q4\\_K\\_M mediante `llama.cpp`/`llama-server`. La elección del"
+          },
+          {
+            "line": 33,
+            "text": "atención) dentro del presupuesto de 4 GB, con un consumo medido de **3.371 MiB de delta de"
+          },
+          {
+            "line": 34,
+            "text": "VRAM** (aproximadamente 3,36 GB), mientras que la variante inmediatamente superior"
+          },
+          {
+            "line": 42,
+            "text": "CPU para no competir por la VRAM, el texto resultante es procesado por el modelo de lenguaje"
+          },
+          {
+            "line": 78,
+            "text": "│         ▲                + UI visual             │  E2B-FT (GPU 4GB / CPU) →    │    │"
+          },
+          {
+            "line": 120,
+            "text": "desarrollo: alta incertidumbre técnica (no se sabía de antemano qué modelo entraría en 4 GB"
+          },
+          {
+            "line": 192,
+            "text": "incluyen: consumo de VRAM ≤ 4 GB (medido 3,36 GB para E2B-Q4), 0 % de herramientas"
+          },
+          {
+            "line": 195,
+            "text": "(*held-out*) en español, y latencia por acción ≤ 4–5 s (medida en ~2,2 s tras la optimización"
+          },
+          {
+            "line": 196,
+            "text": "de caché de prefijo). El gate de wake-word (`recall ≥ 0,60 ∧ fp/hr ≤ 1,0`) está **cumplido**:"
+          },
+          {
+            "line": 213,
+            "text": "la ejecución física mockeada, que arrojó una latencia mediana (p50) de 2,5 s, cero errores y"
+          },
+          {
+            "line": 227,
+            "text": "desafío —ejecutar un asistente de voz con modelo de lenguaje, visión y voz dentro de 4 GB de"
+          }
+        ],
+        "dates": [
+          "2026-06-02",
+          "2026-05-26"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM",
+          "vram"
+        ],
+        "mechanisms": [
+          {
+            "line": 171,
+            "text": "con pruebas unitarias mockeadas falló en producción porque el modelo, al ser"
+          }
+        ],
+        "ranges": [
+          "1-330",
+          "h:15",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/04_diseno_ejecucion_cierre.md",
+      "queued_sha256": "a98f5267c3987fd3d2f2e6bb7c6392a931bdf32e9ae7047e02f947f1265c1256",
+      "size_queued": 32230,
+      "exists": true,
+      "disk_sha256": "a98f5267c3987fd3d2f2e6bb7c6392a931bdf32e9ae7047e02f947f1265c1256",
+      "disk_size": 32230,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 497,
+        "headings": [
+          {
+            "line": 12,
+            "level": 1,
+            "text": "6. DISEÑO DE ALTO NIVEL"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "6.1. Vista Lógica (paquetes del agente)"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "6.2. Vista Física (mapeo a hardware)"
+          },
+          {
+            "line": 161,
+            "level": 2,
+            "text": "6.3. Vista de Despliegue (instalación y ejecución)"
+          },
+          {
+            "line": 213,
+            "level": 2,
+            "text": "6.4. Vista de Escenarios (casos de uso clave)"
+          },
+          {
+            "line": 263,
+            "level": 1,
+            "text": "7. EJECUCIÓN DEL PROYECTO (3 ITERACIONES)"
+          },
+          {
+            "line": 273,
+            "level": 2,
+            "text": "7.1. Iteración 1 — Núcleo del agente: LLM local, herramientas y enrutador"
+          },
+          {
+            "line": 310,
+            "level": 2,
+            "text": "7.2. Iteración 2 — Voz, percepción y robustez: STT/TTS, wake-word y visión"
+          },
+          {
+            "line": 352,
+            "level": 2,
+            "text": "7.3. Iteración 3 — Fine-tuning E2B, optimización 4 GB y accesibilidad"
+          },
+          {
+            "line": 404,
+            "level": 1,
+            "text": "8. TRABAJOS FUTUROS"
+          },
+          {
+            "line": 440,
+            "level": 1,
+            "text": "9. CONCLUSIONES"
+          }
+        ],
+        "lead": "**DISEÑO DE ALTO NIVEL, EJECUCIÓN Y CIERRE DEL PROYECTO**",
+        "measures": [
+          {
+            "line": 70,
+            "text": "(~8 Hz en lugar de ~31 Hz) para reducir el uso de CPU en reposo en un ~74 % medido,"
+          },
+          {
+            "line": 125,
+            "text": "El hardware *target* es una laptop o PC modesta con **GPU de 4 GB de VRAM**"
+          },
+          {
+            "line": 126,
+            "text": "(GTX 1650 o RTX 3050 4 GB) o, en su defecto, sin GPU dedicada (fallback a CPU). El"
+          },
+          {
+            "line": 132,
+            "text": "| **GPU (VRAM)** | LLM (Gemma 4 E2B-Q4_K_M) + encoder de visión (mmproj, residente) + caché KV | **3 371 MiB (delta)** para E2B-Q4_K_M; visión ≈ 1,2 GB |"
+          },
+          {
+            "line": 133,
+            "text": "| **CPU** | STT (Whisper/Parakeet int8), TTS (Piper), enrutador (MiniLM), render de la UI (`--disable-gpu`) | 0 VRAM; ~30 tok/s en CPU de escritorio |"
+          },
+          {
+            "line": 134,
+            "text": "| **RAM** | Modelo mapeado con `mmap` (páginas evictables) + caché KV residente | Piso recomendado: 8 GB; costo fijo KV ≈ 0,5–1 GB |"
+          },
+          {
+            "line": 137,
+            "text": "El dato de selección de modelo es determinante: según la medición, **E2B-Q4_K_M"
+          },
+          {
+            "line": 138,
+            "text": "(3 371 MiB) entra completo en 4 GB**, mientras que **E4B-Q4_K_M (5 087 MiB) NO"
+          },
+          {
+            "line": 140,
+            "text": "límite). Los modelos 26B/31B requieren 12–15 GB y quedan descartados de plano. Esta"
+          },
+          {
+            "line": 147,
+            "text": "│  ┌──────────── GPU 4 GB VRAM ────────────┐   ┌──────────── CPU ─────────────┐  │"
+          },
+          {
+            "line": 148,
+            "text": "│  │ Gemma 4 E2B-Q4 (3,36 GB)              │   │ STT int8 · TTS Piper         │  │"
+          },
+          {
+            "line": 149,
+            "text": "│  │ + visión mmproj (~1,2 GB, residente)  │   │ enrutador MiniLM · UI render │  │"
+          }
+        ],
+        "dates": [
+          "2026-06-02"
+        ],
+        "models": [
+          "livekit",
+          "whisper",
+          "piper",
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "voxcpm",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB",
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [
+          {
+            "line": 190,
+            "text": "*loops* pesados para evitar el congelamiento de la PC por *busy-wait*."
+          },
+          {
+            "line": 339,
+            "text": "- Causa raíz documentada del falso \"el modelo no sirve\" (score ~0.002): *padding* al"
+          },
+          {
+            "line": 461,
+            "text": "*trade-off* aceptado y compensado en producción por el mecanismo de *forced-retry*"
+          },
+          {
+            "line": 482,
+            "text": "crudo. Este rigor permitió descubrir causas raíz contraintuitivas (el *padding* del"
+          },
+          {
+            "line": 483,
+            "text": "wake-word, el *busy-wait* de ONNX, la serialización corrupta del dataset) que un"
+          }
+        ],
+        "ranges": [
+          "1-497",
+          "h:12",
+          "m:70"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/05_presentacion_oral.md",
+      "queued_sha256": "9678468dcb485233433b22e2c3cccda232507ac70dc02612e6d33f4d222656c9",
+      "size_queued": 19959,
+      "exists": true,
+      "disk_sha256": "9678468dcb485233433b22e2c3cccda232507ac70dc02612e6d33f4d222656c9",
+      "disk_size": 19959,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 313,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Presentación Oral Final — Baxy"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Slide 1 — Portada"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Slide 2 — El problema"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "Slide 3 — Diagrama de Ishikawa (causas raíz)"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Slide 4 — Objetivos"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Slide 5 — La solución: qué es Baxy"
+          },
+          {
+            "line": 116,
+            "level": 2,
+            "text": "Slide 6 — Arquitectura de alto nivel"
+          },
+          {
+            "line": 137,
+            "level": 2,
+            "text": "Slide 7 — Diferenciadores / MOAT vs. competencia"
+          },
+          {
+            "line": 159,
+            "level": 2,
+            "text": "Slide 8 — Metodología: medir, no celebrar"
+          },
+          {
+            "line": 178,
+            "level": 2,
+            "text": "Slide 9 — Las 3 iteraciones"
+          },
+          {
+            "line": 200,
+            "level": 2,
+            "text": "Slide 10 — Resultados medidos"
+          },
+          {
+            "line": 226,
+            "level": 2,
+            "text": "Slide 11 — Factibilidades"
+          },
+          {
+            "line": 244,
+            "level": 2,
+            "text": "Slide 12 — Riesgos clave + mitigación"
+          },
+          {
+            "line": 266,
+            "level": 2,
+            "text": "Slide 13 — Trabajos futuros"
+          },
+          {
+            "line": 284,
+            "level": 2,
+            "text": "Slide 14 — Cierre / conclusiones"
+          },
+          {
+            "line": 305,
+            "level": 3,
+            "text": "Apéndice — Datos defensivos para preguntas (no proyectar)"
+          }
+        ],
+        "lead": "**Título:**",
+        "measures": [
+          {
+            "line": 6,
+            "text": "> Exposición de **10 minutos**. 14 slides · ~45 s c/u. Cada slide trae *bullets* para"
+          },
+          {
+            "line": 16,
+            "text": "ASISTENTE DE VOZ DE ESCRITORIO LOCAL Y PRIVADO PARA WINDOWS EN HARDWARE MODESTO (≤ 4 GB DE VRAM) MEDIANTE UN MODELO GEMMA 4 E2B FINE-TUNEADO"
+          },
+          {
+            "line": 24,
+            "text": "> **Nota del orador (~30 s):** \"Buenos días, profesor. Mi proyecto de título es Baxy,"
+          },
+          {
+            "line": 25,
+            "text": "> un asistente de voz para Windows que corre 100% en el equipo del usuario —sin nube,"
+          },
+          {
+            "line": 26,
+            "text": "> sin pagos— en una tarjeta gráfica de apenas 4 GB. Hoy quiero mostrarles el vacío de"
+          },
+          {
+            "line": 36,
+            "text": "- Mercado masivo: ~USD 9.163 M en 2025 → USD 59.900 M en 2033 (CAGR ≈ 26,8 %); +8.400 M de dispositivos (Astute Analytica, 2026)."
+          },
+          {
+            "line": 38,
+            "text": "- Consecuencias: pérdida de privacidad, dependencia de internet, latencia de red, costo recurrente."
+          },
+          {
+            "line": 39,
+            "text": "- Demanda insatisfecha: 77 % usaría más un asistente con mejores garantías de privacidad (Secure Data Recovery, 2024)."
+          },
+          {
+            "line": 40,
+            "text": "- **El vacío:** no existe uno que sea, a la vez, local + privado + gratis + OSS + multilingüe + que corra en 4 GB."
+          },
+          {
+            "line": 42,
+            "text": "> **Nota del orador (~50 s):** \"El control por voz ya es masivo, pero descansa en una"
+          },
+          {
+            "line": 44,
+            "text": "> terceros. Casi el 60 % de los usuarios está preocupado por su privacidad y el 77 %"
+          },
+          {
+            "line": 47,
+            "text": "> y operable en 4 GB de VRAM. Ese cruce es el vacío concreto que ataco.\" Si preguntan"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "livekit",
+          "whisper",
+          "piper",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 147,
+            "text": "| Multilingüe (sin hardcode) | ✓ | ✗ (chino hardcoded) | parcial | **✓ (embeddings)** |"
+          },
+          {
+            "line": 172,
+            "text": "> contra el modelo real —no con tests mockeados— porque el modelo es no-determinista y"
+          },
+          {
+            "line": 236,
+            "text": "> porque todo es de código abierto y reutiliza hardware que el usuario ya tiene; el único"
+          },
+          {
+            "line": 290,
+            "text": "- Lección central: **\"medir, no celebrar\"** destrabó causas raíz contraintuitivas (padding del wake-word, busy-wait de ONNX, dataset corrupto)."
+          }
+        ],
+        "ranges": [
+          "1-313",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/INFORME_FINAL_COMPLETO.md",
+      "queued_sha256": "00808524a1a84776ca3ca43924580f953923dee393e3cd943c386ac342140c7b",
+      "size_queued": 123791,
+      "exists": true,
+      "disk_sha256": "00808524a1a84776ca3ca43924580f953923dee393e3cd943c386ac342140c7b",
+      "disk_size": 123791,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1845,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "INFORME FINAL — Baxy"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Índice"
+          },
+          {
+            "line": 82,
+            "level": 1,
+            "text": "UNIVERSIDAD DE EJEMPLO"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "FACULTAD DE INGENIERÍA"
+          },
+          {
+            "line": 86,
+            "level": 3,
+            "text": "INGENIERÍA CIVIL INFORMÁTICA"
+          },
+          {
+            "line": 90,
+            "level": 1,
+            "text": "ASISTENTE DE VOZ DE ESCRITORIO LOCAL Y PRIVADO PARA WINDOWS EN HARDWARE MODESTO (≤ 4 GB DE VRAM) MEDIANTE UNA ARQUITECTURA LOCAL DE DOS MODELOS: GEMMA 4 E2B PARA EL DIÁLOGO Y UN EN"
+          },
+          {
+            "line": 120,
+            "level": 2,
+            "text": "Declaración de Originalidad y Uso de Inteligencia Artificial"
+          },
+          {
+            "line": 150,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 186,
+            "level": 2,
+            "text": "Abstract"
+          },
+          {
+            "line": 220,
+            "level": 1,
+            "text": "1. Introducción"
+          },
+          {
+            "line": 294,
+            "level": 1,
+            "text": "2. Fundamentación del Problema"
+          },
+          {
+            "line": 296,
+            "level": 2,
+            "text": "2.1. Contexto"
+          },
+          {
+            "line": 339,
+            "level": 2,
+            "text": "2.2. Situación Actual"
+          },
+          {
+            "line": 388,
+            "level": 2,
+            "text": "2.3. Técnica de Identificación de la Problemática: Diagrama de Ishikawa"
+          },
+          {
+            "line": 420,
+            "level": 2,
+            "text": "2.4. Descripción de Causas"
+          },
+          {
+            "line": 428,
+            "level": 3,
+            "text": "Categoría Tecnología / Máquina (causa principal)"
+          },
+          {
+            "line": 454,
+            "level": 3,
+            "text": "Categoría Costo (causa principal, factor externo)"
+          },
+          {
+            "line": 468,
+            "level": 3,
+            "text": "Categoría Privacidad (causa principal)"
+          },
+          {
+            "line": 479,
+            "level": 3,
+            "text": "Categoría Conectividad (causa secundaria, factor externo)"
+          },
+          {
+            "line": 487,
+            "level": 3,
+            "text": "Categoría Idioma / Usuario (causa secundaria)"
+          },
+          {
+            "line": 498,
+            "level": 3,
+            "text": "Categoría Método (causa principal, factor interno)"
+          },
+          {
+            "line": 537,
+            "level": 1,
+            "text": "3. Alcance del Proyecto"
+          },
+          {
+            "line": 550,
+            "level": 2,
+            "text": "3.1. Objetivo General"
+          },
+          {
+            "line": 569,
+            "level": 2,
+            "text": "3.2. Objetivos Específicos"
+          }
+        ],
+        "lead": "**Páginas preliminares**",
+        "measures": [
+          {
+            "line": 62,
+            "text": "- 7.3. Iteración 3 — Fine-tuning E2B, optimización 4 GB y accesibilidad"
+          },
+          {
+            "line": 155,
+            "text": "remotos, exige conectividad permanente, introduce latencia de red y, con frecuencia,"
+          },
+          {
+            "line": 164,
+            "text": "memoria: un modelo de lenguaje **Gemma 4 E2B** (cuantizado en formato GGUF y servido"
+          },
+          {
+            "line": 199,
+            "text": "language model (quantized in GGUF format and served with the open-source library"
+          },
+          {
+            "line": 229,
+            "text": "tasa de crecimiento anual compuesta (CAGR) cercana al 26,8 %, sostenida por más de 8.400"
+          },
+          {
+            "line": 242,
+            "text": "control, exige conectividad permanente a internet, introduce latencia de red y, en sus"
+          },
+          {
+            "line": 249,
+            "text": "opere en hardware modesto —específicamente en una tarjeta gráfica de apenas 4 GB de"
+          },
+          {
+            "line": 250,
+            "text": "memoria de video (VRAM)—**. El análisis comparativo de diez soluciones contemporáneas del"
+          },
+          {
+            "line": 277,
+            "text": "específicos abordan la ejecución del modelo dentro de 4 GB de VRAM, la fiabilidad en la"
+          },
+          {
+            "line": 301,
+            "text": "proyecta una expansión hasta los USD 59.900 millones en 2033 (CAGR ≈ 26,8 %), impulsada"
+          },
+          {
+            "line": 304,
+            "text": "Estados Unidos, una penetración mensual del 88,1 % entre los propietarios de teléfonos"
+          },
+          {
+            "line": 305,
+            "text": "inteligentes y un 60 % de uso semanal de la búsqueda por voz, frente al 45 % en 2024"
+          }
+        ],
+        "dates": [
+          "2026-06-02",
+          "2026-05-26",
+          "2026-06-03",
+          "2026-06-19"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "functiongemma",
+          "piper",
+          "e4b",
+          "livekit",
+          "whisper",
+          "voxcpm"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB",
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [
+          {
+            "line": 581,
+            "text": "2. **Desarrollar** un mecanismo de invocación de herramientas (*tool-calling*)"
+          },
+          {
+            "line": 660,
+            "text": "porque el producto se diseñó desde el inicio para ser **vendible** (stack de licencia"
+          },
+          {
+            "line": 706,
+            "text": "La alternativa (A) se descartó porque viola las tres restricciones de producto"
+          },
+          {
+            "line": 712,
+            "text": "producción mediante el mecanismo de reintento forzado de herramienta y el"
+          },
+          {
+            "line": 1097,
+            "text": "con pruebas unitarias mockeadas falló en producción porque el modelo, al ser"
+          },
+          {
+            "line": 1446,
+            "text": "pesados para evitar el congelamiento de la PC por *busy-wait*."
+          }
+        ],
+        "ranges": [
+          "1-1845",
+          "h:1",
+          "m:62"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/PORTAFOLIO_COMPLETO.md",
+      "queued_sha256": "505df4e15390aa4077f9c16545d8c84c02ba094e846e07b418356a7f945620b8",
+      "size_queued": 151030,
+      "exists": true,
+      "disk_sha256": "505df4e15390aa4077f9c16545d8c84c02ba094e846e07b418356a7f945620b8",
+      "disk_size": 151030,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1927,
+        "headings": [
+          {
+            "line": 3,
+            "level": 1,
+            "text": "UNIVERSIDAD DE EJEMPLO"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "FACULTAD DE INGENIERÍA"
+          },
+          {
+            "line": 7,
+            "level": 3,
+            "text": "INGENIERÍA CIVIL INFORMÁTICA"
+          },
+          {
+            "line": 11,
+            "level": 1,
+            "text": "ASISTENTE DE VOZ DE ESCRITORIO LOCAL Y PRIVADO PARA WINDOWS EN HARDWARE MODESTO (≤ 4 GB DE VRAM) MEDIANTE UN MODELO GEMMA 4 E2B FINE-TUNEADO"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "Declaración de Originalidad y Uso de Inteligencia Artificial"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Abstract"
+          },
+          {
+            "line": 133,
+            "level": 2,
+            "text": "Tabla de Contenidos"
+          },
+          {
+            "line": 185,
+            "level": 2,
+            "text": "Índice de Tablas e Índice de Figuras"
+          },
+          {
+            "line": 223,
+            "level": 1,
+            "text": "CAPÍTULO I — PROBLEMA / OPORTUNIDAD Y PLANTEAMIENTO"
+          },
+          {
+            "line": 234,
+            "level": 2,
+            "text": "1.1. Descripción del Problema / Oportunidad"
+          },
+          {
+            "line": 312,
+            "level": 2,
+            "text": "1.2. Situación Actual"
+          },
+          {
+            "line": 357,
+            "level": 2,
+            "text": "1.3. Identificación de la Problemática (Diagrama de Ishikawa)"
+          },
+          {
+            "line": 414,
+            "level": 2,
+            "text": "1.4. Descripción de Causas (en qué consiste / qué efecto / cómo incide)"
+          },
+          {
+            "line": 422,
+            "level": 3,
+            "text": "1.4.1. Categoría Tecnología / Máquina (causa principal)"
+          },
+          {
+            "line": 452,
+            "level": 3,
+            "text": "1.4.2. Categoría Costo (causa principal, factor externo)"
+          },
+          {
+            "line": 469,
+            "level": 3,
+            "text": "1.4.3. Categoría Privacidad (causa principal)"
+          },
+          {
+            "line": 481,
+            "level": 3,
+            "text": "1.4.4. Categoría Conectividad (causa secundaria, factor externo)"
+          },
+          {
+            "line": 490,
+            "level": 3,
+            "text": "1.4.5. Categoría Idioma / Usuario (causa secundaria)"
+          },
+          {
+            "line": 502,
+            "level": 3,
+            "text": "1.4.6. Categoría Método (causa principal, factor interno)"
+          },
+          {
+            "line": 528,
+            "level": 3,
+            "text": "1.4.7. Síntesis causal"
+          },
+          {
+            "line": 541,
+            "level": 2,
+            "text": "1.5. Fundamentación del Problema"
+          },
+          {
+            "line": 587,
+            "level": 2,
+            "text": "1.6. Viabilidad del Proyecto (cinco dimensiones)"
+          },
+          {
+            "line": 594,
+            "level": 3,
+            "text": "1.6.1. Viabilidad Legal"
+          }
+        ],
+        "lead": "<div align=\"center\">",
+        "measures": [
+          {
+            "line": 78,
+            "text": "remotos, exige conectividad permanente, introduce latencia de red y, con frecuencia,"
+          },
+          {
+            "line": 87,
+            "text": "GGUF Q4_K_M y servido con la biblioteca de código abierto llama.cpp. El asistente"
+          },
+          {
+            "line": 116,
+            "text": "language model fine-tuned, quantized in GGUF Q4_K_M format, and served with the"
+          },
+          {
+            "line": 202,
+            "text": "- Tabla 3.3. Consumo de VRAM medido por variante de modelo y cuantización (Cap. III)."
+          },
+          {
+            "line": 242,
+            "text": "millones hacia 2033, con una tasa de crecimiento anual compuesta (CAGR) cercana al 26,8 %,"
+          },
+          {
+            "line": 246,
+            "text": "alcanzó el 88,1 % y el uso semanal subió del 45 % en 2024 al 60 % (Astute Analytica, 2026)."
+          },
+          {
+            "line": 258,
+            "text": "conectividad permanente a internet, introduce latencia de red y, en sus versiones más"
+          },
+          {
+            "line": 266,
+            "text": "apenas 4 GB de memoria de video (VRAM)—.** El análisis comparativo de diez soluciones"
+          },
+          {
+            "line": 279,
+            "text": "Estados Unidos reveló que el 77 % de los usuarios se mostraría más propenso a utilizar"
+          },
+          {
+            "line": 287,
+            "text": "de red propios del enfoque en la nube (Zheng et al., 2024; Cai et al., 2026)."
+          },
+          {
+            "line": 319,
+            "text": "los servidores generan la respuesta; (6) la respuesta se devuelve por la red al dispositivo;"
+          },
+          {
+            "line": 324,
+            "text": "internet. Una caída de red, una zona sin cobertura o una interrupción del servicio del"
+          }
+        ],
+        "dates": [
+          "2026-06-02",
+          "2026-06-03",
+          "2026-05-26"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "e4b",
+          "whisper",
+          "piper",
+          "livekit"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 960,
+            "text": "porque el producto se diseñó desde el inicio para ser **vendible** (stack de licencia"
+          },
+          {
+            "line": 1214,
+            "text": "unitarias mockeadas falló en producción porque el modelo, al ser no-determinista,"
+          },
+          {
+            "line": 1273,
+            "text": "| R7 | El consumo de recursos congela el equipo | 3 | 4 | **12** | Media | Limitar hilos y prioridad de los runtimes, desactivar *busy-wait*, fijar afinidad de CPU. | 4 |"
+          }
+        ],
+        "ranges": [
+          "1-1927",
+          "h:3",
+          "m:78"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/README.md",
+      "queued_sha256": "8831acf1487d2fa46a10834f08514cbb076ac3bebd353c452e9189632e049441",
+      "size_queued": 9122,
+      "exists": true,
+      "disk_sha256": "8831acf1487d2fa46a10834f08514cbb076ac3bebd353c452e9189632e049441",
+      "disk_size": 9122,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 108,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Entregables — Tesis Seminario de Título (Baxy)"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "1. Documentos maestros (lo que se entrega y se defiende)"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "2. Capítulos del Portafolio (fuente editable, ya unidos en PORTAFOLIO_COMPLETO.md)"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "3. Páginas preliminares y bloques del Informe Final (fuente editable)"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "4. Guion de defensa oral"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "5. Artefactos de apoyo (para anexar, renderizar o defender)"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "6. Scripts de conversión (re-ejecutables)"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "⚠️ Qué REVISAR antes de entregar (no se pudo automatizar)"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Inventario rápido (todos los archivos de esta carpeta)"
+          }
+        ],
+        "lead": "Generados a partir del proyecto real (este repo) + el material del curso (Chat WhatsApp",
+        "measures": [
+          {
+            "line": 7,
+            "text": "Todo dato técnico proviene de archivos **medidos** del repo (VRAM real, latencia,"
+          },
+          {
+            "line": 9,
+            "text": "100 % medido, se marcó explícitamente (honestidad). Las cifras y fuentes load-bearing del"
+          },
+          {
+            "line": 20,
+            "text": "| **INFORME_FINAL.docx** | El Informe Final en formato UNIEJ (carta, Arial 12, márgenes 2,5 cm, interlineado 1,5, justificado, estilos Heading 1/2/3 para TOC, tablas reales, arte ASCII en Courier). **Listo para revisar y entregar.** |"
+          }
+        ],
+        "dates": [
+          "2026-06-03"
+        ],
+        "models": [
+          "piper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-108",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/README.txt",
+      "queued_sha256": "aa454597e874f8bd411e264a7cff7a1bbece1332422b2186e848b09056c18106",
+      "size_queued": 393,
+      "exists": true,
+      "disk_sha256": "aa454597e874f8bd411e264a7cff7a1bbece1332422b2186e848b09056c18106",
+      "disk_size": 393,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 4,
+        "headings": [],
+        "lead": "Gracias por leer este mensaje.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-4"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/_revision_adversarial.md",
+      "queued_sha256": "bfc9c6956abc7a67691f749690e58c406677f1733fe50369ece2874d8bed3d47",
+      "size_queued": 21705,
+      "exists": true,
+      "disk_sha256": "bfc9c6956abc7a67691f749690e58c406677f1733fe50369ece2874d8bed3d47",
+      "disk_size": 21705,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 304,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Revisión adversarial del INFORME_FINAL_COMPLETO.md"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "RESUMEN EJECUTIVO"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "CRÍTICO (incoherencia / sobre-promesa — corregir SÍ o SÍ)"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "C1. Latencia: tres cifras distintas presentadas sin distinguir bien qué mide cada una"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "C2. VRAM del modelo DESPLEGADO: 3,36 GB vs 2,07 GB — contradicción visible en la Conclusión 1"
+          },
+          {
+            "line": 71,
+            "level": 3,
+            "text": "C3. Sobre-promesa: voz/wake-word presentado como cerrado, pero PRODUCTION_READY.md lo tiene TODO en rojo"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "C4. \"62 herramientas\" vs. el conteo real (61 tras eliminar smart_home; el schema tiene 67 nombres)"
+          },
+          {
+            "line": 106,
+            "level": 3,
+            "text": "C5. Inconsistencia informe ↔ presentación: 6 objetivos vs. 5 objetivos"
+          },
+          {
+            "line": 117,
+            "level": 3,
+            "text": "C6b. CITAS ACADÉMICAS CON AUTORES FABRICADOS / INCORRECTOS + cifra del 67 % sin respaldo"
+          },
+          {
+            "line": 145,
+            "level": 3,
+            "text": "C6. \"2.07 GB de VRAM\" no está en el set de datos crudos citado; procede solo de MEMORY"
+          },
+          {
+            "line": 159,
+            "level": 2,
+            "text": "MENOR (estilo, forma académica, completitud del temario)"
+          },
+          {
+            "line": 161,
+            "level": 3,
+            "text": "M1. Bibliografía NO consolidada — el temario UNIEJ pide una sección única de Referencias"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "M2. Citas en el cuerpo sin entrada bibliográfica completa (Kruchten, Park et al., benchmarks, leyes, model cards)"
+          },
+          {
+            "line": 182,
+            "level": 3,
+            "text": "M3. Falta Carta Gantt / cronograma temporal explícito en el Plan de Proyecto"
+          },
+          {
+            "line": 191,
+            "level": 3,
+            "text": "M4. Modelo \"4+1 de Kruchten\" mal mapeado: se presentan 4 vistas pero se omite la de Desarrollo"
+          },
+          {
+            "line": 204,
+            "level": 3,
+            "text": "M5. \"Capítulos 4 y 5\" en el cuerpo arrancan con numeración propia (## 4. / ## 5.) pero el Cap. 3 viene de otro archivo con \"# 3.\""
+          },
+          {
+            "line": 211,
+            "level": 3,
+            "text": "M6. Restos de marcas de trabajo interno visibles en el documento \"final\""
+          },
+          {
+            "line": 226,
+            "level": 3,
+            "text": "M7. Tono: mayormente 3ra persona correcta, pero hay deslices de registro coloquial"
+          },
+          {
+            "line": 236,
+            "level": 3,
+            "text": "M8. \"≈75 % de accuracy\" presentado como dato medido sin fuente de la medición exacta"
+          },
+          {
+            "line": 248,
+            "level": 3,
+            "text": "M9. Afirmación \"21 combinaciones\" — verificada OK, pero conviene blindarla"
+          },
+          {
+            "line": 253,
+            "level": 3,
+            "text": "M10. Resumen ligeramente por encima de lo habitual y palabras clave escasas"
+          },
+          {
+            "line": 262,
+            "level": 2,
+            "text": "VERIFICACIONES QUE SÍ CIERRAN (no cambiar — defendibles)"
+          },
+          {
+            "line": 287,
+            "level": 2,
+            "text": "ORDEN DE ATAQUE RECOMENDADO"
+          }
+        ],
+        "lead": "El informe es **sólido, honesto y bien fundamentado en datos medidos** — la práctica",
+        "measures": [
+          {
+            "line": 19,
+            "text": "La mayoría de las cifras (VRAM 3.371 MiB, contexto 12.288, tabla de competencia,"
+          },
+          {
+            "line": 24,
+            "text": "latencia y en VRAM del modelo desplegado vs. el base), **dos sobre-promesas puntuales**"
+          },
+          {
+            "line": 37,
+            "text": "**Dónde:** §3.3 (tabla OE3: \"≈2,2 s por acción\"); §5.3.a (\"~2,2 s\"); §5.5 Iteración 3"
+          },
+          {
+            "line": 38,
+            "text": "(\"p50 global medido ~1,22 s\"); §7.3 Evidencia (\"p50 global medido ~1,22 s\"); §9"
+          },
+          {
+            "line": 39,
+            "text": "Conclusión 3 (\"la latencia mediana por turno se redujo a ~1,22–2,2 s\"); §5.3.c (replay:"
+          },
+          {
+            "line": 40,
+            "text": "\"latencia mediana (p50) de 2,5 s\"). El PPT (Slide 10) lo agrava: \"~2,2 s/acción (p50"
+          },
+          {
+            "line": 41,
+            "text": "global ~1,22 s)\"."
+          },
+          {
+            "line": 42,
+            "text": "**Problema:** se mezclan **tres números** (1,22 s, 2,2 s, 2,5 s) como si fueran lo"
+          },
+          {
+            "line": 43,
+            "text": "mismo. En realidad: 2,2 s = latencia por *acción* (tool-call, doc de estado);"
+          },
+          {
+            "line": 44,
+            "text": "1,22 s = p50 *global* del turno (BACKLOG); 2,5 s = p50 del replay de 1.071 mensajes."
+          },
+          {
+            "line": 46,
+            "text": "(\"~1,22–2,2 s\") parece un rango inventado. **Un jurado preguntará \"¿en qué quedamos,"
+          },
+          {
+            "line": 49,
+            "text": "usarlas consistentemente: *\"p50 global por turno ≈1,22 s; latencia por acción con"
+          }
+        ],
+        "dates": [
+          "2026-06-03",
+          "2026-06-02",
+          "2026-05-26"
+        ],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "whisper",
+          "livekit",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-304",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/artefactos_sueltos.md",
+      "queued_sha256": "42331361acde0eae1b215fc6152d99802379da1fe797112e488eaafcd0acceea",
+      "size_queued": 42237,
+      "exists": true,
+      "disk_sha256": "42331361acde0eae1b215fc6152d99802379da1fe797112e488eaafcd0acceea",
+      "disk_size": 42237,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 515,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Artefactos sueltos — Tesis \"Baxy\" (UNIEJ INSW410)"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "1. Tabla comparativa de competencia"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "1.1. Tabla de homologación frente al estado del arte"
+          },
+          {
+            "line": 58,
+            "level": 3,
+            "text": "1.2. Panorama de competidores analizados"
+          },
+          {
+            "line": 80,
+            "level": 3,
+            "text": "1.3. Interpretación"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "2. Análisis legal (privacidad y licencias)"
+          },
+          {
+            "line": 101,
+            "level": 3,
+            "text": "2.1. Marco legal chileno aplicable a la privacidad"
+          },
+          {
+            "line": 128,
+            "level": 3,
+            "text": "2.2. Auditoría de licencias del stack"
+          },
+          {
+            "line": 151,
+            "level": 4,
+            "text": "2.2.1. Único bloqueante real"
+          },
+          {
+            "line": 166,
+            "level": 4,
+            "text": "2.2.2. Falsos bloqueantes (GPL/no comercial que no aplican)"
+          },
+          {
+            "line": 177,
+            "level": 4,
+            "text": "2.2.3. Licencias de los modelos (fuera del alcance de pip)"
+          },
+          {
+            "line": 190,
+            "level": 3,
+            "text": "2.3. Conclusión: por qué es vendible"
+          },
+          {
+            "line": 204,
+            "level": 2,
+            "text": "3. Matriz de riesgos y mitigaciones"
+          },
+          {
+            "line": 214,
+            "level": 3,
+            "text": "3.1. Metodología de evaluación (escala cuantitativa)"
+          },
+          {
+            "line": 250,
+            "level": 3,
+            "text": "3.2. Lectura de la matriz"
+          },
+          {
+            "line": 274,
+            "level": 2,
+            "text": "4. Técnicas de análisis del problema"
+          },
+          {
+            "line": 284,
+            "level": 3,
+            "text": "4.1. Técnica 1 — Diagrama de Ishikawa (espina de pescado)"
+          },
+          {
+            "line": 327,
+            "level": 4,
+            "text": "Descripción de causas (en qué consiste / qué efecto / cómo incide)"
+          },
+          {
+            "line": 372,
+            "level": 3,
+            "text": "4.2. Técnica 2 — Árbol de problemas y priorización de Pareto"
+          },
+          {
+            "line": 408,
+            "level": 4,
+            "text": "Priorización de Pareto (regla 80/20)"
+          },
+          {
+            "line": 438,
+            "level": 3,
+            "text": "4.3. Convergencia de ambas técnicas"
+          },
+          {
+            "line": 450,
+            "level": 2,
+            "text": "5. Modelo de negocio CANVAS"
+          },
+          {
+            "line": 476,
+            "level": 3,
+            "text": "5.1. Lectura del CANVAS"
+          },
+          {
+            "line": 489,
+            "level": 2,
+            "text": "Referencias (APA 7)"
+          }
+        ],
+        "lead": "**Contenido**",
+        "measures": [
+          {
+            "line": 31,
+            "text": "operable en 4 GB de VRAM con capacidad de *computer-use*). Las soluciones comerciales son"
+          },
+          {
+            "line": 45,
+            "text": "| **Local / privado** (procesa todo en el equipo) | ✗ Audio y datos enviados a servidores | ✗ Nube (GPT-4V, UI-TARS) | ✗ Depende de Gemini LiveAPI en la nube | ◐ Algunos soportan modelos locales, pero orientados a desarrollo | ✓ 100 % local"
+          },
+          {
+            "line": 47,
+            "text": "| **Cabe en 4 GB de VRAM** | n/a (servidores remotos) | ✗ Requiere GPU grande o nube | ✗ Cómputo en la nube | ✗ Asumen modelos grandes o GPU ≥ 6–8 GB | ✓ 3,36 GB medido (E2B-Q4_K_M) |"
+          },
+          {
+            "line": 48,
+            "text": "| **Interacción por voz** (wake-word + STT + TTS) | ✓ Voz nativa | ✗ Texto / agentes de GUI | ✓ Voz (Gemini, latencia ~100 ms) | ✗ Texto / agentes de desarrollo | ✓ Voz local (wake-word LiveKit + STT CPU + Piper TTS) |"
+          },
+          {
+            "line": 51,
+            "text": "| **Computer-use** (operar el SO / la GUI) | ◐ Limitado a integraciones | ✓ Capacidad principal (OSWorld 72 %) | ◐ Vía agente de desarrollo | ◐ Orientado a software/código | ✓ Cascada UIA → OCR → visión con verificación por estado del SO |"
+          },
+          {
+            "line": 67,
+            "text": "| Agent-S | *Computer-use* / GUI (OSWorld 72 %) | GPT-4V / UI-TARS, **nube** | No (nube, modelo grande) |"
+          },
+          {
+            "line": 82,
+            "text": "El cruce de criterios confirma que el nicho de la solución propuesta —**local, 4 GB de"
+          },
+          {
+            "line": 83,
+            "text": "VRAM, voz, privado, gratuito, multilingüe y honesto**— está vacío en el estado del arte."
+          },
+          {
+            "line": 209,
+            "text": "de 4 GB de VRAM, de forma local y desarrollado por un solo estudiante en un semestre— y se"
+          },
+          {
+            "line": 219,
+            "text": "- **Probabilidad (P):** 1 = muy improbable (≈10 %), 2 = improbable (≈30 %), 3 = posible"
+          },
+          {
+            "line": 220,
+            "text": "(≈50 %), 4 = probable (≈70 %), 5 = casi seguro (≈90 %)."
+          },
+          {
+            "line": 254,
+            "text": "**dos restricciones nucleares del proyecto** —la barrera física de 4 GB de VRAM (R1) y la"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "livekit",
+          "piper",
+          "gemma 4",
+          "whisper",
+          "llama.cpp",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 169,
+            "text": "porque no son importadas por el código de producción (son transitivas muertas de"
+          },
+          {
+            "line": 455,
+            "text": "pertinente porque el proyecto se diseñó desde el inicio como un producto **vendible** (stack"
+          }
+        ],
+        "ranges": [
+          "1-515",
+          "h:1",
+          "m:31"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/bibliografia_verificada.md",
+      "queued_sha256": "71857b717d35201d2fa3b7ae583735eae1da9cc0e0585aa01affcd784f143a04",
+      "size_queued": 16398,
+      "exists": true,
+      "disk_sha256": "71857b717d35201d2fa3b7ae583735eae1da9cc0e0585aa01affcd784f143a04",
+      "disk_size": 16398,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 281,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Bibliografía verificada — Informe Final (Baxy)"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "RESUMEN EJECUTIVO (qué hay que corregir en el informe)"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "1. Astute Analytica — mercado de asistentes de voz"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "2. Secure Data Recovery Services — encuesta de privacidad"
+          },
+          {
+            "line": 131,
+            "level": 2,
+            "text": "3. arXiv 2410.11845 — review de edge LLMs (cita \"Singh et al.\" en el informe)"
+          },
+          {
+            "line": 164,
+            "level": 2,
+            "text": "4. Tsinghua Science and Technology — survey de inferencia edge (cita \"Zheng et al.\" en el informe)"
+          },
+          {
+            "line": 193,
+            "level": 2,
+            "text": "5. (NUEVA, recomendada) Fuente primaria para Gemini Nano / Apple Intelligence on-device"
+          },
+          {
+            "line": 212,
+            "level": 2,
+            "text": "BIBLIOGRAFÍA APA 7 — versión limpia y verificada"
+          },
+          {
+            "line": 247,
+            "level": 2,
+            "text": "CAMBIOS CONCRETOS A APLICAR EN `01_introduccion_fundamentacion.md`"
+          },
+          {
+            "line": 268,
+            "level": 2,
+            "text": "NOTA DE HONESTIDAD METODOLÓGICA"
+          }
+        ],
+        "lead": "**Lo más urgente:** (a) el **67 %** (ítem 5) no tiene respaldo en la fuente",
+        "measures": [
+          {
+            "line": 20,
+            "text": "| 3 | CAGR ≈ 26,8 % (2025–2033) | **CONFIRMADA** | Ninguna. |"
+          },
+          {
+            "line": 22,
+            "text": "| 5 | \"más del 67 % de los usuarios de smartphone usan voz al menos 1×/mes\" | **NO CONFIRMADA** | **Corregir.** Ese 67 % NO está en la fuente Astute Analytica. Reemplazar por una cifra real de la misma fuente o quitar. |"
+          },
+          {
+            "line": 23,
+            "text": "| 6 | Privacidad: \"cerca del 60 % preocupado\" | **CONFIRMADA (= 58 %)** | Opcional: 31 % + 27 % = 58 %. \"Cerca del 60 %\" es admisible; preciso sería \"58 %\". |"
+          },
+          {
+            "line": 24,
+            "text": "| 7 | 49 % desconoce la escucha continua | **CONFIRMADA** | Ninguna. |"
+          },
+          {
+            "line": 25,
+            "text": "| 8 | 68 % nunca tomó medidas de privacidad | **CONFIRMADA** | Ninguna. |"
+          },
+          {
+            "line": 26,
+            "text": "| 9 | 77 % usaría más con mejor privacidad | **CONFIRMADA** | Ninguna. |"
+          },
+          {
+            "line": 31,
+            "text": "**Lo más urgente:** (a) el **67 %** (ítem 5) no tiene respaldo en la fuente"
+          },
+          {
+            "line": 41,
+            "text": "≈ 26,8 %; +8.400 millones de dispositivos; \"más del 67 % de los usuarios de"
+          },
+          {
+            "line": 64,
+            "text": "- **CAGR ≈ 26,8 % — CONFIRMADA.** Literal: *\"growing at a CAGR of 26.80%"
+          },
+          {
+            "line": 70,
+            "text": "- **\"más del 67 % de smartphones usan voz 1×/mes\" — NO CONFIRMADA.**"
+          },
+          {
+            "line": 72,
+            "text": "dice es: *\"125 million smartphone owners achieved 88.1% monthly penetration\"*"
+          },
+          {
+            "line": 73,
+            "text": "(penetración mensual del 88,1 % sobre 125 M de propietarios, dato de EE. UU.)"
+          }
+        ],
+        "dates": [
+          "2026-06-03"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-281",
+          "h:1",
+          "m:20"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/diagramas_mermaid.md",
+      "queued_sha256": "28caf7a5666b0e4a347c8629f47a3c637eaf6f5c5abe19062b738aede605abfe",
+      "size_queued": 16065,
+      "exists": true,
+      "disk_sha256": "28caf7a5666b0e4a347c8629f47a3c637eaf6f5c5abe19062b738aede605abfe",
+      "disk_size": 16065,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 406,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Diagramas en Mermaid — Tesis Baxy"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Figura 1. Diagrama de Ishikawa (causa-efecto) de la problemática"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "1a. Versión grafo causa → efecto (recomendada)"
+          },
+          {
+            "line": 74,
+            "level": 3,
+            "text": "1b. Versión `mindmap` equivalente"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "Figura 2. Diagrama de Contexto (DFD nivel 0 / C4 nivel 1)"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "Figura 3. Vista Lógica (paquetes del agente y hot-path del turno)"
+          },
+          {
+            "line": 208,
+            "level": 2,
+            "text": "Figura 4. Vista de Despliegue (procesos y entornos en la máquina del usuario)"
+          },
+          {
+            "line": 248,
+            "level": 2,
+            "text": "Figura 5. Vista Física (mapeo a recursos de hardware del nodo único)"
+          },
+          {
+            "line": 288,
+            "level": 2,
+            "text": "Figura 6. Vista de Escenarios (los tres casos de uso clave)"
+          },
+          {
+            "line": 322,
+            "level": 2,
+            "text": "Figura 7. Metodología — fases y tres iteraciones (cronograma Gantt)"
+          },
+          {
+            "line": 365,
+            "level": 2,
+            "text": "Figura 8. Metodología — flujo de las tres iteraciones y sus gates"
+          },
+          {
+            "line": 396,
+            "level": 3,
+            "text": "Notas de uso"
+          }
+        ],
+        "lead": "Mermaid no posee un tipo *fishbone* nativo, por lo que el diagrama de Ishikawa se",
+        "measures": [
+          {
+            "line": 29,
+            "text": "T1[\"LLMs grandes no caben en 4 GB de VRAM\"]"
+          },
+          {
+            "line": 30,
+            "text": "T2[\"Encoder de vision (mmproj) pesa ~1,2 GB\"]"
+          },
+          {
+            "line": 31,
+            "text": "T3[\"Hardware de usuario modesto (GPU 4 GB o sin GPU)\"]"
+          },
+          {
+            "line": 45,
+            "text": "N2[\"Latencia de red por turno\"]"
+          },
+          {
+            "line": 54,
+            "text": "M1[\"Tool-calling dificil en modelos chicos (~75% vs ~91%, estimado)\"]"
+          },
+          {
+            "line": 66,
+            "text": "PROB[\"PROBLEMA:<br/>No existe un asistente de voz local, privado y gratuito<br/>usable en hardware modesto (&le; 4 GB VRAM)\"]"
+          },
+          {
+            "line": 78,
+            "text": "root((No existe asistente de voz<br/>local, privado y gratis<br/>en &le;4 GB VRAM))"
+          },
+          {
+            "line": 80,
+            "text": "LLMs grandes no caben en 4 GB"
+          },
+          {
+            "line": 81,
+            "text": "Encoder de vision ~1,2 GB"
+          },
+          {
+            "line": 93,
+            "text": "Latencia de red por turno"
+          },
+          {
+            "line": 100,
+            "text": "Tool-calling dificil en 2B (~75% vs ~91%, estimado)"
+          },
+          {
+            "line": 125,
+            "text": "BAXY[\"BAXY (Baxy)<br/>STT (CPU) &rarr; LLM Gemma 4 E2B-FT (GPU 4GB / CPU)<br/>&rarr; Router + ~67 Tools &rarr; Verificadores &rarr; TTS (CPU)\"]"
+          }
+        ],
+        "dates": [
+          "2026-03-01"
+        ],
+        "models": [
+          "gemma 4",
+          "piper",
+          "llama.cpp",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-406",
+          "h:1",
+          "m:29"
+        ]
+      }
+    }
+  ]
+}

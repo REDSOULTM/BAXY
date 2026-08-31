@@ -1,0 +1,106 @@
+batch_id=docs-024-baxy
+kind=docs
+file_count=100
+hash_ok=100 drift=0 miss=0
+subsystem=baxy_legacy_docs
+---FILES---
+OK legacy/docs/decision_log.md	Registro de decisiones técnicas
+OK legacy/docs/dependency_map.md	Mapa de dependencias por módulo
+OK legacy/docs/discord_message_v2_security.md	Discord exact-message provider v2: security and promotion gate
+OK legacy/docs/filesystem_write_transaction_blocker.md	Bloqueo transaccional de `write_text` y `restore_backup`
+OK legacy/docs/gemma4_validation.md	Validación Gemma 4 E2B para BAXY
+OK legacy/docs/gui_reminders_v2_security.md	Recordatorios GUI v2: seguridad, recuperación y límites
+OK legacy/docs/inventory.md	Inventario del proyecto anterior (auditoría FASE 1)
+OK legacy/docs/local_calendar_v2_security.md	Local Calendar v2: contrato de seguridad y estado experimental
+OK legacy/docs/migration_plan.md	Plan de migración — qué se migró, cómo, y qué sigue
+OK legacy/docs/mission_ledger_v1_integration.md	Mission ledger v1 — integración tipada experimental
+OK legacy/docs/office_document_v2_security.md	Office Document v2: creación segura de un DOCX nuevo
+OK legacy/docs/pending_modules.md	Módulos pendientes (conservados, no conectados)
+OK legacy/docs/productivity_v2_security.md	Productividad local v2: notas y temporizadores
+OK legacy/docs/routines_v2_security.md	Rutinas v2: recetas exactas, no macros con autoridad
+OK legacy/docs/skills_authoring.md	Cómo escribir skills de BAXY (D37, elegibilidad y caveats D43)
+OK legacy/docs/steam_spotify_compound_security.md	Steam + Spotify compound mission security note
+OK legacy/docs/tasks_v2_security.md	Tareas locales cifradas v2
+OK legacy/docs/tool_ecosystem_v2.md	Tool Ecosystem v2 de BAXY
+OK legacy/docs/tool_ecosystem_v2_coverage.md	Tool Ecosystem v2 — baseline, cobertura y matriz de migración
+OK legacy/docs/tts_landscape_2026.md	TTS local para BAXY: estado y gates al 2026-07-11
+OK legacy/docs/vision_attachment_v2_security.md	Vision attachment v2 security note
+OK legacy/legacy_export/README.md	legacy_export — código real del BAXY anterior, conservado
+OK legacy/legacy_export/prompts/core.md	
+OK legacy/legacy_export/prompts/core_lean.md	
+OK legacy/legacy_export/prompts/tool_rules/accessibility.md	
+OK legacy/legacy_export/prompts/tool_rules/app.lean.md	
+OK legacy/legacy_export/prompts/tool_rules/app.md	
+OK legacy/legacy_export/prompts/tool_rules/audio.md	
+OK legacy/legacy_export/prompts/tool_rules/audio_device.md	
+OK legacy/legacy_export/prompts/tool_rules/backup_sync.md	
+OK legacy/legacy_export/prompts/tool_rules/browser.md	
+OK legacy/legacy_export/prompts/tool_rules/browser_real.md	
+OK legacy/legacy_export/prompts/tool_rules/clipboard.md	
+OK legacy/legacy_export/prompts/tool_rules/container.md	
+OK legacy/legacy_export/prompts/tool_rules/creative_local.md	
+OK legacy/legacy_export/prompts/tool_rules/data_analysis.md	
+OK legacy/legacy_export/prompts/tool_rules/database.md	
+OK legacy/legacy_export/prompts/tool_rules/dependency.md	
+OK legacy/legacy_export/prompts/tool_rules/desktop_layout.md	
+OK legacy/legacy_export/prompts/tool_rules/device_settings.md	
+OK legacy/legacy_export/prompts/tool_rules/download.md	
+OK legacy/legacy_export/prompts/tool_rules/env.md	
+OK legacy/legacy_export/prompts/tool_rules/filesystem.md	
+OK legacy/legacy_export/prompts/tool_rules/gui.md	
+OK legacy/legacy_export/prompts/tool_rules/habit_tracker.md	
+OK legacy/legacy_export/prompts/tool_rules/input.md	
+OK legacy/legacy_export/prompts/tool_rules/job_manager.md	
+OK legacy/legacy_export/prompts/tool_rules/local_calendar.md	
+OK legacy/legacy_export/prompts/tool_rules/local_search.md	
+OK legacy/legacy_export/prompts/tool_rules/media.lean.md	
+OK legacy/legacy_export/prompts/tool_rules/media.md	
+OK legacy/legacy_export/prompts/tool_rules/media_edit.md	
+OK legacy/legacy_export/prompts/tool_rules/memory.md	
+OK legacy/legacy_export/prompts/tool_rules/notes_tasks.md	
+OK legacy/legacy_export/prompts/tool_rules/office.md	
+OK legacy/legacy_export/prompts/tool_rules/package.md	
+OK legacy/legacy_export/prompts/tool_rules/peripheral.md	
+OK legacy/legacy_export/prompts/tool_rules/photo_library.md	
+OK legacy/legacy_export/prompts/tool_rules/printer_scanner.md	
+OK legacy/legacy_export/prompts/tool_rules/registry.md	
+OK legacy/legacy_export/prompts/tool_rules/routine.md	
+OK legacy/legacy_export/prompts/tool_rules/safety.md	
+OK legacy/legacy_export/prompts/tool_rules/session.md	
+OK legacy/legacy_export/prompts/tool_rules/skill_load.md	
+OK legacy/legacy_export/prompts/tool_rules/source_manager.md	
+OK legacy/legacy_export/prompts/tool_rules/state.md	
+OK legacy/legacy_export/prompts/tool_rules/system.md	
+OK legacy/legacy_export/prompts/tool_rules/terminal.md	
+OK legacy/legacy_export/prompts/tool_rules/uia.md	
+OK legacy/legacy_export/prompts/tool_rules/verify.md	
+OK legacy/legacy_export/prompts/tool_rules/vision.md	
+OK legacy/legacy_export/prompts/tool_rules/whatsapp.md	
+OK legacy/legacy_export/prompts/tool_rules/window.lean.md	
+OK legacy/legacy_export/prompts/tool_rules/window.md	
+OK legacy/microagents/README.md	BAXY microagents
+OK legacy/microagents/glossary_libs.md	Glosario: librerías y patrones
+OK legacy/microagents/glossary_modelos.md	Glosario: modelos y runtime
+OK legacy/microagents/glossary_windows.md	Glosario: Windows
+OK legacy/microagents/windows_commands.md	Windows commands cheatsheet
+OK legacy/requirements.txt	BAXY — dependencias por capa. El CORE corre solo con la stdlib.
+OK legacy/skills/README.md	BAXY skills
+OK legacy/skills/backup-then-clean/SKILL.md	Backup antes de limpiar
+OK legacy/skills/capabilities-overview/SKILL.md	Qué puede hacer BAXY (hoy, honesto)
+OK legacy/skills/debug-app-crash/SKILL.md	Diagnosticar una app que se colgó o crasheó
+OK legacy/skills/download-file/SKILL.md	Descargar un archivo de internet
+OK legacy/skills/install-steam-game/SKILL.md	Instalar o abrir un juego de Steam
+OK legacy/skills/new-development-project/SKILL.md	Proyecto de desarrollo nuevo
+OK legacy/skills/purchase-guard/SKILL.md	Purchase guard (regla dura universal)
+OK legacy/skills/research-and-summarize/SKILL.md	Investigar y resumir
+OK legacy/skills/safe-file-cleanup/SKILL.md	Limpieza segura de archivos
+OK legacy/skills/schedule-recurring-task/SKILL.md	Programar tareas recurrentes
+OK legacy/skills/screenshot-and-analyze/SKILL.md	Capturar y analizar la pantalla
+OK legacy/skills/voice-record-transcribe/SKILL.md	Grabar voz y transcribir
+OK AGENTS.md	BAXY: guía obligatoria para agentes
+OK AGENT_HANDOFF.md	BAXY private asset handoff
+OK BAXY_GPT56_ULTRA_PROMPT.md	Prompt maestro — reconstrucción definitiva de BAXY
+OK R209_CROSS_ENCODER_HANDOFF.md	Handoff — cross-encoder BAXY R207–R209
+OK README.md	BAXY — reconstrucción v3
+OK constraints-runtime-win-x64.txt	Grafo exacto medido y aprobado para CPython 3.12 / Windows x64.
+OK constraints-test-win-x64.txt	Clausura exacta de pytest para CPython 3.12 / Windows x64.

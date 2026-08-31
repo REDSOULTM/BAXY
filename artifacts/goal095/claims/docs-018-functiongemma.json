@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-018-functiongemma",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:43Z",
+  "estimated_tokens": 26790,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 4,
+  "source_id": "functiongemma",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/docs-018-functiongemma.json"
+}

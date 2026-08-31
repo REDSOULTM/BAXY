@@ -1,0 +1,9 @@
+batch_id=docs-021-baxy
+kind=docs
+file_count=3
+hash_ok=3 drift=0 miss=0
+subsystem=baxy_docs_01_ARQUITECTURA
+---FILES---
+OK documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md	Registro de mantenibilidad
+OK documentacion/01_CONTRATO_PRODUCTO.md	Contrato de producto de BAXY
+OK documentacion/02_INDICE_FUENTES.md	Índice de fuentes históricas

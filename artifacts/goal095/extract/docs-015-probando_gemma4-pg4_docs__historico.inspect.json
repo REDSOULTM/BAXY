@@ -1,0 +1,4870 @@
+{
+  "batch_id": "docs-015-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_docs__historico",
+  "file_count": 24,
+  "hash_ok": 24,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17.md",
+      "queued_sha256": "99e90490831191929169a20ac6c51216a41bf9874467f60e82623215367fdbf6",
+      "size_queued": 17411,
+      "exists": true,
+      "disk_sha256": "99e90490831191929169a20ac6c51216a41bf9874467f60e82623215367fdbf6",
+      "disk_size": 17411,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 446,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 — GUI silent crash + Spotify deeplink race"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 18,
+            "level": 3,
+            "text": "Fallo 1 — GUI cerró sola sin escribir error"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "Fallo 2 — Spotify reprodujo la cola en vez de Michael Jackson"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "OBJETIVO DEL HOTFIX"
+          },
+          {
+            "line": 79,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 96,
+            "level": 2,
+            "text": "FIX 1 — Spotify race condition"
+          },
+          {
+            "line": 98,
+            "level": 3,
+            "text": "1.1 — Detectar Spotify ya abierto + wait dinámico"
+          },
+          {
+            "line": 133,
+            "level": 1,
+            "text": "Si Spotify ya estaba abierto, el deeplink demora más en navegar"
+          },
+          {
+            "line": 134,
+            "level": 1,
+            "text": "de player view a search results. El default 1.8s alcanza para"
+          },
+          {
+            "line": 135,
+            "level": 1,
+            "text": "cold-launch (donde el splash + load tarda más que la navegación)"
+          },
+          {
+            "line": 136,
+            "level": 1,
+            "text": "pero NO alcanza warm. Subimos a 3.5s en ese caso."
+          },
+          {
+            "line": 144,
+            "level": 3,
+            "text": "1.2 — Verificación post-keypress"
+          },
+          {
+            "line": 151,
+            "level": 1,
+            "text": "Post-keypress: validar que el track tocando matchea la query."
+          },
+          {
+            "line": 152,
+            "level": 1,
+            "text": "Spotify muestra el now-playing en la barra de tareas / window title."
+          },
+          {
+            "line": 153,
+            "level": 1,
+            "text": "Si el query es \"Michael Jackson\", esperamos que el title contenga"
+          },
+          {
+            "line": 154,
+            "level": 1,
+            "text": "\"Michael Jackson\" o un nombre de track conocido."
+          },
+          {
+            "line": 168,
+            "level": 1,
+            "text": "Heurística: si el title contiene cualquier palabra de la query con"
+          },
+          {
+            "line": 169,
+            "level": 1,
+            "text": "≥4 caracteres, consideramos match. Spotify title format típico:"
+          },
+          {
+            "line": 170,
+            "level": 1,
+            "text": "\"Track Name • Artist Name\". Conservador: NO penalizamos si el title"
+          },
+          {
+            "line": 171,
+            "level": 1,
+            "text": "no contiene la query — sólo flageamos como \"query_match=False\" en"
+          },
+          {
+            "line": 172,
+            "level": 1,
+            "text": "el return para que el LLM sepa que hay duda."
+          },
+          {
+            "line": 197,
+            "level": 1,
+            "text": "Si played=True pero query_match=False, NO marcamos verified=True."
+          },
+          {
+            "line": 198,
+            "level": 1,
+            "text": "El LLM tiene que saber que el Enter funcionó pero el track tocando"
+          }
+        ],
+        "lead": "Estado del repo: rama PortandoLoMejor, HEAD `b38ec32` (voice toast fix),",
+        "measures": [
+          {
+            "line": 27,
+            "text": "Ningún evento `turn error` ni `voice failed` cerca del cierre."
+          },
+          {
+            "line": 50,
+            "text": "el `auto_play_wait=1.8s` es muy corto cuando Spotify ya está abierto en"
+          },
+          {
+            "line": 52,
+            "text": "UI, pero si Spotify estaba mostrando el player, tarda 2-4s en cambiar"
+          },
+          {
+            "line": 53,
+            "text": "a search results. Cuando se manda Enter a 1.8s+0.3s≈2.1s, Spotify"
+          },
+          {
+            "line": 88,
+            "text": "- `python -m pytest gemma4_agent/ -q` — debe seguir en 809 passed +"
+          },
+          {
+            "line": 222,
+            "text": "player, `auto_play_wait=1.8s` was too short — Enter fired before"
+          },
+          {
+            "line": 258,
+            "text": "\"\"\"When Spotify is already open, the wait MUST be ≥ 3.5s.\"\"\""
+          },
+          {
+            "line": 274,
+            "text": "# Verificar que _spotify_auto_play fue llamado con 3.5s y no 1.8s."
+          },
+          {
+            "line": 428,
+            "text": "- 809 passed + 1 pre-existing failure mantenido. Tests nuevos verde."
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 49,
+            "text": "Root cause: en `gemma4_agent/domain_tools.py:6781-6900` (`_spotify_auto_play`)"
+          },
+          {
+            "line": 57,
+            "text": "El tool reporta `played=True, verified=True, status=\"dispatched\"` porque"
+          },
+          {
+            "line": 107,
+            "text": "enviar el deeplink. Si lo hay, vamos a subir el wait porque"
+          }
+        ],
+        "ranges": [
+          "1-446",
+          "h:1",
+          "m:27"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_b.md",
+      "queued_sha256": "8d647e482a76cce2d4fa6ed82b1cbd49f32478361dd64dae20f4d7948293f89c",
+      "size_queued": 15095,
+      "exists": true,
+      "disk_sha256": "8d647e482a76cce2d4fa6ed82b1cbd49f32478361dd64dae20f4d7948293f89c",
+      "disk_size": 15095,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 376,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (B) — \"Listo\" vacío + WhatsApp slot-filling falso"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Contexto: los dos turns fallados"
+          },
+          {
+            "line": 24,
+            "level": 3,
+            "text": "Bug 1 — \"Listo.\" como respuesta a \"Perfecto, gracias\""
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "Bug 2 — WhatsApp no extrae slots de \"Dile a amor en wsp que la amo\""
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "OBJETIVO DEL HOTFIX"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "FIX 1 — `modes.py`: distinguir ack post-tool de ack social"
+          },
+          {
+            "line": 94,
+            "level": 3,
+            "text": "1.1 — Cambiar el system_hint de fast_action"
+          },
+          {
+            "line": 132,
+            "level": 3,
+            "text": "1.2 — Test"
+          },
+          {
+            "line": 149,
+            "level": 1,
+            "text": "Build the mode and read the system_hint."
+          },
+          {
+            "line": 150,
+            "level": 1,
+            "text": "NOTE: if _build_mode_fast_action has different signature, just"
+          },
+          {
+            "line": 151,
+            "level": 1,
+            "text": "construct it with whatever args are needed. The test only"
+          },
+          {
+            "line": 152,
+            "level": 1,
+            "text": "checks the string content of system_hint."
+          },
+          {
+            "line": 155,
+            "level": 1,
+            "text": "Must still have the old positive: tool ack uses 'Listo, X.'"
+          },
+          {
+            "line": 157,
+            "level": 1,
+            "text": "Must explicitly warn against using 'Listo' on no-tool turns."
+          },
+          {
+            "line": 159,
+            "level": 1,
+            "text": "Must give a concrete counter-example for social acks."
+          },
+          {
+            "line": 160,
+            "level": 1,
+            "text": "Either 'de nada' OR 'no hay de qué' is fine."
+          },
+          {
+            "line": 175,
+            "level": 3,
+            "text": "1.3 — Commit"
+          },
+          {
+            "line": 201,
+            "level": 2,
+            "text": "FIX 2 — schema de `whatsapp`: más ejemplos positivos de slot extraction"
+          },
+          {
+            "line": 203,
+            "level": 3,
+            "text": "2.1 — Editar la descripción"
+          },
+          {
+            "line": 248,
+            "level": 3,
+            "text": "2.2 — Test"
+          },
+          {
+            "line": 285,
+            "level": 1,
+            "text": "Both sections must exist so the LLM has a clean comparison."
+          },
+          {
+            "line": 290,
+            "level": 1,
+            "text": "The 'amor / mama / papa / mi novio' aliases should be"
+          },
+          {
+            "line": 291,
+            "level": 1,
+            "text": "explicitly endorsed so the LLM treats them as valid contacts."
+          }
+        ],
+        "lead": "Del log `~/.gemma4/logs/_pre_session/chat.log`:",
+        "measures": [
+          {
+            "line": 85,
+            "text": "- `python -m pytest gemma4_agent/ -q` debe seguir en 809 passed +"
+          },
+          {
+            "line": 351,
+            "text": "(debe ser 809 + 4 nuevos = 813 passed, 1 pre-existing failure)."
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 185,
+            "text": "absurd as an answer to a thank-you. Root cause: the fast_action"
+          },
+          {
+            "line": 326,
+            "text": "Root cause: the whatsapp schema's SLOT FILLING section had a strong"
+          }
+        ],
+        "ranges": [
+          "1-376",
+          "h:1",
+          "m:85"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_c.md",
+      "queued_sha256": "32b8bf346c83c68a8579bc0c859d372407468fe4da215ca0194dac39d8792462",
+      "size_queued": 23812,
+      "exists": true,
+      "disk_sha256": "32b8bf346c83c68a8579bc0c859d372407468fe4da215ca0194dac39d8792462",
+      "disk_size": 23812,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 556,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (C) — Path-amnesia post-creación de archivos"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Contexto: lo que pasó"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Causa raíz (CONFIRMADA, no especulación)"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Bug C1 — El LLM no cita el path al responder post-creación"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "Bug C2 — El path se DROPEA del history en el próximo turn"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Lo que NO es la causa raíz (descartado)"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "OBJETIVO DEL HOTFIX"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "FIX C1 — Tool rule de office: exigir cita del path"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "C1.1 — Editar `gemma4_agent/prompts/tool_rules/office.md`"
+          },
+          {
+            "line": 145,
+            "level": 3,
+            "text": "C1.2 — Commit"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "FIX C2 — `core.md`: regla universal de citación de evidencia"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "C2.1 — Editar `gemma4_agent/prompts/core.md`"
+          },
+          {
+            "line": 207,
+            "level": 3,
+            "text": "C2.2 — Commit"
+          },
+          {
+            "line": 232,
+            "level": 2,
+            "text": "FIX C3 — Breadcrumb survival across turns"
+          },
+          {
+            "line": 234,
+            "level": 3,
+            "text": "C3.1 — Modificar `_compact_completed_history` en agent.py"
+          },
+          {
+            "line": 279,
+            "level": 1,
+            "text": "PRE-PASS: harvest tool-result locators and stitch onto the next"
+          },
+          {
+            "line": 280,
+            "level": 1,
+            "text": "assistant reply if absent. Locator keys are picked from the same"
+          },
+          {
+            "line": 281,
+            "level": 1,
+            "text": "set agent_compaction.compact_tool_result preserves in core_keys."
+          },
+          {
+            "line": 287,
+            "level": 1,
+            "text": "Tool content is JSON-serialized (str). Try to parse."
+          },
+          {
+            "line": 305,
+            "level": 1,
+            "text": "This is the final assistant reply of the tool cycle."
+          },
+          {
+            "line": 308,
+            "level": 1,
+            "text": "multimodal-shape content; coerce to plain text repr"
+          },
+          {
+            "line": 315,
+            "level": 1,
+            "text": "Only add locators that aren't already mentioned verbatim."
+          },
+          {
+            "line": 322,
+            "level": 1,
+            "text": "Bound the addition so we don't push the assistant"
+          }
+        ],
+        "lead": "Del log `~/.gemma4/logs/_pre_session/chat.log` y",
+        "measures": [
+          {
+            "line": 115,
+            "text": "- `python -m pytest gemma4_agent/ -q` debe pasar (812+ passed,"
+          },
+          {
+            "line": 260,
+            "text": "PRE-PASS (Sprint hotfix C 2026-05-17): before dropping tool"
+          },
+          {
+            "line": 270,
+            "text": "1. Cheap pass: drop tool messages and tool_calls, shorten strings."
+          },
+          {
+            "line": 271,
+            "text": "2. If estimated context usage is still > 75% of context_size, ask"
+          },
+          {
+            "line": 329,
+            "text": "# ORIGINAL drop pass starts here ↓ ↓ ↓ (keep unchanged)"
+          },
+          {
+            "line": 353,
+            "text": "\"\"\"Regression test for the breadcrumb pre-pass in"
+          },
+          {
+            "line": 472,
+            "text": "a) Extraer la lógica del pre-pass a una función pura"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "gemma4",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 140,
+            "text": "This is critical because in subsequent turns the tool_result is dropped from history; only your reply text survives. If you don't cite the path, the user (and your future self) will lose track of where the file is."
+          },
+          {
+            "line": 190,
+            "text": "- The post-tool verifier checks that your reply mentions the action"
+          },
+          {
+            "line": 202,
+            "text": "grep -n \"tool\\|result\\|verifier\" gemma4_agent/prompts/core.md | head"
+          },
+          {
+            "line": 266,
+            "text": "breadcrumb the path was lost because tool messages get dropped"
+          },
+          {
+            "line": 344,
+            "text": "- Si el assistant content ya menciona el path verbatim (porque"
+          },
+          {
+            "line": 357,
+            "text": "had no access to the path because tool messages get dropped."
+          }
+        ],
+        "ranges": [
+          "1-556",
+          "h:1",
+          "m:115"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_d.md",
+      "queued_sha256": "030f8ec4bf61968006d54b6dcb5800633e1e282f6f8bf6fb1a89511f53ac6af2",
+      "size_queued": 25590,
+      "exists": true,
+      "disk_sha256": "030f8ec4bf61968006d54b6dcb5800633e1e282f6f8bf6fb1a89511f53ac6af2",
+      "disk_size": 25590,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 627,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (D) — Anti-hallucination + Multi-disk + Cross-turn coherence"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Contexto: 8 bugs en una sola sesión"
+          },
+          {
+            "line": 17,
+            "level": 3,
+            "text": "Bug D1 — Alucinación de hora (16:48:20)"
+          },
+          {
+            "line": 27,
+            "level": 3,
+            "text": "Bug D2 — Auto-contradicción inmediata (16:48:58)"
+          },
+          {
+            "line": 37,
+            "level": 3,
+            "text": "Bug D3 — URL inventada (16:50:41)"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "Bug D4 — Llamó una tool/action que no existe (16:51:17)"
+          },
+          {
+            "line": 61,
+            "level": 3,
+            "text": "Bug D5 — Pérdida de contexto entre turns (16:51:30)"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "Bug D6 — Alucinación de datos del disco F (16:54:32)"
+          },
+          {
+            "line": 100,
+            "level": 3,
+            "text": "Bug D7 — Trigger malinterpretado como ejecución directa (16:52:31, 16:53:00)"
+          },
+          {
+            "line": 118,
+            "level": 3,
+            "text": "Bug D8 — Niega capabilities (16:53:37 + 16:55:37)"
+          },
+          {
+            "line": 141,
+            "level": 2,
+            "text": "Causa raíz (5 patrones, no 8 bugs aislados)"
+          },
+          {
+            "line": 155,
+            "level": 2,
+            "text": "OBJETIVO DEL HOTFIX"
+          },
+          {
+            "line": 176,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 193,
+            "level": 2,
+            "text": "FIX D1 — Anti-hallucination: \"si la tool del subset responde, LLÁMALA\""
+          },
+          {
+            "line": 195,
+            "level": 3,
+            "text": "D1.1 — Editar `gemma4_agent/prompts/core.md`"
+          },
+          {
+            "line": 226,
+            "level": 3,
+            "text": "D1.2 — Commit"
+          },
+          {
+            "line": 253,
+            "level": 3,
+            "text": "D1.3 — Test"
+          },
+          {
+            "line": 271,
+            "level": 1,
+            "text": "qué hora es → system.time"
+          },
+          {
+            "line": 278,
+            "level": 1,
+            "text": "The honest-fallback clause must be present."
+          },
+          {
+            "line": 284,
+            "level": 2,
+            "text": "FIX D2 — Anti-URL-fabrication"
+          },
+          {
+            "line": 286,
+            "level": 3,
+            "text": "D2.1 — Editar `gemma4_agent/prompts/tool_rules/browser.md`"
+          },
+          {
+            "line": 314,
+            "level": 3,
+            "text": "D2.2 — Commit"
+          },
+          {
+            "line": 320,
+            "level": 2,
+            "text": "FIX D3 — Generalizar breadcrumb a campos tabulares chicos"
+          },
+          {
+            "line": 322,
+            "level": 3,
+            "text": "D3.1 — Editar `_compact_completed_history` en agent.py"
+          }
+        ],
+        "lead": "Del log `~/.gemma4/logs/_pre_session/chat.log` 16:45-16:56:",
+        "measures": [
+          {
+            "line": 53,
+            "text": "SYSTEM: session failed · failed"
+          },
+          {
+            "line": 57,
+            "text": "- Y peor: después del fail, el LLM dijo \"no tengo búsqueda web"
+          },
+          {
+            "line": 81,
+            "text": "{\"DeviceID\":\"F:\", \"FreeSpace\": 96764792832, ...},    ← 90.1 GB real"
+          },
+          {
+            "line": 89,
+            "text": "La tool YA había devuelto F=90.1 GB en su result_disks. El LLM lo"
+          },
+          {
+            "line": 90,
+            "text": "tenía en el contexto del turn. Igual inventó **350 GB**. Causa:"
+          },
+          {
+            "line": 94,
+            "text": "tool_result entero (sólo queda \"74 GB en disco C\" en el reply)."
+          },
+          {
+            "line": 108,
+            "text": "[16:52:54] SYSTEM: terminal failed · needs_user"
+          },
+          {
+            "line": 214,
+            "text": "do NOT fall back to a value from training. \"Te quedan ~350 GB libres"
+          },
+          {
+            "line": 239,
+            "text": "- \"Cuánto espacio en F\" → \"350 GB\". Real: 90 GB. system(disk) had"
+          },
+          {
+            "line": 311,
+            "text": "For the user's typed URLs, pass them through unchanged."
+          },
+          {
+            "line": 328,
+            "text": "Ampliar el pre-pass para que TAMBIÉN extraiga campos tabulares"
+          },
+          {
+            "line": 336,
+            "text": "# Compact \"tabular evidence\" pre-pass — Sprint hotfix D 2026-05-17."
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 91,
+            "text": "- El LLM solo verbalizó el disco C en su reply (porque el user"
+          },
+          {
+            "line": 389,
+            "text": "turn (\"y en F?\") had no F data in history because the disks list"
+          }
+        ],
+        "ranges": [
+          "1-627",
+          "h:1",
+          "m:53"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e.md",
+      "queued_sha256": "d6d8f7a31bcbab3555e0dec38cd287e329300c7f9ff76372f3746b147c9f9523",
+      "size_queued": 30758,
+      "exists": true,
+      "disk_sha256": "d6d8f7a31bcbab3555e0dec38cd287e329300c7f9ff76372f3746b147c9f9523",
+      "disk_size": 30758,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 821,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (E) — Activar router_v2 como default + voice telemetry + tabular keys"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Por qué Sprint E NO es \"más regex\""
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "OBJETIVO DEL HOTFIX"
+          },
+          {
+            "line": 94,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "FIX E1 — Shadow mode por default"
+          },
+          {
+            "line": 119,
+            "level": 3,
+            "text": "E1.1 — Editar `gemma4_agent/router_v2.py`"
+          },
+          {
+            "line": 144,
+            "level": 1,
+            "text": "Default: shadow is ON if the model is available (model_path exists"
+          },
+          {
+            "line": 145,
+            "level": 1,
+            "text": "AND the singleton can be loaded). The check is cheap because the"
+          },
+          {
+            "line": 146,
+            "level": 1,
+            "text": "singleton is lazy; we only test MODEL_PATH."
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "E1.2 — Tests"
+          },
+          {
+            "line": 185,
+            "level": 3,
+            "text": "E1.3 — Commit"
+          },
+          {
+            "line": 214,
+            "level": 2,
+            "text": "FIX E2 — Automatic bootstrap on first launch"
+          },
+          {
+            "line": 216,
+            "level": 3,
+            "text": "E2.1 — Inspeccionar el launcher"
+          },
+          {
+            "line": 222,
+            "level": 3,
+            "text": "E2.2 — Editar `gemma4_agent/launcher.py`"
+          },
+          {
+            "line": 247,
+            "level": 1,
+            "text": "Print a one-line notice so the user sees the network"
+          },
+          {
+            "line": 248,
+            "level": 1,
+            "text": "activity. ~113 MB on a fresh machine."
+          },
+          {
+            "line": 257,
+            "level": 1,
+            "text": "Non-fatal: v1 router will still serve traffic."
+          },
+          {
+            "line": 268,
+            "level": 1,
+            "text": "scripts/bootstrap_e5_small.py"
+          },
+          {
+            "line": 277,
+            "level": 3,
+            "text": "E2.3 — Test"
+          },
+          {
+            "line": 313,
+            "level": 1,
+            "text": "If bootstrap raises, the launcher must continue (v1 fallback)."
+          },
+          {
+            "line": 319,
+            "level": 1,
+            "text": "Should NOT raise."
+          },
+          {
+            "line": 327,
+            "level": 3,
+            "text": "E2.4 — Commit"
+          },
+          {
+            "line": 361,
+            "level": 2,
+            "text": "FIX E3 — Promote router_v2 to authoritative default"
+          },
+          {
+            "line": 363,
+            "level": 3,
+            "text": "E3.1 — Editar `gemma4_agent/router_v2.py`"
+          }
+        ],
+        "lead": "`gemma4_agent` debe servir a **usuarios que hablan de cualquier",
+        "measures": [
+          {
+            "line": 101,
+            "text": "queda como red de seguridad hasta confirmar v2 estable en uso real."
+          },
+          {
+            "line": 209,
+            "text": "remain green; 2 new EnvFlagsTest cases pin the new contract."
+          },
+          {
+            "line": 231,
+            "text": "centroid on first launch. ~113 MB int8 model."
+          },
+          {
+            "line": 238,
+            "text": "re-runs print 'already complete' and return in <1s."
+          },
+          {
+            "line": 251,
+            "text": "\"(~113 MB, multilingual int8 ONNX) to ~/.gemma4/models/e5-small/. \""
+          },
+          {
+            "line": 258,
+            "text": "print(f\"router_v2 bootstrap failed ({exc}); falling back to v1 routing.\")"
+          },
+          {
+            "line": 348,
+            "text": "scripts.bootstrap_e5_small.main() which downloads the ~113 MB int8"
+          },
+          {
+            "line": 445,
+            "text": "pass"
+          },
+          {
+            "line": 501,
+            "text": "self.fail(f\"{query!r}: smalltalk gate fired, expected {expected_tool}\")"
+          },
+          {
+            "line": 605,
+            "text": "logger.info(\"VAD: speech too short (<0.3s), rejecting\")"
+          },
+          {
+            "line": 660,
+            "text": "no trace event distinguishes wake-fail / VAD-no-speech /"
+          },
+          {
+            "line": 786,
+            "text": "print(f'{q!r:30s} -> source={tel.get(\\\"source\\\"):9s} top3={subset[:3]}')"
+          }
+        ],
+        "dates": [
+          "2026-05-17",
+          "2026-05-18",
+          "2026-05-19"
+        ],
+        "models": [
+          "e5-small",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 199,
+            "text": "agreement on real queries because nobody had ever enabled shadow."
+          }
+        ],
+        "ranges": [
+          "1-821",
+          "h:1",
+          "m:101"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e5.md",
+      "queued_sha256": "06b8ee1dbf1d7ea1d4e601ec91534df84ea24dd8b21d9ae0400c9606a038b156",
+      "size_queued": 17535,
+      "exists": true,
+      "disk_sha256": "06b8ee1dbf1d7ea1d4e601ec91534df84ea24dd8b21d9ae0400c9606a038b156",
+      "disk_size": 17535,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 449,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (E.5) — Smalltalk gate calibration + media queries enrichment"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "FIX E5.1 — Tighten smalltalk delta threshold"
+          },
+          {
+            "line": 79,
+            "level": 3,
+            "text": "E5.1.1 — Editar `gemma4_agent/router_v2.py`"
+          },
+          {
+            "line": 88,
+            "level": 1,
+            "text": "Smalltalk delta threshold. Calibrated 2026-05-17 (hotfix E.5)"
+          },
+          {
+            "line": 89,
+            "level": 1,
+            "text": "after the audit detected that 'pone benson boone' had"
+          },
+          {
+            "line": 90,
+            "level": 1,
+            "text": "delta=0.028 — just above the old 0.025 threshold — firing"
+          },
+          {
+            "line": 91,
+            "level": 1,
+            "text": "the gate on a clear music request. Raising to 0.030 means the"
+          },
+          {
+            "line": 92,
+            "level": 1,
+            "text": "gate only fires when the smalltalk signal is more clearly"
+          },
+          {
+            "line": 93,
+            "level": 1,
+            "text": "dominant. The probe results that anchor this value:"
+          },
+          {
+            "line": 94,
+            "level": 1,
+            "text": "\"hola, como estas?\"     delta=0.033   (still fires ✓)"
+          },
+          {
+            "line": 95,
+            "level": 1,
+            "text": "\"thanks\"                delta=0.060   (still fires ✓)"
+          },
+          {
+            "line": 96,
+            "level": 1,
+            "text": "\"gracias\"               delta=0.080   (still fires ✓)"
+          },
+          {
+            "line": 97,
+            "level": 1,
+            "text": "\"pone benson boone\"     delta=0.028   (no longer fires ✓)"
+          },
+          {
+            "line": 98,
+            "level": 1,
+            "text": "\"abrime el Steam\"       delta=0.014   (never fired ✓)"
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "E5.1.2 — Editar test del banding"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "E5.1.3 — Smoke test cold del repro"
+          },
+          {
+            "line": 150,
+            "level": 1,
+            "text": "--- Smalltalk should still fire ---"
+          },
+          {
+            "line": 164,
+            "level": 1,
+            "text": "Was a regex false-positive in v1; v2 should classify as"
+          },
+          {
+            "line": 165,
+            "level": 1,
+            "text": "smalltalk (delta well above 0.030)."
+          },
+          {
+            "line": 169,
+            "level": 1,
+            "text": "--- Music commands must NOT fire smalltalk (the bug) ---"
+          },
+          {
+            "line": 171,
+            "level": 1,
+            "text": "The bug: delta=0.028 fired the gate at theta=0.025. With"
+          }
+        ],
+        "lead": "El bug:",
+        "measures": [
+          {
+            "line": 3,
+            "text": "> Continuá el chat post hotfix E (8444329 / 1bf8ab8 / a3a970a /"
+          },
+          {
+            "line": 4,
+            "text": "> d6f7512 / 553e493). Sprint chico de calibración. Surgió DEL"
+          },
+          {
+            "line": 121,
+            "text": "test_play_music_es passed only because test_play_music_en"
+          },
+          {
+            "line": 211,
+            "text": "suite passed only because alphabetical test ordering put"
+          },
+          {
+            "line": 415,
+            "text": "print(f'{q!r:35s} -> source={tel.get(\\\"source\\\"):9s} top3={subset[:3]}')"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 10,
+            "text": "> tipo \"pone X\". Esto bloquea F porque es exactamente la familia"
+          },
+          {
+            "line": 37,
+            "text": "- **Calibración**: el delta 0.025 fue medido en Sprint 8a contra un probe set chico. Queries cortas en imperativo voseo + nombre propio tienen delta cercano al threshold porque los nombres propios no agregan mucha señal \"tools\" al embedding"
+          },
+          {
+            "line": 121,
+            "text": "test_play_music_es passed only because test_play_music_en"
+          },
+          {
+            "line": 211,
+            "text": "suite passed only because alphabetical test ordering put"
+          },
+          {
+            "line": 278,
+            "text": "# smalltalk gate because the dense embedding lacked anchor"
+          },
+          {
+            "line": 446,
+            "text": "- Si el rebuild del index falla porque hay cache persistente de"
+          }
+        ],
+        "ranges": [
+          "1-449",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_f.md",
+      "queued_sha256": "6602dcbd7a7b91e91e965dad5343533a1a805adb7a6b16de67f672e703edf32a",
+      "size_queued": 35660,
+      "exists": true,
+      "disk_sha256": "6602dcbd7a7b91e91e965dad5343533a1a805adb7a6b16de67f672e703edf32a",
+      "disk_size": 35660,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 990,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (F) — Pending intent + locator alignment + verifiers + intent cross-validation"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Contexto: bugs P1 confirmados"
+          },
+          {
+            "line": 12,
+            "level": 3,
+            "text": "Bug F1 — Cross-turn intent perdido (Bug D8 part 2)"
+          },
+          {
+            "line": 39,
+            "level": 3,
+            "text": "Bug F2 — `compact_tool_result.core_keys` no incluye `deeplink`"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "Bug F3 — 52 de 65 tools no tienen verifier"
+          },
+          {
+            "line": 64,
+            "level": 3,
+            "text": "Bug F4 — intent_validator solo cubre 4 pares ambiguos"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 91,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 111,
+            "level": 2,
+            "text": "FIX F1 — Pending intent slot"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "F1.1 — Detección del intent (sin matchear user text)"
+          },
+          {
+            "line": 136,
+            "level": 3,
+            "text": "F1.2 — Inspeccionar `gemma4_agent/state.py`"
+          },
+          {
+            "line": 146,
+            "level": 3,
+            "text": "F1.3 — Agregar el slot al `AgentState`"
+          },
+          {
+            "line": 200,
+            "level": 3,
+            "text": "F1.4 — Trigger del slot desde `agent.py`"
+          },
+          {
+            "line": 210,
+            "level": 1,
+            "text": "Hotfix F 2026-05-17: persist the intent so the next turn's"
+          },
+          {
+            "line": 211,
+            "level": 1,
+            "text": "router can resume even if the user reply lacks tool-keyword"
+          },
+          {
+            "line": 212,
+            "level": 1,
+            "text": "signal. Language-agnostic: we read 'asks_for' from the tool"
+          },
+          {
+            "line": 213,
+            "level": 1,
+            "text": "result, never from user text."
+          },
+          {
+            "line": 224,
+            "level": 3,
+            "text": "F1.5 — Consumir el slot en el router"
+          },
+          {
+            "line": 243,
+            "level": 1,
+            "text": "existing pipeline ..."
+          },
+          {
+            "line": 245,
+            "level": 1,
+            "text": "After RRF + popular fallback, ensure pending_tool_hint is"
+          },
+          {
+            "line": 246,
+            "level": 1,
+            "text": "in the subset. Insert at the head if missing."
+          },
+          {
+            "line": 259,
+            "level": 3,
+            "text": "F1.6 — Wire desde `agent.py`"
+          },
+          {
+            "line": 294,
+            "level": 1,
+            "text": "After existing logic, before the cap:"
+          },
+          {
+            "line": 301,
+            "level": 3,
+            "text": "F1.7 — Clear-on-resolve"
+          }
+        ],
+        "lead": "[16:55:34] YOU: Instala doom eternal en steam",
+        "measures": [
+          {
+            "line": 134,
+            "text": "Es 100% estructural."
+          },
+          {
+            "line": 169,
+            "text": "args       — args passed to the tool that returned needs_user."
+          },
+          {
+            "line": 271,
+            "text": "existente; queda como red de seguridad si v2 está OFF):"
+          },
+          {
+            "line": 347,
+            "text": "pass"
+          },
+          {
+            "line": 376,
+            "text": "\"\"\"When pending_tool_hint is passed, the router injects that"
+          },
+          {
+            "line": 388,
+            "text": "# User reply is 100% language-neutral confirmation; without"
+          },
+          {
+            "line": 438,
+            "text": "a subsequent turn (verified=True or status not in {failed,"
+          },
+          {
+            "line": 490,
+            "text": "exceeds TOOL_RESULT_LIMIT) and the breadcrumb pre-pass."
+          },
+          {
+            "line": 538,
+            "text": "breadcrumb pre-pass _LOCATOR_KEYS did include deeplink. Drift means"
+          },
+          {
+            "line": 540,
+            "text": "got dropped before the breadcrumb pre-pass could harvest it."
+          },
+          {
+            "line": 747,
+            "text": "self.assertEqual(out.kind, \"failed\")"
+          },
+          {
+            "line": 804,
+            "text": "Audit 2026-05-17: only 13/65 tools had post-action verifiers."
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 59,
+            "text": "**Importante**: cada verifier chequea evidencia **estructural** del"
+          },
+          {
+            "line": 104,
+            "text": "5. Cada verifier nuevo: solo evidencia estructural. Si el tool"
+          },
+          {
+            "line": 105,
+            "text": "no expone evidencia, el verifier devuelve `_unverifiable(...)`."
+          },
+          {
+            "line": 129,
+            "text": "pendientes. Lo dejamos para sprint futuro porque requiere"
+          },
+          {
+            "line": 689,
+            "text": "Contract: each verifier returns _failed on tool-reported failure,"
+          },
+          {
+            "line": 691,
+            "text": "evidence. NO verifier inspects natural-language text."
+          }
+        ],
+        "ranges": [
+          "1-990",
+          "h:1",
+          "m:134"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_g.md",
+      "queued_sha256": "ef646de1db2e7eb6e2131fde3adcdee4c061597e62172af29137e0600cb2e457",
+      "size_queued": 17510,
+      "exists": true,
+      "disk_sha256": "ef646de1db2e7eb6e2131fde3adcdee4c061597e62172af29137e0600cb2e457",
+      "disk_size": 17510,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 485,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (G) — Tool rules coverage + prompt drift audit"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Principio rector — language-agnostic"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "FIX G1 — Add 39 missing tool_rules"
+          },
+          {
+            "line": 97,
+            "level": 3,
+            "text": "G1.1 — Estudiar el patrón"
+          },
+          {
+            "line": 116,
+            "level": 3,
+            "text": "G1.2 — Extraer actions reales"
+          },
+          {
+            "line": 130,
+            "level": 3,
+            "text": "G1.3 — Templates language-agnostic"
+          },
+          {
+            "line": 221,
+            "level": 3,
+            "text": "G1.4 — Lista de los 39 a crear"
+          },
+          {
+            "line": 238,
+            "level": 3,
+            "text": "G1.5 — Verificación pre-commit"
+          },
+          {
+            "line": 252,
+            "level": 3,
+            "text": "G1.6 — Commit"
+          },
+          {
+            "line": 287,
+            "level": 2,
+            "text": "FIX G2 — Test: tool-rule action drift"
+          },
+          {
+            "line": 289,
+            "level": 3,
+            "text": "G2.1 — Crear test"
+          },
+          {
+            "line": 345,
+            "level": 1,
+            "text": "Negative-mention exclusion. Pre-flight check 2026-05-17 detected"
+          },
+          {
+            "line": 346,
+            "level": 1,
+            "text": "browser.md says: `NOT browser(action=\"minimize\")`. That's an"
+          },
+          {
+            "line": 347,
+            "level": 1,
+            "text": "intentional negative example — the rule warns the LLM NOT to use"
+          },
+          {
+            "line": 348,
+            "level": 1,
+            "text": "that action. The drift test should ignore matches whose"
+          },
+          {
+            "line": 349,
+            "level": 1,
+            "text": "left-context is `NOT `, `not `, `don't ` (any case) or similar"
+          },
+          {
+            "line": 350,
+            "level": 1,
+            "text": "negative-mention markers, otherwise the test flags valid"
+          },
+          {
+            "line": 351,
+            "level": 1,
+            "text": "pedagogical content as drift."
+          },
+          {
+            "line": 382,
+            "level": 1,
+            "text": "Intentional negative example (e.g. 'NOT"
+          },
+          {
+            "line": 383,
+            "level": 1,
+            "text": "browser(action=\"minimize\")'). Skip."
+          },
+          {
+            "line": 402,
+            "level": 3,
+            "text": "G2.2 — Correr el test"
+          }
+        ],
+        "lead": "Auditoría 2026-05-17:",
+        "measures": [
+          {
+            "line": 261,
+            "text": "Audit 2026-05-17: only 26/65 compound tools had a"
+          },
+          {
+            "line": 395,
+            "text": "self.fail(\"Tool rule action drift detected:\\n  \" + \"\\n  \".join(problems))"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 430,
+            "text": "because nothing constrained it, and if a rule had said it the"
+          }
+        ],
+        "ranges": [
+          "1-485",
+          "h:1",
+          "m:261"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_h.md",
+      "queued_sha256": "7388c2eed8d244178c1c84b10c174b765b7355c077c3785ae0187dcdc55d9092",
+      "size_queued": 22676,
+      "exists": true,
+      "disk_sha256": "7388c2eed8d244178c1c84b10c174b765b7355c077c3785ae0187dcdc55d9092",
+      "disk_size": 22676,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 677,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (H) — Observability: traced fallbacks + breadcrumb hygiene + v2 calibration"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "Bug H1 — 27 broad `except Exception` sin trace en agent.py"
+          },
+          {
+            "line": 30,
+            "level": 1,
+            "text": "pierde context y nadie lo sabe."
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Bug H2 — Breadcrumbs nunca se compactan"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "Bug H3 — Telemetría de voz incompleta"
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "Bug H4 — Calibración de router_v2 en producción (post hotfix E)"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 96,
+            "level": 2,
+            "text": "FIX H1 — Trace events para silent fallbacks críticos"
+          },
+          {
+            "line": 98,
+            "level": 3,
+            "text": "H1.1 — Identificar los críticos"
+          },
+          {
+            "line": 119,
+            "level": 3,
+            "text": "H1.2 — Patrón de fix"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "H1.3 — Test"
+          },
+          {
+            "line": 183,
+            "level": 1,
+            "text": "Source-level grep: the event name must exist somewhere"
+          },
+          {
+            "line": 184,
+            "level": 1,
+            "text": "in agent.py post-fix. Catches accidental removal."
+          },
+          {
+            "line": 198,
+            "level": 3,
+            "text": "H1.4 — Commit"
+          },
+          {
+            "line": 232,
+            "level": 2,
+            "text": "FIX H2 — Breadcrumb compaction in compact_history_content"
+          },
+          {
+            "line": 234,
+            "level": 3,
+            "text": "H2.1 — Editar `gemma4_agent/agent_compaction.py`"
+          },
+          {
+            "line": 286,
+            "level": 3,
+            "text": "H2.2 — Test"
+          },
+          {
+            "line": 332,
+            "level": 3,
+            "text": "H2.3 — Commit"
+          },
+          {
+            "line": 362,
+            "level": 2,
+            "text": "FIX H3 — Voice pipeline trace events"
+          },
+          {
+            "line": 364,
+            "level": 3,
+            "text": "H3.1 — Editar `gemma4_agent/voice/wake.py` y controller.py"
+          },
+          {
+            "line": 374,
+            "level": 1,
+            "text": "Wake accepted:"
+          },
+          {
+            "line": 381,
+            "level": 1,
+            "text": "Wake rejected:"
+          }
+        ],
+        "lead": "Auditoría 2026-05-17 + post hotfix E surfaced:",
+        "measures": [
+          {
+            "line": 105,
+            "text": "1. `agent.py:219-220` — microagents fail → empty section."
+          },
+          {
+            "line": 106,
+            "text": "2. `agent.py:230-232` — skills registry fail → no menu."
+          },
+          {
+            "line": 107,
+            "text": "3. `agent.py:380, :403` — cached prompt blocks fail."
+          },
+          {
+            "line": 108,
+            "text": "4. `agent.py:688-691` — router_v2 fail (ya parcialmente trazado)."
+          },
+          {
+            "line": 109,
+            "text": "5. `agent.py:718, :725` — semantic suggestion fail."
+          },
+          {
+            "line": 110,
+            "text": "6. `agent.py:805` — keyword hits fail."
+          },
+          {
+            "line": 121,
+            "text": "Por cada except crítico, reemplazar el `pass` / asignación vacía"
+          },
+          {
+            "line": 209,
+            "text": "- microagents.build_microagents_section fail -> empty section."
+          },
+          {
+            "line": 210,
+            "text": "- skills_registry.scan_skills fail -> no skills menu."
+          },
+          {
+            "line": 211,
+            "text": "- router_v2 fail -> v1 fallback (already partly traced)."
+          },
+          {
+            "line": 212,
+            "text": "- semantic_router fail -> empty hint list."
+          },
+          {
+            "line": 531,
+            "text": "pass"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "gemma4",
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 512,
+            "text": "(Cuando el router está en `disabled` state porque"
+          }
+        ],
+        "ranges": [
+          "1-677",
+          "h:1",
+          "m:105"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_i.md",
+      "queued_sha256": "68595bf09d4b40fc2d3fc28eeb0bc4bd2339cbb9f9a54a5c6595f94689b1e0e4",
+      "size_queued": 42861,
+      "exists": true,
+      "disk_sha256": "68595bf09d4b40fc2d3fc28eeb0bc4bd2339cbb9f9a54a5c6595f94689b1e0e4",
+      "disk_size": 42861,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1180,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (I) — Closing gaps: pending_intent extension + Listo validator + verifier expansion + safety enforcement"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Contexto: lo que quedó fuera de E+F+G+H"
+          },
+          {
+            "line": 16,
+            "level": 3,
+            "text": "Gap I1 — `pending_intent` no se setea cuando el LLM pregunta por su cuenta"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "Gap I2 — Listo-on-no-tool sigue dependiendo del prompt"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Gap I3 — 47 tools todavía sin verifier"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "Gap I4 — Safety enforcement es solo declarativo"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "Gap I5 — Telemetría de \"Gemma respondió sin llamar tool que debía\""
+          },
+          {
+            "line": 57,
+            "level": 3,
+            "text": "Gap I6 — Multi-turn slot-filling general (WhatsApp body,"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 111,
+            "level": 2,
+            "text": "FIX I1 — Extender pending_intent al caso \"LLM preguntó por su cuenta\""
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "I1.1 — Detección estructural"
+          },
+          {
+            "line": 134,
+            "level": 3,
+            "text": "I1.2 — Editar `gemma4_agent/agent.py`"
+          },
+          {
+            "line": 140,
+            "level": 1,
+            "text": "Hotfix I 2026-05-17: pending_intent rescue when the LLM asked"
+          },
+          {
+            "line": 141,
+            "level": 1,
+            "text": "a clarifying question without firing a tool. Triggers are"
+          },
+          {
+            "line": 142,
+            "level": 1,
+            "text": "structural; we never match user text."
+          },
+          {
+            "line": 205,
+            "level": 3,
+            "text": "I1.3 — Test"
+          },
+          {
+            "line": 225,
+            "level": 1,
+            "text": "The function lives inside agent.py as a private helper;"
+          },
+          {
+            "line": 226,
+            "level": 1,
+            "text": "we import it for unit testing. If it's nested, lift to"
+          },
+          {
+            "line": 227,
+            "level": 1,
+            "text": "module-level during the fix so it's testable."
+          },
+          {
+            "line": 240,
+            "level": 1,
+            "text": "Cross-lingual: French question. Structural detection on"
+          },
+          {
+            "line": 241,
+            "level": 1,
+            "text": "'?' char only — language-agnostic."
+          },
+          {
+            "line": 250,
+            "level": 1,
+            "text": "If a tool actually ran successfully, this is a normal"
+          },
+          {
+            "line": 251,
+            "level": 1,
+            "text": "turn ending — don't stash a pending intent."
+          }
+        ],
+        "lead": "Después de E+F+G+H el sistema cubre los 8 bugs de la sesión real",
+        "measures": [
+          {
+            "line": 41,
+            "text": "`contacts`, `database`. Esas 10 cubren ~80% del uso."
+          },
+          {
+            "line": 78,
+            "text": "3. `feat(verifiers)`: 10 verifiers nuevos para cubrir 80% del"
+          },
+          {
+            "line": 215,
+            "text": "100% structural detection — no user text matching."
+          },
+          {
+            "line": 494,
+            "text": "still does 95% of the work; the validator catches the residual"
+          },
+          {
+            "line": 495,
+            "text": "5% where the model ignores the rule."
+          },
+          {
+            "line": 507,
+            "text": "not-triggered (non-Listo reply), triggered (only failed calls)."
+          },
+          {
+            "line": 512,
+            "text": "## FIX I3 — 10 more structural verifiers (~80% traffic coverage)"
+          },
+          {
+            "line": 593,
+            "text": "routine). Verifier count went from 13/65 to 18/65. This commit"
+          },
+          {
+            "line": 595,
+            "text": "to 28/65 (~43% of tools, ~80% of traffic)."
+          },
+          {
+            "line": 1066,
+            "text": "pass"
+          },
+          {
+            "line": 1150,
+            "text": "print(f'{u[:60]:60s} block={v[\"block\"]}')"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 6,
+            "text": "> marcó pero NO entraron en E/F/G/H porque eran más profundos o"
+          },
+          {
+            "line": 294,
+            "text": "because this is a guess, not a structural tool signal)."
+          },
+          {
+            "line": 328,
+            "text": "# uses because core.md says to. The structural anti-pattern is"
+          },
+          {
+            "line": 395,
+            "text": "# turn because we wire this right after the assistant reply"
+          },
+          {
+            "line": 516,
+            "text": "Mismo patrón estructural que F3. Cada verifier chequea evidencia"
+          },
+          {
+            "line": 580,
+            "text": "menos 2 cases por verifier (ok path + unverifiable path)."
+          }
+        ],
+        "ranges": [
+          "1-1180",
+          "h:1",
+          "m:41"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j.md",
+      "queued_sha256": "532771f7c36b0f71923ed6ccd7ab446f4e5e15285901b4c0de95bcc330427dde",
+      "size_queued": 18250,
+      "exists": true,
+      "disk_sha256": "532771f7c36b0f71923ed6ccd7ab446f4e5e15285901b4c0de95bcc330427dde",
+      "disk_size": 18250,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 501,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (J) — Adaptive subset cap (confidence-aware TOP_K)"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Contexto: el bug"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "La señal estructural que ya emitimos pero no usamos"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "FIX J1 — Adaptive cap en `RouterV2.route()`"
+          },
+          {
+            "line": 100,
+            "level": 3,
+            "text": "J1.1 — Agregar constantes"
+          },
+          {
+            "line": 106,
+            "level": 1,
+            "text": "Adaptive subset cap (hotfix J 2026-05-17)."
+          },
+          {
+            "line": 107,
+            "level": 1,
+            "text": "When BOTH retrievers (dense + BM25) agree on the top tool AND"
+          },
+          {
+            "line": 108,
+            "level": 1,
+            "text": "the RRF score is near max-theoretical (~0.033 = 2/(60+1) for"
+          },
+          {
+            "line": 109,
+            "level": 1,
+            "text": "RRF_K=60 over 65 docs), confidence is high enough to cap the"
+          },
+          {
+            "line": 110,
+            "level": 1,
+            "text": "subset tightly. When they disagree, we fall back to TOP_K for"
+          },
+          {
+            "line": 111,
+            "level": 1,
+            "text": "the LLM to choose."
+          },
+          {
+            "line": 113,
+            "level": 1,
+            "text": "Bands chosen empirically against the smoke probes 2026-05-17:"
+          },
+          {
+            "line": 114,
+            "level": 1,
+            "text": "\"sube el volumen\"   -> top_score=0.0328 (max), agree   -> 4"
+          },
+          {
+            "line": 115,
+            "level": 1,
+            "text": "\"apaga la pc\"       -> top_score=0.0328, agree         -> 4"
+          },
+          {
+            "line": 116,
+            "level": 1,
+            "text": "\"instala vlc\"       -> top_score=0.0328, agree         -> 4"
+          },
+          {
+            "line": 117,
+            "level": 1,
+            "text": "\"ayudame con un X\"  -> top_score=0.0325, disagree      -> 16"
+          },
+          {
+            "line": 119,
+            "level": 1,
+            "text": "0.030 is well above the FALLBACK_THETA=0.025 floor so high-"
+          },
+          {
+            "line": 120,
+            "level": 1,
+            "text": "confidence and fallback paths never overlap."
+          },
+          {
+            "line": 127,
+            "level": 3,
+            "text": "J1.2 — Modificar el slicing post-RRF"
+          },
+          {
+            "line": 140,
+            "level": 1,
+            "text": "Always compute the full ranking first — we cap after we know"
+          },
+          {
+            "line": 141,
+            "level": 1,
+            "text": "which confidence band we're in."
+          },
+          {
+            "line": 146,
+            "level": 1,
+            "text": "Adaptive cap based on agreement + RRF score (hotfix J)."
+          }
+        ],
+        "lead": "Repro:",
+        "measures": [
+          {
+            "line": 24,
+            "text": "0.0328  # max teórico para RRF k=60 / 65 docs (≈ 2/61)"
+          },
+          {
+            "line": 34,
+            "text": "savings potencial: 10490 chars (71% reduction)"
+          },
+          {
+            "line": 78,
+            "text": "Detección 100% estructural — no toca calibración del smalltalk"
+          },
+          {
+            "line": 236,
+            "text": "forzar el cap a `TOP_K`. Eso da al LLM la red de popular fallback"
+          },
+          {
+            "line": 399,
+            "text": "costs ~10KB of unnecessary schemas (71% of total) in the LLM"
+          },
+          {
+            "line": 409,
+            "text": "Detection is 100% structural — reads dense_top1, bm25_top1,"
+          },
+          {
+            "line": 428,
+            "text": "Expected impact: ~70% of real-traffic turns are unambiguous"
+          },
+          {
+            "line": 430,
+            "text": "prompt size drops 60-70% — measurable latency reduction for"
+          },
+          {
+            "line": 461,
+            "text": "print(f'{q!r:42s} src={tel.get(\"source\"):9s} band={band:7s} agree={agree!s:5s} subset_size={len(subset)}')"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 498,
+            "text": "- Si el test integration falla porque el RRF score teórico"
+          }
+        ],
+        "ranges": [
+          "1-501",
+          "h:1",
+          "m:24"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j1.md",
+      "queued_sha256": "80f6d00894fa5750d28979e0a0baa72baa1773aa6d3749dc4fa94e6ffe1238d7",
+      "size_queued": 27198,
+      "exists": true,
+      "disk_sha256": "80f6d00894fa5750d28979e0a0baa72baa1773aa6d3749dc4fa94e6ffe1238d7",
+      "disk_size": 27198,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 679,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (J.1) — TIGHT_CLUSTER band + BM25 saturation guard + cluster_size telemetry"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Contexto: el bug específico"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "La señal estructural: `rrf[N]/rrf[0]`"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "FIX J1.1 — Agregar constantes"
+          },
+          {
+            "line": 113,
+            "level": 1,
+            "text": "TIGHT_CLUSTER band (hotfix J.1 2026-05-17)."
+          },
+          {
+            "line": 114,
+            "level": 1,
+            "text": "When retrievers DISAGREE on top-1 but the top-5 RRF scores form"
+          },
+          {
+            "line": 115,
+            "level": 1,
+            "text": "a tight cluster (rrf[4]/rrf[0] >= 0.80) AND the top score is"
+          },
+          {
+            "line": 116,
+            "level": 1,
+            "text": "corroborated across retrievers (top_score >= 0.025), the LLM"
+          },
+          {
+            "line": 117,
+            "level": 1,
+            "text": "sees 4-5 real candidates rather than the full TOP_K=16 noise."
+          },
+          {
+            "line": 119,
+            "level": 1,
+            "text": "Calibration (5 probes, 2026-05-17 audit):"
+          },
+          {
+            "line": 120,
+            "level": 1,
+            "text": "\"cierra steam\"               rrf[4]/rrf[0]=0.88, top=0.0320 -> TIGHT"
+          },
+          {
+            "line": 121,
+            "level": 1,
+            "text": "\"abre el powerpoint...\"      rrf[4]/rrf[0]=0.93, top=~0.030 -> TIGHT"
+          },
+          {
+            "line": 122,
+            "level": 1,
+            "text": "\"instala vlc...\"             rrf[4]/rrf[0]=0.83, top=~0.029 -> TIGHT"
+          },
+          {
+            "line": 123,
+            "level": 1,
+            "text": "\"ayudame con un proyecto\"    rrf[4]/rrf[0]=0.61, top=0.0325 -> LOW"
+          },
+          {
+            "line": 124,
+            "level": 1,
+            "text": "\"hace algo\"                  top_score<0.020              -> LOW (via floor)"
+          },
+          {
+            "line": 126,
+            "level": 1,
+            "text": "The 0.025 floor matches FALLBACK_THETA exactly: anything below"
+          },
+          {
+            "line": 127,
+            "level": 1,
+            "text": "is fallback territory regardless of cluster shape."
+          },
+          {
+            "line": 129,
+            "level": 1,
+            "text": "The 0.80 ratio sits midway between the lowest TIGHT (0.83) and"
+          },
+          {
+            "line": 130,
+            "level": 1,
+            "text": "the highest DISPERSED (0.61) — 19-point margin in both directions."
+          },
+          {
+            "line": 132,
+            "level": 1,
+            "text": "Cap=8 (not 6) because the competitive cluster is typically 4-5"
+          },
+          {
+            "line": 133,
+            "level": 1,
+            "text": "tools; cap=8 leaves a 3-4 tool margin for adjacent neighbours"
+          },
+          {
+            "line": 134,
+            "level": 1,
+            "text": "(e.g. `installer`/`launcher`/`terminal` next to `package`+`app`"
+          }
+        ],
+        "lead": "Repro del log real:",
+        "measures": [
+          {
+            "line": 7,
+            "text": "> 88% del top-1, lo que indica un **cluster chico de candidatos"
+          },
+          {
+            "line": 13,
+            "text": "> checked (Shtok 2012, Bahri 2020/2023, Bruch 2023) y validada"
+          },
+          {
+            "line": 264,
+            "text": "# 80% of the top-1. Useful for auditing TIGHT_CLUSTER calibration"
+          },
+          {
+            "line": 316,
+            "text": "Plus a synthetic two-singletons regression: when both top-1s are"
+          },
+          {
+            "line": 321,
+            "text": "WOULD pass the ratio gate without the guard must NOT fire"
+          },
+          {
+            "line": 535,
+            "text": "literature sanity-checked against Shtok 2012, Bahri 2020/2023,"
+          },
+          {
+            "line": 567,
+            "text": "score is >= 80% of top-1. Healthy regime for TIGHT_CLUSTER is"
+          },
+          {
+            "line": 600,
+            "text": "(Sprint J tests must remain green)."
+          },
+          {
+            "line": 622,
+            "text": "print(f'{q!r:40s} band={band:14s} agree={agree!s:5s} cap={cap!s:3s} cluster_size={cs!s:3s} size={len(subset):2d}')"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 5,
+            "text": "> en banda LOW (cap=16) porque dense_top1=`app` y bm25_top1="
+          },
+          {
+            "line": 180,
+            "text": "# in arbitrary order due to ties at zero. Treating them as"
+          },
+          {
+            "line": 294,
+            "text": "automáticamente el nuevo key porque el band name es ahora"
+          },
+          {
+            "line": 397,
+            "text": "# band. We don't pin identical subsets because the encoder"
+          }
+        ],
+        "ranges": [
+          "1-679",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_k.md",
+      "queued_sha256": "3af92139d6c84ba8a342453d0dc5ee847b9a104420fb364664cadbc935164f64",
+      "size_queued": 18260,
+      "exists": true,
+      "disk_sha256": "3af92139d6c84ba8a342453d0dc5ee847b9a104420fb364664cadbc935164f64",
+      "disk_size": 18260,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 500,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (K) — Bilingual purpose (ES + EN) in tool_descriptions.yaml"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Contexto: el dato del diagnóstico"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "Por qué este sprint y no parche al router"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "FIX K1 — Enriquecer 65 purpose con línea ES"
+          },
+          {
+            "line": 114,
+            "level": 3,
+            "text": "K1.1 — Patrón de transformación"
+          },
+          {
+            "line": 149,
+            "level": 3,
+            "text": "K1.2 — Ejemplos de transformación"
+          },
+          {
+            "line": 151,
+            "level": 4,
+            "text": "Ejemplo 1 — `office`:"
+          },
+          {
+            "line": 174,
+            "level": 4,
+            "text": "Ejemplo 2 — `window`:"
+          },
+          {
+            "line": 192,
+            "level": 4,
+            "text": "Ejemplo 3 — `whatsapp`:"
+          },
+          {
+            "line": 215,
+            "level": 4,
+            "text": "Ejemplo 4 — `media`:"
+          },
+          {
+            "line": 234,
+            "level": 3,
+            "text": "K1.3 — Lista completa de 65 tools"
+          },
+          {
+            "line": 266,
+            "level": 3,
+            "text": "K1.4 — Verificación post-edit"
+          },
+          {
+            "line": 282,
+            "level": 1,
+            "text": "Char budget check."
+          },
+          {
+            "line": 297,
+            "level": 3,
+            "text": "K1.5 — Smoke post-edit: BM25 nonzero coverage"
+          },
+          {
+            "line": 331,
+            "level": 3,
+            "text": "K1.6 — Smoke: cierra steam debe mejorar"
+          },
+          {
+            "line": 353,
+            "level": 3,
+            "text": "K1.7 — Commit"
+          },
+          {
+            "line": 419,
+            "level": 2,
+            "text": "REPORTE FINAL"
+          },
+          {
+            "line": 446,
+            "level": 2,
+            "text": "CRITERIO DE ÉXITO"
+          },
+          {
+            "line": 460,
+            "level": 2,
+            "text": "NO HACER (anti-scope)"
+          },
+          {
+            "line": 487,
+            "level": 2,
+            "text": "Notas de calibración para futuros sprints"
+          }
+        ],
+        "lead": "Del diagnostic post-J.1 (2026-05-17 ~22:00):",
+        "measures": [
+          {
+            "line": 321,
+            "text": "print(f'{es_verb!r:10s} bm25_nonzero={int(np.sum(es_bm25>0)):3d}'"
+          },
+          {
+            "line": 322,
+            "text": "f'   |  {en_verb!r:10s} bm25_nonzero={int(np.sum(en_bm25>0)):3d}')"
+          },
+          {
+            "line": 349,
+            "text": "era 100% léxico y la otra causa raíz (cluster geometry post-"
+          },
+          {
+            "line": 443,
+            "text": "print(f'{q!r:35s} band={band!s:14s} agree={agree!s:5s} cap={cap!s:3s} size={len(subset):2d}')"
+          },
+          {
+            "line": 495,
+            "text": "eso confirma que el problema era 100% léxico. Si salta a"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "e5-small"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 29,
+            "text": "`close` matchea 7 descriptions porque las `purpose` del YAML están"
+          },
+          {
+            "line": 36,
+            "text": "es 4 tools porque no todas las tools tienen \"cierra\" en sus"
+          },
+          {
+            "line": 104,
+            "text": "el budget porque ahora son 2 líneas). El prompt completo sigue"
+          },
+          {
+            "line": 170,
+            "text": "formats\" porque ya pesaba ~200 chars; la línea ES alcanza con los"
+          },
+          {
+            "line": 212,
+            "text": "(Recortamos \"Use for ...\" porque example_queries ya tiene los"
+          },
+          {
+            "line": 237,
+            "text": "medida que avanzás. Si una tool ya tiene línea ES (porque su"
+          }
+        ],
+        "ranges": [
+          "1-500",
+          "h:1",
+          "m:321"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_l.md",
+      "queued_sha256": "793107d2d42999031478e8f9653e39a950f2a3b3f69a46381f346b79a06280dd",
+      "size_queued": 37524,
+      "exists": true,
+      "disk_sha256": "793107d2d42999031478e8f9653e39a950f2a3b3f69a46381f346b79a06280dd",
+      "disk_size": 37524,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 992,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (L) — Voice session recording (continuous wake-to-reply)"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Contexto: lo que el operador quiere"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "Inventario del pipeline existente"
+          },
+          {
+            "line": 67,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "FIX L1 — Módulo `voice/recorder.py`"
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "L1.1 — API design"
+          },
+          {
+            "line": 165,
+            "level": 1,
+            "text": "Drop chunks if the writer queue grows past this many entries."
+          },
+          {
+            "line": 166,
+            "level": 1,
+            "text": "At 16 kHz mono int16, 32ms chunks: ~1024 bytes/chunk. 2000"
+          },
+          {
+            "line": 167,
+            "level": 1,
+            "text": "pending = ~2 MB lag tolerance, ~64 sec of audio queued."
+          },
+          {
+            "line": 170,
+            "level": 1,
+            "text": "Pre-wake tail capture window. The mic ring buffer is short"
+          },
+          {
+            "line": 171,
+            "level": 1,
+            "text": "(audio_io.RING_BUFFER_CHUNKS) so we don't try to read more"
+          },
+          {
+            "line": 172,
+            "level": 1,
+            "text": "than it actually holds."
+          },
+          {
+            "line": 187,
+            "level": 1,
+            "text": "Open WAV writers. Lazy-created on first chunk so we don't"
+          },
+          {
+            "line": 188,
+            "level": 1,
+            "text": "produce 44-byte empty WAVs for turns that get cancelled."
+          },
+          {
+            "line": 259,
+            "level": 1,
+            "text": "Per-session subdirectory."
+          },
+          {
+            "line": 266,
+            "level": 1,
+            "text": "Writer thread (singleton)."
+          },
+          {
+            "line": 309,
+            "level": 1,
+            "text": "Pre-wake tail goes in as the first chunks."
+          },
+          {
+            "line": 357,
+            "level": 1,
+            "text": "Drain pending chunks first. We post a sentinel \"flush\""
+          },
+          {
+            "line": 358,
+            "level": 1,
+            "text": "then wait briefly. Simpler approach: enqueue and let"
+          },
+          {
+            "line": 359,
+            "level": 1,
+            "text": "writer process; closing writers happens here directly."
+          },
+          {
+            "line": 360,
+            "level": 1,
+            "text": "The writer doesn't keep file handles per turn — it"
+          },
+          {
+            "line": 361,
+            "level": 1,
+            "text": "writes opportunistically — so we close from here."
+          },
+          {
+            "line": 362,
+            "level": 1,
+            "text": "Drain by waiting briefly for the queue."
+          }
+        ],
+        "lead": "Operator request literal: \"Quiero que todas las sesiones que haga",
+        "measures": [
+          {
+            "line": 45,
+            "text": "para cada chunk de 32ms (línea 338)."
+          },
+          {
+            "line": 114,
+            "text": "- START: when wake-word is detected. Includes a 500ms pre-wake"
+          },
+          {
+            "line": 242,
+            "text": "disabled or init failed."
+          },
+          {
+            "line": 372,
+            "text": "pass"
+          },
+          {
+            "line": 409,
+            "text": "pass"
+          },
+          {
+            "line": 558,
+            "text": "pass  # never break audio loop on recorder failure"
+          },
+          {
+            "line": 569,
+            "text": "pass"
+          },
+          {
+            "line": 587,
+            "text": "pass"
+          },
+          {
+            "line": 630,
+            "text": "pass"
+          },
+          {
+            "line": 648,
+            "text": "pass"
+          },
+          {
+            "line": 667,
+            "text": "capture ~500ms before wake confirmed)."
+          },
+          {
+            "line": 669,
+            "text": "(32ms, int16, 16kHz) for the active turn."
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [
+          "whisper",
+          "piper",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-992",
+          "h:1",
+          "m:45"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m.md",
+      "queued_sha256": "faab051105ed471ae871182c975885a23c878d4fc04f62804c9262259d871632",
+      "size_queued": 15734,
+      "exists": true,
+      "disk_sha256": "faab051105ed471ae871182c975885a23c878d4fc04f62804c9262259d871632",
+      "disk_size": 15734,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 438,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (M) — BoH false positive: 'pon musica' rejected"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Contexto: el diagnóstico"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "Por qué la BoH catch atrapa 'pon musica'"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "FIX M — Update BoH list"
+          },
+          {
+            "line": 117,
+            "level": 3,
+            "text": "M.1 — Editar `gemma4_agent/voice/stt.py:111-133`"
+          },
+          {
+            "line": 170,
+            "level": 1,
+            "text": "Sound-effect tags Whisper sometimes hallucinates in silence."
+          },
+          {
+            "line": 171,
+            "level": 1,
+            "text": "Keep the bracketed/parenthesized forms; the standalone word"
+          },
+          {
+            "line": 172,
+            "level": 1,
+            "text": "\"musica\" was removed 2026-05-18 because it falsely rejected"
+          },
+          {
+            "line": 173,
+            "level": 1,
+            "text": "legitimate user requests like \"pon musica\" (7 silent rejects"
+          },
+          {
+            "line": 174,
+            "level": 1,
+            "text": "observed in real session 12:08 — diagnosed via Sprint L"
+          },
+          {
+            "line": 175,
+            "level": 1,
+            "text": "recordings). See manifest at"
+          },
+          {
+            "line": 176,
+            "level": 1,
+            "text": "~/.gemma4/recordings/20260518_120744/manifest.jsonl."
+          },
+          {
+            "line": 196,
+            "level": 3,
+            "text": "M.2 — Test"
+          },
+          {
+            "line": 226,
+            "level": 1,
+            "text": "--- Negative cases: must NOT be flagged as hallucination ---"
+          },
+          {
+            "line": 229,
+            "level": 1,
+            "text": "The motivating bug for hotfix M."
+          },
+          {
+            "line": 239,
+            "level": 1,
+            "text": "Real user phrasings that mention 'musica'."
+          },
+          {
+            "line": 255,
+            "level": 1,
+            "text": "--- Positive cases: still must catch real hallucinations ---"
+          },
+          {
+            "line": 258,
+            "level": 1,
+            "text": "Whisper's actual silence hallucination."
+          },
+          {
+            "line": 268,
+            "level": 1,
+            "text": "Regression check: the other BoH entries still work."
+          },
+          {
+            "line": 274,
+            "level": 1,
+            "text": "Pin: ensure the standalone entry doesn't sneak back in."
+          },
+          {
+            "line": 276,
+            "level": 1,
+            "text": "Bracketed forms remain."
+          },
+          {
+            "line": 285,
+            "level": 3,
+            "text": "M.3 — Smoke real con los WAVs grabados por Sprint L"
+          }
+        ],
+        "lead": "Del manifest del Sprint L (`~/.gemma4/recordings/20260518_120744/",
+        "measures": [
+          {
+            "line": 28,
+            "text": "turn_11151750.user.wav (14s):"
+          },
+          {
+            "line": 29,
+            "text": "transcribe pass1: dur=12.55s mode=long ok=False"
+          },
+          {
+            "line": 33,
+            "text": "turn_11176750.user.wav (13.4s):"
+          },
+          {
+            "line": 34,
+            "text": "transcribe pass1: dur=11.50s mode=long ok=False"
+          },
+          {
+            "line": 38,
+            "text": "turn_11201390.user.wav ('abre esteam', PASSED):"
+          },
+          {
+            "line": 39,
+            "text": "transcribe pass1: dur=1.19s mode=short ok=True"
+          },
+          {
+            "line": 212,
+            "text": "This test pins the contract: legitimate 'musica' queries pass,"
+          },
+          {
+            "line": 311,
+            "text": "status = \"PASS\" if text else \"REJECT\""
+          },
+          {
+            "line": 312,
+            "text": "print(f\"{status:7s} {name}: {text!r}\")"
+          },
+          {
+            "line": 338,
+            "text": "turn_11151750: dur=12.55s text='Pon musica. Gemma.'"
+          },
+          {
+            "line": 340,
+            "text": "turn_11176750: dur=11.50s text='Pon musica.'"
+          },
+          {
+            "line": 368,
+            "text": "\"escucha musica\", etc. — all pass (not hallucination)."
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "whisper",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 14,
+            "text": "> legítimas como `\"Pon musica\"` o `\"Pon musica. Gemma.\"` porque"
+          },
+          {
+            "line": 344,
+            "text": "in _quality_check rejected because SPANISH_HALLUCINATION_PHRASES"
+          }
+        ],
+        "ranges": [
+          "1-438",
+          "h:1",
+          "m:28"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m1.md",
+      "queued_sha256": "0129a01aaa28359e74e66d5de8dec88e954d1d17f646f0950b7e85cc8f59c4d7",
+      "size_queued": 42432,
+      "exists": true,
+      "disk_sha256": "0129a01aaa28359e74e66d5de8dec88e954d1d17f646f0950b7e85cc8f59c4d7",
+      "disk_size": 42432,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1120,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (M.1) — Voice recorder polish: TTS capture, wake conf, STT reason, eager finish"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Contexto: los 4 gaps observados"
+          },
+          {
+            "line": 16,
+            "level": 3,
+            "text": "Gap M.1.1 — `.tts.wav` solo se generó UNA vez de 3 turns con TTS"
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "Gap M.1.2 — `wake_confidence: 0.0` en todos los turns"
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "Gap M.1.3 — `stt_reject_reason: \"stt_empty_or_vad_reject\"` es genérico"
+          },
+          {
+            "line": 77,
+            "level": 3,
+            "text": "Gap M.1.4 — Turn cierra recién cuando llega el siguiente wake"
+          },
+          {
+            "line": 91,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "FIX M.1.1 — TTS capture race condition"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "M.1.1a — Diagnóstico"
+          },
+          {
+            "line": 144,
+            "level": 3,
+            "text": "M.1.1b — Fix: capturar al turn ACTIVO en el momento de"
+          },
+          {
+            "line": 157,
+            "level": 1,
+            "text": "Add to __init__:"
+          },
+          {
+            "line": 167,
+            "level": 1,
+            "text": "Race fix M.1.1: TTS chunks may arrive shortly AFTER end_tts"
+          },
+          {
+            "line": 168,
+            "level": 1,
+            "text": "returns (Piper worker thread is async). Keep a reference to"
+          },
+          {
+            "line": 169,
+            "level": 1,
+            "text": "the just-closed turn for a short grace window so late chunks"
+          },
+          {
+            "line": 170,
+            "level": 1,
+            "text": "get appended to the correct .tts.wav instead of being dropped."
+          },
+          {
+            "line": 184,
+            "level": 1,
+            "text": "Prefer active turn; fall back to just-finished within grace."
+          },
+          {
+            "line": 190,
+            "level": 1,
+            "text": "Route to the just-finished turn. The writer loop"
+          },
+          {
+            "line": 191,
+            "level": 1,
+            "text": "resolves the target lazily; we tag here."
+          },
+          {
+            "line": 234,
+            "level": 1,
+            "text": "Race fix M.1.1: late TTS chunk for the just-"
+          },
+          {
+            "line": 235,
+            "level": 1,
+            "text": "closed turn. Open or reuse the .tts.wav and"
+          },
+          {
+            "line": 236,
+            "level": 1,
+            "text": "append. The writer was already closed; reopen"
+          },
+          {
+            "line": 237,
+            "level": 1,
+            "text": "in append mode is tricky with `wave` (no"
+          },
+          {
+            "line": 238,
+            "level": 1,
+            "text": "native append). Workaround: keep the writer"
+          }
+        ],
+        "lead": "Inspecionando la sesión `20260518_120744` (11 turns, manifest +",
+        "measures": [
+          {
+            "line": 42,
+            "text": "Si el agent reply tarda > 100ms (que siempre) y el siguiente"
+          },
+          {
+            "line": 129,
+            "text": "pass"
+          },
+          {
+            "line": 279,
+            "text": "pass"
+          },
+          {
+            "line": 300,
+            "text": "pass"
+          },
+          {
+            "line": 316,
+            "text": "pass"
+          },
+          {
+            "line": 409,
+            "text": "# Si pass-1 falla quality y Plan B no aplica, devolver (text, reason)."
+          },
+          {
+            "line": 422,
+            "text": "# Si pass-1 OK:"
+          },
+          {
+            "line": 469,
+            "text": "pass"
+          },
+          {
+            "line": 501,
+            "text": "pass"
+          },
+          {
+            "line": 551,
+            "text": "pass"
+          },
+          {
+            "line": 567,
+            "text": "# Simulate a late TTS chunk arriving 100ms after finish."
+          },
+          {
+            "line": 737,
+            "text": "# Chunk en 32ms (mismo que el pipeline real) y feed al wake detector."
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "gemma4",
+          "piper",
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 55,
+            "text": "El call en `_on_wake_detected` pasa `wake_confidence=0.0` porque"
+          },
+          {
+            "line": 134,
+            "text": "(porque el writer drain está atrasado o el nuevo wake llegó),"
+          },
+          {
+            "line": 142,
+            "text": "el chunk se descarta porque `self._active_turn is None`."
+          },
+          {
+            "line": 263,
+            "text": "writer fue cerrado, el chunk se pierde. Esto es OK porque el"
+          },
+          {
+            "line": 984,
+            "text": "30 min to diagnose because the manifest didn't carry the"
+          }
+        ],
+        "ranges": [
+          "1-1120",
+          "h:1",
+          "m:42"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m2.md",
+      "queued_sha256": "f6cc4bf8dcd717f15102395b91678b0813cc0279112a2f171620b93e32c8e1dc",
+      "size_queued": 22355,
+      "exists": true,
+      "disk_sha256": "f6cc4bf8dcd717f15102395b91678b0813cc0279112a2f171620b93e32c8e1dc",
+      "disk_size": 22355,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 631,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (M.2) — Close M.1 loose ends + act on testaudio findings"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Contexto: lo que pasó en M.1"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "Hallazgo H1: Wake detector recall colapsado en este audio"
+          },
+          {
+            "line": 55,
+            "level": 3,
+            "text": "Hallazgo H2: 3/3 turns rechazados por quality_check"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 94,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "FIX M.2.1 — Commit testaudio analysis artifacts"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "M.2.1a — Actualizar `.gitignore`"
+          },
+          {
+            "line": 117,
+            "level": 1,
+            "text": "Sprint L+ voice analysis intermediates (regenerable from .m4a)."
+          },
+          {
+            "line": 120,
+            "level": 1,
+            "text": "Operator-provided raw audio — leave to operator decision."
+          },
+          {
+            "line": 121,
+            "level": 1,
+            "text": "Uncomment if operator marks the .m4a as personal/sensitive:"
+          },
+          {
+            "line": 122,
+            "level": 1,
+            "text": "gemma4_agent/voice/tests/*.m4a"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "M.2.1b — Verificar qué archivos hay para commitear"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "M.2.1c — Verificar `testaudio_analysis.json` está bien"
+          },
+          {
+            "line": 163,
+            "level": 3,
+            "text": "M.2.1d — Decisión sobre el `.m4a` original"
+          },
+          {
+            "line": 185,
+            "level": 3,
+            "text": "M.2.1e — Commit"
+          },
+          {
+            "line": 219,
+            "level": 2,
+            "text": "FIX M.2.2 — Tighten wake debounce for rapid-fire scenarios"
+          },
+          {
+            "line": 221,
+            "level": 3,
+            "text": "M.2.2a — Diagnóstico"
+          },
+          {
+            "line": 238,
+            "level": 3,
+            "text": "M.2.2b — Fix"
+          },
+          {
+            "line": 256,
+            "level": 1,
+            "text": "Hotfix M.2 2026-05-18: lowered from 2.0s to 0.8s based on"
+          },
+          {
+            "line": 257,
+            "level": 1,
+            "text": "testaudio analysis finding (Sprint M.1) — operator's rapid-"
+          },
+          {
+            "line": 258,
+            "level": 1,
+            "text": "fire wakes (\"hey gemma X, hey gemma Y\" within ~1s) were"
+          },
+          {
+            "line": 259,
+            "level": 1,
+            "text": "dropping 50% to the debounce. 0.8s still suppresses TTS-echo"
+          },
+          {
+            "line": 260,
+            "level": 1,
+            "text": "false-wakes (Piper utterances are typically >1s) and"
+          }
+        ],
+        "lead": "M.1 aterrizó limpio (16/16 tests, los 4 fixes en su lugar). El",
+        "measures": [
+          {
+            "line": 12,
+            "text": "M.1 aterrizó limpio (16/16 tests, los 4 fixes en su lugar). El"
+          },
+          {
+            "line": 31,
+            "text": "Audio duration: 292.8s (~5 min)"
+          },
+          {
+            "line": 38,
+            "text": "recall ~5-10% — el wake detector está fallando masivamente en"
+          },
+          {
+            "line": 49,
+            "text": "Diagnóstico estructural: el primer pass de la detección reportó"
+          },
+          {
+            "line": 53,
+            "text": "el debounce mató 50% de ellos."
+          },
+          {
+            "line": 69,
+            "text": "speech\" con probabilidad 66%."
+          },
+          {
+            "line": 102,
+            "text": "4. **NO bajes** el wake debounce a < 0.5s. Race condition con"
+          },
+          {
+            "line": 165,
+            "text": "`Grabación (2).m4a` es ~7MB de voz del operador. Dos opciones:"
+          },
+          {
+            "line": 211,
+            "text": "- Wake detector recall ~5-10% on this audio (Hallazgo H1)."
+          },
+          {
+            "line": 212,
+            "text": "- 100% of Whisper outputs rejected by quality_check (H2)."
+          },
+          {
+            "line": 232,
+            "text": "3 por debounce — eso es 50% de pérdida."
+          },
+          {
+            "line": 236,
+            "text": "sweet-spot probable es **0.8-1.2s**."
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "whisper",
+          "gemma 4",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-631",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_n.md",
+      "queued_sha256": "3e9e0f67432e5d2ccb1adcba69230e93a49ebac735b2cd5eb1c49d5567217067",
+      "size_queued": 37450,
+      "exists": true,
+      "disk_sha256": "3e9e0f67432e5d2ccb1adcba69230e93a49ebac735b2cd5eb1c49d5567217067",
+      "disk_size": 37450,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 937,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (N) — Whisper-large ground truth + WER/CER comparison"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Por qué"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "FIX N.1 — Script `scripts/testaudio_groundtruth.py`"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "N.1.1 — Estructura del script"
+          },
+          {
+            "line": 204,
+            "level": 1,
+            "text": "Resolve repo root regardless of cwd."
+          },
+          {
+            "line": 214,
+            "level": 1,
+            "text": "--- WER/CER -------------------------------------------------------"
+          },
+          {
+            "line": 251,
+            "level": 1,
+            "text": "--- Audio conversion -----------------------------------------------"
+          },
+          {
+            "line": 259,
+            "level": 1,
+            "text": "Trust the operator that an existing .wav is in the right"
+          },
+          {
+            "line": 260,
+            "level": 1,
+            "text": "format. If not, faster-whisper will read it anyway via"
+          },
+          {
+            "line": 261,
+            "level": 1,
+            "text": "its own loader."
+          },
+          {
+            "line": 294,
+            "level": 1,
+            "text": "--- Whisper-large loader -------------------------------------------"
+          },
+          {
+            "line": 307,
+            "level": 1,
+            "text": "Try GPU first; fall back to CPU."
+          },
+          {
+            "line": 318,
+            "level": 1,
+            "text": "--- Full transcription --------------------------------------------"
+          },
+          {
+            "line": 331,
+            "level": 1,
+            "text": "NOTE: NO initial_prompt. We want unbiased ground truth."
+          },
+          {
+            "line": 333,
+            "level": 1,
+            "text": "`segments` is a generator; force materialization."
+          },
+          {
+            "line": 363,
+            "level": 1,
+            "text": "--- Aligned per-wake transcription ---------------------------------"
+          },
+          {
+            "line": 461,
+            "level": 1,
+            "text": "--- Report markdown -----------------------------------------------"
+          },
+          {
+            "line": 477,
+            "level": 1,
+            "text": "Continuous transcription preview"
+          },
+          {
+            "line": 491,
+            "level": 1,
+            "text": "Aligned comparison"
+          },
+          {
+            "line": 505,
+            "level": 1,
+            "text": "Verdict distribution"
+          },
+          {
+            "line": 514,
+            "level": 1,
+            "text": "Detailed per-turn comparison"
+          },
+          {
+            "line": 541,
+            "level": 1,
+            "text": "--- CLI ------------------------------------------------------------"
+          }
+        ],
+        "lead": "El sprint M.2 expuso `whisper_raw_text` en el manifest, lo que nos",
+        "measures": [
+          {
+            "line": 82,
+            "text": "extraer la ventana 15s post-wake del audio y transcribirla con"
+          },
+          {
+            "line": 185,
+            "text": "(~1.5 GB int8 weights) into the standard HF cache. Subsequent"
+          },
+          {
+            "line": 279,
+            "text": "raise RuntimeError(f\"ffmpeg failed: {result.stderr[-500:]}\")"
+          },
+          {
+            "line": 297,
+            "text": "\"\"\"Load faster-whisper large-v3. ~1.5GB download on first run."
+          },
+          {
+            "line": 305,
+            "text": "\"(first run downloads ~1.5GB)\")"
+          },
+          {
+            "line": 312,
+            "text": "logger.info(f\"GPU load failed ({exc}); falling back to CPU/int8\")"
+          },
+          {
+            "line": 402,
+            "text": "logger.warning(f\"{analysis_path} not found — skipping aligned pass\")"
+          },
+          {
+            "line": 527,
+            "text": "lines.append(f\"- WER: {t['wer']:.2%} · CER: {t['cer']:.2%}\")"
+          },
+          {
+            "line": 556,
+            "text": "help=\"Skip the per-wake alignment pass (faster; only continuous output)\","
+          },
+          {
+            "line": 622,
+            "text": "Si la descarga del modelo falla por red:"
+          },
+          {
+            "line": 780,
+            "text": "self.skipTest(f\"script imports failed: {exc}\")"
+          },
+          {
+            "line": 836,
+            "text": "a 15s window (rapid-fire); large bounds it tighter. Suggests"
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "whisper",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 35,
+            "text": "- ¿Whisper-small dijo \"pon mi\" porque el operador lo dijo así, o"
+          },
+          {
+            "line": 36,
+            "text": "porque small es peor que large para voseo?"
+          },
+          {
+            "line": 301,
+            "text": "disable the in-model VAD filter because the operator pipeline"
+          }
+        ],
+        "ranges": [
+          "1-937",
+          "h:1",
+          "m:82"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_o.md",
+      "queued_sha256": "e6ef7bc258ffee71c41ed6fd8580b4fbcbe6eb4f5ecfe16d75bf306e6dc079f1",
+      "size_queued": 14632,
+      "exists": true,
+      "disk_sha256": "e6ef7bc258ffee71c41ed6fd8580b4fbcbe6eb4f5ecfe16d75bf306e6dc079f1",
+      "disk_size": 14632,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 373,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (O) — STT filter calibration (no model upgrade)"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "FIX O — Diagnóstico-primero, calibración-segunda"
+          },
+          {
+            "line": 85,
+            "level": 3,
+            "text": "O.1 — Generar el reporte por-filtro"
+          },
+          {
+            "line": 127,
+            "level": 3,
+            "text": "O.2 — Decisión de calibración (post-O.1)"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "O.3 — Decoding params: el espacio de búsqueda permitido"
+          },
+          {
+            "line": 203,
+            "level": 3,
+            "text": "O.4 — Tests"
+          },
+          {
+            "line": 227,
+            "level": 3,
+            "text": "O.5 — Re-correr el bench"
+          },
+          {
+            "line": 240,
+            "level": 3,
+            "text": "O.6 — Commit"
+          },
+          {
+            "line": 296,
+            "level": 2,
+            "text": "REPORTE FINAL"
+          },
+          {
+            "line": 319,
+            "level": 2,
+            "text": "CRITERIO DE ÉXITO"
+          },
+          {
+            "line": 331,
+            "level": 2,
+            "text": "NO HACER (anti-scope)"
+          },
+          {
+            "line": 351,
+            "level": 2,
+            "text": "Follow-ups documentados"
+          }
+        ],
+        "lead": "`gemma4_agent/voice/stt.py::_quality_check` tiene 7 gates",
+        "measures": [
+          {
+            "line": 6,
+            "text": "> latencia tier-Alexa (<300ms), no el 1.2s del bench."
+          },
+          {
+            "line": 23,
+            "text": "| 2 | too_many_words_for_duration | `<0.7s & >4w` or `<1.5s & >8w` | 679 |"
+          },
+          {
+            "line": 145,
+            "text": "duration<3s; probar 3 o 5)."
+          },
+          {
+            "line": 151,
+            "text": "y confirmar que sigue PASS con el target tier-Alexa (<300ms)."
+          },
+          {
+            "line": 152,
+            "text": "Si supera 300ms, REVERTIR el cambio aunque WER haya bajado."
+          },
+          {
+            "line": 179,
+            "text": "- Esto NO mueve el bench (stt_wer_mean sigue FAIL 0.521)."
+          },
+          {
+            "line": 237,
+            "text": "target tier-Alexa (<300ms; el bench formal es <1.2s pero"
+          },
+          {
+            "line": 238,
+            "text": "nuestra restricción real es <300ms), **REVERTIR**."
+          },
+          {
+            "line": 258,
+            "text": "<300ms target)."
+          },
+          {
+            "line": 277,
+            "text": "short clips (2/6 turns have raw Whisper output much shorter than"
+          },
+          {
+            "line": 290,
+            "text": "bench.py stt_wer_mean remains FAIL at 0.521 -- this commit"
+          },
+          {
+            "line": 291,
+            "text": "makes the failure mode legible, not green."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 342,
+            "text": "- NO bajes ningún threshold solo porque \"se siente mejor\"."
+          }
+        ],
+        "ranges": [
+          "1-373",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_p.md",
+      "queued_sha256": "155816e21b394d9ec2a8a283fcff5ca01ea008b1b08f81c09d24e7cfaa810f6b",
+      "size_queued": 25394,
+      "exists": true,
+      "disk_sha256": "155816e21b394d9ec2a8a283fcff5ca01ea008b1b08f81c09d24e7cfaa810f6b",
+      "disk_size": 25394,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 660,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (P) — Silero-VAD endpointing + offline replay aligned to live pipeline"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "FIX P.1 — Align offline analysis to live pipeline endpointing"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "P.1.1 — Diagnóstico"
+          },
+          {
+            "line": 97,
+            "level": 3,
+            "text": "P.1.2 — Fix al script"
+          },
+          {
+            "line": 171,
+            "level": 1,
+            "text": "Sprint P.1: align to live pipeline — endpoint by RMS silence"
+          },
+          {
+            "line": 172,
+            "level": 1,
+            "text": "instead of fixed 15s window."
+          },
+          {
+            "line": 182,
+            "level": 3,
+            "text": "P.1.3 — Re-correr el análisis"
+          },
+          {
+            "line": 194,
+            "level": 3,
+            "text": "P.1.4 — Re-comparar contra ground truth"
+          },
+          {
+            "line": 210,
+            "level": 3,
+            "text": "P.1.5 — Tests"
+          },
+          {
+            "line": 262,
+            "level": 1,
+            "text": "2s speech + 1s silence + (would be more speech but cut by endpoint)"
+          },
+          {
+            "line": 265,
+            "level": 1,
+            "text": "Should close after first speech + 500ms silence (= 2.5s)"
+          },
+          {
+            "line": 266,
+            "level": 1,
+            "text": "not at 15.0s."
+          },
+          {
+            "line": 286,
+            "level": 1,
+            "text": "\"Gemma X. [800ms silence] Gemma Y.\" → 2 calls produce"
+          },
+          {
+            "line": 287,
+            "level": 1,
+            "text": "2 separate endpoints when called sequentially."
+          },
+          {
+            "line": 293,
+            "level": 1,
+            "text": "First call from idx=0 closes at first silence."
+          },
+          {
+            "line": 298,
+            "level": 1,
+            "text": "Second call from end1 closes at second silence (or max)."
+          },
+          {
+            "line": 305,
+            "level": 3,
+            "text": "P.1.6 — Commit"
+          },
+          {
+            "line": 354,
+            "level": 2,
+            "text": "FIX P.2 — Upgrade endpoint detection from RMS to Silero VAD"
+          },
+          {
+            "line": 356,
+            "level": 3,
+            "text": "P.2.1 — Diagnóstico"
+          },
+          {
+            "line": 389,
+            "level": 3,
+            "text": "P.2.2 — Fix"
+          },
+          {
+            "line": 394,
+            "level": 1,
+            "text": "ANTES (RMS-based):"
+          },
+          {
+            "line": 399,
+            "level": 1,
+            "text": "DESPUÉS (Silero VAD-based con RMS como fallback):"
+          }
+        ],
+        "lead": "Dos commits chicos:",
+        "measures": [
+          {
+            "line": 10,
+            "text": ">    fija de 15s — NO refleja el pipeline live. Las \"false"
+          },
+          {
+            "line": 28,
+            "text": "ventana 15s fija. En su lugar, simula el endpointing live"
+          },
+          {
+            "line": 54,
+            "text": "4. **NO subas** `LISTENING_TIMEOUT_S` (5s sin speech → idle)."
+          },
+          {
+            "line": 56,
+            "text": "5. **NO modifiques** el wake detector (Vosk). El recall era ~10%"
+          },
+          {
+            "line": 82,
+            "text": "operador dijo \"Gemma X. [pausa 1s] Gemma Y. [pausa 1s] Gemma Z.\""
+          },
+          {
+            "line": 83,
+            "text": "todo en 15s, Whisper transcribe `\"Gemma X. Gemma Y. Gemma Z.\"`"
+          },
+          {
+            "line": 88,
+            "text": "RMS. Si el operador pausó 1s entre comandos, el live habría"
+          },
+          {
+            "line": 107,
+            "text": "CHUNK_SAMPLES,  # 512 = 32ms"
+          },
+          {
+            "line": 125,
+            "text": "— NOT the fixed 15s window the original analysis used."
+          },
+          {
+            "line": 190,
+            "text": "más cortos (~1-3s en lugar de 15s), y el verdict distribution"
+          },
+          {
+            "line": 216,
+            "text": "silence, not at fixed 15s. Sprint N analysis was unfairly"
+          },
+          {
+            "line": 217,
+            "text": "penalizing the pipeline because it gave Whisper 15s of audio"
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 158,
+            "text": "(Si `SPEECH_MIN_CHUNKS` no es importable porque está hardcoded,"
+          },
+          {
+            "line": 217,
+            "text": "penalizing the pipeline because it gave Whisper 15s of audio"
+          },
+          {
+            "line": 575,
+            "text": "from Sprint N should mostly resolve. If they don't (because"
+          }
+        ],
+        "ranges": [
+          "1-660",
+          "h:1",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_q0.md",
+      "queued_sha256": "a6eb761baab0e5ef2c9eaed677b687f30e62226741122cb742b96804a0e7ba48",
+      "size_queued": 17558,
+      "exists": true,
+      "disk_sha256": "a6eb761baab0e5ef2c9eaed677b687f30e62226741122cb742b96804a0e7ba48",
+      "disk_size": 17558,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 484,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (Q.0) — CUDA runtime DLLs accessible to faster-whisper"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Diagnóstico (ya hecho, NO repetir)"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "FIX Q.0 — Restaurar CUDA runtime para faster-whisper"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "Q.0.1 — Solución 1 (PRIMERA, más limpia)"
+          },
+          {
+            "line": 101,
+            "level": 1,
+            "text": "Esperás >= 1"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "Q.0.2 — Solución 2 (fallback, copia manual)"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "Q.0.3 — Solución 3 (fallback final, downgrade ctranslate2)"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "Q.0.4 — Limpieza de los tilde files (sin riesgo)"
+          },
+          {
+            "line": 182,
+            "level": 1,
+            "text": "CUIDADO: confirmar visualmente cada path antes de rm."
+          },
+          {
+            "line": 185,
+            "level": 1,
+            "text": "etc"
+          },
+          {
+            "line": 191,
+            "level": 3,
+            "text": "Q.0.5 — Verificación end-to-end"
+          },
+          {
+            "line": 211,
+            "level": 3,
+            "text": "Q.0.6 — Fix del check si Q.0.5 lo revela"
+          },
+          {
+            "line": 217,
+            "level": 1,
+            "text": "ANTES:"
+          },
+          {
+            "line": 225,
+            "level": 1,
+            "text": "DESPUÉS:"
+          },
+          {
+            "line": 226,
+            "level": 1,
+            "text": "Sprint Q.0: torch is CPU-only on this system but ctranslate2"
+          },
+          {
+            "line": 227,
+            "level": 1,
+            "text": "(used by faster-whisper) has its own CUDA detection. We probe"
+          },
+          {
+            "line": 228,
+            "level": 1,
+            "text": "ctranslate2 directly — that's what actually matters for STT"
+          },
+          {
+            "line": 229,
+            "level": 1,
+            "text": "latency on the production pipeline."
+          },
+          {
+            "line": 240,
+            "level": 1,
+            "text": "Probe that inference actually works (not just device count):"
+          },
+          {
+            "line": 251,
+            "level": 1,
+            "text": "At this point, CUDA inference works. Proceed with the"
+          },
+          {
+            "line": 252,
+            "level": 1,
+            "text": "benchmark using the real StreamingSTT."
+          },
+          {
+            "line": 258,
+            "level": 3,
+            "text": "Q.0.7 — Tests"
+          }
+        ],
+        "lead": "Pre-flight ya ejecutado. Estado real del sistema operador:",
+        "measures": [
+          {
+            "line": 26,
+            "text": "Loaded on cuda/float16 in 1.1s"
+          },
+          {
+            "line": 73,
+            "text": "7. **NO toques `torch`**. Reinstalar torch con CUDA es ~2GB de"
+          },
+          {
+            "line": 202,
+            "text": "PASS si p95 ≤ 1.2s, o FAIL si más alto."
+          },
+          {
+            "line": 249,
+            "text": "..., note=f\"GPU inference probe failed: {exc}\","
+          },
+          {
+            "line": 276,
+            "text": "pipeline. Tests don't REQUIRE CUDA to pass — they SKIP cleanly"
+          },
+          {
+            "line": 297,
+            "text": "1s of audio. SKIPS if no CUDA device, FAILS if device"
+          },
+          {
+            "line": 314,
+            "text": "# runtime DLL missing. Fail explicitly with the"
+          },
+          {
+            "line": 316,
+            "text": "self.fail("
+          },
+          {
+            "line": 317,
+            "text": "f\"GPU inference failed despite CUDA device present.\\n\""
+          },
+          {
+            "line": 359,
+            "text": "- faster-whisper end-to-end probe (tiny model, 1s audio,"
+          },
+          {
+            "line": 362,
+            "text": "- scripts/bench.py stt_latency_p95 now measures (PASS or FAIL"
+          },
+          {
+            "line": 372,
+            "text": "systems without CUDA; FAIL with actionable hint on systems with"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 4,
+            "text": "> está SKIPPED porque `torch.cuda.is_available()` devuelve False"
+          },
+          {
+            "line": 5,
+            "text": "> Y porque `faster-whisper` falla en inferencia GPU con"
+          },
+          {
+            "line": 337,
+            "text": "Sprint S surfaced that stt_latency_p95 is SKIPPED because"
+          }
+        ],
+        "ranges": [
+          "1-484",
+          "h:1",
+          "m:26"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r2.md",
+      "queued_sha256": "b94c2fe35c27a08bf67718b56584ac9b689a18f9f6a5bb8bf7e7071cc36953ee",
+      "size_queued": 19850,
+      "exists": true,
+      "disk_sha256": "b94c2fe35c27a08bf67718b56584ac9b689a18f9f6a5bb8bf7e7071cc36953ee",
+      "disk_size": 19850,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 491,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (R2) — openWakeWord backend; Vosk to fallback"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "Por qué Vosk falla"
+          },
+          {
+            "line": 52,
+            "level": 3,
+            "text": "Por qué openWakeWord"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "Restricción importante"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "FIX R2 — openWakeWord backend con fallback Vosk"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "R2.1 — Estructura nueva"
+          },
+          {
+            "line": 155,
+            "level": 3,
+            "text": "R2.2 — openWakeWord install + load"
+          },
+          {
+            "line": 158,
+            "level": 1,
+            "text": "en wake_oww.py"
+          },
+          {
+            "line": 193,
+            "level": 3,
+            "text": "R2.3 — Orquestador en wake.py"
+          },
+          {
+            "line": 220,
+            "level": 1,
+            "text": "Fall back to Vosk"
+          },
+          {
+            "line": 239,
+            "level": 3,
+            "text": "R2.4 — Tests"
+          },
+          {
+            "line": 266,
+            "level": 3,
+            "text": "R2.5 — Benchmark + calibración"
+          },
+          {
+            "line": 295,
+            "level": 3,
+            "text": "R2.6 — Re-correr el bench"
+          },
+          {
+            "line": 322,
+            "level": 3,
+            "text": "R2.7 — Commit"
+          },
+          {
+            "line": 386,
+            "level": 2,
+            "text": "REPORTE FINAL"
+          },
+          {
+            "line": 405,
+            "level": 2,
+            "text": "CRITERIO DE ÉXITO"
+          },
+          {
+            "line": 418,
+            "level": 2,
+            "text": "NO HACER (anti-scope)"
+          },
+          {
+            "line": 444,
+            "level": 2,
+            "text": "Follow-ups documentados"
+          }
+        ],
+        "lead": "Vosk es un STT genérico forzado a hacer wake-detection mediante",
+        "measures": [
+          {
+            "line": 6,
+            "text": ">   `wake_recall = 0.067` — Vosk solo detecta 6 de 90 wakes"
+          },
+          {
+            "line": 10,
+            "text": "> 93.3% de los wakes legítimos del operador no llegan al pipeline."
+          },
+          {
+            "line": 12,
+            "text": "> una superficie que el usuario no toca el 93% del tiempo."
+          },
+          {
+            "line": 63,
+            "text": "- Latencia: ~10ms por chunk de 80ms en CPU. Mucho más rápido"
+          },
+          {
+            "line": 64,
+            "text": "que Vosk (~50-100ms)."
+          },
+          {
+            "line": 182,
+            "text": "espera ventanas de 80ms (1280 samples). Si el chunk del caller"
+          },
+          {
+            "line": 190,
+            "text": "asumir 0.3s de margen post-trigger (el modelo dispara cuando"
+          },
+          {
+            "line": 215,
+            "text": "logger.warning(\"openWakeWord load failed, falling back to Vosk\")"
+          },
+          {
+            "line": 218,
+            "text": "logger.warning(\"openWakeWord init failed: %s\", exc)"
+          },
+          {
+            "line": 280,
+            "text": "fueron cerca de un wake esperado, ±1s)"
+          },
+          {
+            "line": 317,
+            "text": "NO bajes el threshold del bench para hacerlo PASS. El threshold"
+          },
+          {
+            "line": 318,
+            "text": "queda en 0.70. Si el sprint deja `wake_recall = 0.30`, eso"
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 95,
+            "text": "(porque \"hey gemma\" es muy distinto fonéticamente a los"
+          },
+          {
+            "line": 305,
+            "text": "- **B**: `wake_recall` sin mejora significativa porque"
+          }
+        ],
+        "ranges": [
+          "1-491",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r25.md",
+      "queued_sha256": "f339d51a14d004fb181de6569afd48047c84f4769439c2f1889f591bda46dc75",
+      "size_queued": 16789,
+      "exists": true,
+      "disk_sha256": "f339d51a14d004fb181de6569afd48047c84f4769439c2f1889f591bda46dc75",
+      "disk_size": 16789,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 448,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (R2.5) — Fix bench wake_recall + add precision metric"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Contexto"
+          },
+          {
+            "line": 39,
+            "level": 1,
+            "text": "scripts/wake_backend_audit.py:_match_detections"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "FIX R2.5 — Bench wake_recall matched"
+          },
+          {
+            "line": 108,
+            "level": 3,
+            "text": "R2.5.1 — Portar la lógica de matching"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "R2.5.2 — Cambio exacto en bench.py"
+          },
+          {
+            "line": 134,
+            "level": 1,
+            "text": "Sprint R2.5 2026-05-18: convert detection wall-clock timestamps"
+          },
+          {
+            "line": 135,
+            "level": 1,
+            "text": "to audio-relative timestamps. The detector reports time.monotonic()"
+          },
+          {
+            "line": 136,
+            "level": 1,
+            "text": "at the moment of the callback, NOT the position in the audio file."
+          },
+          {
+            "line": 137,
+            "level": 1,
+            "text": "We compute audio position via len-fed proxy."
+          },
+          {
+            "line": 138,
+            "level": 1,
+            "text": "Actually: easier path -- iterate with index and stamp the chunk"
+          },
+          {
+            "line": 139,
+            "level": 1,
+            "text": "midpoint as the audio-relative time of any fire that landed in"
+          },
+          {
+            "line": 140,
+            "level": 1,
+            "text": "that window. See R2.5.2.a below."
+          },
+          {
+            "line": 142,
+            "level": 1,
+            "text": "After the loop above, `detections` is a list of (wall_ts, phrase,"
+          },
+          {
+            "line": 143,
+            "level": 1,
+            "text": "confidence) tuples. We need audio-relative timestamps for matching"
+          },
+          {
+            "line": 144,
+            "level": 1,
+            "text": "against expected_s (which are audio-relative)."
+          },
+          {
+            "line": 145,
+            "level": 1,
+            "text": "..."
+          },
+          {
+            "line": 163,
+            "level": 1,
+            "text": "NOTE: ts is wall-clock; we don't use it for matching."
+          },
+          {
+            "line": 164,
+            "level": 1,
+            "text": "The current audio offset is captured by the enclosing"
+          },
+          {
+            "line": 165,
+            "level": 1,
+            "text": "loop via a mutable [last_offset_s]."
+          },
+          {
+            "line": 185,
+            "level": 3,
+            "text": "R2.5.3 — Estructura final del medidor"
+          },
+          {
+            "line": 212,
+            "level": 1,
+            "text": "No ground truth -- report fires raw, SKIP."
+          }
+        ],
+        "lead": "El bug está en",
+        "measures": [
+          {
+            "line": 9,
+            "text": "> aleatoriamente, `recall = 1.0`. Si dispara 6 veces correctas,"
+          },
+          {
+            "line": 15,
+            "text": "> dispara fantasmas y el bench diría \"PASS\"."
+          },
+          {
+            "line": 179,
+            "text": "Esto está bien para tolerance ±1s. El error de localización es"
+          },
+          {
+            "line": 180,
+            "text": "máximo `CHUNK/SAMPLE_RATE = 32ms`, muy debajo del ±1s window."
+          },
+          {
+            "line": 204,
+            "text": "return ThresholdResult(... note=f\"Wake load failed: {det.last_error}\")"
+          },
+          {
+            "line": 213,
+            "text": "return ThresholdResult(... passed=None,"
+          },
+          {
+            "line": 236,
+            "text": "passed=_compare(recall, THRESHOLDS[\"wake_recall\"][\"target\"],"
+          },
+          {
+            "line": 263,
+            "text": "fn = 0, recall = 1.0, precision = 1.0."
+          },
+          {
+            "line": 266,
+            "text": "fp = 0, fn = len(expected), recall = 0.0, precision = 0.0."
+          },
+          {
+            "line": 271,
+            "text": "# 100 random fires uniformly spread across 300s of audio."
+          },
+          {
+            "line": 273,
+            "text": "# Old buggy bench: recall = 100/50 = 2.0 (>>1.0 nonsensical)."
+          },
+          {
+            "line": 276,
+            "text": "expected = [1.5, 4.5, 7.5, ..., 148.5]        # 0.5s offset, never matches"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 309,
+            "text": "Probablemente **menos** que el 0.076 actual porque algunos"
+          },
+          {
+            "line": 386,
+            "text": "Si esto no se puede hacer cleanly (porque el test importa de"
+          }
+        ],
+        "ranges": [
+          "1-448",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r3.md",
+      "queued_sha256": "94388deb33c708c691db90876a1b1915988530e7f1d591922115025382c3fd7f",
+      "size_queued": 21430,
+      "exists": true,
+      "disk_sha256": "94388deb33c708c691db90876a1b1915988530e7f1d591922115025382c3fd7f",
+      "disk_size": 21430,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 611,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HOTFIX 2026-05-17 (R3) — Custom \"hey gemma\" wake-word model"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Contexto crítico"
+          },
+          {
+            "line": 24,
+            "level": 3,
+            "text": "Caracterización de Vosk (memoria"
+          },
+          {
+            "line": 47,
+            "level": 3,
+            "text": "Dataset positivo seed (pre-calculado)"
+          },
+          {
+            "line": 58,
+            "level": 3,
+            "text": "Dataset negativo seed (hard negatives del mismo audio)"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "Dataset negativo adicional"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "OBJETIVO"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "REGLAS GENERALES"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "FIX R3 — Custom wake-word training pipeline"
+          },
+          {
+            "line": 132,
+            "level": 3,
+            "text": "R3.1 — scripts/build_wake_dataset.py"
+          },
+          {
+            "line": 137,
+            "level": 1,
+            "text": "Outputs: wake_dataset/positive/*.wav (105 clips)"
+          },
+          {
+            "line": 138,
+            "level": 1,
+            "text": "wake_dataset/negative_hard/*.wav (~139 clips)"
+          },
+          {
+            "line": 139,
+            "level": 1,
+            "text": "wake_dataset/positive_aug/*.wav (positives × 4-5 augmentations)"
+          },
+          {
+            "line": 140,
+            "level": 1,
+            "text": "wake_dataset/manifest.json"
+          },
+          {
+            "line": 141,
+            "level": 1,
+            "text": "wake_dataset.zip (todo lo anterior, listo para upload)"
+          },
+          {
+            "line": 150,
+            "level": 4,
+            "text": "Extracción de positivos"
+          },
+          {
+            "line": 169,
+            "level": 4,
+            "text": "Augmentation del positivo"
+          },
+          {
+            "line": 188,
+            "level": 4,
+            "text": "Extracción de hard negatives"
+          },
+          {
+            "line": 195,
+            "level": 1,
+            "text": "Algorithm:"
+          },
+          {
+            "line": 196,
+            "level": 1,
+            "text": "1. Mark intervals covered by positives as forbidden."
+          },
+          {
+            "line": 197,
+            "level": 1,
+            "text": "2. Walk the audio from 0 to duration, stepping by 1.2s."
+          },
+          {
+            "line": 198,
+            "level": 1,
+            "text": "3. If the candidate window doesn't intersect any forbidden"
+          },
+          {
+            "line": 199,
+            "level": 1,
+            "text": "interval, emit it as a hard negative."
+          },
+          {
+            "line": 210,
+            "level": 4,
+            "text": "Manifest"
+          }
+        ],
+        "lead": "[[project-vosk-baseline-characterization]])",
+        "measures": [
+          {
+            "line": 6,
+            "text": ">   2. El bench midiendo recall correcto con matching ±1s."
+          },
+          {
+            "line": 7,
+            "text": ">   3. Vosk caracterizado: `precision=0.857` pero `recall=0.057`."
+          },
+          {
+            "line": 42,
+            "text": "- Si custom logra recall 0.90 + precision 0.50 → **NO shippear**."
+          },
+          {
+            "line": 43,
+            "text": "Bench reporta FAIL del custom incluso si recall supera el"
+          },
+          {
+            "line": 50,
+            "text": "solapadas posibles con `[-0.3s, +0.9s]` = 1.2s totales:"
+          },
+          {
+            "line": 53,
+            "text": "Total positivos: 105 clips de 1.2s"
+          },
+          {
+            "line": 54,
+            "text": "Solapamientos:   0 (gap mínimo 1.34s > 1.2s window)"
+          },
+          {
+            "line": 55,
+            "text": "Cobertura:       126s de 293s totales del audio"
+          },
+          {
+            "line": 60,
+            "text": "166.8s del audio NO están dentro de ninguna ventana positiva."
+          },
+          {
+            "line": 61,
+            "text": "Extraíbles como ~139 clips de 1.2s. Estos son **hard negatives"
+          },
+          {
+            "line": 167,
+            "text": "silencio** al tamaño esperado (1.2s exactos)."
+          },
+          {
+            "line": 173,
+            "text": "2. **Pitch shift**: ±2 semitonos (random 50/50)."
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "gemma4",
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 415,
+            "text": "Si el docs file no existe (porque R2 outcome fue distinto),"
+          },
+          {
+            "line": 532,
+            "text": "sigue corriendo (debe usar `hey_jarvis` como fallback porque"
+          }
+        ],
+        "ranges": [
+          "1-611",
+          "h:1",
+          "m:6"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+batch_id=docs-015-probando_gemma4-pg4_docs__historico
+kind=docs
+file_count=24
+hash_ok=24 drift=0 miss=0
+subsystem=pg4_docs__historico
+---FILES---
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17.md	HOTFIX 2026-05-17 — GUI silent crash + Spotify deeplink race
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_b.md	HOTFIX 2026-05-17 (B) — "Listo" vacío + WhatsApp slot-filling falso
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_c.md	HOTFIX 2026-05-17 (C) — Path-amnesia post-creación de archivos
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_d.md	HOTFIX 2026-05-17 (D) — Anti-hallucination + Multi-disk + Cross-turn coherence
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e.md	HOTFIX 2026-05-17 (E) — Activar router_v2 como default + voice telemetry + tabul
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e5.md	HOTFIX 2026-05-17 (E.5) — Smalltalk gate calibration + media queries enrichment
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_f.md	HOTFIX 2026-05-17 (F) — Pending intent + locator alignment + verifiers + intent 
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_g.md	HOTFIX 2026-05-17 (G) — Tool rules coverage + prompt drift audit
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_h.md	HOTFIX 2026-05-17 (H) — Observability: traced fallbacks + breadcrumb hygiene + v
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_i.md	HOTFIX 2026-05-17 (I) — Closing gaps: pending_intent extension + Listo validator
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j.md	HOTFIX 2026-05-17 (J) — Adaptive subset cap (confidence-aware TOP_K)
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j1.md	HOTFIX 2026-05-17 (J.1) — TIGHT_CLUSTER band + BM25 saturation guard + cluster_s
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_k.md	HOTFIX 2026-05-17 (K) — Bilingual purpose (ES + EN) in tool_descriptions.yaml
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_l.md	HOTFIX 2026-05-17 (L) — Voice session recording (continuous wake-to-reply)
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m.md	HOTFIX 2026-05-17 (M) — BoH false positive: 'pon musica' rejected
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m1.md	HOTFIX 2026-05-17 (M.1) — Voice recorder polish: TTS capture, wake conf, STT rea
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m2.md	HOTFIX 2026-05-17 (M.2) — Close M.1 loose ends + act on testaudio findings
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_n.md	HOTFIX 2026-05-17 (N) — Whisper-large ground truth + WER/CER comparison
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_o.md	HOTFIX 2026-05-17 (O) — STT filter calibration (no model upgrade)
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_p.md	HOTFIX 2026-05-17 (P) — Silero-VAD endpointing + offline replay aligned to live 
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_q0.md	HOTFIX 2026-05-17 (Q.0) — CUDA runtime DLLs accessible to faster-whisper
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r2.md	HOTFIX 2026-05-17 (R2) — openWakeWord backend; Vosk to fallback
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r25.md	HOTFIX 2026-05-17 (R2.5) — Fix bench wake_recall + add precision metric
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r3.md	HOTFIX 2026-05-17 (R3) — Custom "hey gemma" wake-word model

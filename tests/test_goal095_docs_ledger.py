@@ -89,7 +89,7 @@ def _ledger(paths: list[str], *, extra: dict | None = None) -> dict:
         "missing": 0,
         "overlaps": 0,
         "next_docs_batch_id": "docs-002-carter",
-        "next_prompt": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
+        "next_prompt": "campaign:docs",
     }
     if extra:
         body.update(extra)
@@ -177,6 +177,8 @@ def test_published_docs001_ledger_matches_schema() -> None:
     assert errors == []
     assert ledger["batch_id"] == "docs-001-carter"
     assert ledger["estimated_tokens"] <= TOKEN_LIMIT
+    assert ledger["next_prompt"] == "campaign:docs"
+    assert "09.5.2_LEER_DOCUMENTACION_LOTE.md" not in str(ledger["next_prompt"])
     raw = BATCH_LEDGER.read_text(encoding="utf-8").casefold()
     assert "c:\\users\\" not in raw
     assert "d:\\perfil\\" not in raw
@@ -190,7 +192,7 @@ def test_published_docs001_ledger_matches_schema() -> None:
     claimed = [
         item["batch_id"]
         for item in queue_ledger["batches"]
-        if item.get("status") == "claimed"
+        if item.get("kind") == "docs" and item.get("status") == "claimed"
     ]
     assert claimed == []
     summary = load_json(QUEUE / "summary.json")
@@ -201,3 +203,22 @@ def test_published_docs001_ledger_matches_schema() -> None:
     partition = partition_ok(load_jsonl(QUEUE / "unified_manifest.jsonl"))
     assert partition["missing"] == 0
     assert partition["overlaps"] == 0
+    campaign_path = REPO / "artifacts" / "goal095" / "campaigns" / "docs.json"
+    assert campaign_path.is_file()
+    campaign = load_json(campaign_path)
+    assert campaign["campaign_id"] == "docs"
+    assert campaign["required_human_launches"] == 1
+    assert "docs-001-carter" in campaign["preserved_complete"]
+    if campaign["counts"]["pending"] == 0:
+        assert campaign["counts"]["complete"] == 25
+        assert campaign["counts"]["claimed"] == 0
+        assert campaign["next_human_prompt"] == (
+            "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md"
+        )
+        last = load_json(REPO / "artifacts" / "goal095" / "ledger" / "docs-025-baxy.json")
+        assert last["next_prompt"] == (
+            "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md"
+        )
+        assert "09.5.2_LEER_DOCUMENTACION_LOTE.md" not in last["next_prompt"]
+    else:
+        assert campaign["next_human_prompt"] is None

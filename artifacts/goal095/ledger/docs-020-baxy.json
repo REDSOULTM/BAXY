@@ -1,0 +1,341 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-020-baxy",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:48Z",
+  "closed_utc": "2026-08-31T04:29:50Z",
+  "estimated_tokens": 158472,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 18,
+  "subsystem": "baxy_docs_00_POST_WAKE_RUNBOOK_2026-08-11.md",
+  "files": [
+    {
+      "path": "documentacion/00_POST_WAKE_RUNBOOK_2026-08-11.md",
+      "sha256": "0c3fdd6aa33918fc2d37bb91671523464a4d3fe732234872aa433a8d9dcb8597",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-236",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE.md",
+      "sha256": "dd938deb0df7c23a077f6a35fefd5fdadccd7d832e1ec882755ce1e25d110dc2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-209",
+        "h:1",
+        "m:70"
+      ]
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_POST_V8.md",
+      "sha256": "409e1ace4522414d2762413cd81654242653bdcb22ca4a06953bb436f120514a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-152",
+        "h:1",
+        "m:42"
+      ]
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_RECONOCIMIENTO_LATENCIA.md",
+      "sha256": "4ffece49da5564c36705a82113fa833749a340b1a79a3ee7a93c16b964aa16f4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-274",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_SIN_VOZ.md",
+      "sha256": "50053279f94d1c069e130c3a99d41ff013effb0b71aebaa7a2cc953ab0fe0450",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-142",
+        "h:1",
+        "m:111"
+      ]
+    },
+    {
+      "path": "documentacion/00_PROMPT_AGENTE_VETOS_V8.md",
+      "sha256": "228b7c7a818f77e6f35451d68ac7753be2fe205d29fbfb22e0177b927104d0a0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-153",
+        "h:1",
+        "m:34"
+      ]
+    },
+    {
+      "path": "documentacion/00_WAKE_V17_RUNBOOK_2026-08-11.md",
+      "sha256": "f04ef479fafe4cf63d6e2b7ec40a042563a4aee60958b5c6de90a8ccc5d7776e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-97",
+        "h:1",
+        "m:89"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/DECISION_VIGENTE.md",
+      "sha256": "d2545c20aab90542190d528856c222175373aa44f31978acff1092bc7826b979",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-162",
+        "h:1",
+        "m:54"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/01_MODELO_MENTAL_Y_OWNERSHIP.md",
+      "sha256": "cabbdbf12982de8683a1d003ad2f5e4a9e58c4069d646bfc90525e7badaba1ae",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-425",
+        "h:1",
+        "m:333"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/02_CONSTRUCCION_EJECUCION_Y_ENTREGA.md",
+      "sha256": "4918a1290985cfd695e3fcc268e4f328db0a6c95a2b364844219b861f563d1ea",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-498",
+        "h:1",
+        "m:153"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/03_CONTRATOS_FLUJOS_Y_DATOS.md",
+      "sha256": "e79dc113419570adffdc569b6933c78d1ec4ec49ecd68577a805b2f33790e3c7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-451",
+        "h:1",
+        "m:88"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/04_RECETAS_DE_CAMBIO.md",
+      "sha256": "ea5fa411405903bffb3fc8885289aafa0a30146f613e1f57f8023d27f43751d6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-568",
+        "h:1",
+        "m:455"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md",
+      "sha256": "d6d2bb838cec9b885cf15a66819c76e398f91d6fb1a49a24fdb592ea85fab2f4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-429",
+        "h:1",
+        "m:192"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/06_INVENTARIO_DE_SCRIPTS_Y_GATES.md",
+      "sha256": "b0f2267363ad854d033c7d21bb610f19094a2b92c5eb13341b30315b1bb2adca",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-204",
+        "h:1",
+        "m:34"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md",
+      "sha256": "971c0b6e7b9d872a4a7e7a7868b2b0d1b6a99f31f7f02f0468249aae5574949c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1864",
+        "h:1",
+        "m:74"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md",
+      "sha256": "28b9d455ae07cae8d9915c89ef96f6eace4d6bfd048da26d918bdefc63ce99a1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-185",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md",
+      "sha256": "a38a75ba87e0d610f49f4d9c07243d7dbc1f2cd4d6762c517a294c189f155566",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-271",
+        "h:1",
+        "m:65"
+      ]
+    },
+    {
+      "path": "documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md",
+      "sha256": "fc13aa0a232af6ebfa8b12a9e4656f6c5c1599b2e3d14cb572e2f53791050b96",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-121",
+        "h:1",
+        "m:14"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-020-baxy-01-documentacion",
+      "claim_kind": "documental",
+      "problem": "Cierre posterior a wake v17 — 2026-08-11: Este runbook no autoriza abrir R2 ni modificar el árbol wake antes del recibo",
+      "outcome": "contexto",
+      "solution_or_failure": "Este runbook no autoriza abrir R2 ni modificar el árbol wake antes del recibo",
+      "causal_mechanism": "mecanismo entendido vale tanto como uno promovido. | justificándolo porque es antiguo, ajeno o caro. **Un fallo heredado sigue siendo | publica también lo que rechaces con su mecanismo entendido. | además dejó de acreditar el árbol actual porque se editó un test después de | entender, porque cambia dónde está el trabajo. | Y una segunda mitad del mismo encargo: **quita lo que sobra.** Cada mecani…",
+      "measurement": "certificador externo debe probar simultáneamente 48/48 positivos, 0/96 falsas | activaciones, p50 <= 1,5 s, p95 <= 2,0 s, identidades exactas, cero efectos y | 22/20/20 s. No se rebaja ningún presupuesto de producto. | - En `tests/test_mind_budget_gate.py`, comprobar explícitamente 19 s para GPU y | 120 s para CPU, además de los deadlines exteriores compartidos. | 4 GiB VRAM; CPU conserva <= 8 Gi…",
+      "provenance": {
+        "path": "documentacion/00_POST_WAKE_RUNBOOK_2026-08-11.md",
+        "ranges": [
+          "1-236",
+          "h:1",
+          "m:11"
+        ],
+        "date": "2026-08-11",
+        "hardware": "VRAM",
+        "model": "e5-small",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "documentacion/00_POST_WAKE_RUNBOOK_2026-08-11.md",
+        "documentacion/00_PROMPT_AGENTE.md",
+        "documentacion/00_PROMPT_AGENTE_POST_V8.md",
+        "documentacion/00_PROMPT_AGENTE_RECONOCIMIENTO_LATENCIA.md",
+        "documentacion/00_PROMPT_AGENTE_SIN_VOZ.md",
+        "documentacion/00_PROMPT_AGENTE_VETOS_V8.md",
+        "documentacion/00_WAKE_V17_RUNBOOK_2026-08-11.md"
+      ],
+      "repeats": [
+        "documentacion/00_PROMPT_AGENTE.md",
+        "documentacion/00_PROMPT_AGENTE_POST_V8.md",
+        "documentacion/00_PROMPT_AGENTE_RECONOCIMIENTO_LATENCIA.md",
+        "documentacion/00_PROMPT_AGENTE_SIN_VOZ.md",
+        "documentacion/00_PROMPT_AGENTE_VETOS_V8.md",
+        "documentacion/00_WAKE_V17_RUNBOOK_2026-08-11.md"
+      ]
+    },
+    {
+      "card_id": "docs-020-baxy-02-documentacion-01_ARQUITECTURA",
+      "claim_kind": "documental",
+      "problem": "Decisión de arquitectura vigente: Estado: **vigente para el producto activo a 2026-08-01**.",
+      "outcome": "contexto",
+      "solution_or_failure": "Estado: **vigente para el producto activo a 2026-08-01**.",
+      "causal_mechanism": "receptor tiene vida de proceso porque Windows/Python no ofrecen cancelación | hoy es O(n): enumera el directorio en cada evaluación porque un resize in-place | porque su layout forma parte del contrato sellado de paquete. Los gates físicos",
+      "measurement": "→ completed/failed/rejected terminal o pending reintentable | devuelve como `failed` terminal con `effectMayHaveOccurred:true`; el App aun | de rutas para Python, `PYTHONPATH`, GGUF, `llama-server`, capas GPU y activos | - accesibilidad física Narrator/NVDA y DPI al 200 % sobre la UI restaurada; | | `scripts/baxy_runtime_config.py` | tooling canónico | Resolución fail-closed de manifest u overrid…",
+      "provenance": {
+        "path": "documentacion/01_ARQUITECTURA/DECISION_VIGENTE.md",
+        "ranges": [
+          "1-162",
+          "h:1",
+          "m:54"
+        ],
+        "date": "2026-08-01",
+        "hardware": "VRAM",
+        "model": "qwen3",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/01_ARQUITECTURA: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/01_ARQUITECTURA/DECISION_VIGENTE.md",
+        "documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md",
+        "documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md"
+      ],
+      "repeats": [
+        "documentacion/01_ARQUITECTURA/MAPA_DEL_SISTEMA.md",
+        "documentacion/01_ARQUITECTURA/MAPA_TURNO_END_TO_END_20260730.md"
+      ]
+    },
+    {
+      "card_id": "docs-020-baxy-03-documentacion-01_ARQUITECTURA-GUIA_AGENTES_IA",
+      "claim_kind": "documental",
+      "problem": "Modelo mental, composición y ownership: BAXY es una aplicación local de Windows con una interfaz WPF/WebView2, un",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY es una aplicación local de Windows con una interfaz WPF/WebView2, un",
+      "causal_mechanism": "`tests/Baxy.Providers.Windows.Tests`, porque ejercitan las primitivas junto a | Los adapters no comparten un único mecanismo. Según la capacidad pueden usar | Una actualización del lock o del source visual no es rutinaria porque | 2. Identifica descriptor, riesgo, verifier y schema actuales. | - afirmar autenticidad porque existen hashes; | habilita esta reutilización porque el runtime no puede a…",
+      "measurement": "históricas a `baxy.field.v1`. El bridge bloquea navegación y red no permitidas. | Una prueba `Explicit` o skip ambiental no equivale a pass. Consulta el motivo y | GGUF, llama-server, bundle STT y wake declarado, y vuelve a leerlos antes de | readiness: 120 s es la ventana de transporte de startup, 105 s el presupuesto | de catálogo y 90 s el máximo dedicado al warmup. | El bridge bloquea navegac…",
+      "provenance": {
+        "path": "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/01_MODELO_MENTAL_Y_OWNERSHIP.md",
+        "ranges": [
+          "1-425",
+          "h:1",
+          "m:333"
+        ],
+        "date": "2026-07-30",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA: 8 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/01_MODELO_MENTAL_Y_OWNERSHIP.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/02_CONSTRUCCION_EJECUCION_Y_ENTREGA.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/03_CONTRATOS_FLUJOS_Y_DATOS.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/04_RECETAS_DE_CAMBIO.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/06_INVENTARIO_DE_SCRIPTS_Y_GATES.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md"
+      ],
+      "repeats": [
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/02_CONSTRUCCION_EJECUCION_Y_ENTREGA.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/03_CONTRATOS_FLUJOS_Y_DATOS.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/04_RECETAS_DE_CAMBIO.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/05_VALIDACION_SEGURIDAD_Y_HANDOFF.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/06_INVENTARIO_DE_SCRIPTS_Y_GATES.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/07_LATENCIA_END_TO_END.md",
+        "documentacion/01_ARQUITECTURA/GUIA_AGENTES_IA/README.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=18 drift=0 miss=0",
+  "next_docs_batch_id": "docs-021-baxy",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-020-baxy.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

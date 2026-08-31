@@ -1,0 +1,1457 @@
+{
+  "batch_id": "docs-005-carter-carter_v2",
+  "kind": "docs",
+  "source_id": "carter",
+  "subsystem": "carter_v2",
+  "file_count": 24,
+  "hash_ok": 24,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "Carter_v2/documentacion/investigaciones/base/Informe de Arquitectura Avanzada.md",
+      "queued_sha256": "2a2a4788ab9427d8b9dcf3c6cd0872f886bdd2aba62b3917088edd3382e8fd43",
+      "size_queued": 51895,
+      "exists": true,
+      "disk_sha256": "2a2a4788ab9427d8b9dcf3c6cd0872f886bdd2aba62b3917088edd3382e8fd43",
+      "disk_size": 51895,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/documentacion/investigaciones/base/Informe de Arquitectura Avanzada.md' exists on disk, but not i",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Informe de Arquitectura Avanzada: Optimización y Selección de Modelos Locales para CARTER OS bajo Restricciones Estrictas de VRAMFundamentos Arquitectónicos y el Paradigma del Agente de Sistema OperativoEl diseño y despliegue de agentes autónomos capaces de interactuar de manera nativa con sistemas operativos de escritorio representa una de las fronteras más complejas en la disciplina de la inteli",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "qwen3"
+        ],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/documentacion/investigaciones/base/Stack Agente Autónomo Windows 16GB.md",
+      "queued_sha256": "db83e6ed9e1b8eaf3c688cfcd28ed95a6b58e548b2cbee94a74711f85ee630af",
+      "size_queued": 39824,
+      "exists": true,
+      "disk_sha256": "db83e6ed9e1b8eaf3c688cfcd28ed95a6b58e548b2cbee94a74711f85ee630af",
+      "disk_size": 39824,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/documentacion/investigaciones/base/Stack Agente Autónomo Windows 16GB.md' exists on disk, but not",
+      "extract": {
+        "binary": false,
+        "lines": 169,
+        "headings": [],
+        "lead": "Arquitectura Definitiva del Stack Tecnológico para Agentes Autónomos en Sistema Operativo (CARTER OS)",
+        "measures": [
+          {
+            "line": 11,
+            "text": "Dinámica de la Memoria VRAM y el Cuello de Botella del Bus PCIe"
+          },
+          {
+            "line": 45,
+            "text": "Ollama (llama.cpp)\tAccesibilidad Universal\tExcelente (GGUF)\tModerada\tInexistente (Saltos fijos)\tMedio"
+          },
+          {
+            "line": 84,
+            "text": "Modelo Candidato\tParámetros Totales\tArquitectura Base\tVelocidad de Generación\tProcesamiento de Prompt\tVRAM Cuantizada (Est.)\tResistencia a Deriva Lógica"
+          },
+          {
+            "line": 85,
+            "text": "GPT-OSS 20B\t21B (3.6B activos)\tMixture of Experts\t~42.0 t/s\t611 - 652 t/s\t~8.75 GB - 9.5 GB\tExcepcional"
+          },
+          {
+            "line": 86,
+            "text": "Apriel-1.5-15B\t14.9B\tDensa / Multimodal\t~14.8 t/s\t~255 t/s\t~9.9 GB\tMuy Alta"
+          },
+          {
+            "line": 87,
+            "text": "Qwen3-14B\t14.8B\tDensa\t~14.8 t/s\t~205 t/s\t~9.2 GB\tModerada"
+          },
+          {
+            "line": 88,
+            "text": "Qwen2.5-Coder\t14B\tDensa\tLenta/Variable\tVariable\t~9.0 GB\tAlta en Código, Baja en General"
+          },
+          {
+            "line": 115,
+            "text": "Modelo Visual (VLM)\tParámetros (Escala)\tPrecisión Analítica HW (OCR/UI)\tVelocidad Promedio\tVRAM en Cuantización Agresiva\tEspecialización Estructural"
+          },
+          {
+            "line": 116,
+            "text": "MiniCPM-V 4.0\t4.1B\tAlta (OpenCompass: 69.0)\tMuy Alta\t~5.0 GB\tMultimodalidad Intensa, UI"
+          },
+          {
+            "line": 117,
+            "text": "Chandra\t9.0B\tExtrema (OlmOCR: 83.1)\tBaja (~1.29 p/s)\t>6.0 GB\tLayouts Complejos, JSON Puro"
+          },
+          {
+            "line": 118,
+            "text": "OlmOCR-2\t7.7B\tMuy Alta (OlmOCR: 82.4)\tMedia (~1.78 p/s)\t~5.0 GB\tTablas y Formularios, Ing."
+          },
+          {
+            "line": 119,
+            "text": "Nanonets OCR 2\t4.0B\tCompetente (OlmOCR: 69.5)\tMuy Alta\t~3.5 GB\tEtiquetas Semánticas (UI)"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "qwen3"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM",
+          "RTX 4070 Ti",
+          "RTX 4080",
+          "RTX 4090",
+          "RTX 3090"
+        ],
+        "mechanisms": [
+          {
+            "line": 152,
+            "text": "La sinergia resultante en tiempo de ejecución establece el mecanismo de automatización cognitiva más reactivo posible a nivel local. La coreografía de ejecución fluye con precisión instrumental:"
+          }
+        ],
+        "ranges": [
+          "1-169",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/documentacion/investigaciones/comparadas/Claude-Building a real Jarvis the definitive desktop agent architecture guide.md",
+      "queued_sha256": "2c1fd834b1d7da014ae074093950a61fb23ffa34fb61e00bfa771614152a9948",
+      "size_queued": 27930,
+      "exists": true,
+      "disk_sha256": "2c1fd834b1d7da014ae074093950a61fb23ffa34fb61e00bfa771614152a9948",
+      "disk_size": 27930,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/documentacion/investigaciones/comparadas/Claude-Building a real Jarvis the definitive desktop age",
+      "extract": {
+        "binary": false,
+        "lines": 308,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Building a real Jarvis: the definitive desktop agent architecture guide"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "A. The correct architecture is planner-executor-verifier, not a single loop"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "B. Capability design: MCP servers and hybrid API-GUI execution"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "C. GUI interaction: UIA-first with surgical vision fallback"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "D. The best local models for a 16GB VRAM desktop agent"
+          },
+          {
+            "line": 90,
+            "level": 3,
+            "text": "Primary recommendation: Qwen3 14B"
+          },
+          {
+            "line": 94,
+            "level": 3,
+            "text": "Strong alternative: Mistral Small 3.1 24B"
+          },
+          {
+            "line": 98,
+            "level": 3,
+            "text": "Best instruction follower: Phi-4-Reasoning 14B"
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "Dual-brain configuration that fits 16GB"
+          },
+          {
+            "line": 112,
+            "level": 3,
+            "text": "Models to avoid for desktop agents"
+          },
+          {
+            "line": 116,
+            "level": 3,
+            "text": "Hybrid local + cloud"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "E. Runtime recommendation: llama.cpp server for maximum control"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "The winner for Windows desktop agents: llama-server"
+          },
+          {
+            "line": 143,
+            "level": 3,
+            "text": "Runner-up: LM Studio"
+          },
+          {
+            "line": 147,
+            "level": 3,
+            "text": "Ollama: fine for prototyping, suboptimal for production"
+          },
+          {
+            "line": 151,
+            "level": 3,
+            "text": "TabbyAPI for maximum quality-per-bit"
+          },
+          {
+            "line": 155,
+            "level": 3,
+            "text": "vLLM and SGLang: not for Windows"
+          },
+          {
+            "line": 161,
+            "level": 2,
+            "text": "F. Memory: start with SQLite, not vector databases"
+          },
+          {
+            "line": 165,
+            "level": 3,
+            "text": "Minimal viable memory (build this first)"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "Skill library pattern (from OS-Copilot/FRIDAY)"
+          },
+          {
+            "line": 187,
+            "level": 3,
+            "text": "Learning from failures without context pollution"
+          },
+          {
+            "line": 191,
+            "level": 3,
+            "text": "When to add vector search"
+          },
+          {
+            "line": 197,
+            "level": 2,
+            "text": "G. Voice pipeline: achieving conversational Jarvis under 11 GB VRAM"
+          },
+          {
+            "line": 201,
+            "level": 3,
+            "text": "TTS: Kokoro for the best quality-to-VRAM ratio"
+          }
+        ],
+        "lead": "**The core problem with CARTER OS isn't the LLM — it's the architecture.** Modern desktop agents that achieve human-level performance (Agent S3 at 72.6% on OSWorld, UFO2 across 20+ Windows apps) share a decisive structural pattern: they separate planning from execution, wrap LLM decisions in deterministic state machines, and treat GUI interaction as a last resort behind native APIs. Your agent fai",
+        "measures": [
+          {
+            "line": 64,
+            "text": "The debate between UI Automation and vision-first approaches is settled. **Hybrid UIA-first is definitively superior**, and UFO2 proved it with 10% higher task completion than the best vision-only agents."
+          },
+          {
+            "line": 70,
+            "text": "**The optimal perception pipeline for 16GB VRAM**:"
+          },
+          {
+            "line": 72,
+            "text": "1. **Screenshot capture** (~5ms) via Windows.Graphics.Capture API"
+          },
+          {
+            "line": 73,
+            "text": "2. **Change detection** (~2ms) via pixel diff against cached frame — skip re-analysis if <5% changed"
+          },
+          {
+            "line": 74,
+            "text": "3. **UIA tree query** (~10–50ms) for the active window — get all visible, enabled controls with labels and bounding boxes"
+          },
+          {
+            "line": 75,
+            "text": "4. **If UIA covers the task** (most standard apps): send control list to text LLM → LLM selects action by control ID → execute via pywinauto. Total: **<100ms perception**"
+          },
+          {
+            "line": 76,
+            "text": "5. **If UIA is insufficient**: run OCR on screenshot (~50–200ms via PaddleOCR on CPU or Windows OCR API at zero VRAM cost)"
+          },
+          {
+            "line": 77,
+            "text": "6. **If still insufficient**: run **OmniParser v2** (~0.8s, ~2–3 GB VRAM) — YOLO detector + Florence-2 captioner detects all interactable elements invisible to UIA"
+          },
+          {
+            "line": 106,
+            "text": "- **Fast brain**: Phi-4-mini 3.8B at Q4 (~3.5 GB) — handles simple routing, classification, basic tool calls with native function calling support"
+          },
+          {
+            "line": 107,
+            "text": "- **Complex brain**: Qwen3 14B at Q4 (~9.2 GB) — handles multi-step reasoning, code generation, complex planning"
+          },
+          {
+            "line": 108,
+            "text": "- **Total**: ~12.7 GB, leaving headroom for KV cache and OmniParser"
+          },
+          {
+            "line": 129,
+            "text": "- **Best structured output**: GBNF grammar system with JSON schema auto-conversion guarantees 100% valid JSON"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "qwen3",
+          "llama.cpp",
+          "whisper"
+        ],
+        "hardware": [
+          "16GB",
+          "VRAM",
+          "RTX 4080",
+          "RTX 4060 Ti 16GB",
+          "RTX 3070 Ti"
+        ],
+        "mechanisms": [
+          {
+            "line": 28,
+            "text": "[VERIFIER] ← Hybrid: deterministic checks + LLM critic"
+          }
+        ],
+        "ranges": [
+          "1-308",
+          "h:1",
+          "m:64"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/live_smoke_results.md",
+      "queued_sha256": "9845ef8bc7a2f302373d2c055f4ddf4d38004bf7473fcf632fa2aec9dcad2a47",
+      "size_queued": 70492,
+      "exists": true,
+      "disk_sha256": "9845ef8bc7a2f302373d2c055f4ddf4d38004bf7473fcf632fa2aec9dcad2a47",
+      "disk_size": 70492,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/live_smoke_results.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1225,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Live Carter LLM Smoke Results"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Summary"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Details"
+          },
+          {
+            "line": 101,
+            "level": 3,
+            "text": "1. Entra a steam y busca juegos de batman en mi biblioteca"
+          },
+          {
+            "line": 116,
+            "level": 3,
+            "text": "2. Entra a steam, ve a mi biblioteca y busca juegos de batman"
+          },
+          {
+            "line": 130,
+            "level": 3,
+            "text": "3. Fall guys esta instalado?"
+          },
+          {
+            "line": 143,
+            "level": 3,
+            "text": "4. Puedes instalar Fall Guys en Steam?"
+          },
+          {
+            "line": 155,
+            "level": 3,
+            "text": "5. Entra a opera y busca batman"
+          },
+          {
+            "line": 168,
+            "level": 3,
+            "text": "6. Entra a opera gx y busca batman"
+          },
+          {
+            "line": 180,
+            "level": 3,
+            "text": "7. Pon el volumen del pc 20"
+          },
+          {
+            "line": 192,
+            "level": 3,
+            "text": "8. Pon una canción en Spotify"
+          },
+          {
+            "line": 207,
+            "level": 3,
+            "text": "9. Abre youtube y pon un video"
+          },
+          {
+            "line": 219,
+            "level": 3,
+            "text": "10. Aprieta la tecla windows"
+          },
+          {
+            "line": 231,
+            "level": 3,
+            "text": "11. Pon mi pantalla a 60hz pls"
+          },
+          {
+            "line": 245,
+            "level": 3,
+            "text": "12. Pon el idioma del teclado en ingles"
+          },
+          {
+            "line": 259,
+            "level": 3,
+            "text": "13. Metete a discord y metete al canal con un personaje redondo con gafas y amarillo"
+          },
+          {
+            "line": 274,
+            "level": 3,
+            "text": "14. Abre el bloc de notas"
+          },
+          {
+            "line": 286,
+            "level": 3,
+            "text": "15. Cierra el bloc de notas"
+          },
+          {
+            "line": 298,
+            "level": 3,
+            "text": "16. Abre la calculadora"
+          },
+          {
+            "line": 310,
+            "level": 3,
+            "text": "17. Abre VS Code"
+          },
+          {
+            "line": 322,
+            "level": 3,
+            "text": "18. Abre Discord"
+          },
+          {
+            "line": 334,
+            "level": 3,
+            "text": "19. Abre Spotify"
+          },
+          {
+            "line": 346,
+            "level": 3,
+            "text": "20. Busca gatos en Google"
+          },
+          {
+            "line": 358,
+            "level": 3,
+            "text": "21. Busca batman en YouTube"
+          }
+        ],
+        "lead": "- backend=real",
+        "measures": [
+          {
+            "line": 5,
+            "text": "- model=qwen3-8b-q4km.gguf [draft:prompt-lookup]"
+          },
+          {
+            "line": 105,
+            "text": "- Reason: Tool failed or verification was inconclusive, and the reply stayed honest."
+          },
+          {
+            "line": 107,
+            "text": "- Final answer: Intenté ejecutarlo pero falló: GUI task failed at step 1 (click 'My Library button'): Element 'My Library button' not found visually."
+          },
+          {
+            "line": 108,
+            "text": "- Elapsed: 57.96s"
+          },
+          {
+            "line": 111,
+            "text": "- gui_do args={\"task\": \"go to my library and search for Batman games\", \"window_title\": \"Steam\"} ok=False blocked=False verification=failed"
+          },
+          {
+            "line": 120,
+            "text": "- Reason: Tool failed or verification was inconclusive, and the reply stayed honest."
+          },
+          {
+            "line": 122,
+            "text": "- Final answer: Intenté ejecutarlo pero falló: GUI task failed at step 1 (click 'Library'): Element 'Library' not found visually."
+          },
+          {
+            "line": 123,
+            "text": "- Elapsed: 34.1s"
+          },
+          {
+            "line": 125,
+            "text": "- gui_do args={\"task\": \"Go to My Library and search for Batman games\", \"window_title\": \"Steam\"} ok=False blocked=False verification=failed"
+          },
+          {
+            "line": 134,
+            "text": "- Reason: Tool failed or verification was inconclusive, and the reply stayed honest."
+          },
+          {
+            "line": 137,
+            "text": "- Elapsed: 26.7s"
+          },
+          {
+            "line": 140,
+            "text": "- steam_install args={\"game\": \"Fall Guys\"} ok=False blocked=False verification=failed"
+          }
+        ],
+        "dates": [
+          "2026-04-25"
+        ],
+        "models": [
+          "qwen3"
+        ],
+        "hardware": [
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-1225",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.txt",
+      "queued_sha256": "9d57a18b3475e37bc1d51c589b239aeb51ba26771a2deaaedfc42e0775157e68",
+      "size_queued": 19,
+      "exists": true,
+      "disk_sha256": "9d57a18b3475e37bc1d51c589b239aeb51ba26771a2deaaedfc42e0775157e68",
+      "disk_size": 19,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_assets/sample.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1,
+        "headings": [],
+        "lead": "Carter probe text",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/pull_work/README.md",
+      "queued_sha256": "09985c338caef5b05861e42defbb075372107b57850ce2a5b967e146518a3812",
+      "size_queued": 12,
+      "exists": true,
+      "disk_sha256": "09985c338caef5b05861e42defbb075372107b57850ce2a5b967e146518a3812",
+      "disk_size": 12,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_assets_runtime/git_sandbox/pull_work/README.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1,
+        "headings": [],
+        "lead": "probe seed",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/push_work/local_push.txt",
+      "queued_sha256": "9d136474e56403e1ced6feac3c6c95da3714b889f57ae8b7168d3e11949278f2",
+      "size_queued": 12,
+      "exists": true,
+      "disk_sha256": "9d136474e56403e1ced6feac3c6c95da3714b889f57ae8b7168d3e11949278f2",
+      "disk_size": 12,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_assets_runtime/git_sandbox/push_work/local_push.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1,
+        "headings": [],
+        "lead": "local push",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/push_work/remote_update.txt",
+      "queued_sha256": "d48166f8a2afe1bb9727edc1dafb75e58ad9bfedf7ef415ce30d4e57143536b1",
+      "size_queued": 15,
+      "exists": true,
+      "disk_sha256": "d48166f8a2afe1bb9727edc1dafb75e58ad9bfedf7ef415ce30d4e57143536b1",
+      "disk_size": 15,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_assets_runtime/git_sandbox/push_work/remote_update.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1,
+        "headings": [],
+        "lead": "remote update",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/log.txt",
+      "queued_sha256": "d16a143cfed1b61559d7320cd858997ec13094f00c119c63a7fe674745c744e9",
+      "size_queued": 7,
+      "exists": true,
+      "disk_sha256": "d16a143cfed1b61559d7320cd858997ec13094f00c119c63a7fe674745c744e9",
+      "disk_size": 7,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_assets_runtime/log.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1,
+        "headings": [],
+        "lead": "start",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/note.txt",
+      "queued_sha256": "c8dba68945249de9b4faed72b89e041e3df77ffff885122599e6c2f7c65a68b2",
+      "size_queued": 20,
+      "exists": true,
+      "disk_sha256": "c8dba68945249de9b4faed72b89e041e3df77ffff885122599e6c2f7c65a68b2",
+      "disk_size": 20,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_assets_runtime/note.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "alpha",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_baseline_stderr.txt",
+      "queued_sha256": "3935435b1e870c4e1ff03774ac5fc5c87c331b7b394a9dd9f9b3f4264affb31b",
+      "size_queued": 676,
+      "exists": true,
+      "disk_sha256": "3935435b1e870c4e1ff03774ac5fc5c87c331b7b394a9dd9f9b3f4264affb31b",
+      "disk_size": 676,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_baseline_stderr.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 6,
+        "headings": [],
+        "lead": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\pywinauto\\__init__.py:80: UserWarning: Revert to STA COM threading mode",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-6"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_baseline_stdout.txt",
+      "queued_sha256": "d3be9672ac3c5da1a942096206bbdcf3d6f192ba0db550b0d5d574035976ed84",
+      "size_queued": 40950,
+      "exists": true,
+      "disk_sha256": "d3be9672ac3c5da1a942096206bbdcf3d6f192ba0db550b0d5d574035976ed84",
+      "disk_size": 40950,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_baseline_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 769,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  20.0s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  16.5s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  6.9s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.7s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-769",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_err.txt",
+      "queued_sha256": "4979327dc2f90fc0960314b4dde0d15ac8ca353197167315a635067f5fc490b2",
+      "size_queued": 1938,
+      "exists": true,
+      "disk_sha256": "4979327dc2f90fc0960314b4dde0d15ac8ca353197167315a635067f5fc490b2",
+      "disk_size": 1938,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_err.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 27,
+        "headings": [],
+        "lead": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\pywinauto\\__init__.py:80: UserWarning: Revert to STA COM threading mode",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-27"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_fixed_stderr.txt",
+      "queued_sha256": "a55be164b659ee262127ed0e10f8fb7a718490aefd9d8d197746f2132c0d90ec",
+      "size_queued": 1140,
+      "exists": true,
+      "disk_sha256": "a55be164b659ee262127ed0e10f8fb7a718490aefd9d8d197746f2132c0d90ec",
+      "disk_size": 1140,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_fixed_stderr.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 10,
+        "headings": [],
+        "lead": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\pywinauto\\__init__.py:80: UserWarning: Revert to STA COM threading mode",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_fixed_stdout.txt",
+      "queued_sha256": "704b0f8168592c2980c00bdbd3ea00111abb886b0c290f11fbf1ad755aa46df1",
+      "size_queued": 56499,
+      "exists": true,
+      "disk_sha256": "704b0f8168592c2980c00bdbd3ea00111abb886b0c290f11fbf1ad755aa46df1",
+      "disk_size": 56499,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_fixed_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 932,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  9.1s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  3.7s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  4.8s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery', 'system_get_battery']  |  65.8s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 374,
+            "text": "Reply: 'LLM error after 3 attempts: Ollama HTTP 500: {\"error\":\"model runner has unexpectedly stopped, this may be due to resource limitations or an internal e'"
+          }
+        ],
+        "ranges": [
+          "1-932",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_live_err.txt",
+      "queued_sha256": "05d6c32a2179be733496485f4b283d42ea185b33bd857314aa9b6ecb23ddf8fc",
+      "size_queued": 212,
+      "exists": true,
+      "disk_sha256": "05d6c32a2179be733496485f4b283d42ea185b33bd857314aa9b6ecb23ddf8fc",
+      "disk_size": 212,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_live_err.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 2,
+        "headings": [],
+        "lead": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python310\\lib\\site-packages\\pywinauto\\__init__.py:80: UserWarning: Revert to STA COM threading mode",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-2"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_live_out.txt",
+      "queued_sha256": "c7315fa85d7cd0ff6200e7dbdfcfe9fcb29e86be7f73f02b858b1240a2944496",
+      "size_queued": 514,
+      "exists": true,
+      "disk_sha256": "c7315fa85d7cd0ff6200e7dbdfcfe9fcb29e86be7f73f02b858b1240a2944496",
+      "disk_size": 514,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_live_out.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_out.txt",
+      "queued_sha256": "0c04a7403fa6a19e7af49e08251b144b546114647f0e104142fcab9937d3af16",
+      "size_queued": 81788,
+      "exists": true,
+      "disk_sha256": "0c04a7403fa6a19e7af49e08251b144b546114647f0e104142fcab9937d3af16",
+      "disk_size": 81788,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_out.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1134,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 8,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 9,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 10,
+            "text": "\u001b[2mTools: ['system_get_time']  |  26.4s\u001b[0m"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 13,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2mTools: ['system_get_time']  |  4.5s\u001b[0m"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 17,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2mTools: ['system_get_time']  |  4.7s\u001b[0m"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 21,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  7.7s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1134",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run10_stdout.txt",
+      "queued_sha256": "daf489d92f6db7a908f105af5a64a61409baf06b4c8627ee586d7372efe93fc4",
+      "size_queued": 42206,
+      "exists": true,
+      "disk_sha256": "daf489d92f6db7a908f105af5a64a61409baf06b4c8627ee586d7372efe93fc4",
+      "disk_size": 42206,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run10_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 792,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  6.6s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.5s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.5s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-792",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run11_stdout.txt",
+      "queued_sha256": "05dc873cca10ca2fe03c68c6aea1e18de4c729c2b36ead30c1a8e05caa95ddfa",
+      "size_queued": 41364,
+      "exists": true,
+      "disk_sha256": "05dc873cca10ca2fe03c68c6aea1e18de4c729c2b36ead30c1a8e05caa95ddfa",
+      "disk_size": 41364,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run11_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 778,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  6.6s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.5s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-778",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run12_stdout.txt",
+      "queued_sha256": "25c4068fd79b920ce94cf50cf0dc660aacc2c750096830039e3bfe49213db8ef",
+      "size_queued": 40964,
+      "exists": true,
+      "disk_sha256": "25c4068fd79b920ce94cf50cf0dc660aacc2c750096830039e3bfe49213db8ef",
+      "disk_size": 40964,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run12_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 769,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  6.7s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.5s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.5s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-769",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run5_stdout.txt",
+      "queued_sha256": "23f7ff6fa53c4cf214ec09465ba6c82096042e1835b90aeca26b99bf403033ca",
+      "size_queued": 341,
+      "exists": true,
+      "disk_sha256": "23f7ff6fa53c4cf214ec09465ba6c82096042e1835b90aeca26b99bf403033ca",
+      "disk_size": 341,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run5_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run6_stdout.txt",
+      "queued_sha256": "711fa2bedd0069fdc8f01436d404d8675214c0fc5227f14f4e1e130cab72baa7",
+      "size_queued": 33076,
+      "exists": true,
+      "disk_sha256": "711fa2bedd0069fdc8f01436d404d8675214c0fc5227f14f4e1e130cab72baa7",
+      "disk_size": 33076,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run6_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 576,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  7.7s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.5s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.5s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery', 'system_get_battery', 'system_get_uptime']  |  14.2s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-576",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run7_stdout.txt",
+      "queued_sha256": "9aec09d07ed2750e78fed6ef1ea3ed64db0a8fb0ba2eac7cc1350cc9688e81a2",
+      "size_queued": 42937,
+      "exists": true,
+      "disk_sha256": "9aec09d07ed2750e78fed6ef1ea3ed64db0a8fb0ba2eac7cc1350cc9688e81a2",
+      "disk_size": 42937,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run7_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 799,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  20.6s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.6s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-799",
+          "m:10"
+        ]
+      }
+    }
+  ]
+}

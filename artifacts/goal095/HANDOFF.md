@@ -1,45 +1,43 @@
-# Handoff — 09.5.3 code_tests campaign — 2026-08-31
+# Handoff — 09.5.2 docs campaign — 2026-08-31
 
 ## Objetivo
-Vaciar la campana `code_tests` (477 checkpoints) con una sola meta. Criterio: pending=0.
+Vaciar la campana `docs` (25 checkpoints) con una sola meta. Criterio: pending=0.
 
 ## Estado
-Hecho: campana terminal. 477/477 complete, claimed=0, pending=0.
-En curso: nada de code_tests.
-Sin empezar: campana `docs` (docs-002+) y `evidence_assets`.
+Hecho: campana terminal. 25/25 complete, claimed=0, pending=0.
+En curso: nada de docs.
+Sin empezar: campana `evidence_assets` (09.5.4).
 
 ## Decisiones tomadas
-- Una campana (`artifacts/goal095/campaigns/code_tests.json`), no un goal por batch_id.
-- `next_prompt` de unidades = `campaign:code_tests`; nunca `09.5.3_AUDITAR_CODIGO_LOTE.md`.
-- 001 y 002 se conservaron; 002 se reanudo (claim viva).
-- El empaquetado v1 de `traces.jsonl.N` (mismo SHA en decenas de lotes) se cubre una vez y el resto `duplicado_por_hash`.
-- Schema Agent (477) no esta en el worktree HEAD de BAXY; se leyo por `git cat-file` de blobs 09.5.1 (Tools-Reduce).
-- Decisiones provisionales hasta 09.5.9. No se copio codigo de producto.
+- Una campana (`artifacts/goal095/campaigns/docs.json`), no un goal por batch_id.
+- Cola v1 envuelta in situ; `docs-001-carter` se conservo por hash.
+- `next_prompt` de unidades = `campaign:docs`; nunca `09.5.2_LEER_DOCUMENTACION_LOTE.md`.
+- UTF-16 LE (`ff fe`) en logs `legacy/data/logs/gemma4-audit/` se lee, no se excluye.
+- Agrupacion de tarjetas por directorio padre. Afirmacion documental != resultado reproducido.
+- Decisiones de herencia quedan para 09.5.9. No se copio codigo de producto.
 
 ## Archivos tocados
-- `scripts/goal095_code_ledger.py` — resume de claim, next_prompt de campana
-- `scripts/goal095_code_campaign.py` — cursor
-- `scripts/goal095_close_code_unit.py` — cierre generico
-- `scripts/goal095_inspect_code_batch.py` — inspect por batch_id
-- `scripts/emit_goal095_code_002.py` — 002 a mano (Carter v2 audit)
-- `artifacts/goal095/ledger/code_tests-*.json` — 477 ledgers
+- `scripts/goal095_docs_ledger.py` — resume de claim, next_prompt de campana
+- `scripts/goal095_docs_campaign.py` — cursor
+- `scripts/goal095_inspect_docs_batch.py` — titulos/fragmentos/medidas
+- `scripts/goal095_close_docs_unit.py` — cierre generico
+- `artifacts/goal095/ledger/docs-*.json` — 25 ledgers
 - `documentacion/herencia/09_5_COBERTURA.md`
 
 ## Archivos relevantes aun sin tocar
-- `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md` — siguiente prompt humano
-- `documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md` — despues de vaciar docs
+- `documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md` — siguiente prompt humano
 
 ## Hipotesis
-Confirmadas: compound-smoke 5/10 trivial-con-tools; hardcode_guard 0 findings por allowlist; gates GREEN contradichos en el mismo lote; 327 lotes = hash duplicado.
-Descartadas: «falta pegar 09.5.3 otra vez». «Schema Agent es una carpeta hermana» — son blobs git de BAXY.
+Confirmadas: 943/943 con terminal valido; hashes disco=cola en los 24 lotes nuevos; faltantes/solapes 0/0.
+Descartadas: «los .txt con NUL son binarios» — son UTF-16 LE. «Falta pegar 09.5.2 otra vez».
 
 ## Comandos ejecutados y resultado
-- `py -3.12 scripts/_goal095_validate_code_campaign.py` → pending=0 claimed=0 complete=477 invalid_ledgers=0 relaunch_09_5_3=0 next_human=09.5.2
-- `py -3.12 -m pytest tests/test_goal095_code_ledger.py tests/test_goal_launch_contracts.py tests/test_goal095_docs_ledger.py tests/test_goal095_queues.py -q` → 29 passed in 13.19s
-- Claims `code_tests-*.json` selladas a `status=complete` (cola ya tenia claimed=0)
+- `py -3.12 scripts/_goal095_validate_docs_campaign.py` → pending=0 claimed=0 complete=25 invalid_ledgers=0 relaunch_09_5_2=0 next_human=09.5.4
+- `py -3.12 -m pytest tests/test_goal095_docs_ledger.py tests/test_goal095_code_ledger.py tests/test_goal095_queues.py -q` → ver corrida de cierre
+- Claims `docs-*.json` selladas a `status=complete`
 
 ## Problemas pendientes
-Ninguno de code_tests. `docs` sigue pendiente (docs-002).
+Ninguno de docs. `evidence_assets` sigue pendiente (09.5.4).
 
 ## Siguiente accion recomendada
-Pegar `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md` (sesion nueva, /goal). No relanzar 09.5.3.
+Pegar `documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md` (sesion nueva, /goal). No relanzar 09.5.2 ni 09.5.3.

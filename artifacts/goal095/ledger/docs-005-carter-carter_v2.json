@@ -1,0 +1,477 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-005-carter-carter_v2",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:31Z",
+  "closed_utc": "2026-08-31T04:29:32Z",
+  "estimated_tokens": 287412,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 24,
+  "subsystem": "carter_v2",
+  "files": [
+    {
+      "path": "Carter_v2/documentacion/investigaciones/base/Informe de Arquitectura Avanzada.md",
+      "sha256": "2a2a4788ab9427d8b9dcf3c6cd0872f886bdd2aba62b3917088edd3382e8fd43",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "Carter_v2/documentacion/investigaciones/base/Stack Agente Autónomo Windows 16GB.md",
+      "sha256": "db83e6ed9e1b8eaf3c688cfcd28ed95a6b58e548b2cbee94a74711f85ee630af",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-169",
+        "m:11"
+      ]
+    },
+    {
+      "path": "Carter_v2/documentacion/investigaciones/comparadas/Claude-Building a real Jarvis the definitive desktop agent architecture guide.md",
+      "sha256": "2c1fd834b1d7da014ae074093950a61fb23ffa34fb61e00bfa771614152a9948",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-308",
+        "h:1",
+        "m:64"
+      ]
+    },
+    {
+      "path": "Carter_v2/live_smoke_results.md",
+      "sha256": "9845ef8bc7a2f302373d2c055f4ddf4d38004bf7473fcf632fa2aec9dcad2a47",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1225",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets/sample.txt",
+      "sha256": "9d57a18b3475e37bc1d51c589b239aeb51ba26771a2deaaedfc42e0775157e68",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/pull_work/README.md",
+      "sha256": "09985c338caef5b05861e42defbb075372107b57850ce2a5b967e146518a3812",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/push_work/local_push.txt",
+      "sha256": "9d136474e56403e1ced6feac3c6c95da3714b889f57ae8b7168d3e11949278f2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/git_sandbox/push_work/remote_update.txt",
+      "sha256": "d48166f8a2afe1bb9727edc1dafb75e58ad9bfedf7ef415ce30d4e57143536b1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/log.txt",
+      "sha256": "d16a143cfed1b61559d7320cd858997ec13094f00c119c63a7fe674745c744e9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_assets_runtime/note.txt",
+      "sha256": "c8dba68945249de9b4faed72b89e041e3df77ffff885122599e6c2f7c65a68b2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_baseline_stderr.txt",
+      "sha256": "3935435b1e870c4e1ff03774ac5fc5c87c331b7b394a9dd9f9b3f4264affb31b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-6"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_baseline_stdout.txt",
+      "sha256": "d3be9672ac3c5da1a942096206bbdcf3d6f192ba0db550b0d5d574035976ed84",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-769",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_err.txt",
+      "sha256": "4979327dc2f90fc0960314b4dde0d15ac8ca353197167315a635067f5fc490b2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-27"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_fixed_stderr.txt",
+      "sha256": "a55be164b659ee262127ed0e10f8fb7a718490aefd9d8d197746f2132c0d90ec",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_fixed_stdout.txt",
+      "sha256": "704b0f8168592c2980c00bdbd3ea00111abb886b0c290f11fbf1ad755aa46df1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-932",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_live_err.txt",
+      "sha256": "05d6c32a2179be733496485f4b283d42ea185b33bd857314aa9b6ecb23ddf8fc",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_live_out.txt",
+      "sha256": "c7315fa85d7cd0ff6200e7dbdfcfe9fcb29e86be7f73f02b858b1240a2944496",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_out.txt",
+      "sha256": "0c04a7403fa6a19e7af49e08251b144b546114647f0e104142fcab9937d3af16",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-1134",
+        "m:8"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run10_stdout.txt",
+      "sha256": "daf489d92f6db7a908f105af5a64a61409baf06b4c8627ee586d7372efe93fc4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-792",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run11_stdout.txt",
+      "sha256": "05dc873cca10ca2fe03c68c6aea1e18de4c729c2b36ead30c1a8e05caa95ddfa",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-778",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run12_stdout.txt",
+      "sha256": "25c4068fd79b920ce94cf50cf0dc660aacc2c750096830039e3bfe49213db8ef",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-769",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run5_stdout.txt",
+      "sha256": "23f7ff6fa53c4cf214ec09465ba6c82096042e1835b90aeca26b99bf403033ca",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run6_stdout.txt",
+      "sha256": "711fa2bedd0069fdc8f01436d404d8675214c0fc5227f14f4e1e130cab72baa7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-576",
+        "m:10"
+      ]
+    },
+    {
+      "path": "Carter_v2/probe_run7_stdout.txt",
+      "sha256": "9aec09d07ed2750e78fed6ef1ea3ed64db0a8fb0ba2eac7cc1350cc9688e81a2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-799",
+        "m:10"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-005-carter-carter_v2-01-Carter_v2",
+      "claim_kind": "documental",
+      "problem": "Live Carter LLM Smoke Results: - backend=real",
+      "outcome": "contexto",
+      "solution_or_failure": "- backend=real",
+      "causal_mechanism": "Reply: 'LLM error after 3 attempts: Ollama HTTP 500: {\"error\":\"model runner has unexpectedly stopped, this may be due to resource limitations or an internal e'",
+      "measurement": "- model=qwen3-8b-q4km.gguf [draft:prompt-lookup] | - Reason: Tool failed or verification was inconclusive, and the reply stayed honest. | - Final answer: Intenté ejecutarlo pero falló: GUI task failed at step 1 (click 'My Library button'): Element 'My Library button' not found visually. | - Elapsed: 57.96s | - gui_do args={\"task\": \"go to my library and search for Batman games\", \"window_title\": \"S…",
+      "provenance": {
+        "path": "Carter_v2/live_smoke_results.md",
+        "ranges": [
+          "1-1225",
+          "h:1",
+          "m:5"
+        ],
+        "date": "2026-04-25",
+        "hardware": "RTX 4060 Ti",
+        "model": "qwen3",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2: 15 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/live_smoke_results.md",
+        "Carter_v2/probe_baseline_stderr.txt",
+        "Carter_v2/probe_baseline_stdout.txt",
+        "Carter_v2/probe_err.txt",
+        "Carter_v2/probe_fixed_stderr.txt",
+        "Carter_v2/probe_fixed_stdout.txt",
+        "Carter_v2/probe_live_err.txt",
+        "Carter_v2/probe_live_out.txt",
+        "Carter_v2/probe_out.txt",
+        "Carter_v2/probe_run10_stdout.txt",
+        "Carter_v2/probe_run11_stdout.txt",
+        "Carter_v2/probe_run12_stdout.txt",
+        "Carter_v2/probe_run5_stdout.txt",
+        "Carter_v2/probe_run6_stdout.txt",
+        "Carter_v2/probe_run7_stdout.txt"
+      ],
+      "repeats": [
+        "Carter_v2/probe_baseline_stderr.txt",
+        "Carter_v2/probe_baseline_stdout.txt",
+        "Carter_v2/probe_err.txt",
+        "Carter_v2/probe_fixed_stderr.txt",
+        "Carter_v2/probe_fixed_stdout.txt",
+        "Carter_v2/probe_live_err.txt",
+        "Carter_v2/probe_live_out.txt",
+        "Carter_v2/probe_out.txt",
+        "Carter_v2/probe_run10_stdout.txt",
+        "Carter_v2/probe_run11_stdout.txt",
+        "Carter_v2/probe_run12_stdout.txt"
+      ]
+    },
+    {
+      "card_id": "docs-005-carter-carter_v2-02-Carter_v2-documentacion-investigaciones-base",
+      "claim_kind": "documental",
+      "problem": "Carter_v2/documentacion/investigaciones/base: Informe de Arquitectura Avanzada: Optimización y Selección de Modelos Locales para CARTER OS bajo Restricciones Estrictas de VRAMFundamentos Arquitectónicos y el Paradigma del Agente de Sistema OperativoEl diseño y despliegue de agen…",
+      "outcome": "contexto",
+      "solution_or_failure": "Informe de Arquitectura Avanzada: Optimización y Selección de Modelos Locales para CARTER OS bajo Restricciones Estrictas de VRAMFundamentos Arquitectónicos y el Paradigma del Agente de Sistema OperativoEl diseño y despliegue de agentes autónomos capaces de interactuar de manera nativa con sistemas operativos de escritorio representa una de las fronteras más complejas en la disciplina de la inteli",
+      "causal_mechanism": "La sinergia resultante en tiempo de ejecución establece el mecanismo de automatización cognitiva más reactivo posible a nivel local. La coreografía de ejecución fluye con precisión instrumental:",
+      "measurement": "Dinámica de la Memoria VRAM y el Cuello de Botella del Bus PCIe | Ollama (llama.cpp) Accesibilidad Universal Excelente (GGUF) Moderada Inexistente (Saltos fijos) Medio | Modelo Candidato Parámetros Totales Arquitectura Base Velocidad de Generación Procesamiento de Prompt VRAM Cuantizada (Est.) Resistencia a Deriva Lógica | GPT-OSS 20B 21B (3.6B activos) Mixture of Experts ~42.0 t/s 611 - 652 t/s…",
+      "provenance": {
+        "path": "Carter_v2/documentacion/investigaciones/base/Informe de Arquitectura Avanzada.md",
+        "ranges": [
+          "1-3"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2/documentacion/investigaciones/base: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "Carter_v2/documentacion/investigaciones/base/Informe de Arquitectura Avanzada.md",
+        "Carter_v2/documentacion/investigaciones/base/Stack Agente Autónomo Windows 16GB.md"
+      ],
+      "repeats": [
+        "Carter_v2/documentacion/investigaciones/base/Stack Agente Autónomo Windows 16GB.md"
+      ]
+    },
+    {
+      "card_id": "docs-005-carter-carter_v2-03-Carter_v2-documentacion-investigaciones-comparadas",
+      "claim_kind": "documental",
+      "problem": "Building a real Jarvis: the definitive desktop agent architecture guide: **The core problem with CARTER OS isn't the LLM — it's the architecture.** Modern desktop agents that achieve human-level performance (Agent S3 at 72.6% on OSWorld, UFO2 across 20+ Windows apps) share a dec…",
+      "outcome": "fracaso",
+      "solution_or_failure": "**The core problem with CARTER OS isn't the LLM — it's the architecture.** Modern desktop agents that achieve human-level performance (Agent S3 at 72.6% on OSWorld, UFO2 across 20+ Windows apps) share a decisive structural pattern: they separate planning from execution, wrap LLM decisions in deterministic state machines, and treat GUI interaction as a last resort behind native APIs. Your agent fai",
+      "causal_mechanism": "[VERIFIER] ← Hybrid: deterministic checks + LLM critic",
+      "measurement": "The debate between UI Automation and vision-first approaches is settled. **Hybrid UIA-first is definitively superior**, and UFO2 proved it with 10% higher task completion than the best vision-only agents. | **The optimal perception pipeline for 16GB VRAM**: | 1. **Screenshot capture** (~5ms) via Windows.Graphics.Capture API | 2. **Change detection** (~2ms) via pixel diff against cached frame — sk…",
+      "provenance": {
+        "path": "Carter_v2/documentacion/investigaciones/comparadas/Claude-Building a real Jarvis the definitive desktop agent architecture guide.md",
+        "ranges": [
+          "1-308",
+          "h:1",
+          "m:64"
+        ],
+        "date": "2026-08-31",
+        "hardware": "16GB",
+        "model": "qwen3",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2/documentacion/investigaciones/comparadas: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "source_files": [
+        "Carter_v2/documentacion/investigaciones/comparadas/Claude-Building a real Jarvis the definitive desktop agent architecture guide.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-005-carter-carter_v2-04-Carter_v2-probe_assets",
+      "claim_kind": "documental",
+      "problem": "Carter_v2/probe_assets: Carter probe text",
+      "outcome": "contexto",
+      "solution_or_failure": "Carter probe text",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "Carter_v2/probe_assets/sample.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2/probe_assets: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets/sample.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-005-carter-carter_v2-05-Carter_v2-probe_assets_runtime",
+      "claim_kind": "documental",
+      "problem": "Carter_v2/probe_assets_runtime: start",
+      "outcome": "contexto",
+      "solution_or_failure": "start",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/log.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2/probe_assets_runtime: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/log.txt",
+        "Carter_v2/probe_assets_runtime/note.txt"
+      ],
+      "repeats": [
+        "Carter_v2/probe_assets_runtime/note.txt"
+      ]
+    },
+    {
+      "card_id": "docs-005-carter-carter_v2-06-Carter_v2-probe_assets_runtime-git_sandbox-pull_wo",
+      "claim_kind": "documental",
+      "problem": "Carter_v2/probe_assets_runtime/git_sandbox/pull_work: probe seed",
+      "outcome": "contexto",
+      "solution_or_failure": "probe seed",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/git_sandbox/pull_work/README.md",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2/probe_assets_runtime/git_sandbox/pull_work: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/git_sandbox/pull_work/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-005-carter-carter_v2-07-Carter_v2-probe_assets_runtime-git_sandbox-push_wo",
+      "claim_kind": "documental",
+      "problem": "Carter_v2/probe_assets_runtime/git_sandbox/push_work: local push",
+      "outcome": "contexto",
+      "solution_or_failure": "local push",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "Carter_v2/probe_assets_runtime/git_sandbox/push_work/local_push.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo Carter_v2/probe_assets_runtime/git_sandbox/push_work: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "Carter_v2/probe_assets_runtime/git_sandbox/push_work/local_push.txt",
+        "Carter_v2/probe_assets_runtime/git_sandbox/push_work/remote_update.txt"
+      ],
+      "repeats": [
+        "Carter_v2/probe_assets_runtime/git_sandbox/push_work/remote_update.txt"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=24 drift=0 miss=0",
+  "next_docs_batch_id": "docs-006-carter-carter_v2",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-005-carter-carter_v2.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

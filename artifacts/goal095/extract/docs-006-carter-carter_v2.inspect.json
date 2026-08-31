@@ -1,0 +1,246 @@
+{
+  "batch_id": "docs-006-carter-carter_v2",
+  "kind": "docs",
+  "source_id": "carter",
+  "subsystem": "carter_v2",
+  "file_count": 3,
+  "hash_ok": 3,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "Carter_v2/probe_run8_stdout.txt",
+      "queued_sha256": "41531fd69863520cc0614d19bf1d59a668e1ddad0bfd49dde081a234b9a98ec2",
+      "size_queued": 42679,
+      "exists": true,
+      "disk_sha256": "41531fd69863520cc0614d19bf1d59a668e1ddad0bfd49dde081a234b9a98ec2",
+      "disk_size": 42679,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run8_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 799,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  8.3s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.6s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.6s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-799",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run9_stdout.txt",
+      "queued_sha256": "6788355f3eead47313ab3576a218bfc20d878190fc65964bdda30b3e16c148ed",
+      "size_queued": 42652,
+      "exists": true,
+      "disk_sha256": "6788355f3eead47313ab3576a218bfc20d878190fc65964bdda30b3e16c148ed",
+      "disk_size": 42652,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run9_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 799,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  8.3s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.5s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  2.5s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  2.5s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 578,
+            "text": "Reply: 'w1: Blocked because no candidate tool is available.'"
+          },
+          {
+            "line": 793,
+            "text": "category=NO_TOOL tools=[] reply='w1: Blocked because no candidate tool is available.'"
+          }
+        ],
+        "ranges": [
+          "1-799",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "Carter_v2/probe_run_stdout.txt",
+      "queued_sha256": "74b4ffbf0c85e5ffba1fe0efd0889372de379c3234bf2da477c15c82e4fe1f1c",
+      "size_queued": 81430,
+      "exists": true,
+      "disk_sha256": "74b4ffbf0c85e5ffba1fe0efd0889372de379c3234bf2da477c15c82e4fe1f1c",
+      "disk_size": 81430,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'Carter_v2/probe_run_stdout.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1121,
+        "headings": [],
+        "lead": "\u001b[1m\u001b[96m======================================================",
+        "measures": [
+          {
+            "line": 10,
+            "text": "\u001b[2m[1/167] CLK-1 — Hora local en español...\u001b[0m"
+          },
+          {
+            "line": 11,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-1\u001b[0m \u001b[2m(clock)\u001b[0m — Hora local en español"
+          },
+          {
+            "line": 12,
+            "text": "\u001b[2mTools: ['system_get_time']  |  18.8s\u001b[0m"
+          },
+          {
+            "line": 14,
+            "text": "\u001b[2m[2/167] CLK-2 — Hora en inglés...\u001b[0m"
+          },
+          {
+            "line": 15,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-2\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en inglés"
+          },
+          {
+            "line": 16,
+            "text": "\u001b[2mTools: ['system_get_time']  |  28.9s\u001b[0m"
+          },
+          {
+            "line": 18,
+            "text": "\u001b[2m[3/167] CLK-3 — Hora en alemán — multilenguaje...\u001b[0m"
+          },
+          {
+            "line": 19,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mCLK-3\u001b[0m \u001b[2m(clock)\u001b[0m — Hora en alemán — multilenguaje"
+          },
+          {
+            "line": 20,
+            "text": "\u001b[2mTools: ['system_get_time']  |  26.9s\u001b[0m"
+          },
+          {
+            "line": 22,
+            "text": "\u001b[2m[4/167] SYS-1 — Batería del equipo...\u001b[0m"
+          },
+          {
+            "line": 23,
+            "text": "\u001b[92m[PASS]\u001b[0m \u001b[1mSYS-1\u001b[0m \u001b[2m(system)\u001b[0m — Batería del equipo"
+          },
+          {
+            "line": 24,
+            "text": "\u001b[2mTools: ['system_get_battery']  |  254.9s\u001b[0m"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-1121",
+          "m:10"
+        ]
+      }
+    }
+  ]
+}

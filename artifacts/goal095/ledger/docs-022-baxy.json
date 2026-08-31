@@ -1,0 +1,1110 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-022-baxy",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:50Z",
+  "closed_utc": "2026-08-31T04:29:54Z",
+  "estimated_tokens": 209540,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 57,
+  "subsystem": "baxy_docs_03_HALLAZGOS_AGENTES.md",
+  "files": [
+    {
+      "path": "documentacion/03_HALLAZGOS_AGENTES.md",
+      "sha256": "7805c2144052e5dbba33164b3eeedb17585832118359e16d1e0b4f7e6ec8c0a2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-176",
+        "h:1",
+        "m:31"
+      ]
+    },
+    {
+      "path": "documentacion/04_ARQUITECTURA_TECNOLOGICA.md",
+      "sha256": "a90ec1bbe1381ac80674bc7cc8c186c630762c96311107a88942145783e3672d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-615",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/05_FALLOS_Y_REGRESIONES.md",
+      "sha256": "f0c2cf85e2c346b2eb4df91217b235336fe24165b38b154710781319369e5456",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-87",
+        "h:1",
+        "m:22"
+      ]
+    },
+    {
+      "path": "documentacion/06_MAPA_FUENTES_HISTORICAS.md",
+      "sha256": "aee20e4d093abf3ffe840edf6d726a39e9c17aa0266d30a176d65cbb1d37ce7f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-86",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/07_LEDGER_REQUISITOS_HISTORICOS.md",
+      "sha256": "cf7f9811f15a3c56378d9672c95589c76c465a99189256bc16dec5e83f85f6e5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-191",
+        "h:1",
+        "m:180"
+      ]
+    },
+    {
+      "path": "documentacion/08_EVOLUCION_CARTER_A_BAXY.md",
+      "sha256": "692d52a82622a9c120b28a4c03f3d474801cc75254a0b966b3f6d673917a5ea8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-79",
+        "h:1",
+        "m:44"
+      ]
+    },
+    {
+      "path": "documentacion/09_LEDGER_EVIDENCIA_AGENTES.md",
+      "sha256": "e68ece725717e54a65525d79628a68318e0a7801daf4e29d3059f375f4d90fe7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-66",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "documentacion/10_TORNEO_TECNOLOGICO.md",
+      "sha256": "46149110119b76a3662d8f652a97dd72a135394628950961014a37c354697aae",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-296",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/11_PRIMER_CORTE_PRODUCTIVO.md",
+      "sha256": "696fba2e0ce9096533dfcf64fd86d4ce78f5102b5f6eb7a8da322f0ba5866de2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-141",
+        "h:1",
+        "m:114"
+      ]
+    },
+    {
+      "path": "documentacion/12_SEGUNDO_CORTE_APP_OPEN.md",
+      "sha256": "ab3bea530ba4992e34742ef565a6a4e70296a83412c3350e2617a685a69a7d9a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:58"
+      ]
+    },
+    {
+      "path": "documentacion/13_TERCER_CORTE_NOTAS_NATURALES.md",
+      "sha256": "7cae467703f13d62b19274bf470a16b98ff56087cc386844e8c2e295189ebdfd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:32"
+      ]
+    },
+    {
+      "path": "documentacion/14_CUARTO_CORTE_DESAMBIGUACION_NOTAS.md",
+      "sha256": "bb25d79e16126f44a9c5f7e4151a42f7d40c358deed7d4e238b8843551f29c61",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-151",
+        "h:1",
+        "m:65"
+      ]
+    },
+    {
+      "path": "documentacion/15_QUINTO_CORTE_ESTADO_LOCAL_PC.md",
+      "sha256": "dc2fb2c17bdc4d7d5543c24f14af1b1e444a6f7e6342c7a764b274d3a494abc7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-162",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/16_SEXTO_CORTE_AUDIO_GLOBAL.md",
+      "sha256": "636cd3a0ad83025f78d72e0282dcf32d71fe4701c964befbc2e5c6786faee687",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-270",
+        "h:1",
+        "m:50"
+      ]
+    },
+    {
+      "path": "documentacion/17_SEPTIMO_CORTE_MEMORIA_PRIVADA.md",
+      "sha256": "604a32d7fd460957aecfa65107f981aa2706df8843607b2b6bafe0411a8499f1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-204",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "documentacion/18_OCTAVO_CORTE_GPU_LOCAL.md",
+      "sha256": "ae962223e0eb8995a0c738f1597f09023b84e199126950635822ed355c314fe2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-163",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/19_NOVENO_CORTE_DISTRIBUCION_REPRODUCIBLE.md",
+      "sha256": "4c2217e38766779cddf4bd442c8787ed9dee88b06698ff9455b1a5e1760a92ea",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/20_DECIMO_CORTE_SETUP_REPRODUCIBLE.md",
+      "sha256": "c75fad9ab6c29b12f9a6694b5be70cd4f006e371767dfbcac7a7599ca115d655",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/21_UNDECIMO_CORTE_DATA_SCHEMA_CONGELADO.md",
+      "sha256": "0f63e8cc1ae146babbd5156b972aea68ad86f8c5165701fd235b4154c8aeb907",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-74",
+        "h:1",
+        "m:58"
+      ]
+    },
+    {
+      "path": "documentacion/22_INVENTARIO_ARQUEOLOGICO_CARTER_BAXY.md",
+      "sha256": "d8f4054d3fe63dc6166db626039cf19de3cf1ad81f13be3040c34244399b5459",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-66",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/23_CENSO_FUNCIONAL_TOOLS_CONGELADO.md",
+      "sha256": "d33646b0499270b895d16a5a834edeb80d4e4761c1c60cf76de6caef032aef54",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-74",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/24_ARQUEOLOGIA_PLANNER_CARTER_BAXY.md",
+      "sha256": "aed9b201746bd0738e3fa707de04786884574527412e785b0630973ce058895e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-96",
+        "h:1",
+        "m:79"
+      ]
+    },
+    {
+      "path": "documentacion/25_INTEGRACION_GENERACIONAL_CARTER_SCHEMA_BAXY.md",
+      "sha256": "3e010ab1e3451a1548be8dd7abf7d1d5172226d67154df17ba6bdd37ecc9dd20",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-98",
+        "h:1",
+        "m:16"
+      ]
+    },
+    {
+      "path": "documentacion/26_ESTRUCTURA_Y_RUTAS_DE_MAQUINA.md",
+      "sha256": "6a997206f7b29a026fba6ee3e10e85e7ba3c330574072dc58292a1cb9adfb34d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-110",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/agentes/INDICE.md",
+      "sha256": "7b88bca03e1670a67c37d9259f3a888945e736520988f21408ba6a85b4e951da",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-337",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/agentes/README.md",
+      "sha256": "3f0170b9609defc7136a773e60a386288dace57f5010ed2c58db213a29747961",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-88",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/00_INDICE.md",
+      "sha256": "2427b104775c5598717fc916b67bdce6831c4a0623e1441e2343b8f56d609647",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-102",
+        "h:1",
+        "m:45"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/01_HERENCIA.md",
+      "sha256": "e7084a8fd65280391a2ea7573d63c9aaf873f183d515f2a11899ee3b44caf0e2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108",
+        "h:1",
+        "m:72"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/02_BASE.md",
+      "sha256": "b674a2cb66c0da15a7f083abc468119fdb442b29deaffb70ab861d1b751a4d09",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-75",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/03_COMPRENSION.md",
+      "sha256": "8ca50f10fcc90a49be3fbb4b1e0e6285c2a222ea7681180e7a132806847897aa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-145",
+        "h:1",
+        "m:33"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/04_HONESTIDAD.md",
+      "sha256": "9afb5eaa429cbf8231ef0a1a2961c6f3bcda39b6308963b6265790508504ed71",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/05_EJECUCION.md",
+      "sha256": "18fab50a4c06c6e30c7fb115d8c00c98c15b27c7eba0a45c0f5ac20f9f0d6a90",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-103",
+        "h:1",
+        "m:33"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/06_VOZ_DEL_PRODUCTO.md",
+      "sha256": "9a8239585eca373069b3169590d79fc439671020ad70a828b92ff742556285fb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-99",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/07_MISIONES.md",
+      "sha256": "2f9eccbdab8613071b19572e3d493632ab48cc61527518d93766e6e704e28bd1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-101",
+        "h:1",
+        "m:29"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/08_PRIMERA_SENAL.md",
+      "sha256": "d9fcd996bfdcf2318a9a7637ce46846d62266c8af7ef9acb7463c33bcf93947f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-110",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/09_VOZ_Y_OIDO.md",
+      "sha256": "c8e349b4fc7afa08d71ec20bf00a4f479d6e1688e9dac8a2bbc697436b53737b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-133",
+        "h:1",
+        "m:57"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/10_USO_DIARIO.md",
+      "sha256": "cb70a8fdccb403f0e2c02a30c990a9af569da9f16a9078a5f649254ea809c201",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-88",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/sprints/11_VALIDACION.md",
+      "sha256": "b0ec352d84c78de84bd5ecb9194d5fe6bd118bb9218adbcfd30fa19643a2611c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-101",
+        "h:1",
+        "m:81"
+      ]
+    },
+    {
+      "path": "experiments/functiongemma_selector/README.md",
+      "sha256": "3855b73cd8d07119eee093d63836726bf7520a72eb186d95e0d1467e6bbbd57e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-46",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "experiments/functiongemma_selector/requirements-lock.txt",
+      "sha256": "0f81520d788c4e1786ad23a28ee2aaff9b00b6c3d8e21498c41a48ededfe6c77",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-13",
+        "h:1"
+      ]
+    },
+    {
+      "path": "experiments/mind_llm_tournament/convo_transcripts.txt",
+      "sha256": "c23d8ea59674869252344ff5ed4d6032a74c3c36367cc3680c2c7f5fb7257dc7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-123",
+        "m:1"
+      ]
+    },
+    {
+      "path": "experiments/mind_llm_tournament/results/convo_judged_review.md",
+      "sha256": "83f4bbe3b16156a9af793b60043dcf35ddf4ca181ce09091b0f48c95944489a7",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-63",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "experiments/mind_router_spike/VEREDICTO.md",
+      "sha256": "01485b89160fb1c0a78bee4f033ea9c0e1927d564341fab5b0a770c9a16b0cde",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-91",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "experiments/stt_quality/wordfreq_semantic_fusion_requirements.txt",
+      "sha256": "230ebb5ed3b737c4e9a0747098f16084d917a8d623fd2a891a22fbb25120e25b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-16"
+      ]
+    },
+    {
+      "path": "experiments/technology_tournament/README.md",
+      "sha256": "02be7899f94abfa765feaa52fa3fd8cce83477ef7856874d0dc9fc0cecfdd209",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-15",
+        "h:1"
+      ]
+    },
+    {
+      "path": "experiments/technology_tournament/python_core/README.md",
+      "sha256": "33b01e6229a2ef8be9a762a202b20a494e9bc9bfbad3bc3af83aae53ee970304",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-10",
+        "h:1"
+      ]
+    },
+    {
+      "path": "experiments/technology_tournament/python_core/packaging-requirements.txt",
+      "sha256": "de29de76e69f28f069d681b214fd783b83e235794768cbe1767929127d77b639",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-8",
+        "h:1"
+      ]
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/dotnet_webview/README.md",
+      "sha256": "28425cce93ecb785a56124abd753761e2821c918f55dbdd31af45c9c7220da06",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-16",
+        "h:1"
+      ]
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/README.md",
+      "sha256": "a074742f2c982166671c43c4223e8c0ad3760929f14bcf6795291ba914d7b0a0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-17",
+        "h:1"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/assets/baxy_open_vocab_keywords_v1.txt",
+      "sha256": "4d9186513a9e14d188ffe5f6e5c317d63a4e5bd3c14e60956b4cd68a6d5500f9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords.v1.txt",
+      "sha256": "16f244fdc59fb061254e3c3d2dc78c1cdfbd5d1b1e0994fae85932e21d929216",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-12"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords_development_v2.txt",
+      "sha256": "337b7cb66fa1d6d1e164fdeb4fe25e7bd4c561d10514a96833c11fc290e835d1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-12"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords_raw.v1.txt",
+      "sha256": "afe0e0d3830c52de031c05541e0ed8b908f5f98d5467405109b067a87df27bfc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords_tokens.v1.txt",
+      "sha256": "9ccc3439b2409695530b11f88e7d1b6d74bd25dcfaa6b23be5645e7cfc538dcf",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-12"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/keywords_baxy_raw.txt",
+      "sha256": "0001b236f9d407a51e0008505c56d185a7eef98705e3d117908d6fa2a58eb72c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "experiments/voice_latency/keywords_baxy_sherpa.txt",
+      "sha256": "3a004ffd23dfa2d513b2fbf1234d15dd70bbda59eb2061b7d8f423d91f3c42c0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/Codex.md",
+      "sha256": "1f5207e9cb0a0445eb529aab62d30442b66f568f5db0e1cbfed118b42494431e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1184",
+        "m:3"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-022-baxy-01-documentacion",
+      "claim_kind": "documental",
+      "problem": "Hallazgos recuperados de agentes y auditorías: Este documento sintetiza una parte de las conclusiones visibles o respaldadas",
+      "outcome": "contexto",
+      "solution_or_failure": "Este documento sintetiza una parte de las conclusiones visibles o respaldadas",
+      "causal_mechanism": "Python merece un prototipo porque gran parte de la evidencia, corpus, modelos y | heurística y no puede usarse como filtro mecánico, porque textos objetivo breves | mecanismo de paquete aprobó 8/8 gates: junction/ADS, instalación, actualización, | la frontera porque ninguno es no-peor en todas y mejor en al menos una. | Este mecanismo no cifra el contenido. Su SHA-256 no usa una clave y por tanto…",
+      "measurement": "- BAXY_SPOTIFY_PLAY_EXACT=1 creaba el perfil experimental 95/92/3/39. | - No se declaró GPU física de 4 GB ni corpus guiado de voz. | - En el momento del informe existían baterías backend 150/150, frontend 73/73 y | - El perfil estable exigía flags experimentales falsos, inventario 94/91 y | 95/92; también diferían contrato, dominio, epoch, counts y digest. | 8. Las correcciones focales reportaro…",
+      "provenance": {
+        "path": "documentacion/03_HALLAZGOS_AGENTES.md",
+        "ranges": [
+          "1-176",
+          "h:1",
+          "m:31"
+        ],
+        "date": "2026-07-14",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion: 24 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/03_HALLAZGOS_AGENTES.md",
+        "documentacion/04_ARQUITECTURA_TECNOLOGICA.md",
+        "documentacion/05_FALLOS_Y_REGRESIONES.md",
+        "documentacion/06_MAPA_FUENTES_HISTORICAS.md",
+        "documentacion/07_LEDGER_REQUISITOS_HISTORICOS.md",
+        "documentacion/08_EVOLUCION_CARTER_A_BAXY.md",
+        "documentacion/09_LEDGER_EVIDENCIA_AGENTES.md",
+        "documentacion/10_TORNEO_TECNOLOGICO.md",
+        "documentacion/11_PRIMER_CORTE_PRODUCTIVO.md",
+        "documentacion/12_SEGUNDO_CORTE_APP_OPEN.md",
+        "documentacion/13_TERCER_CORTE_NOTAS_NATURALES.md",
+        "documentacion/14_CUARTO_CORTE_DESAMBIGUACION_NOTAS.md",
+        "documentacion/15_QUINTO_CORTE_ESTADO_LOCAL_PC.md",
+        "documentacion/16_SEXTO_CORTE_AUDIO_GLOBAL.md",
+        "documentacion/17_SEPTIMO_CORTE_MEMORIA_PRIVADA.md",
+        "documentacion/18_OCTAVO_CORTE_GPU_LOCAL.md",
+        "documentacion/19_NOVENO_CORTE_DISTRIBUCION_REPRODUCIBLE.md",
+        "documentacion/20_DECIMO_CORTE_SETUP_REPRODUCIBLE.md",
+        "documentacion/21_UNDECIMO_CORTE_DATA_SCHEMA_CONGELADO.md",
+        "documentacion/22_INVENTARIO_ARQUEOLOGICO_CARTER_BAXY.md",
+        "documentacion/23_CENSO_FUNCIONAL_TOOLS_CONGELADO.md",
+        "documentacion/24_ARQUEOLOGIA_PLANNER_CARTER_BAXY.md",
+        "documentacion/25_INTEGRACION_GENERACIONAL_CARTER_SCHEMA_BAXY.md",
+        "documentacion/26_ESTRUCTURA_Y_RUTAS_DE_MAQUINA.md"
+      ],
+      "repeats": [
+        "documentacion/04_ARQUITECTURA_TECNOLOGICA.md",
+        "documentacion/05_FALLOS_Y_REGRESIONES.md",
+        "documentacion/06_MAPA_FUENTES_HISTORICAS.md",
+        "documentacion/07_LEDGER_REQUISITOS_HISTORICOS.md",
+        "documentacion/08_EVOLUCION_CARTER_A_BAXY.md",
+        "documentacion/09_LEDGER_EVIDENCIA_AGENTES.md",
+        "documentacion/10_TORNEO_TECNOLOGICO.md",
+        "documentacion/11_PRIMER_CORTE_PRODUCTIVO.md",
+        "documentacion/12_SEGUNDO_CORTE_APP_OPEN.md",
+        "documentacion/13_TERCER_CORTE_NOTAS_NATURALES.md",
+        "documentacion/14_CUARTO_CORTE_DESAMBIGUACION_NOTAS.md"
+      ]
+    },
+    {
+      "card_id": "docs-022-baxy-02-documentacion-agentes",
+      "claim_kind": "documental",
+      "problem": "Índice recuperado de subagentes Codex: - Hilo raíz: 019f5027-c684-75a1-a47b-5af2edd2339b",
+      "outcome": "contexto",
+      "solution_or_failure": "- Hilo raíz: 019f5027-c684-75a1-a47b-5af2edd2339b",
+      "causal_mechanism": "Está ignorada por Git porque puede contener rutas, comandos, outputs, contexto",
+      "measurement": "- Tamaño bruto referenciado: 5.10 GiB",
+      "provenance": {
+        "path": "documentacion/agentes/INDICE.md",
+        "ranges": [
+          "1-337",
+          "h:1",
+          "m:5"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/agentes: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/agentes/INDICE.md",
+        "documentacion/agentes/README.md"
+      ],
+      "repeats": [
+        "documentacion/agentes/README.md"
+      ]
+    },
+    {
+      "card_id": "docs-022-baxy-03-documentacion-sprints",
+      "claim_kind": "documental",
+      "problem": "BAXY por sprints — once prompts para GPT-5.6 Sol: Once prompts. Cada uno se lanza en una sesión nueva con un agente nuevo, en",
+      "outcome": "contexto",
+      "solution_or_failure": "Once prompts. Cada uno se lanza en una sesión nueva con un agente nuevo, en",
+      "causal_mechanism": "El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes | - **Qué no se hereda y por qué** — un rechazo con el mecanismo entendido vale | basta: un STT excelente que necesita 8 GB de VRAM no sirve, porque BAXY tiene que | R280 — léela antes de empezar, porque la mitad del trabajo ya está hecho: | peticiones servibles llegan con cero candidatos porque el camino determinista las…",
+      "measurement": "**Cuanto menos consuma, mejor.** 4 GB de VRAM es el techo, no el objetivo. Entre | tiene 16 GB de VRAM: eso es holgura para trabajar, no el presupuesto del producto. | certificado de 4 GB de VRAM y perfil CPU de 8 GB; instalación limpia, primer | basta: un STT excelente que necesita 8 GB de VRAM no sirve, porque BAXY tiene que | correr en un portátil normal. La máquina de desarrollo tiene 16 GB d…",
+      "provenance": {
+        "path": "documentacion/sprints/00_INDICE.md",
+        "ranges": [
+          "1-102",
+          "h:1",
+          "m:45"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/sprints: 12 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/sprints/00_INDICE.md",
+        "documentacion/sprints/01_HERENCIA.md",
+        "documentacion/sprints/02_BASE.md",
+        "documentacion/sprints/03_COMPRENSION.md",
+        "documentacion/sprints/04_HONESTIDAD.md",
+        "documentacion/sprints/05_EJECUCION.md",
+        "documentacion/sprints/06_VOZ_DEL_PRODUCTO.md",
+        "documentacion/sprints/07_MISIONES.md",
+        "documentacion/sprints/08_PRIMERA_SENAL.md",
+        "documentacion/sprints/09_VOZ_Y_OIDO.md",
+        "documentacion/sprints/10_USO_DIARIO.md",
+        "documentacion/sprints/11_VALIDACION.md"
+      ],
+      "repeats": [
+        "documentacion/sprints/01_HERENCIA.md",
+        "documentacion/sprints/02_BASE.md",
+        "documentacion/sprints/03_COMPRENSION.md",
+        "documentacion/sprints/04_HONESTIDAD.md",
+        "documentacion/sprints/05_EJECUCION.md",
+        "documentacion/sprints/06_VOZ_DEL_PRODUCTO.md",
+        "documentacion/sprints/07_MISIONES.md",
+        "documentacion/sprints/08_PRIMERA_SENAL.md",
+        "documentacion/sprints/09_VOZ_Y_OIDO.md",
+        "documentacion/sprints/10_USO_DIARIO.md",
+        "documentacion/sprints/11_VALIDACION.md"
+      ]
+    },
+    {
+      "card_id": "docs-022-baxy-04-experiments-functiongemma_selector",
+      "claim_kind": "documental",
+      "problem": "FunctionGemma como selector de hoja de BAXY: Este experimento mide si un modelo pequeño especializado puede resolver la",
+      "outcome": "contexto",
+      "solution_or_failure": "Este experimento mide si un modelo pequeño especializado puede resolver la",
+      "causal_mechanism": "de volumen relativo y micrófono se corrigen de forma explícita porque entonces",
+      "measurement": "permite medir exactitud, latencia y VRAM de forma independiente. Ningún asset | El oracle de 90 casos es solo desarrollo. Aunque esta prueba alcance 100% en | su porción de audio, no constituye el gate final de 99% ni autoriza promoción.",
+      "provenance": {
+        "path": "experiments/functiongemma_selector/README.md",
+        "ranges": [
+          "1-46",
+          "h:1",
+          "m:17"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "functiongemma",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/functiongemma_selector: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "experiments/functiongemma_selector/README.md",
+        "experiments/functiongemma_selector/requirements-lock.txt"
+      ],
+      "repeats": [
+        "experiments/functiongemma_selector/requirements-lock.txt"
+      ]
+    },
+    {
+      "card_id": "docs-022-baxy-05-experiments-mind_llm_tournament",
+      "claim_kind": "documental",
+      "problem": "experiments/mind_llm_tournament: gemma4-e2b-qat: auto-pass 27/30",
+      "outcome": "exito",
+      "solution_or_failure": "gemma4-e2b-qat: auto-pass 27/30",
+      "causal_mechanism": "A: No puedo traducir ese código porque no tengo acceso a ningún código que hayas mencionado. Para ayudarte, por favor: 1. Indícame en qué aplicación estás trabajando (por ejemplo, Notepad) para poder abrirlo. 2. O simple | A: No puedo darte esa información porque no tengo acceso a internet ni a aplicaciones externas para consultar el clima. Mi conocimiento se limita a lo que puedes darme o lo que…",
+      "measurement": "gemma4-e2b-qat: auto-pass 27/30 | --- [2] <FAIL-AUTO> en Q: what's the foreground process | --- [4] <FAIL-AUTO> en Q: open calcualtor | --- [18] <FAIL-AUTO> en Q: is Steam open right now? | qwen3.5-4b: auto-pass 23/30 | --- [3] <FAIL-AUTO> en Q: Thanku what a great work! | --- [7] <FAIL-AUTO> en Q: Can you please make it easier to understand? | --- [23] <FAIL-AUTO> es Q: recordame tomar la pastil…",
+      "provenance": {
+        "path": "experiments/mind_llm_tournament/convo_transcripts.txt",
+        "ranges": [
+          "1-123",
+          "m:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/mind_llm_tournament: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "experiments/mind_llm_tournament/convo_transcripts.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-06-experiments-mind_llm_tournament-results",
+      "claim_kind": "documental",
+      "problem": "Revisión juzgada — tarea B (conversación) de los finalistas LLM: - Fecha: 2026-07-16. Revisor: Fable. Rúbrica congelada del protocolo:",
+      "outcome": "contexto",
+      "solution_or_failure": "- Fecha: 2026-07-16. Revisor: Fable. Rúbrica congelada del protocolo:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Notas: cero llamadas mutantes en 30/30; identidad y límites consistentes | responde en español a prompts en inglés (6/30). Para el compromiso | - Gemma-4 E2B mantiene el idioma (fallos 2/30 de idioma + 1 de coherencia) y | Diferencia 0,6 pts < 2 pts → desempate congelado por menor VRAM pico:",
+      "provenance": {
+        "path": "experiments/mind_llm_tournament/results/convo_judged_review.md",
+        "ranges": [
+          "1-63",
+          "h:1",
+          "m:19"
+        ],
+        "date": "2026-07-16",
+        "hardware": "VRAM",
+        "model": "qwen3",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/mind_llm_tournament/results: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "experiments/mind_llm_tournament/results/convo_judged_review.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-07-experiments-mind_router_spike",
+      "claim_kind": "documental",
+      "problem": "Veredicto del spike — router de intención por embeddings: - Fecha: 2026-07-15. Fase 2 del plan de la mente (Fable).",
+      "outcome": "contexto",
+      "solution_or_failure": "- Fecha: 2026-07-15. Fase 2 del plan de la mente (Fable).",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "| Cobertura de oráculos congelados (config producción) | **674/675 (99,85 %)** — 12 de 13 sets al 100 % | 675/675 (100 %) por construcción | | | Generalización a fraseos no vistos (LOO) | **89,3 %** (602/675) | ≈0 % fuera de patrones literales | | | Fallos LOO peligrosos (ruta equivocada) | 37/675 (5,5 %) | n/a | | | Fallos LOO seguros (sobre-abstención → cae al LLM) | 35/675 (5,2 %) | n/a | | |…",
+      "provenance": {
+        "path": "experiments/mind_router_spike/VEREDICTO.md",
+        "ranges": [
+          "1-91",
+          "h:1",
+          "m:12"
+        ],
+        "date": "2026-07-15",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "e5-small",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/mind_router_spike: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "experiments/mind_router_spike/VEREDICTO.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-08-experiments-stt_quality",
+      "claim_kind": "documental",
+      "problem": "experiments/stt_quality: --only-binary=:all:",
+      "outcome": "contexto",
+      "solution_or_failure": "--only-binary=:all:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/stt_quality/wordfreq_semantic_fusion_requirements.txt",
+        "ranges": [
+          "1-16"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/stt_quality: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "experiments/stt_quality/wordfreq_semantic_fusion_requirements.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-09-experiments-technology_tournament",
+      "claim_kind": "documental",
+      "problem": "Cortes verticales del torneo tecnológico: Este directorio contiene contendientes desechables y equivalentes. No es el",
+      "outcome": "contexto",
+      "solution_or_failure": "Este directorio contiene contendientes desechables y equivalentes. No es el",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/technology_tournament/README.md",
+        "ranges": [
+          "1-15",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/technology_tournament: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "experiments/technology_tournament/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-10-experiments-technology_tournament-python_core",
+      "claim_kind": "documental",
+      "problem": "Python core contender: Run with CPython 3.12:",
+      "outcome": "contexto",
+      "solution_or_failure": "Run with CPython 3.12:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/technology_tournament/python_core/README.md",
+        "ranges": [
+          "1-10",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/technology_tournament/python_core: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "experiments/technology_tournament/python_core/README.md",
+        "experiments/technology_tournament/python_core/packaging-requirements.txt"
+      ],
+      "repeats": [
+        "experiments/technology_tournament/python_core/packaging-requirements.txt"
+      ]
+    },
+    {
+      "card_id": "docs-022-baxy-11-experiments-technology_tournament-round_b-dotnet_w",
+      "claim_kind": "documental",
+      "problem": ".NET + WebView2 integrated finalist: This WPF shell hosts the shared offline BAXY interface and owns the Native AOT",
+      "outcome": "contexto",
+      "solution_or_failure": "This WPF shell hosts the shared offline BAXY interface and owns the Native AOT",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/technology_tournament/round_b/dotnet_webview/README.md",
+        "ranges": [
+          "1-16",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/technology_tournament/round_b/dotnet_webview: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "experiments/technology_tournament/round_b/dotnet_webview/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-12-experiments-technology_tournament-round_b-tauri_ru",
+      "claim_kind": "documental",
+      "problem": "Tauri + Rust integrated finalist: This Tauri 2 shell hosts the same offline HTML/CSS/JavaScript as the .NET",
+      "outcome": "contexto",
+      "solution_or_failure": "This Tauri 2 shell hosts the same offline HTML/CSS/JavaScript as the .NET",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/technology_tournament/round_b/tauri_rust/README.md",
+        "ranges": [
+          "1-17",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/technology_tournament/round_b/tauri_rust: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "experiments/technology_tournament/round_b/tauri_rust/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-13-experiments-voice_latency",
+      "claim_kind": "documental",
+      "problem": "experiments/voice_latency: B AA1 K S IY0 :1.0 #0.25 @BAXY_BOXY",
+      "outcome": "contexto",
+      "solution_or_failure": "B AA1 K S IY0 :1.0 #0.25 @BAXY_BOXY",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/voice_latency/baxy_kws_keywords.v1.txt",
+        "ranges": [
+          "1-12"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/voice_latency: 6 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "experiments/voice_latency/baxy_kws_keywords.v1.txt",
+        "experiments/voice_latency/baxy_kws_keywords_development_v2.txt",
+        "experiments/voice_latency/baxy_kws_keywords_raw.v1.txt",
+        "experiments/voice_latency/baxy_kws_keywords_tokens.v1.txt",
+        "experiments/voice_latency/keywords_baxy_raw.txt",
+        "experiments/voice_latency/keywords_baxy_sherpa.txt"
+      ],
+      "repeats": [
+        "experiments/voice_latency/baxy_kws_keywords_development_v2.txt",
+        "experiments/voice_latency/baxy_kws_keywords_raw.v1.txt",
+        "experiments/voice_latency/baxy_kws_keywords_tokens.v1.txt",
+        "experiments/voice_latency/keywords_baxy_raw.txt",
+        "experiments/voice_latency/keywords_baxy_sherpa.txt"
+      ]
+    },
+    {
+      "card_id": "docs-022-baxy-14-experiments-voice_latency-assets",
+      "claim_kind": "documental",
+      "problem": "experiments/voice_latency/assets: B AE1 K S IY0 @BAXY",
+      "outcome": "contexto",
+      "solution_or_failure": "B AE1 K S IY0 @BAXY",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "experiments/voice_latency/assets/baxy_open_vocab_keywords_v1.txt",
+        "ranges": [
+          "1-9"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo experiments/voice_latency/assets: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "experiments/voice_latency/assets/baxy_open_vocab_keywords_v1.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-022-baxy-15-legacy",
+      "claim_kind": "documental",
+      "problem": "legacy: Procesado durante 33m 58s",
+      "outcome": "contexto",
+      "solution_or_failure": "Procesado durante 33m 58s",
+      "causal_mechanism": "Encontré que el WebSocket actual puede perder eventos porque no tiene ACK ni reproducción durable. | Final estimado: mañana alrededor de las 07:08. Todavía no está aprobado porque falta final.json y comprobar la limpieza final. | También voy a pausar la vigilancia automática del soak; apagar solo el proceso no basta, porque el monitor podría volver a despertarse cada 30 minutos. La reprogramaré p…",
+      "measurement": "Procesado durante 33m 58s | 28.83%: 6 h 55 min de 24 h. | 83/83 operaciones correctas; cero fallos. | Máxima interrupción: 5.015 s; límite: 30 s. | Procesado durante 13m 15s | ¡Holaa! 😄 Avancé bastante, pero siendo estricto sitúo el producto completo en ≈47%. La base Gemma 4 está mucho más madura que el resto del producto. | Soak: 7 h 06 min de 24 h — 29,6%. | 86/86 ciclos reales de chat + visión…",
+      "provenance": {
+        "path": "legacy/Codex.md",
+        "ranges": [
+          "1-1184",
+          "m:3"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Codex.md"
+      ],
+      "repeats": []
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=57 drift=0 miss=0",
+  "next_docs_batch_id": "docs-023-baxy",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-022-baxy.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

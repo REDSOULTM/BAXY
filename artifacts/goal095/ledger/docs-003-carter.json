@@ -1,0 +1,993 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-003-carter",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:26Z",
+  "closed_utc": "2026-08-31T04:29:29Z",
+  "estimated_tokens": 295527,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 59,
+  "subsystem": "carter_legacy_Carter_v3",
+  "files": [
+    {
+      "path": "legacy/Carter_v3/Roadmap/04_round_4_filesystem_universal.md",
+      "sha256": "6d7b48858d297f7c27298c5427ff24f164a0b5a8fc0260d49df956e5c5ab2c60",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-72",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/05_round_5_terminal_seguro.md",
+      "sha256": "2e95a3bf006472b0943acee6f42c4f1a83c38ca9ac19769d7a3893b628283ad0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-67",
+        "h:1",
+        "m:51"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/06_round_6_browser_minimo_util.md",
+      "sha256": "09397c312764f8c220f33564ca3c2048d16e15c549df8402d66f6b06e3ad516e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-68",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/07_round_7_consolidacion_final.md",
+      "sha256": "a49473faa562441d1b47e613a700fac0a1b18a82428705976db0fcb20be6a593",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-63",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/08_round_8_c14_typo_targeting.md",
+      "sha256": "65d3cc8389edea61113cdc6c0c49c00f49703e754fb8c08a21b2f9b541a77ed2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-87",
+        "h:1",
+        "m:78"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/08b_round_8b_app_open_fake_success.md",
+      "sha256": "baec3c04462939e4b46572e79d6417da43c6f91aaf9f9ce03b15555bfbaa36e6",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-132",
+        "h:1",
+        "m:64"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/09_round_9_refactor_dispatch_src.md",
+      "sha256": "96d69f821db7d764f558647a804be2bb25adc248ad94cf322cbe7a3198cf9ab4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-95",
+        "h:1",
+        "m:81"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/10_round_10_tool_protocol_robusto.md",
+      "sha256": "41c7ef200d99a5b10724e0847002bef8855158e90665917de2ea54acd7c9115c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-95",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/11_round_11_user_approved_provenance.md",
+      "sha256": "37ce700561edb227cdd1c4607368cca8e803dfab06d5498138d5a90b6676f5e4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-101",
+        "h:1",
+        "m:87"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/12_round_12_consolidacion_post_fixes.md",
+      "sha256": "9bc3cd3486ac6d7f0afbc4f9af2b7346bf415e9fd4ede795382ade1791cd435a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-85",
+        "h:1",
+        "m:54"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/Roadmap/README.md",
+      "sha256": "9cfe0b50296cd9f93130778c392150fa8f84cc4f286de30f1f4cce08c9cacc7b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-67",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_PLAN.md",
+      "sha256": "727b0cf768d4a157bef7bca9939913f01a8302c67b7162635bbf8d6010c67de1",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-76",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_REPORT.md",
+      "sha256": "c182033ece4f32702287425e6b8000dd402026cd81715a11fa1695d364039f7e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:38"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/STRICT_LIVE_SMOKE_ORACLES.md",
+      "sha256": "419b93f6341a3e68af0277ff8c0328e564235f94357b4707709f7be8b86a5277",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-134",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/STRICT_SMOKE_HARNESS_AUDIT.md",
+      "sha256": "6a2ed3f98cce01a7b2f58c0a119a7e502e5fc3e925481acb256c56170074bc6b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-35",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TEST_FAILURE_AUDIT.md",
+      "sha256": "bc46067e1d646cc41b7e9cc5ca57f46c390bac8567085bcab67c97e06a3424b0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-51",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TEST_TRUE_READY_REPORT.md",
+      "sha256": "b586b66089cd10bb6b66f8410253d0a166171342918af420f6fb8044f52e83fe",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-128",
+        "h:1",
+        "m:51"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TEXT_CORE_100_MASTER_PLAN.md",
+      "sha256": "0d5606d35d35ed3b94df1af604f774c4a0a2ed8ca39183465fbc02d4195f8ca4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-181",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TEXT_CORE_CLOSURE_AUDIT.md",
+      "sha256": "8369ffae7d5232d6f3ce0f13620ed56d74601cf83e12ce310dd172d5dea9bca2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-291",
+        "h:1",
+        "m:54"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TEXT_CORE_CLOSURE_REPORT.md",
+      "sha256": "c80a66815df3c384ac4629cd9bbe5392c061c9ce2b794621b12fe5825c7efca0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-325",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TEXT_CORE_MASTER_CONTEXT.md",
+      "sha256": "50c762b1e80a312858284bdfe1b73300472a7e4383f08047270fdae6144201f0",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-262",
+        "h:1",
+        "m:23"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_AUDIT.md",
+      "sha256": "782c287e92863dc0124aeff9be74548bc7b2c03b935f57643ff5c3eee21c117a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-119",
+        "h:1",
+        "m:113"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_PLAN.md",
+      "sha256": "c0ab481cab3c8a98bcc3c1b9ed8a677f84df3689de3aab9c8adec43f7c304fed",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-65",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_REPORT.md",
+      "sha256": "78ba296cc0841e15d18f8ef3218616b896c6130b71f32721873ee99a14ebcf43",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-112",
+        "h:1",
+        "m:84"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/THIRD_PASS_MISSION_STATUS_TRACE_REPORT.md",
+      "sha256": "e3fe444519a3fdc454cce993ebb59e87ca55dcdc2b039b4ed28020337f8b989c",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-70",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/TRUE_CARTER_V3_TEXT_CORE_READY_REPORT.md",
+      "sha256": "0a73714cd6bfd495704ffe9707bd3987fd4ede414b681428c9d5be488ced77a2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-84",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_10_LOG.md",
+      "sha256": "0200b409640f1cd4d29e83c98c95d30d9fc1c0a3e7231a70fe54a8d0075cf699",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-200",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_11_LOG.md",
+      "sha256": "99a55bb0514d501bee359396bf650bf219d3c34570a93d3db699a2530e684f06",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-129",
+        "h:1",
+        "m:96"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_12_LOG.md",
+      "sha256": "4d9abeb2b1664139bf22cadc2046d3c566ecb4934820f574d4cf0d9689e5696f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-229",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_13A_LOG.md",
+      "sha256": "a6aa1e7cc6637958ac857f6867bd71a793f0468f2cb1cbc6b77cbfce7be2fedb",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-287",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_13B_LOG.md",
+      "sha256": "4e7e48a85d6b7bf426602ec92122938718dbb1bc37c7923534ebab542cc30116",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-192",
+        "h:1",
+        "m:138"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_13C_LOG.md",
+      "sha256": "84124c046a7a40834f7ed7e88ba46715d3d39b80306dcbec023fc31aa5456195",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-193",
+        "h:1",
+        "m:139"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_14_LOG.md",
+      "sha256": "b0ac0d473b829e4b8eec17cf91de972a08f54242ece858dff362b9f59a628f58",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-67",
+        "h:1",
+        "m:52"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_15_LOG.md",
+      "sha256": "5fe9b334701ff8eb2dab63554bcfbdfa8177295a5e0f1b7752a5a5e34dc1a77a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-147",
+        "h:1",
+        "m:125"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_1_LOG.md",
+      "sha256": "b65c678fd7f7b28cd8603e4e1bf4fc7aaedd67f620f18b154db150b39a7b7d20",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-302",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_2_LOG.md",
+      "sha256": "b985e0f8966931ab15b26b15d7c40dc5e19d421c27429eabcc803700abee4983",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-91",
+        "h:1",
+        "m:73"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_3_LOG.md",
+      "sha256": "9ae39c520047f70181aa0f7db7a676c0cbb1e844b476857b38af4aa09d853b0d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-274",
+        "h:1",
+        "m:66"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_4_LOG.md",
+      "sha256": "e6983bfd9c88e64471ce7c3f0982d022eab592cc4edf7b60c16e132b571e8172",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-74",
+        "h:1",
+        "m:66"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_5_LOG.md",
+      "sha256": "3f4a08f1fd633f6316948013bfb121ed8d5b9881c74d455c6c739a2dd6ad0ffc",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-200",
+        "h:1",
+        "m:30"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_6_LOG.md",
+      "sha256": "5529c562d49ef3d07c4e2c0a8ed733027db42e546287181f578b4a3d931a0637",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-182",
+        "h:1",
+        "m:81"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_7_LOG.md",
+      "sha256": "320244a91aaeef6176fc2403f814ec0bb570ebaeaf356ffc1f688b193ba2433f",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-184",
+        "h:1",
+        "m:45"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_8B_LOG.md",
+      "sha256": "68d6167f6f235c085a75a1b0b95fce7b1ec5d2ab7545bc95a603127b7e7b1aee",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-173",
+        "h:1",
+        "m:80"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_8_LOG.md",
+      "sha256": "f9fcc110f66b885bea9016070941943e428e3229dddb36ef6a544cb74889f0cb",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-284",
+        "h:1",
+        "m:169"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_IMPORT_ROUND_9_LOG.md",
+      "sha256": "319f79296eecd541848a2c9d0847d6aba30514eba3498683583a607a98547c02",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-64",
+        "h:1",
+        "m:39"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/V2_TO_V3_IMPORT_AUDIT.md",
+      "sha256": "bea19acda44504c414387e1d417ef0ad5c097e8ddfaeecd3c2964f196d6997de",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-813",
+        "h:1",
+        "m:45"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/VISION_WITHOUT_VLM_AUDIT.md",
+      "sha256": "97fd02ceb69546754acf58450c9c2bbca0a39ad745854968599d26b61ef3c148",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-242",
+        "h:1",
+        "m:27"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/VISION_WITHOUT_VLM_PLAN.md",
+      "sha256": "de1a23a705386810ef98f11ebec5036a64b51acec3f0cb5a94ac39ef2f41e30a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-161",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/VISION_WITHOUT_VLM_REPORT.md",
+      "sha256": "c1030e776663d3f9210a409f58c337cab5fa3817e18ab90b3d1c8ba899e4f311",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-207",
+        "h:1",
+        "m:31"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/live_matrix_progress.txt",
+      "sha256": "a58a7dca4beec591267350dc800fbf3f89d25d8ea7cd5a698fe198964766bc94",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-6",
+        "m:1"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/audit/runs/live_matrix_stderr.txt",
+      "sha256": "ced9f59fffda8f7565d6019e39df47e3d5a075b498022c599b05fe06f11b9d2b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/docs/audit/CODEX_REVIEW_minimum_live_safe_tool_policy_round.md",
+      "sha256": "bb07a41c4a0a0349ffa466f750b0badccd4d6c587f7b0540d1e52ce0cd893269",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-143",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/docs/competition/CLAUDE_COMPETITIVE_AUDIT_VERDICT.md",
+      "sha256": "45616accffdc1173753633c71d355c97ab243c4bd57ea20c46be6e3cd736ede7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-257",
+        "h:1",
+        "m:32"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/docs/competition/COMPETITOR_AGENTS_DEEP_AUDIT.md",
+      "sha256": "f2a64c4dbda2c9f90ac84cf7eb2a2cda84c04069613667f10c37cbcc52ae1cef",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-226",
+        "h:1",
+        "m:90"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/docs/competition/COMPETITOR_GOOSE_DEEP_AUDIT.md",
+      "sha256": "b324e1f938d42a1151f507891065f44ec0613d86eef7f26db0391f3894a14b83",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-206",
+        "h:1",
+        "m:198"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/docs/history/CHANGELOG_FASE0.md",
+      "sha256": "31f557f059cc719aa476a4456da355c12488dd7bf0a617139da240e352106fb4",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-3029",
+        "h:1",
+        "m:55"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v3/docs/history/smoke_live_post_cleanup_raw.txt",
+      "sha256": "034eceb6b011309ff1a17630da1098978794af46e45558c1a5d0c900e0abd8aa",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-36",
+        "m:8"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/audit/runs/gemma_vs_qwen_report.md",
+      "sha256": "9f7648c848fe5ecbe5717bbf31748c2989d071dae2a87a981e9cf1af91c1cdb5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-68",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v4/requirements.txt",
+      "sha256": "56cfb942e7be065f065a076b2ea7766bafe3ea298d3d80c34cbf018ec034f683",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-29",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/Cater_v3_tests/Carter_v2_Matriz_Pruebas_30_por_categoria (1).md",
+      "sha256": "926482eeda24f7868e631c876eacbd5b733bef348557eda27509323fbda1d592",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-538",
+        "h:1",
+        "m:16"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-003-carter-01-legacy-Carter_v3",
+      "claim_kind": "documental",
+      "problem": "SECOND PASS TEXT CORE HARDENING PLAN: 1. **Bug real en resolver/verificacion de procesos (`app_open`)**",
+      "outcome": "fracaso",
+      "solution_or_failure": "1. **Bug real en resolver/verificacion de procesos (`app_open`)**",
+      "causal_mechanism": "3. **Cobertura insuficiente de edge-cases contra fake success / estados terminales** | - `verifier skipped/failed/unverifiable/confirmed sin evidencia util`; | - verifier `skipped/failed/unverifiable`. | - Carter queda mas honesto/robusto ante fake success: | - degradacion a `UNVERIFIED` cuando verifier confirma pero no hay evidencia util; | - para arquitectura, menciona al menos 2 elementos estr…",
+      "measurement": "- `verifier skipped/failed/unverifiable/confirmed sin evidencia util`; | - verifier `skipped/failed/unverifiable`. | - **FAILED:** se preserva para errores reales (tool/verifier/dispatch). | - **6 passed**, 83 deselected. | - **5 passed**, 84 deselected. | - **8 passed**, 81 deselected. | - **127 passed**, 1 warning (pywinauto threading mode). | Objetivo: criterios estrictos para evaluar smoke li…",
+      "provenance": {
+        "path": "legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_PLAN.md",
+        "ranges": [
+          "1-76",
+          "h:1",
+          "m:18"
+        ],
+        "date": "2026-05-05",
+        "hardware": "VRAM",
+        "model": "whisper",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v3: 37 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_PLAN.md",
+        "legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_REPORT.md",
+        "legacy/Carter_v3/STRICT_LIVE_SMOKE_ORACLES.md",
+        "legacy/Carter_v3/STRICT_SMOKE_HARNESS_AUDIT.md",
+        "legacy/Carter_v3/TEST_FAILURE_AUDIT.md",
+        "legacy/Carter_v3/TEST_TRUE_READY_REPORT.md",
+        "legacy/Carter_v3/TEXT_CORE_100_MASTER_PLAN.md",
+        "legacy/Carter_v3/TEXT_CORE_CLOSURE_AUDIT.md",
+        "legacy/Carter_v3/TEXT_CORE_CLOSURE_REPORT.md",
+        "legacy/Carter_v3/TEXT_CORE_MASTER_CONTEXT.md",
+        "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_AUDIT.md",
+        "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_PLAN.md",
+        "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_REPORT.md",
+        "legacy/Carter_v3/THIRD_PASS_MISSION_STATUS_TRACE_REPORT.md",
+        "legacy/Carter_v3/TRUE_CARTER_V3_TEXT_CORE_READY_REPORT.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_10_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_11_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_12_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_13A_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_13B_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_13C_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_14_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_15_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_1_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_2_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_3_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_4_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_5_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_6_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_7_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_8B_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_8_LOG.md",
+        "legacy/Carter_v3/V2_IMPORT_ROUND_9_LOG.md",
+        "legacy/Carter_v3/V2_TO_V3_IMPORT_AUDIT.md",
+        "legacy/Carter_v3/VISION_WITHOUT_VLM_AUDIT.md",
+        "legacy/Carter_v3/VISION_WITHOUT_VLM_PLAN.md",
+        "legacy/Carter_v3/VISION_WITHOUT_VLM_REPORT.md"
+      ],
+      "repeats": [
+        "legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_REPORT.md",
+        "legacy/Carter_v3/STRICT_LIVE_SMOKE_ORACLES.md",
+        "legacy/Carter_v3/STRICT_SMOKE_HARNESS_AUDIT.md",
+        "legacy/Carter_v3/TEST_FAILURE_AUDIT.md",
+        "legacy/Carter_v3/TEST_TRUE_READY_REPORT.md",
+        "legacy/Carter_v3/TEXT_CORE_100_MASTER_PLAN.md",
+        "legacy/Carter_v3/TEXT_CORE_CLOSURE_AUDIT.md",
+        "legacy/Carter_v3/TEXT_CORE_CLOSURE_REPORT.md",
+        "legacy/Carter_v3/TEXT_CORE_MASTER_CONTEXT.md",
+        "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_AUDIT.md",
+        "legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_PLAN.md"
+      ]
+    },
+    {
+      "card_id": "docs-003-carter-02-legacy-Carter_v3-Roadmap",
+      "claim_kind": "documental",
+      "problem": "Round 4 - filesystem universal: Modelo recomendado:",
+      "outcome": "contexto",
+      "solution_or_failure": "Modelo recomendado:",
+      "causal_mechanism": "- `Carter_v3/src/carter_v3/tools/verifier.py` | 5. Mantener honestidad de status/verifier. | 2. Que cambiaste y por que es general (no hardcode) | 5. Residual que sigue abierto en C14 (casos que no se pueden cerrar sin hardcode) | PRIORIDAD: CRITICA. Este bug viola directamente R4 (cero fake success) | - Round 8b es BLOQUEANTE: viola R4 (fake success). Hacer antes que cualquier otra.",
+      "measurement": "- si no puedes verificar, dilo como `unverified` o `failed`, no como `complete` | C11 debe mantenerse en 100%. | `ok=False` o `mission_status=unverified/failed`, nunca `complete`. | 1. App que no existe: dispatch retorna ok=False o verifier retorna PENDING/FAILED. | spotify NO esta en PATH -> debe retornar unverified o failed, no complete. | El global del runner no debe bajar vs el baseline de Ro…",
+      "provenance": {
+        "path": "legacy/Carter_v3/Roadmap/04_round_4_filesystem_universal.md",
+        "ranges": [
+          "1-72",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v3/Roadmap: 11 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v3/Roadmap/04_round_4_filesystem_universal.md",
+        "legacy/Carter_v3/Roadmap/05_round_5_terminal_seguro.md",
+        "legacy/Carter_v3/Roadmap/06_round_6_browser_minimo_util.md",
+        "legacy/Carter_v3/Roadmap/07_round_7_consolidacion_final.md",
+        "legacy/Carter_v3/Roadmap/08_round_8_c14_typo_targeting.md",
+        "legacy/Carter_v3/Roadmap/08b_round_8b_app_open_fake_success.md",
+        "legacy/Carter_v3/Roadmap/09_round_9_refactor_dispatch_src.md",
+        "legacy/Carter_v3/Roadmap/10_round_10_tool_protocol_robusto.md",
+        "legacy/Carter_v3/Roadmap/11_round_11_user_approved_provenance.md",
+        "legacy/Carter_v3/Roadmap/12_round_12_consolidacion_post_fixes.md",
+        "legacy/Carter_v3/Roadmap/README.md"
+      ],
+      "repeats": [
+        "legacy/Carter_v3/Roadmap/05_round_5_terminal_seguro.md",
+        "legacy/Carter_v3/Roadmap/06_round_6_browser_minimo_util.md",
+        "legacy/Carter_v3/Roadmap/07_round_7_consolidacion_final.md",
+        "legacy/Carter_v3/Roadmap/08_round_8_c14_typo_targeting.md",
+        "legacy/Carter_v3/Roadmap/08b_round_8b_app_open_fake_success.md",
+        "legacy/Carter_v3/Roadmap/09_round_9_refactor_dispatch_src.md",
+        "legacy/Carter_v3/Roadmap/10_round_10_tool_protocol_robusto.md",
+        "legacy/Carter_v3/Roadmap/11_round_11_user_approved_provenance.md",
+        "legacy/Carter_v3/Roadmap/12_round_12_consolidacion_post_fixes.md",
+        "legacy/Carter_v3/Roadmap/README.md"
+      ]
+    },
+    {
+      "card_id": "docs-003-carter-03-legacy-Carter_v3-audit-runs",
+      "claim_kind": "documental",
+      "problem": "legacy/Carter_v3/audit/runs: [pass] 25/540 C01.25 cat1 5581ms status=trivial tools=0",
+      "outcome": "exito",
+      "solution_or_failure": "[pass] 25/540 C01.25 cat1 5581ms status=trivial tools=0",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "[pass] 25/540 C01.25 cat1 5581ms status=trivial tools=0 | [fail] 31/540 C02.01 cat2 21235ms status=trivial tools=0 | [fail] 40/540 C02.10 cat2 21422ms status=trivial tools=0 | [fail] 41/540 C02.11 cat2 21868ms status=trivial tools=0 | [fail] 45/540 C02.15 cat2 24832ms status=needs_user tools=0 | [pass] 50/540 C02.20 cat2 8740ms status=trivial tools=0",
+      "provenance": {
+        "path": "legacy/Carter_v3/audit/runs/live_matrix_progress.txt",
+        "ranges": [
+          "1-6",
+          "m:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v3/audit/runs: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v3/audit/runs/live_matrix_progress.txt",
+        "legacy/Carter_v3/audit/runs/live_matrix_stderr.txt"
+      ],
+      "repeats": [
+        "legacy/Carter_v3/audit/runs/live_matrix_stderr.txt"
+      ]
+    },
+    {
+      "card_id": "docs-003-carter-04-legacy-Carter_v3-docs-audit",
+      "claim_kind": "documental",
+      "problem": "Revisión Codex: minimum live-safe — tool policy y ruta acción vs conversación: Documento generado para revisión externa (Codex). Resume cambios de código, motivación, archivos, validación y riesgos tras una ronda de trabajo sobre fallas **tool_policy** en la suite mínima **live-…",
+      "outcome": "contexto",
+      "solution_or_failure": "Documento generado para revisión externa (Codex). Resume cambios de código, motivación, archivos, validación y riesgos tras una ronda de trabajo sobre fallas **tool_policy** en la suite mínima **live-safe** de Carter v3.",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "- **global_pass_rate ~52.94%** | - **16 FAIL**, todos con validador `tool_policy` | | `audit/runs/minimum_live_safe_now.json` (antes) | ~52.94% | 16 FAIL tool_policy | | | `audit/runs/minimum_fix_round3.json` | ~73.53% | Mejora sustancial en misma línea base | | | `audit/runs/smoke_post_fix2.json` (subset 10) | ~77.78% | MIN-C17-02 PASS tras fix `policy_blocks` + prior | | **Nota:** Una corrida p…",
+      "provenance": {
+        "path": "legacy/Carter_v3/docs/audit/CODEX_REVIEW_minimum_live_safe_tool_policy_round.md",
+        "ranges": [
+          "1-143",
+          "h:1",
+          "m:13"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v3/docs/audit: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/Carter_v3/docs/audit/CODEX_REVIEW_minimum_live_safe_tool_policy_round.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-003-carter-05-legacy-Carter_v3-docs-competition",
+      "claim_kind": "documental",
+      "problem": "CLAUDE_COMPETITIVE_AUDIT_VERDICT.md: Carter v3 tiene la **mejor arquitectura de su clase** para el nicho de asistente personal local en Windows. Sus fundamentos son superiores a todos los competidores analizados en las dimensiones mÃ¡s importantes: honestidad, verificaciÃ³n, seg…",
+      "outcome": "contexto",
+      "solution_or_failure": "Carter v3 tiene la **mejor arquitectura de su clase** para el nicho de asistente personal local en Windows. Sus fundamentos son superiores a todos los competidores analizados en las dimensiones mÃ¡s importantes: honestidad, verificaciÃ³n, seguridad, privacidad, y no-hardcode.",
+      "causal_mechanism": "Carter v3 tiene la **mejor arquitectura de su clase** para el nicho de asistente personal local en Windows. Sus fundamentos son superiores a todos los competidores analizados en las dimensiones mÃ¡s importantes: honestidad, verificaciÃ³n, s | - **Fake success guards**: 8 guards estructurales post-reply, incluyendo fake_success_guard. NingÃºn competidor tiene esto. | - Todo lo importante: privacid…",
+      "measurement": "- **Privacy local-first por diseÃ±o**: Carter puede correr 100% offline con Ollama. Mark falla sin internet. OpenClaw puede hacer lo mismo pero no estÃ¡ diseÃ±ado para PC personal. | - Verifier por tool (CONFIRMED/UNVERIFIED/FAILED) | - Hardware adaptation (VRAM 85% rule, CPU profiles) | 10. **DegradaciÃ³n VRAM/RAM** (P1) â€” cumplir Valor 22 de ContextoCarter | Carter necesita cerrar el nÃºcleo…",
+      "provenance": {
+        "path": "legacy/Carter_v3/docs/competition/CLAUDE_COMPETITIVE_AUDIT_VERDICT.md",
+        "ranges": [
+          "1-257",
+          "h:1",
+          "m:32"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v3/docs/competition: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v3/docs/competition/CLAUDE_COMPETITIVE_AUDIT_VERDICT.md",
+        "legacy/Carter_v3/docs/competition/COMPETITOR_AGENTS_DEEP_AUDIT.md",
+        "legacy/Carter_v3/docs/competition/COMPETITOR_GOOSE_DEEP_AUDIT.md"
+      ],
+      "repeats": [
+        "legacy/Carter_v3/docs/competition/COMPETITOR_AGENTS_DEEP_AUDIT.md",
+        "legacy/Carter_v3/docs/competition/COMPETITOR_GOOSE_DEEP_AUDIT.md"
+      ]
+    },
+    {
+      "card_id": "docs-003-carter-06-legacy-Carter_v3-docs-history",
+      "claim_kind": "documental",
+      "problem": "Carter v3 — CHANGELOG: **Decisión.** El `mission_status` público de Carter v3 se computa",
+      "outcome": "fracaso",
+      "solution_or_failure": "**Decisión.** El `mission_status` público de Carter v3 se computa",
+      "causal_mechanism": "terminó la misión*. Esto cierra la regla R4 (cero fake success): si el | | ≥1 tool call, todos los verifier = `confirmed` | `complete` | | | ≥1 tool call, todos los verifier = `failed` | `failed` | | | ≥1 tool call con verifier = `pending` o `unverifiable` único | `unverified` |",
+      "measurement": "| ≥1 tool call, mezcla `confirmed` + `failed`/`pending`/`unverifiable` | `partial` | | | ≥1 tool call, todos los verifier = `failed` | `failed` | | | engine_error no recuperado dentro del presupuesto del turno | `failed` | | `partial` (al menos un step ok) o `failed` (ningún step ok). | chat puro <500ms pre-LLM). Queda como investigación opcional. | - \"qué ventana está activa\" → nivel 2, no nivel…",
+      "provenance": {
+        "path": "legacy/Carter_v3/docs/history/CHANGELOG_FASE0.md",
+        "ranges": [
+          "1-3029",
+          "h:1",
+          "m:55"
+        ],
+        "date": "2026-05-03",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v3/docs/history: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Carter_v3/docs/history/CHANGELOG_FASE0.md",
+        "legacy/Carter_v3/docs/history/smoke_live_post_cleanup_raw.txt"
+      ],
+      "repeats": [
+        "legacy/Carter_v3/docs/history/smoke_live_post_cleanup_raw.txt"
+      ]
+    },
+    {
+      "card_id": "docs-003-carter-07-legacy-Carter_v4",
+      "claim_kind": "documental",
+      "problem": "Carter v4 — runtime dependencies.: #",
+      "outcome": "contexto",
+      "solution_or_failure": "#",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/Carter_v4/requirements.txt",
+        "ranges": [
+          "1-29",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v4: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "legacy/Carter_v4/requirements.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-003-carter-08-legacy-Carter_v4-audit-runs",
+      "claim_kind": "documental",
+      "problem": "Auditoría comparativa: Gemma 4 vs Qwen3 para Carter v4: _Generado 2026-05-08 14:45:17_",
+      "outcome": "contexto",
+      "solution_or_failure": "_Generado 2026-05-08 14:45:17_",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "| Modelo | PASS | % | P0 PASS | % P0 | Latencia avg | Latencia p95 | | | `gemma4:e2b` | 27/30 | 90.0% | 12/13 | 92.3% | 2672ms | 6375ms | | | `qwen3:4b-instruct-2507-q4_K_M` | 26/30 | 86.7% | 11/13 | 84.6% | 440ms | 969ms | | | `gemma4:e4b` | 24/30 | 80.0% | 11/13 | 84.6% | 3314ms | 15765ms | | | Dimensión | `qwen3:4b-instruct-2507-q4_K_M` | `gemma4:e4b` | `gemma4:e2b` | | | **honesty** | 3/3 (10…",
+      "provenance": {
+        "path": "legacy/Carter_v4/audit/runs/gemma_vs_qwen_report.md",
+        "ranges": [
+          "1-68",
+          "h:1",
+          "m:7"
+        ],
+        "date": "2026-05-08",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma4",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Carter_v4/audit/runs: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "caducada",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "legacy/Carter_v4/audit/runs/gemma_vs_qwen_report.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-003-carter-09-legacy-Cater_v3_tests",
+      "claim_kind": "documental",
+      "problem": "Carter v2 — Matriz brutal de pruebas: 30 tests por categoría: **Fecha de generación:** 2026-05-04",
+      "outcome": "contexto",
+      "solution_or_failure": "**Fecha de generación:** 2026-05-04",
+      "causal_mechanism": "5. **Sin fake success de cierre:** Carter no puede decir “cerrado” si no verificó que la ventana/proceso desapareció. Si no pudo verificar, debe responder `UNVERIFIED` o equivalente honesto. | | C01-13 | Quem é você? | Responde en portugués básico o según idioma detectado. | ninguna | usar hardcode raro | Entiende idioma sin hacks. | | | C02-30 | Solo responde, no uses herramientas: abre Steam |…",
+      "measurement": "6. **Cuidar RAM/VRAM:** si ya hay un LLM local cargado, no cargar modelos extra, visión pesada, OCR pesado, juegos o apps con aceleración GPU salvo que sea indispensable para la prueba. | - RAM/VRAM no quedó anormalmente alta por culpa del test. | Criterio duro: **un test de acción no puede ser `PASS` si dejó basura abierta sin documentarlo**. Como máximo puede ser `PARTIAL_WITH_CLEANUP_PENDING`…",
+      "provenance": {
+        "path": "legacy/Cater_v3_tests/Carter_v2_Matriz_Pruebas_30_por_categoria (1).md",
+        "ranges": [
+          "1-538",
+          "h:1",
+          "m:16"
+        ],
+        "date": "2026-05-04",
+        "hardware": "VRAM",
+        "model": "n/a (auditoria documental)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/Cater_v3_tests: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/Cater_v3_tests/Carter_v2_Matriz_Pruebas_30_por_categoria (1).md"
+      ],
+      "repeats": []
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=59 drift=0 miss=0",
+  "next_docs_batch_id": "docs-004-carter",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-003-carter.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

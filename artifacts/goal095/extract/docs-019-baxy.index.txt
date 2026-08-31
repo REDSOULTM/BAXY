@@ -1,0 +1,85 @@
+batch_id=docs-019-baxy
+kind=docs
+file_count=79
+hash_ok=79 drift=0 miss=0
+subsystem=baxy_art_audit
+---FILES---
+OK artifacts/audit/2026-07-27-night-audit/BACKLOG.md	Backlog de defectos
+OK artifacts/audit/2026-07-27-night-audit/README.md	Auditoría nocturna BAXY — 2026-07-27
+OK artifacts/audit/2026-07-27-night-audit/RESULTS.md	Resultados de la auditoría
+OK artifacts/field-ui-4a83f2d-export/gui/ui_field/README.md	React + TypeScript + Vite
+OK artifacts/fixes/2026-07-27-audit-remediation/PROGRESS.md	Remediación de auditoría BAXY — 2026-07-27
+OK artifacts/fixes/app_visible_path_v3_aborted_run/DISCARDED.md	Corrida descartada del harness de camino visible
+OK artifacts/historical_exhaustive/README.md	Evidencia exhaustiva histórica
+OK artifacts/historical_exhaustive/runtime_model_gate.finalfix2_cases.txt	
+OK artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/LICENSE.txt	
+OK artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/warn-baxy-python-onedir.txt	
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core/README.md	.NET/Windows core contender
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/README.md	BAXY Round B — WPF nativo
+OK artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/README.md	Rust core contender
+OK artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/notes/ideas.txt	
+OK artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/plan.txt	
+OK artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/reunión-ñ.txt	
+OK artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/unica.txt	
+OK artifacts/technology_tournament/work/round_b_capture/data/workspace/notes/ideas.txt	
+OK artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/notes/recovery.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/core/runtime.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/release-marker.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/version.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/release-marker.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/version.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/release-marker.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/version.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/release-marker.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/version.txt	
+OK artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/core/runtime.txt	
+OK artifacts/tool_recovery/EVIDENCIA_CORTES.md	Evidencia mínima — recuperación de tools
+OK contexto/00_control/ALCANCE_Y_DEFINITION_OF_DONE.md	Alcance y Definition of Done
+OK contexto/00_control/ESTADO_ACTUAL.md	Estado actual
+OK contexto/00_control/MAPA.md	Mapa canónico
+OK contexto/01_producto/CORPUS_HISTORICO_Y_CUTOFF.md	Corpus histórico y cutoff
+OK contexto/01_producto/MISIONES_PRIORIZADAS.md	Misiones priorizadas
+OK contexto/01_producto/VISION_Y_DECISIONES_DEL_USUARIO.md	Visión y decisiones del usuario
+OK contexto/02_historia/FUENTES_Y_GENEALOGIA.md	Fuentes y genealogía
+OK contexto/02_historia/LECCIONES_RECUPERADAS.md	Lecciones recuperadas
+OK contexto/03_investigacion/ADAPTADORES_EXTERNOS_ESTADO_DEL_ARTE_2026-07-16.md	Adaptadores externos: contraste y decisiones (2026-07-16)
+OK contexto/03_investigacion/ALTERNATIVAS_Y_EVIDENCIA.md	Alternativas y evidencia
+OK contexto/03_investigacion/BRIEF_MODELOS_MENTE_2026-07-15.md	Brief de investigación — modelos para la mente de BAXY 1.0
+OK contexto/03_investigacion/HALLAZGOS.md	Hallazgos de investigación
+OK contexto/03_investigacion/LLM_ESTADO_DEL_ARTE_2026-07-23.md	Auditoría LLM de BAXY — estado del arte y decisión 2026-07-23
+OK contexto/03_investigacion/PLANNER_ESTADO_DEL_ARTE_2026-07-16.md	Planner de BAXY — contraste con el estado del arte
+OK contexto/03_investigacion/SKILLS_ESTADO_DEL_ARTE_2026-07-16.md	Skills de BAXY — arqueología y contraste actual
+OK contexto/03_investigacion/VOZ_ESTADO_DEL_ARTE_2026-07-16.md	Voz local: Carter → BAXY y estado del arte (2026-07-16)
+OK contexto/04_arquitectura/ADR/ADR-0001-arquitectura-base-baxy-1.md	ADR-0001 — Arquitectura base de BAXY 1.0
+OK contexto/04_arquitectura/ADR/ADR-0002-estado-gpu-local.md	ADR-0002 — Estado local de GPU mediante DXGI y PDH
+OK contexto/04_arquitectura/ADR/ADR-0003-paquete-release-reproducible.md	ADR-0003 — Paquete Release reproducible
+OK contexto/04_arquitectura/ADR/ADR-0004-setup-embebido-transaccional.md	ADR-0004 — Setup embebido y motor transaccional por usuario
+OK contexto/04_arquitectura/ADR/ADR-0005-mente-modelos-y-runtime.md	ADR-0005 — Mente de BAXY 1.0: arquitectura de inteligencia y modelos
+OK contexto/04_arquitectura/ADR/ADR-0006-planner-hibrido-durable.md	ADR-0006 — Planner híbrido, acotado y durable
+OK contexto/04_arquitectura/ADR/ADR-0007-voz-local-wake-stt-tts.md	ADR-0007 — Voz local, wake verificable y salida cancelable
+OK contexto/04_arquitectura/ADR/ADR-0008-restauracion-field-ui-historica.md	ADR-0008 — Restauración literal de BAXY Field
+OK contexto/04_arquitectura/ADR/ADR-0009-evidencia-corpus-turnos.md	ADR-0009 — Evidencia recuperada del corpus para decidir turnos
+OK contexto/04_arquitectura/ADR/README.md	ADR
+OK contexto/04_arquitectura/DECISION_VIGENTE.md	Decisión de arquitectura vigente
+OK contexto/04_arquitectura/FRONTERA_CODEX_FABLE.md	Frontera Codex → Fable — Goal de la base determinista (v3)
+OK contexto/04_arquitectura/FRONTERA_CODEX_FABLE_V2.md	Frontera Codex ↔ Fable V2: mente, planner y tools
+OK contexto/05_implementacion/CAMBIOS_Y_MIGRACIONES.md	Cambios y migraciones
+OK contexto/05_implementacion/ENTRADA_MISION_TIPADA.md	Entrada de mision tipada
+OK contexto/05_implementacion/MAPA_DEL_SISTEMA.md	Mapa del sistema
+OK contexto/06_pruebas_y_mediciones/GATES_APLAZADOS_EQUIPO_LIMPIO.md	Gates aplazados — equipo/perfil limpio
+OK contexto/06_pruebas_y_mediciones/GATES_MENTE.md	Gates de la mente — cierre con evidencia (Fable)
+OK contexto/06_pruebas_y_mediciones/MATRIZ_DE_ACEPTACION.md	Matriz de aceptación
+OK contexto/06_pruebas_y_mediciones/MENSAJE_A_MISION_TOOL_PRUEBA.md	Mensaje → misión → operación → prueba
+OK contexto/06_pruebas_y_mediciones/RESULTADOS.md	Resultados
+OK contexto/07_riesgos_y_pendientes/BACKLOG_POST_ENTREGA.md	Backlog posterior a 1.0
+OK contexto/07_riesgos_y_pendientes/BLOQUEANTES.md	Bloqueantes
+OK contexto/08_entrega/OPERACION_Y_ROLLBACK.md	Operación y rollback
+OK contexto/08_entrega/RELEASE_CHECKLIST.md	Checklist de release
+OK contexto/README.md	Contexto operativo de BAXY 1.0
+OK documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md	Alcance: qué se mide ahora y qué se difiere al producto final
+OK documentacion/00_GOAL_SIGUIENTE_SESION.md	BAXY — cerrar la compuerta y servir la petición
+OK documentacion/00_HANDOFF_TERRA_ALTO_R257.md	HANDOFF CRÍTICO — BAXY, continuación autónoma con GPU (R257)
+OK documentacion/00_LEEME.md	Documentación de BAXY
+OK documentacion/00_META_VIGENTE.md	Meta vigente de BAXY
+OK documentacion/00_MVP_2026-08-11.md	MVP ejecutable de BAXY — 2026-08-11
+OK documentacion/00_MVP_CONSOLIDADO_2026-08-11.md	MVP consolidado de BAXY — 2026-08-11 (campaña de tarde)

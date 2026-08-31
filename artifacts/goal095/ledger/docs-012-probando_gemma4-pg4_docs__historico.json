@@ -1,0 +1,803 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-012-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:37Z",
+  "closed_utc": "2026-08-31T04:29:38Z",
+  "estimated_tokens": 299008,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 49,
+  "subsystem": "pg4_docs__historico",
+  "files": [
+    {
+      "path": "documentacion/_historico/auditorias_baseline/audit_report.md",
+      "sha256": "99cc3ed0d8448380652e1f74768a75ac03ddcd50261f2c6fabd7653a805bff97",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-576",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/branch_readiness.md",
+      "sha256": "bf8f6f96ae917655faf170e35b8406b69f4f68e50b4cad2da56a6a981df07a7b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-99",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/computer_use_exhaustive_validation_2026_05_25.md",
+      "sha256": "8dc880e27a7614b3f1eb4997daa02b57ee767df9b6a3048dec9304e2166d7037",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-189",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/computer_use_marathon_2026_05_25.md",
+      "sha256": "8a752dd735c2dfe893b09a8302112e082de9c11c0154e0b3ae88092f1b57fc2d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-70",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/coverage_gaps.md",
+      "sha256": "72263b91787d7c6ae83d602133b8d4e1efb264e754512e0c64c2d56e9ec577e2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-64",
+        "h:1",
+        "m:22"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_decisions.md",
+      "sha256": "77e8052ff60dd6850a2c45fac9467a2c05e7a069ea0df68690f6857ac8392550",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-12",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_log.md",
+      "sha256": "0c32cc22908517463a69baf3c5873ea4c993d7708d25510268b4f16d4131cc35",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-328",
+        "h:1",
+        "m:135"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_notes.md",
+      "sha256": "9e0fe6fc831b60e9aa4dcd5549355af3e42b9a183a477b7f3d65544cf6ff5b78",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-13",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_summary.md",
+      "sha256": "a31b002df1da3e15fb3e24f96aee502a13ddb700392d94b0eaa592c2c9f95a6b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-123",
+        "h:1",
+        "m:112"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/followup_log.md",
+      "sha256": "4902339be99f8bb0d78ee0b5771add74f25aec7d2033f43fd12743273cf0cb36",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-100",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/informe_optimizacion_auditoria_externa.md",
+      "sha256": "4d60b52fd0ee7fdce2e251d008875d3d2aa4a87e98126254e8fb9053537e39da",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-847",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/optimization_log.md",
+      "sha256": "5afacf2274b39aa13c89225d7e4a3056358b84015b0e10ef22c2c321ae33c56a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-346",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/optimization_roadmap.md",
+      "sha256": "fdc917b679b1578e00ce13a17c0e64d0b813d69e3a09aecf0678a9aa4932c013",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-183",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/polish_log.md",
+      "sha256": "8e85ae85df72675187d278abaf5c895886d14b23c7068424c058e1f8dc07cc39",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-115",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/questions_for_red.md",
+      "sha256": "949373a64830e1c4fc7001717e14ec895595417b1e55c3041bf1611f31ce277e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-58",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/research_prompt_gemma4_optimization.md",
+      "sha256": "5006d26f4bc98fe8eec84e5a8626a9241164d1e204d33d56d9a2ff762bc9e703",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-460",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/review_arquitectonico_3_bugs_voz.md",
+      "sha256": "73cb6c431dae323891bc0c18907a3f53f557307d90337619ae485ec3d3accb5d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-140",
+        "h:1",
+        "m:60"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/smoke_log.md",
+      "sha256": "3caa8ebf0931e231a92b7d540b909bc46ff65644e4f945371916a2f1ae6019b2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-284",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/smoke_log_mode_b.md",
+      "sha256": "a111c6a18689a883e1b9b7a4fa85dc6861e0e940163d36e299399a14d382e697",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-297",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/smoke_summary.md",
+      "sha256": "673c6a544e78312dcdc590f6a82a61dfc63ccee61ba3de26b607cf0e5a2fdb57",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-196",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/tradeoffs.md",
+      "sha256": "c02c8643c721db4f4492c554d5301458a5c0d82508e06dc61ac29199fcf0b6b9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-92",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/backlogs_superados/ROADMAP_perfeccion.md",
+      "sha256": "a93f05e8c91e14853bc8a3388de7bc45fbab3a58d1cf9014ea6ced712d6e3e06",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-130",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/00_inventory.md",
+      "sha256": "6224717913c662db4dd283c8bfcda0d83a566627ee0d4211fcde76a12cbf60f8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-667",
+        "h:1",
+        "m:186"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/01_system.md",
+      "sha256": "1615519b536a63fbf47bea7124248ba9e36402257cc6a67bccb85515b7538d7d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-699",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/README.md",
+      "sha256": "352df5918ae349aeccac0ad924248a97e4d98ef73fda31ab11c860b80bb5881e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-53",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/agent_core.md",
+      "sha256": "5666ac2b3a01613f2f200cfe894f9003f759b3ff2be7cbad4fb0c98f10a5a072",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-202",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/llm_lifecycle.md",
+      "sha256": "a8f7738d2cac2a6c2edd390e547b61c684a3f2801be7175df0da719c8643098e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-138",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/memory.md",
+      "sha256": "1421f7533dd9b219eddc893e7446870e30cf8ce7dda469304144c298deb6a150",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-182",
+        "h:1",
+        "m:145"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/mission_verification.md",
+      "sha256": "f481107b132c52212e6f9e76b2036fc8d5bc468b3b4e9077e94d81cc9d701aa4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-139",
+        "h:1",
+        "m:47"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/observability.md",
+      "sha256": "9e9ce827dea2e0cbb3fbd73e17f5d731542d24562c4c6064f5fde9305168fd52",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-207",
+        "h:1",
+        "m:91"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/routing.md",
+      "sha256": "a5cd04f75e64d43e401f498a9343019af7d6a52120273f070d9f6ce9b3602ef8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-178",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/state_config.md",
+      "sha256": "91cca393763b3f81efdac337fce72f64a1a4ceb3dc75c3c33e3050d93df34a15",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-183",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/surfaces.md",
+      "sha256": "f002f4bdeefda9e1c0de79ab6b04d42d2bc996eabf1f7e1fa3b548cc90aa72bb",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-198",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/tools.md",
+      "sha256": "f8cfb29f1b2e13ea8f2c9fc933e47a3cd64fae3b80a44cca647ca89a9183bd3e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-209",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/voice_loop.md",
+      "sha256": "2665105534645518c85201a5d6998308887a33bfbead46738bbf93e36be8b9a0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-148",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/README.md",
+      "sha256": "7897d42e5fdc12d48b129ba703dbec7f1e17324f67761dcf4e0a201827c2a692",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-42",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/agent_core.md",
+      "sha256": "e3cae314803988d42d84a3540d7f7a22b8a810b8ed110160cadbb03c4ef93846",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-126",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/llm_lifecycle.md",
+      "sha256": "e968a40c01f2457a233479feeb16f2a0bdfed0bd6c4c47d2b4fa413bad495769",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-109",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/memory.md",
+      "sha256": "9ee40843e7cd077eee0d8dab6f1640d35ea61ba2b33538f3d8deff77a1b4bc27",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-122",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/mission_verification.md",
+      "sha256": "e4a3e2d90e3b3a22563e8897f4f290c96d4abcc4cf450162ac98eab05919f43d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-111",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/observability.md",
+      "sha256": "19980907224e3baf2dc91ff44575c108e70f9e4a8fec6738935b240093136de9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-96",
+        "h:1",
+        "m:60"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/routing.md",
+      "sha256": "58f99112525ba4b3b0d6af61b28ba4d81bd41c484c0202ec5ba40a5ce7784e8e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-138",
+        "h:1",
+        "m:66"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/state_config.md",
+      "sha256": "36b8e507660673fecd328171c9c229300fa3179a751c6336c683ad3f09f7c195",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-184",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/surfaces.md",
+      "sha256": "39c116bf07314cba2be341e340cdd9e88664b438bb98f48f2105185f034e145d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-181",
+        "h:1",
+        "m:87"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/tools.md",
+      "sha256": "8a120b4525ccf52b60b126c7efa4ad180ac836d2e110f1badd1e702b707df076",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/voice_loop.md",
+      "sha256": "698461b1cb51105aaa9d4d5a53aac39201c2ec74a08f36174e278d16ba0c5066",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-195",
+        "h:1",
+        "m:43"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/README.md",
+      "sha256": "64876ce4a4ad85724430108dfe29957e22cf0ba58e4dcae132a900a9bb139426",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-25",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/boot.md",
+      "sha256": "1266bc387ee4f2b6547bc6469b518e9ceecfc20f24813f0e08d7ab9cab1fee39",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "h:1",
+        "m:47"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/router_fallback.md",
+      "sha256": "a6597d26ce1d563d5e3606d21cab358bdcdab69874ba2e832061b405abd9d27c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-90",
+        "h:1",
+        "m:60"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-012-probando_gemma4-pg4_docs__historico-01-documentacion-_historico-auditorias_baseline",
+      "claim_kind": "documental",
+      "problem": "Carter Agent — Auditoría Integral de Tools: - **Proyecto**: gemma4-agent",
+      "outcome": "fracaso",
+      "solution_or_failure": "- **Proyecto**: gemma4-agent",
+      "causal_mechanism": "Varios call sites usan `json.loads(proc.stdout)` directo en lugar de los helpers existentes `_powershell_json` y `_json_or_text`. Cuando PowerShell imprime un warning antes del JSON, el agente surface un genérico `JSONDecodeError:` que no a | 5. **_hass_alive always-true bug** (`T3-smart_home-alive-always-true-031`) — smart_home reporta HA vivo aun caído, downstream calls confunden al verifier. |…",
+      "measurement": "- **Por status**: 35 PASS, 22 NEEDS_FIXES, 0 BROKEN. | | audio_device | T2 | PASS | 0 | 0 | 0 | 0 | | | office | T2 | PASS | 0 | 0 | 0 | 0 | | | photo_library | T2 | PASS | 0 | 0 | 0 | 0 | | | container | T2 | PASS | 0 | 0 | 0 | 0 | | | device_settings | T2 | PASS | 0 | 0 | 0 | 0 | | | media (now_playing/local/vlc) | T3 | PASS | 0 | 0 | 0 | 0 | | | game_launcher | T2 | PASS | 0 | 0 | 0 | 0 | | |…",
+      "provenance": {
+        "path": "documentacion/_historico/auditorias_baseline/audit_report.md",
+        "ranges": [
+          "1-576",
+          "h:1",
+          "m:18"
+        ],
+        "date": "2026-05-15",
+        "hardware": "6 GB",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/auditorias_baseline: 21 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/auditorias_baseline/audit_report.md",
+        "documentacion/_historico/auditorias_baseline/branch_readiness.md",
+        "documentacion/_historico/auditorias_baseline/computer_use_exhaustive_validation_2026_05_25.md",
+        "documentacion/_historico/auditorias_baseline/computer_use_marathon_2026_05_25.md",
+        "documentacion/_historico/auditorias_baseline/coverage_gaps.md",
+        "documentacion/_historico/auditorias_baseline/fix_decisions.md",
+        "documentacion/_historico/auditorias_baseline/fix_log.md",
+        "documentacion/_historico/auditorias_baseline/fix_notes.md",
+        "documentacion/_historico/auditorias_baseline/fix_summary.md",
+        "documentacion/_historico/auditorias_baseline/followup_log.md",
+        "documentacion/_historico/auditorias_baseline/informe_optimizacion_auditoria_externa.md",
+        "documentacion/_historico/auditorias_baseline/optimization_log.md",
+        "documentacion/_historico/auditorias_baseline/optimization_roadmap.md",
+        "documentacion/_historico/auditorias_baseline/polish_log.md",
+        "documentacion/_historico/auditorias_baseline/questions_for_red.md",
+        "documentacion/_historico/auditorias_baseline/research_prompt_gemma4_optimization.md",
+        "documentacion/_historico/auditorias_baseline/review_arquitectonico_3_bugs_voz.md",
+        "documentacion/_historico/auditorias_baseline/smoke_log.md",
+        "documentacion/_historico/auditorias_baseline/smoke_log_mode_b.md",
+        "documentacion/_historico/auditorias_baseline/smoke_summary.md",
+        "documentacion/_historico/auditorias_baseline/tradeoffs.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/auditorias_baseline/branch_readiness.md",
+        "documentacion/_historico/auditorias_baseline/computer_use_exhaustive_validation_2026_05_25.md",
+        "documentacion/_historico/auditorias_baseline/computer_use_marathon_2026_05_25.md",
+        "documentacion/_historico/auditorias_baseline/coverage_gaps.md",
+        "documentacion/_historico/auditorias_baseline/fix_decisions.md",
+        "documentacion/_historico/auditorias_baseline/fix_log.md",
+        "documentacion/_historico/auditorias_baseline/fix_notes.md",
+        "documentacion/_historico/auditorias_baseline/fix_summary.md",
+        "documentacion/_historico/auditorias_baseline/followup_log.md",
+        "documentacion/_historico/auditorias_baseline/informe_optimizacion_auditoria_externa.md",
+        "documentacion/_historico/auditorias_baseline/optimization_log.md"
+      ]
+    },
+    {
+      "card_id": "docs-012-probando_gemma4-pg4_docs__historico-02-documentacion-_historico-backlogs_superados",
+      "claim_kind": "documental",
+      "problem": "Roadmap de perfeccionamiento — Carter Agent (2026-05-29): El equipo hizo trabajo enorme y riguroso: B1–B8 shipped, 8 investigaciones aplicadas,",
+      "outcome": "exito",
+      "solution_or_failure": "El equipo hizo trabajo enorme y riguroso: B1–B8 shipped, 8 investigaciones aplicadas,",
+      "causal_mechanism": "- **H1** `error_type` declarado pero **nunca seteado** por ningún verifier (`verify_core.py:64`).",
+      "measurement": "> se flippea. Nada se shippea contra ruido. Respeta: 4GB VRAM / OSS-free / sin listas | | **C5** | Click reporta **éxito con `state_changed=False`** | `tools.py:5920`, `computer_use.py:346` | \"Listo, hice click\" contradicho por su propia señal. False-PASS 14.3% medido | | | **C6** | Primera **imagen sin pre-flight**; mmproj WARN solo loguea (VERIFICADO: recicla solo en DEGRADE) | `agent.py:1298-1…",
+      "provenance": {
+        "path": "documentacion/_historico/backlogs_superados/ROADMAP_perfeccion.md",
+        "ranges": [
+          "1-130",
+          "h:1",
+          "m:10"
+        ],
+        "date": "2026-05-29",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/backlogs_superados: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/backlogs_superados/ROADMAP_perfeccion.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-012-probando_gemma4-pg4_docs__historico-03-documentacion-_historico-baseline_audit",
+      "claim_kind": "documental",
+      "problem": "Fase 0 — Inventario crudo: `tools.py::ToolRegistry` con 3 157 LOC y 142 métodos es el caso más extremo del repo. Lo señalo aquí pero los hallazgos van todos a `08_findings.md`.",
+      "outcome": "contexto",
+      "solution_or_failure": "`tools.py::ToolRegistry` con 3 157 LOC y 142 métodos es el caso más extremo del repo. Lo señalo aquí pero los hallazgos van todos a `08_findings.md`.",
+      "causal_mechanism": "5. **No hay dependencias \"declaradas pero no importadas\"** porque no hay declaración. El cruce inverso (importadas pero no en el venv) lo veremos cuando exista `requirements.txt`. | | Mecanismo | Detalle | | | `mission_outcome.py` | 15 | comentario docstring | \"Carter v5 mission/verifier.py — 9 outcome states.\" | | - El **`llama-server.exe`** está representado como un nodo aparte porque es un pro…",
+      "measurement": "**No hay archivos de configuración declarativa cargados por el agente.** La configuración 100 % vive en: | ├── model_info.py (153 LOC — ModelInfo + GGUF parse) | | `llama_server.py` | 322 | comentario | \"Acceptance rate estimado 40-60% en Carter (sin medir). VRAM: solo viable\" | | 2. **3 god modules concentran 18 332 LOC** (33 % del total): | El agente Gemma4 corre 100 % local en una máquina Wind…",
+      "provenance": {
+        "path": "documentacion/_historico/baseline_audit/00_inventory.md",
+        "ranges": [
+          "1-667",
+          "h:1",
+          "m:186"
+        ],
+        "date": "2026-05-16",
+        "hardware": "VRAM",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/baseline_audit: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/baseline_audit/00_inventory.md",
+        "documentacion/_historico/baseline_audit/01_system.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/baseline_audit/01_system.md"
+      ]
+    },
+    {
+      "card_id": "docs-012-probando_gemma4-pg4_docs__historico-04-documentacion-_historico-baseline_audit-02_compone",
+      "claim_kind": "documental",
+      "problem": "Fase 2 — Componentes por container (C4 Nivel 3): - **Cajas:** archivos o clases concretas.",
+      "outcome": "contexto",
+      "solution_or_failure": "- **Cajas:** archivos o clases concretas.",
+      "causal_mechanism": "| 3 | `verify_core.py` | `VerifierOutcome` + `VERIFIER_REGISTRY` + `@verifier` decorator + `verify(name, args, result)` + `summarize_verifiers(outcomes)` | 191 | Registry global de verifiers per-tool y summarizer del footer | | | 4 | `verifiers.py` | 19 verifiers concretos (`audio`, `app`, `filesystem`, `clipboard`, etc.) registrados vía `@verifier` decorator | 690 | Implementaciones específicas:…",
+      "measurement": "> **Total LOC:** 3 067 (~5.5 % del paquete, pero el archivo es el segundo más | | 3 | `model_info.py` | `parse_gguf_name`, `build_model_info`, `mock_model_info`, `is_experimental_quant` | 153 | Parser del nombre de archivo GGUF (Unsloth UD-, MoE A4B, MatFormer E4B) | | GGUF[(modelo.gguf<br/>+ mmproj.gguf)] | Info -. \"parse name\" .- GGUF | %% gguf on disk | Manager -- \"--model path\" --> GGUF | GGU…",
+      "provenance": {
+        "path": "documentacion/_historico/baseline_audit/02_components/README.md",
+        "ranges": [
+          "1-53",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "vram",
+        "model": "e4b",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/baseline_audit/02_components: 11 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/baseline_audit/02_components/README.md",
+        "documentacion/_historico/baseline_audit/02_components/agent_core.md",
+        "documentacion/_historico/baseline_audit/02_components/llm_lifecycle.md",
+        "documentacion/_historico/baseline_audit/02_components/memory.md",
+        "documentacion/_historico/baseline_audit/02_components/mission_verification.md",
+        "documentacion/_historico/baseline_audit/02_components/observability.md",
+        "documentacion/_historico/baseline_audit/02_components/routing.md",
+        "documentacion/_historico/baseline_audit/02_components/state_config.md",
+        "documentacion/_historico/baseline_audit/02_components/surfaces.md",
+        "documentacion/_historico/baseline_audit/02_components/tools.md",
+        "documentacion/_historico/baseline_audit/02_components/voice_loop.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/baseline_audit/02_components/agent_core.md",
+        "documentacion/_historico/baseline_audit/02_components/llm_lifecycle.md",
+        "documentacion/_historico/baseline_audit/02_components/memory.md",
+        "documentacion/_historico/baseline_audit/02_components/mission_verification.md",
+        "documentacion/_historico/baseline_audit/02_components/observability.md",
+        "documentacion/_historico/baseline_audit/02_components/routing.md",
+        "documentacion/_historico/baseline_audit/02_components/state_config.md",
+        "documentacion/_historico/baseline_audit/02_components/surfaces.md",
+        "documentacion/_historico/baseline_audit/02_components/tools.md",
+        "documentacion/_historico/baseline_audit/02_components/voice_loop.md"
+      ]
+    },
+    {
+      "card_id": "docs-012-probando_gemma4-pg4_docs__historico-05-documentacion-_historico-baseline_audit-03_classes",
+      "claim_kind": "documental",
+      "problem": "Fase 3 — UML de clases por subsistema: - **Mermaid `classDiagram`** como formato primario.",
+      "outcome": "contexto",
+      "solution_or_failure": "- **Mermaid `classDiagram`** como formato primario.",
+      "causal_mechanism": "verifier: VerifierOutcome|None | _ToolCallRecord o-- VerifierOutcome : verifier",
+      "measurement": "FAILED | record_turn(ttft_ms, tokens, tps, vram, ...) | note for _NLIService \"246 LOC clase · singleton _SINGLETON\\nLazy load mDeBERTa 280MB · cache LRU 512\" | pyqtSignal: failed | note for WakeDetector \"346 LOC · 5 métodos\\nVosk vocab restringido + confidence 0.85 + debounce 2s\"",
+      "provenance": {
+        "path": "documentacion/_historico/baseline_audit/03_classes/README.md",
+        "ranges": [
+          "1-42",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "vram",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/baseline_audit/03_classes: 11 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/baseline_audit/03_classes/README.md",
+        "documentacion/_historico/baseline_audit/03_classes/agent_core.md",
+        "documentacion/_historico/baseline_audit/03_classes/llm_lifecycle.md",
+        "documentacion/_historico/baseline_audit/03_classes/memory.md",
+        "documentacion/_historico/baseline_audit/03_classes/mission_verification.md",
+        "documentacion/_historico/baseline_audit/03_classes/observability.md",
+        "documentacion/_historico/baseline_audit/03_classes/routing.md",
+        "documentacion/_historico/baseline_audit/03_classes/state_config.md",
+        "documentacion/_historico/baseline_audit/03_classes/surfaces.md",
+        "documentacion/_historico/baseline_audit/03_classes/tools.md",
+        "documentacion/_historico/baseline_audit/03_classes/voice_loop.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/baseline_audit/03_classes/agent_core.md",
+        "documentacion/_historico/baseline_audit/03_classes/llm_lifecycle.md",
+        "documentacion/_historico/baseline_audit/03_classes/memory.md",
+        "documentacion/_historico/baseline_audit/03_classes/mission_verification.md",
+        "documentacion/_historico/baseline_audit/03_classes/observability.md",
+        "documentacion/_historico/baseline_audit/03_classes/routing.md",
+        "documentacion/_historico/baseline_audit/03_classes/state_config.md",
+        "documentacion/_historico/baseline_audit/03_classes/surfaces.md",
+        "documentacion/_historico/baseline_audit/03_classes/tools.md",
+        "documentacion/_historico/baseline_audit/03_classes/voice_loop.md"
+      ]
+    },
+    {
+      "card_id": "docs-012-probando_gemma4-pg4_docs__historico-06-documentacion-_historico-baseline_audit-04_sequenc",
+      "claim_kind": "documental",
+      "problem": "Fase 4 — Diagramas de secuencia: Los diagramas exponen 4 patrones que valen documentar como findings:",
+      "outcome": "contexto",
+      "solution_or_failure": "Los diagramas exponen 4 patrones que valen documentar como findings:",
+      "causal_mechanism": "(`mail|email|correo|courriel|posta|messaggio`), **se descarta email** porque | - **Negative anchor \"email + perfil sin mail keywords → drop email\"** es un parche puntual. Si se acumulan más parches así, vale generalizar a un mecanismo de \"anti-patterns\" declarativo.",
+      "measurement": "AR->>LSM: start(profile, wait_health=True, timeout=120s) | LSM->>LSM: _wait_for_health(120s) | Note over SemR: descarga + load MiniLM (~120MB) + embed 62 tools (~6-8s) | AR->>LLC: chat([{role:user,content:'.'}], max_tokens=1, timeout=180s) | LP->>LP: load_tensors (puede tardar 30-90s) | AR->>LLC: prewarm_kv(client, system_prompt, max_tokens=1, timeout=90s) | NLI->>NLI: zero-shot classification (~…",
+      "provenance": {
+        "path": "documentacion/_historico/baseline_audit/04_sequences/README.md",
+        "ranges": [
+          "1-25",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/baseline_audit/04_sequences: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/baseline_audit/04_sequences/README.md",
+        "documentacion/_historico/baseline_audit/04_sequences/boot.md",
+        "documentacion/_historico/baseline_audit/04_sequences/router_fallback.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/baseline_audit/04_sequences/boot.md",
+        "documentacion/_historico/baseline_audit/04_sequences/router_fallback.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=49 drift=0 miss=0",
+  "next_docs_batch_id": "docs-013-probando_gemma4-pg4_docs__historico",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-012-probando_gemma4-pg4_docs__historico.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

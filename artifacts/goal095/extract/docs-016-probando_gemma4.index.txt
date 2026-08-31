@@ -1,0 +1,39 @@
+batch_id=docs-016-probando_gemma4
+kind=docs
+file_count=33
+hash_ok=33 drift=0 miss=0
+subsystem=pg4_docs__historico
+---FILES---
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_s.md	HOTFIX 2026-05-17 (S) — Acceptance gate + bench harness
+OK documentacion/_historico/sprints/sprint_hotfix_2026_05_17_t.md	HOTFIX 2026-05-17 (T) — Session report tool
+OK hf_publish/README.md	Baxy — Gemma 4 E2B (GGUF, fine-tuned)
+OK gemma4_agent/microagents/README.md	Carter Agent microagents
+OK gemma4_agent/microagents/glossary.md	Glossary (jerga técnica del proyecto)
+OK gemma4_agent/microagents/tools_cheat_sheet.md	Tools disponibles (cheat sheet)
+OK scripts/INDEX.md	scripts/ — INDEX
+OK scripts/README_accessibility.md	Accesibilidad de apps Chromium/Electron para Baxy
+OK scripts/_diag/_NOTAS_caceria_t2.md	Notas cacería tanda 2 — análisis pre-fix (2026-06-05)
+OK scripts/_diag/_audit_synthesis.txt	REPORTE CONSOLIDADO — Auditoría de los 5 guards de honestidad (cacería tanda 1)
+OK scripts/_diag/_batch1_view.txt	
+OK scripts/_diag/_ftfail/_all_judge_clusters.txt	Análisis de 414 casos BUG/DUDOSO agrupados por causa raíz
+OK scripts/_diag/_ftfail/_already_used.txt	
+OK scripts/_diag/_ftfail/_coverage_report.txt	CONSOLIDACIÓN — Dataset de Baxy (896 bugs dataset-atacables)
+OK scripts/_diag/_ftfail/_plan_maestro.txt	PLAN MAESTRO — Re-Fine-Tuning del dataset de Baxy
+OK scripts/_diag/_judge_clusters_1000.txt	Análisis de 414 casos BUG/DUDOSO agrupados por causa raíz
+OK scripts/_diag/_judge_clusters_2000.txt	ANÁLISIS POR CAUSA RAÍZ — 443 casos (tanda agregada)
+OK scripts/_diag/_judge_clusters_3000.txt	
+OK scripts/_diag/_judge_clusters_4000.txt	Análisis de 470 casos BUG/DUDOSO — agrupados por causa raíz
+OK scripts/_diag/_judge_rerun_synth.txt	REPORTE DE SÍNTESIS — Cacería tandas re-run 1-4 (4493 casos post-fix, 992 candid
+OK scripts/_diag/_judge_tanda1_clusters.txt	Análisis de 411 fallos — agrupados por causa raíz
+OK scripts/_diag/_media_fires_readable.txt	
+OK scripts/_diag/_media_full.txt	
+OK scripts/_diag/_media_nofire_full.txt	
+OK scripts/_diag/_out_chain_verification.txt	VEREDICTO ADVERSARIAL
+OK scripts/_diag/_out_rebrand_inventory.txt	Inventario accionable: rebrand a Baxy
+OK scripts/_diag/_out_run2_cluster_verifs.txt	CLUSTER terminal_as_app
+OK scripts/_diag/_out_tesis_verify.txt	
+OK scripts/_diag/_out_workflow_diagnoses.txt	busca_teclados  --  'busca teclados'
+OK scripts/_diag/_out_workflow_verifications.txt	busca_teclados  --  'busca teclados'
+OK scripts/_diag/_tests_fires_view.txt	
+OK scripts/_out_filesystem_routing.txt	
+OK scripts/_out_flips_default.txt	

@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-023-baxy",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:30:52Z",
+  "estimated_tokens": 283791,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 17,
+  "source_id": "baxy",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/docs-023-baxy.json"
+}

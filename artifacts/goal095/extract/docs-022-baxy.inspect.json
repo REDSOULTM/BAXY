@@ -1,0 +1,4559 @@
+{
+  "batch_id": "docs-022-baxy",
+  "kind": "docs",
+  "source_id": "baxy",
+  "subsystem": "baxy_docs_03_HALLAZGOS_AGENTES.md",
+  "file_count": 57,
+  "hash_ok": 57,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/03_HALLAZGOS_AGENTES.md",
+      "queued_sha256": "7805c2144052e5dbba33164b3eeedb17585832118359e16d1e0b4f7e6ec8c0a2",
+      "size_queued": 7385,
+      "exists": true,
+      "disk_sha256": "7805c2144052e5dbba33164b3eeedb17585832118359e16d1e0b4f7e6ec8c0a2",
+      "disk_size": 7385,
+      "hash_match": true,
+      "head_sha256": "7805c2144052e5dbba33164b3eeedb17585832118359e16d1e0b4f7e6ec8c0a2",
+      "extract": {
+        "binary": false,
+        "lines": 176,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Hallazgos recuperados de agentes y auditorías"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Cobertura de recuperación"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Auditoría default_off_audit"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "Auditoría phase3_final_diff_audit"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Diagnóstico físico de Spotify"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "Gemma 4 unificado"
+          },
+          {
+            "line": 120,
+            "level": 2,
+            "text": "Qwen-VL"
+          },
+          {
+            "line": 135,
+            "level": 2,
+            "text": "Soak y harness"
+          },
+          {
+            "line": 147,
+            "level": 2,
+            "text": "Experiencia de usuario"
+          },
+          {
+            "line": 158,
+            "level": 2,
+            "text": "Conteos de suite contradictorios"
+          },
+          {
+            "line": 165,
+            "level": 2,
+            "text": "Recuperación de spotify_live_gate_design"
+          }
+        ],
+        "lead": "Este documento sintetiza una parte de las conclusiones visibles o respaldadas",
+        "measures": [
+          {
+            "line": 31,
+            "text": "- BAXY_SPOTIFY_PLAY_EXACT=1 creaba el perfil experimental 95/92/3/39."
+          },
+          {
+            "line": 34,
+            "text": "- No se declaró GPU física de 4 GB ni corpus guiado de voz."
+          },
+          {
+            "line": 35,
+            "text": "- En el momento del informe existían baterías backend 150/150, frontend 73/73 y"
+          },
+          {
+            "line": 52,
+            "text": "- El perfil estable exigía flags experimentales falsos, inventario 94/91 y"
+          },
+          {
+            "line": 55,
+            "text": "95/92; también diferían contrato, dominio, epoch, counts y digest."
+          },
+          {
+            "line": 90,
+            "text": "8. Las correcciones focales reportaron 154/154 y el preflight físico devolvió"
+          },
+          {
+            "line": 104,
+            "text": "- 0/11 activaciones;"
+          },
+          {
+            "line": 107,
+            "text": "- variación de VRAM que no correspondía al resultado esperado."
+          },
+          {
+            "line": 124,
+            "text": "- 2B Q4_K_M + mmproj: alrededor de 2713 MiB de VRAM, rápido, reconocía John"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-176",
+          "h:1",
+          "m:31"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_ARQUITECTURA_TECNOLOGICA.md",
+      "queued_sha256": "a90ec1bbe1381ac80674bc7cc8c186c630762c96311107a88942145783e3672d",
+      "size_queued": 23880,
+      "exists": true,
+      "disk_sha256": "a90ec1bbe1381ac80674bc7cc8c186c630762c96311107a88942145783e3672d",
+      "disk_size": 23880,
+      "hash_match": true,
+      "head_sha256": "2a6a5439e0148e6c01ab02a32ffb03afd5d18c9e06897c9806f0d91915f8ec1d",
+      "extract": {
+        "binary": false,
+        "lines": 615,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Arquitectura tecnológica — base aprobada y mapa de candidatos"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Estado de estas decisiones"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Torneo de arquitectura obligatorio"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Hipótesis históricas por parte"
+          },
+          {
+            "line": 121,
+            "level": 2,
+            "text": "1. Interfaz"
+          },
+          {
+            "line": 123,
+            "level": 3,
+            "text": "Candidato histórico"
+          },
+          {
+            "line": 131,
+            "level": 3,
+            "text": "Razón"
+          },
+          {
+            "line": 138,
+            "level": 3,
+            "text": "Contrato"
+          },
+          {
+            "line": 147,
+            "level": 3,
+            "text": "Gate"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "2. Core de misiones"
+          },
+          {
+            "line": 168,
+            "level": 3,
+            "text": "Candidato histórico"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "Responsabilidades"
+          },
+          {
+            "line": 194,
+            "level": 2,
+            "text": "3. Comunicación GUI/core"
+          },
+          {
+            "line": 196,
+            "level": 3,
+            "text": "Candidato histórico"
+          },
+          {
+            "line": 210,
+            "level": 2,
+            "text": "4. Modelo principal y runtime"
+          },
+          {
+            "line": 212,
+            "level": 3,
+            "text": "Candidato histórico"
+          },
+          {
+            "line": 252,
+            "level": 3,
+            "text": "Perfil eco inicial que debe revalidarse"
+          },
+          {
+            "line": 266,
+            "level": 2,
+            "text": "5. Routing, planificación y tools"
+          },
+          {
+            "line": 268,
+            "level": 3,
+            "text": "Shortlist híbrido"
+          },
+          {
+            "line": 278,
+            "level": 3,
+            "text": "Operaciones"
+          },
+          {
+            "line": 294,
+            "level": 3,
+            "text": "Misiones"
+          },
+          {
+            "line": 305,
+            "level": 2,
+            "text": "6. Voz"
+          },
+          {
+            "line": 307,
+            "level": 3,
+            "text": "Captura"
+          },
+          {
+            "line": 315,
+            "level": 3,
+            "text": "VAD"
+          }
+        ],
+        "lead": "El torneo reproducible cerró la arquitectura base el 2026-07-14. El ganador es",
+        "measures": [
+          {
+            "line": 25,
+            "text": "- perfil cómodo en 4 GB de VRAM, cercano a 3 GB cuando sea viable;"
+          },
+          {
+            "line": 54,
+            "text": "| Misiones reales completadas y verificadas | 25 % |"
+          },
+          {
+            "line": 55,
+            "text": "| RAM, VRAM, disco y consumo en hardware objetivo | 15 % |"
+          },
+          {
+            "line": 56,
+            "text": "| Latencia de interacción y arranque | 10 % |"
+          },
+          {
+            "line": 57,
+            "text": "| UX conversacional y accesibilidad | 10 % |"
+          },
+          {
+            "line": 58,
+            "text": "| Privacidad y seguridad local | 10 % |"
+          },
+          {
+            "line": 59,
+            "text": "| Instalación, lifecycle, recuperación y cleanup | 10 % |"
+          },
+          {
+            "line": 60,
+            "text": "| Testabilidad, mantenibilidad y capacidad de depuración | 10 % |"
+          },
+          {
+            "line": 61,
+            "text": "| Licencia, madurez y riesgo de cadena de suministro | 5 % |"
+          },
+          {
+            "line": 62,
+            "text": "| Costo de migración y reutilización demostrablemente útil | 5 % |"
+          },
+          {
+            "line": 84,
+            "text": "| Cerebro local | Gemma 4 E2B QAT Q4_0 GGUF | Conversación, planificación acotada, visión/audio candidatos |"
+          },
+          {
+            "line": 118,
+            "text": "incompatibles con Windows, privacidad, licencia o 4 GB; las restantes compiten"
+          }
+        ],
+        "dates": [
+          "2026-07-14"
+        ],
+        "models": [
+          "llama.cpp",
+          "piper",
+          "gemma 4",
+          "whisper",
+          "gemma4",
+          "functiongemma"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 188,
+            "text": "Python merece un prototipo porque gran parte de la evidencia, corpus, modelos y"
+          }
+        ],
+        "ranges": [
+          "1-615",
+          "h:1",
+          "m:25"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/05_FALLOS_Y_REGRESIONES.md",
+      "queued_sha256": "f0c2cf85e2c346b2eb4df91217b235336fe24165b38b154710781319369e5456",
+      "size_queued": 11823,
+      "exists": true,
+      "disk_sha256": "f0c2cf85e2c346b2eb4df91217b235336fe24165b38b154710781319369e5456",
+      "disk_size": 11823,
+      "hash_match": true,
+      "head_sha256": "f0c2cf85e2c346b2eb4df91217b235336fe24165b38b154710781319369e5456",
+      "extract": {
+        "binary": false,
+        "lines": 87,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fallos históricos convertidos en regresiones"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Contrato del ledger"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Matriz canónica"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Fuentes de autoridad"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Definición de cierre por regresión"
+          }
+        ],
+        "lead": "Esta es la matriz canónica de lecciones→diseño→prueba. Un ID no significa que",
+        "measures": [
+          {
+            "line": 22,
+            "text": "| R-005 | Router curado 99,64 % cayó a 85,7 % en logs reales | Corpus observado separado de train y replay obligatorio | `REG-005` ejecuta holdout histórico por el camino runtime | `PHY-005` muestra real de voz/texto | Especificada |"
+          },
+          {
+            "line": 31,
+            "text": "| R-014 | Timeout fijo de 8 s falló al inventariar Spotify frío | Presupuesto por fase y percentiles warm/cold, siempre acotado/cancelable | `REG-014` usa provider lento y valida deadline por fase | `PHY-014` arranque frío y caliente | Espe"
+          },
+          {
+            "line": 37,
+            "text": "| R-020 | Parakeet logró baja latencia, pero 81 % de recall de entidades | Corrección fonética y rescate selectivo sin inventar entidades | `REG-020` corpus de nombres, apps, canciones y códigos ES/EN | `PHY-020` dictado de entidades del us"
+          },
+          {
+            "line": 42,
+            "text": "| R-025 | Perfil “4 GB” se infería desde GPU de 16 GB | Presupuesto por proceso y global; perfil físico separado del proxy | `REG-025` mide RAM/VRAM/picos/carga lazy y falla sobre límite | `PHY-025` GPU real de 4 GB o declaración honesta de"
+          },
+          {
+            "line": 47,
+            "text": "| R-030 | Conteos 5.532/5.535 divergieron entre resúmenes | Resultado ligado a comando, commit y artifact inmutable | `REG-030` genera manifiesto de suite y verifica digest | No aplica | Especificada |"
+          },
+          {
+            "line": 50,
+            "text": "| R-033 | Endpoints remotos y logs planos podían filtrar contenido | Local-first; egress opt-in visible; secretos en vault; canales público/privado | `REG-033` bloquea red por defecto y escanea artefactos/logs | `PHY-033` inspección de tráf"
+          },
+          {
+            "line": 84,
+            "text": "Al cierre documental actual hay 36/36 modos de fallo estructurales"
+          },
+          {
+            "line": 85,
+            "text": "especificados y 0/36 cerrados sobre el producto nuevo. Las 117 ocurrencias de"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma",
+          "gemma 4"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-87",
+          "h:1",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/06_MAPA_FUENTES_HISTORICAS.md",
+      "queued_sha256": "aee20e4d093abf3ffe840edf6d726a39e9c17aa0266d30a176d65cbb1d37ce7f",
+      "size_queued": 4675,
+      "exists": true,
+      "disk_sha256": "aee20e4d093abf3ffe840edf6d726a39e9c17aa0266d30a176d65cbb1d37ce7f",
+      "disk_size": 4675,
+      "hash_match": true,
+      "head_sha256": "aee20e4d093abf3ffe840edf6d726a39e9c17aa0266d30a176d65cbb1d37ce7f",
+      "extract": {
+        "binary": false,
+        "lines": 86,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mapa reproducible de fuentes históricas"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cutoff de BAXY 1.0"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Fuentes congeladas"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "Política de inclusión"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Reproducción"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "Estado"
+          }
+        ],
+        "lead": "- UTC: `2026-07-14T10:51:49.1612548Z`.",
+        "measures": [],
+        "dates": [
+          "2026-07-14"
+        ],
+        "models": [
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-86",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/07_LEDGER_REQUISITOS_HISTORICOS.md",
+      "queued_sha256": "cf7f9811f15a3c56378d9672c95589c76c465a99189256bc16dec5e83f85f6e5",
+      "size_queued": 9649,
+      "exists": true,
+      "disk_sha256": "cf7f9811f15a3c56378d9672c95589c76c465a99189256bc16dec5e83f85f6e5",
+      "disk_size": 9649,
+      "hash_match": true,
+      "head_sha256": "cf7f9811f15a3c56378d9672c95589c76c465a99189256bc16dec5e83f85f6e5",
+      "extract": {
+        "binary": false,
+        "lines": 191,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Ledger de requisitos históricos"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Autoridad y artefactos"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Resultado de cobertura"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Revisión semántica v3 cerrada"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Semántica de cada registro"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Reglas de inclusión y exclusión"
+          },
+          {
+            "line": 127,
+            "level": 2,
+            "text": "Operaciones, no tools por frase"
+          },
+          {
+            "line": 144,
+            "level": 2,
+            "text": "Validación reproducible"
+          },
+          {
+            "line": 183,
+            "level": 2,
+            "text": "Estado de release"
+          }
+        ],
+        "lead": "Este ledger convierte la historia congelada de Carter y BAXY en alcance",
+        "measures": [
+          {
+            "line": 180,
+            "text": "para los oráculos de juegos y audio status. Resultado actual: 37/37 pruebas de contrato del"
+          }
+        ],
+        "dates": [
+          "2026-07-14",
+          "2026-07-15"
+        ],
+        "models": [
+          "functiongemma",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-191",
+          "h:1",
+          "m:180"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/08_EVOLUCION_CARTER_A_BAXY.md",
+      "queued_sha256": "692d52a82622a9c120b28a4c03f3d474801cc75254a0b966b3f6d673917a5ea8",
+      "size_queued": 8587,
+      "exists": true,
+      "disk_sha256": "692d52a82622a9c120b28a4c03f3d474801cc75254a0b966b3f6d673917a5ea8",
+      "disk_size": 8587,
+      "hash_match": true,
+      "head_sha256": "692d52a82622a9c120b28a4c03f3d474801cc75254a0b966b3f6d673917a5ea8",
+      "extract": {
+        "binary": false,
+        "lines": 79,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Evolución causal de Carter a BAXY 1.0"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Propósito y criterio"
+          },
+          {
+            "line": 28,
+            "level": 2,
+            "text": "Cronología causal"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Árbol de decisiones"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "Cadena de autoridad"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Cierre de esta etapa"
+          }
+        ],
+        "lead": "Esta genealogía no presume que lo más reciente sea mejor ni que un conteo de",
+        "measures": [
+          {
+            "line": 44,
+            "text": "| Gemma unificado, 11 julio | `7626c47`, `2b17d05`; auditoría con activación 0/11 | Health sin identidad permitió atribuir respuestas al servidor/modelo equivocado | Rediseñar attestation de proceso, modelo, puerto y request |"
+          },
+          {
+            "line": 59,
+            "text": "| Recursos | presupuestos medidos, carga lazy y perfiles incompatibles | perfil 4 GB en hardware real | extrapolar desde GPU de 16 GB |"
+          }
+        ],
+        "dates": [
+          "2026-07-14",
+          "2026-06-17"
+        ],
+        "models": [
+          "gemma 4",
+          "functiongemma"
+        ],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 16,
+            "text": "heurística y no puede usarse como filtro mecánico, porque textos objetivo breves"
+          }
+        ],
+        "ranges": [
+          "1-79",
+          "h:1",
+          "m:44"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/09_LEDGER_EVIDENCIA_AGENTES.md",
+      "queued_sha256": "e68ece725717e54a65525d79628a68318e0a7801daf4e29d3059f375f4d90fe7",
+      "size_queued": 6740,
+      "exists": true,
+      "disk_sha256": "e68ece725717e54a65525d79628a68318e0a7801daf4e29d3059f375f4d90fe7",
+      "disk_size": 6740,
+      "hash_match": true,
+      "head_sha256": "e68ece725717e54a65525d79628a68318e0a7801daf4e29d3059f375f4d90fe7",
+      "extract": {
+        "binary": false,
+        "lines": 66,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Ledger de evidencia recuperada de agentes"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Regla de uso"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "Auditorías decisivas"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Contradicciones y límites resueltos"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "Condición de cierre"
+          }
+        ],
+        "lead": "Los 322 segmentos recuperados son procedencia, no 322 mediciones",
+        "measures": [
+          {
+            "line": 24,
+            "text": "| `audit_soak_vram` | `019f58d3…` / `6a84fab50cb0b132f9ab165e6fa89fb293f105f77fee84cfb36a1200b73a7216` | parcial | Conserva 86.400 s y 285/285 como ejecución, pero el gate formal falló por GPU global/gap; no demuestra ausencia de leak atrib"
+          },
+          {
+            "line": 25,
+            "text": "| `audit_local_gemma_profile` | `019f58d4…` / `111d27ed78893d17e84ea2984c99f8ee18d720d17409b3e4ca548a0f9f31fe09` | corroborada | Fija identidad b9959 y contaminación por override STT; prohíbe afirmar GPU física de 4 GB |"
+          },
+          {
+            "line": 45,
+            "text": "| `default_off_audit` | `019f5f96…` / `301acdf80fc3f1341e7a56936c41616c495c53bf70519e3589876c25e970a444` | corroborada/histórica | Conserva perfil estable 94/91 y experimental 95/92 como referencia; pendientes y gates siguen abiertos |"
+          },
+          {
+            "line": 49,
+            "text": "1. **Carter 540/540**: una declaración temprana de 540/540 queda refutada por"
+          },
+          {
+            "line": 50,
+            "text": "la auditoría primaria de 417/540 reales y 72 falsos positivos automáticos."
+          },
+          {
+            "line": 51,
+            "text": "2. **Soak aprobado**: 86.400 s de proceso no equivale a gate aprobado cuando el"
+          },
+          {
+            "line": 55,
+            "text": "4. **4 GB**: perfiles proxy ejecutados en otra GPU no son evidencia de hardware"
+          },
+          {
+            "line": 56,
+            "text": "de 4 GB."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-66",
+          "h:1",
+          "m:24"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/10_TORNEO_TECNOLOGICO.md",
+      "queued_sha256": "46149110119b76a3662d8f652a97dd72a135394628950961014a37c354697aae",
+      "size_queued": 16059,
+      "exists": true,
+      "disk_sha256": "46149110119b76a3662d8f652a97dd72a135394628950961014a37c354697aae",
+      "disk_size": 16059,
+      "hash_match": true,
+      "head_sha256": "46149110119b76a3662d8f652a97dd72a135394628950961014a37c354697aae",
+      "extract": {
+        "binary": false,
+        "lines": 296,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Torneo tecnológico reproducible"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Estado"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Hardware y advertencia de alcance"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "Contendientes e hipótesis"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "Medición y gates"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "Resultado reproducible de la ronda A"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "Frontera y promoción"
+          },
+          {
+            "line": 142,
+            "level": 3,
+            "text": "Fallos encontrados por el experimento"
+          },
+          {
+            "line": 161,
+            "level": 2,
+            "text": "Resultado reproducible de la ronda B"
+          },
+          {
+            "line": 168,
+            "level": 3,
+            "text": "Descalificaciones del shell web"
+          },
+          {
+            "line": 184,
+            "level": 3,
+            "text": "Finalistas WPF"
+          },
+          {
+            "line": 209,
+            "level": 3,
+            "text": "Reproducción y cadena de suministro"
+          },
+          {
+            "line": 229,
+            "level": 3,
+            "text": "Score, Pareto y decisión"
+          },
+          {
+            "line": 254,
+            "level": 3,
+            "text": "Límites honestos"
+          },
+          {
+            "line": 276,
+            "level": 2,
+            "text": "Fuentes primarias de las rutas de distribución"
+          }
+        ],
+        "lead": "El protocolo `baxy-technology-tournament-v1` quedó congelado antes de medir y",
+        "measures": [
+          {
+            "line": 9,
+            "text": "A y B están cerradas. La repetición final de B corrigió T16 y la red fail-closed"
+          },
+          {
+            "line": 13,
+            "text": "verificadas 25 %, recursos 15 %, latencia 10 %, UX/accesibilidad 10 %,"
+          },
+          {
+            "line": 14,
+            "text": "privacidad/seguridad 10 %, instalación/lifecycle 10 %,"
+          },
+          {
+            "line": 15,
+            "text": "mantenibilidad/testabilidad 10 %, licencia/madurez 5 % y"
+          },
+          {
+            "line": 16,
+            "text": "migración/reutilización 5 %. Las fórmulas y los umbrales quedaron registrados"
+          },
+          {
+            "line": 22,
+            "text": "i9-12900HX (16 núcleos, 24 hilos), 31,77 GiB de RAM y una NVIDIA GeForce RTX"
+          },
+          {
+            "line": 24,
+            "text": "de 4 GB de VRAM. Cualquier prueba con un límite lógico en esta GPU se rotulará"
+          },
+          {
+            "line": 70,
+            "text": "accesibilidad y muestras de red. No se afirma que cada fase archive cwd,"
+          },
+          {
+            "line": 74,
+            "text": "NUL/traversal/objetivos protegidos, tráfico o listeners de red, declarar éxito"
+          },
+          {
+            "line": 77,
+            "text": "menos del 90 % del peso funcional. Un fallo no se borra: descalifica el hash"
+          },
+          {
+            "line": 90,
+            "text": "cerró con 48/48 casos aprobados por cada core (16 casos × 3 repeticiones),"
+          },
+          {
+            "line": 91,
+            "text": "21/21 arranques válidos, 100/100 muestras calientes después del warm-up, cero"
+          }
+        ],
+        "dates": [
+          "2026-07-14"
+        ],
+        "models": [],
+        "hardware": [
+          "4060",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 206,
+            "text": "mecanismo de paquete aprobó 8/8 gates: junction/ADS, instalación, actualización,"
+          },
+          {
+            "line": 239,
+            "text": "la frontera porque ninguno es no-peor en todas y mejor en al menos una."
+          },
+          {
+            "line": 266,
+            "text": "- El paquete es un mecanismo offline interno con"
+          }
+        ],
+        "ranges": [
+          "1-296",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/11_PRIMER_CORTE_PRODUCTIVO.md",
+      "queued_sha256": "696fba2e0ce9096533dfcf64fd86d4ce78f5102b5f6eb7a8da322f0ba5866de2",
+      "size_queued": 6682,
+      "exists": true,
+      "disk_sha256": "696fba2e0ce9096533dfcf64fd86d4ce78f5102b5f6eb7a8da322f0ba5866de2",
+      "disk_size": 6682,
+      "hash_match": true,
+      "head_sha256": "696fba2e0ce9096533dfcf64fd86d4ce78f5102b5f6eb7a8da322f0ba5866de2",
+      "extract": {
+        "binary": false,
+        "lines": 141,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Primer corte productivo de BAXY"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Qué existe"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Separación de responsabilidades"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Persistencia local"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Journal y replay"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "Frontera y ciclo de vida de la GUI"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "Evidencia disponible"
+          },
+          {
+            "line": 124,
+            "level": 2,
+            "text": "Fuera del alcance demostrado"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "Próximo criterio de avance"
+          }
+        ],
+        "lead": "Estado: implementado como corte vertical acotado; pendiente de expansión",
+        "measures": [
+          {
+            "line": 114,
+            "text": "| Suite .NET Release | 101/101: Contracts 23, Kernel 26, Provider 16, integración 36 |"
+          },
+          {
+            "line": 115,
+            "text": "| Suite histórica Python | 41/41; corrida conjunta total: 142 pruebas |"
+          },
+          {
+            "line": 134,
+            "text": "El progreso permanece en 5/15 Must y B-004 sigue abierto."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 55,
+            "text": "Este mecanismo no cifra el contenido. Su SHA-256 no usa una clave y por tanto"
+          }
+        ],
+        "ranges": [
+          "1-141",
+          "h:1",
+          "m:114"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/12_SEGUNDO_CORTE_APP_OPEN.md",
+      "queued_sha256": "ab3bea530ba4992e34742ef565a6a4e70296a83412c3350e2617a685a69a7d9a",
+      "size_queued": 5521,
+      "exists": true,
+      "disk_sha256": "ab3bea530ba4992e34742ef565a6a4e70296a83412c3350e2617a685a69a7d9a",
+      "disk_size": 5521,
+      "hash_match": true,
+      "head_sha256": "ab3bea530ba4992e34742ef565a6a4e70296a83412c3350e2617a685a69a7d9a",
+      "extract": {
+        "binary": false,
+        "lines": 107,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Segundo corte productivo: `app.open` acotado"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Ejecución y verificación"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "Evidencia automatizada"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Gate físico"
+          },
+          {
+            "line": 88,
+            "level": 2,
+            "text": "Revisión semántica v2 del corpus"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "Estado de producto"
+          }
+        ],
+        "lead": "Estado: implementado y auditado en el commit `9c67495d5839`; pruebas",
+        "measures": [
+          {
+            "line": 58,
+            "text": "| Suite .NET Release | 230/230: Contracts 23, Kernel 26, provider 56, integración 125 |"
+          },
+          {
+            "line": 59,
+            "text": "| Suite Python tras la revisión del corpus | 59/59 |"
+          },
+          {
+            "line": 61,
+            "text": "| Auditoría adversarial final | PASS; cero P0/P1 pendientes |"
+          },
+          {
+            "line": 95,
+            "text": "produjeron los cuatro artefactos byte a byte idénticos y 36/36 pruebas de"
+          },
+          {
+            "line": 104,
+            "text": "El progreso permanece en **5/15 Must (33,3 %)**. B-004 sigue abierto porque"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 5,
+            "text": "porque ya existía una instancia de Bloc de notas. Este corte no cierra ningún"
+          },
+          {
+            "line": 104,
+            "text": "El progreso permanece en **5/15 Must (33,3 %)**. B-004 sigue abierto porque"
+          },
+          {
+            "line": 106,
+            "text": "abierto porque el gate físico fue omitido. El build continúa siendo un"
+          }
+        ],
+        "ranges": [
+          "1-107",
+          "h:1",
+          "m:58"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/13_TERCER_CORTE_NOTAS_NATURALES.md",
+      "queued_sha256": "7cae467703f13d62b19274bf470a16b98ff56087cc386844e8c2e295189ebdfd",
+      "size_queued": 4741,
+      "exists": true,
+      "disk_sha256": "7cae467703f13d62b19274bf470a16b98ff56087cc386844e8c2e295189ebdfd",
+      "disk_size": 4741,
+      "hash_match": true,
+      "head_sha256": "7cae467703f13d62b19274bf470a16b98ff56087cc386844e8c2e295189ebdfd",
+      "extract": {
+        "binary": false,
+        "lines": 107,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tercer corte productivo: notas naturales ES/EN/spanglish"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Oráculo histórico"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Grounding y replay"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Frontera y respuesta"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Evidencia ejecutada"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Límites"
+          }
+        ],
+        "lead": "Estado del corte: implementado y verificado en `c1c07ff`. Reduce B-004, pero no",
+        "measures": [
+          {
+            "line": 32,
+            "text": "- 40/40 enrutan a `note.create`;"
+          },
+          {
+            "line": 36,
+            "text": "Esta cifra no significa 40/40 de todo `note.manage`. Hay 65 filas de producto"
+          },
+          {
+            "line": 79,
+            "text": "| Oracle creación standalone | 40/40 mensajes únicos |"
+          },
+          {
+            "line": 80,
+            "text": "| Contratos .NET | 23/23 |"
+          },
+          {
+            "line": 81,
+            "text": "| Kernel .NET | 26/26 |"
+          },
+          {
+            "line": 82,
+            "text": "| Provider Windows .NET | 60/60 |"
+          },
+          {
+            "line": 83,
+            "text": "| Integración .NET | 228/228 |"
+          },
+          {
+            "line": 84,
+            "text": "| Total .NET Release | 337/337 |"
+          },
+          {
+            "line": 85,
+            "text": "| Python canónico | 59/59 + 148 subtests |"
+          },
+          {
+            "line": 86,
+            "text": "| Corpus específico | 36/36 + 54 subtests |"
+          },
+          {
+            "line": 87,
+            "text": "| Total conjunto principal | 396/396 |"
+          },
+          {
+            "line": 105,
+            "text": "- No hay nueva evidencia física de accesibilidad, GPU 4 GB o VM limpia."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-107",
+          "h:1",
+          "m:32"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/14_CUARTO_CORTE_DESAMBIGUACION_NOTAS.md",
+      "queued_sha256": "bb25d79e16126f44a9c5f7e4151a42f7d40c358deed7d4e238b8843551f29c61",
+      "size_queued": 7656,
+      "exists": true,
+      "disk_sha256": "bb25d79e16126f44a9c5f7e4151a42f7d40c358deed7d4e238b8843551f29c61",
+      "disk_size": 7656,
+      "hash_match": true,
+      "head_sha256": "bb25d79e16126f44a9c5f7e4151a42f7d40c358deed7d4e238b8843551f29c61",
+      "extract": {
+        "binary": false,
+        "lines": 151,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Cuarto corte productivo: desambiguación durable de notas"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Snapshot y frontera de protocolo"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Grounding y control de concurrencia"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "Outbox, reinicio y replay"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Parser contextual y accesibilidad"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Evidencia ejecutada"
+          },
+          {
+            "line": 134,
+            "level": 2,
+            "text": "Límites y deuda explícita"
+          }
+        ],
+        "lead": "Estado del corte: implementado y verificado en `fa08653`. Cierra el P2",
+        "measures": [
+          {
+            "line": 65,
+            "text": "Este control es optimista y deliberadamente fail-closed: el snapshot sirve para"
+          },
+          {
+            "line": 97,
+            "text": "físicas con Narrator/NVDA, teclado real o DPI al 200 %."
+          },
+          {
+            "line": 103,
+            "text": "| Contratos .NET | 23/23 |"
+          },
+          {
+            "line": 104,
+            "text": "| Kernel .NET | 27/27 |"
+          },
+          {
+            "line": 105,
+            "text": "| Provider Windows .NET | 64/64 |"
+          },
+          {
+            "line": 106,
+            "text": "| Integración .NET | 261/261 |"
+          },
+          {
+            "line": 107,
+            "text": "| Total .NET Release | 375/375 |"
+          },
+          {
+            "line": 108,
+            "text": "| Python canónico | 59/59 + 148 subtests |"
+          },
+          {
+            "line": 109,
+            "text": "| Corpus específico | 36/36 + 54 subtests |"
+          },
+          {
+            "line": 110,
+            "text": "| Total conjunto principal | 434/434 |"
+          },
+          {
+            "line": 123,
+            "text": "endurecieron casing/Form C y UTF-16 malformado antes de cerrar el red-team."
+          },
+          {
+            "line": 148,
+            "text": "- No hay nueva evidencia física de Narrator/NVDA, DPI al 200 %, equipo con GPU"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-151",
+          "h:1",
+          "m:65"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/15_QUINTO_CORTE_ESTADO_LOCAL_PC.md",
+      "queued_sha256": "dc2fb2c17bdc4d7d5543c24f14af1b1e444a6f7e6342c7a764b274d3a494abc7",
+      "size_queued": 6995,
+      "exists": true,
+      "disk_sha256": "dc2fb2c17bdc4d7d5543c24f14af1b1e444a6f7e6342c7a764b274d3a494abc7",
+      "disk_size": 6995,
+      "hash_match": true,
+      "head_sha256": "dc2fb2c17bdc4d7d5543c24f14af1b1e444a6f7e6342c7a764b274d3a494abc7",
+      "extract": {
+        "binary": false,
+        "lines": 162,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Quinto corte productivo: estado local del PC"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "Oráculo histórico congelado"
+          },
+          {
+            "line": 67,
+            "level": 2,
+            "text": "Parser natural y frontera de composición"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "Provider Win32 de solo lectura"
+          },
+          {
+            "line": 108,
+            "level": 2,
+            "text": "Evidencia ejecutada"
+          },
+          {
+            "line": 142,
+            "level": 2,
+            "text": "Límites y deuda explícita"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "Referencias técnicas"
+          }
+        ],
+        "lead": "Estado del corte: implementado y verificado en `88cb456`. Añade una consulta",
+        "measures": [
+          {
+            "line": 4,
+            "text": "local y de solo lectura del estado del equipo, y el red-team final terminó con"
+          },
+          {
+            "line": 54,
+            "text": "Los 113/113 IDs enrutan a `system.status` con un único argumento `scope` exacto."
+          },
+          {
+            "line": 73,
+            "text": "- GPU/VRAM, procesos, IP y preguntas de conocimiento o precio;"
+          },
+          {
+            "line": 76,
+            "text": "- fecha/hora combinadas con RAM o red;"
+          },
+          {
+            "line": 87,
+            "text": "- uso de CPU mediante dos muestras separadas por 150 ms, cantidad de procesadores"
+          },
+          {
+            "line": 95,
+            "text": "No existe campo ni probe para GPU/VRAM, procesos, IP, hostname o usuario. Una PC"
+          },
+          {
+            "line": 112,
+            "text": "| Contratos .NET | 23/23 |"
+          },
+          {
+            "line": 113,
+            "text": "| Kernel .NET | 27/27 |"
+          },
+          {
+            "line": 114,
+            "text": "| Provider Windows .NET | 81/81 |"
+          },
+          {
+            "line": 115,
+            "text": "| Integración .NET | 329/329 |"
+          },
+          {
+            "line": 116,
+            "text": "| Total .NET Release | 460/460 |"
+          },
+          {
+            "line": 117,
+            "text": "| Python canónico | 59/59 + 148 subtests |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-162",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/16_SEXTO_CORTE_AUDIO_GLOBAL.md",
+      "queued_sha256": "636cd3a0ad83025f78d72e0282dcf32d71fe4701c964befbc2e5c6786faee687",
+      "size_queued": 13904,
+      "exists": true,
+      "disk_sha256": "636cd3a0ad83025f78d72e0282dcf32d71fe4701c964befbc2e5c6786faee687",
+      "disk_size": 13904,
+      "hash_match": true,
+      "head_sha256": "636cd3a0ad83025f78d72e0282dcf32d71fe4701c964befbc2e5c6786faee687",
+      "extract": {
+        "binary": false,
+        "lines": 270,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sexto corte productivo: control global de audio"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Oráculo histórico congelado"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Parser natural y frontera de composición"
+          },
+          {
+            "line": 79,
+            "level": 2,
+            "text": "Provider Windows y evidencia durable"
+          },
+          {
+            "line": 125,
+            "level": 2,
+            "text": "Recuperación en core y GUI"
+          },
+          {
+            "line": 138,
+            "level": 2,
+            "text": "Gate físico NativeAOT"
+          },
+          {
+            "line": 184,
+            "level": 2,
+            "text": "Evidencia ejecutada"
+          },
+          {
+            "line": 216,
+            "level": 2,
+            "text": "Límites y deuda explícita"
+          },
+          {
+            "line": 239,
+            "level": 2,
+            "text": "Adenda 2026-07-15: corte finito audio global 28"
+          },
+          {
+            "line": 259,
+            "level": 2,
+            "text": "Referencias técnicas"
+          }
+        ],
+        "lead": "Estado del corte: implementado y verificado en `33b62bc`. Añade control absoluto",
+        "measures": [
+          {
+            "line": 50,
+            "text": "Los 143/143 enrutan al nombre y argumento exactos. Además, 156 negativos"
+          },
+          {
+            "line": 56,
+            "text": "de composiciones y otras familias de audio. Por eso 143/143 no significa cubrir"
+          },
+          {
+            "line": 150,
+            "text": "| Baseline | scalar `0,98`; 98 %; mute `false` |"
+          },
+          {
+            "line": 154,
+            "text": "| Restore | mismo hash; scalar `0,98`; 98 %; mute `false` |"
+          },
+          {
+            "line": 164,
+            "text": "Este incidente es evidencia del comportamiento fail-closed del arnés, no una"
+          },
+          {
+            "line": 175,
+            "text": "para `baxy-core.exe`. Las 14/14 entradas se verificaron contra bytes y hashes."
+          },
+          {
+            "line": 188,
+            "text": "| Contratos .NET | 25/25 |"
+          },
+          {
+            "line": 189,
+            "text": "| Kernel .NET | 29/29 |"
+          },
+          {
+            "line": 190,
+            "text": "| Provider Windows .NET | 118/118 |"
+          },
+          {
+            "line": 191,
+            "text": "| Integración .NET | 493/493 |"
+          },
+          {
+            "line": 192,
+            "text": "| **Total .NET Release no físico** | **665/665** |"
+          },
+          {
+            "line": 193,
+            "text": "| Python canónico | 59/59 + 148 subtests |"
+          }
+        ],
+        "dates": [
+          "2026-07-15"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-270",
+          "h:1",
+          "m:50"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/17_SEPTIMO_CORTE_MEMORIA_PRIVADA.md",
+      "queued_sha256": "604a32d7fd460957aecfa65107f981aa2706df8843607b2b6bafe0411a8499f1",
+      "size_queued": 12402,
+      "exists": true,
+      "disk_sha256": "604a32d7fd460957aecfa65107f981aa2706df8843607b2b6bafe0411a8499f1",
+      "disk_size": 12402,
+      "hash_match": true,
+      "head_sha256": "604a32d7fd460957aecfa65107f981aa2706df8843607b2b6bafe0411a8499f1",
+      "extract": {
+        "binary": false,
+        "lines": 204,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Séptimo corte productivo: memoria privada local"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "Oráculo histórico congelado"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Frontera privada y raíz canónica"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "Store, retención y recuperación"
+          },
+          {
+            "line": 138,
+            "level": 2,
+            "text": "Exportación y replay"
+          },
+          {
+            "line": 161,
+            "level": 2,
+            "text": "Evidencia ejecutada"
+          },
+          {
+            "line": 184,
+            "level": 2,
+            "text": "Límites y deuda explícita"
+          }
+        ],
+        "lead": "Estado del corte: implementado y verificado en `478a19a`. Añade un ciclo local",
+        "measures": [
+          {
+            "line": 13,
+            "text": "> fail-closed para key loss, truncado, rollback, tamper y journal legado. Bajo el"
+          },
+          {
+            "line": 15,
+            "text": "> 405/405 pruebas focalizadas y cero P0/P1; la personalización transversal queda"
+          },
+          {
+            "line": 19,
+            "text": "B-004/B-005/B-006. El progreso permanece en 5/15 Must (33,3 %): la memoria aún"
+          },
+          {
+            "line": 165,
+            "text": "| Suite .NET Release | 1.035/1.035 |"
+          },
+          {
+            "line": 166,
+            "text": "| Python canónico | 65/65 + 157 subtests |"
+          },
+          {
+            "line": 204,
+            "text": "- El avance permanece en 5/15 Must y B-004/B-005/B-006 siguen abiertos."
+          }
+        ],
+        "dates": [
+          "2026-07-15"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-204",
+          "h:1",
+          "m:13"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/18_OCTAVO_CORTE_GPU_LOCAL.md",
+      "queued_sha256": "ae962223e0eb8995a0c738f1597f09023b84e199126950635822ed355c314fe2",
+      "size_queued": 8112,
+      "exists": true,
+      "disk_sha256": "ae962223e0eb8995a0c738f1597f09023b84e199126950635822ed355c314fe2",
+      "disk_size": 8112,
+      "hash_match": true,
+      "head_sha256": "ae962223e0eb8995a0c738f1597f09023b84e199126950635822ed355c314fe2",
+      "extract": {
+        "binary": false,
+        "lines": 163,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Octavo corte productivo: estado local de GPU"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Oráculo histórico congelado"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "Provider Windows y frontera pública"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Verificación ejecutada"
+          },
+          {
+            "line": 142,
+            "level": 2,
+            "text": "Límites honestos"
+          },
+          {
+            "line": 156,
+            "level": 2,
+            "text": "Commits del corte"
+          }
+        ],
+        "lead": "Estado del corte: implementado y verificado en los commits `3037445`,",
+        "measures": [
+          {
+            "line": 10,
+            "text": "ningún Must ni los bloqueantes B-004/B-005/B-006. El progreso permanece en 5/15"
+          },
+          {
+            "line": 11,
+            "text": "Must (33,3 %): siguen pendientes conversación/composición general, el resto del"
+          },
+          {
+            "line": 22,
+            "text": "| `gpu_identity` | Adaptadores en orden de snapshot, nombre, IDs de vendor/device, VRAM, RAM dedicada del sistema y límite de RAM compartida | Uso, procesos, temperatura |"
+          },
+          {
+            "line": 28,
+            "text": "quinto corte y su oráculo 113/113 permanecen intactos."
+          },
+          {
+            "line": 47,
+            "text": "| universo seleccionado | **77** | 26 positivos + 51 fronteras fail-closed |"
+          },
+          {
+            "line": 63,
+            "text": "correlaciona internamente con los adaptadores DXGI. No hay WMI remoto, red,"
+          },
+          {
+            "line": 93,
+            "text": "- `VRAM` es memoria de video dedicada;"
+          },
+          {
+            "line": 96,
+            "text": "- el uso dedicado se expresa frente a `VRAM + RAM reservada`, y el uso"
+          },
+          {
+            "line": 105,
+            "text": "| Contracts | 37/37 |"
+          },
+          {
+            "line": 106,
+            "text": "| Kernel | 44/44 |"
+          },
+          {
+            "line": 107,
+            "text": "| Providers Windows | 232/232 |"
+          },
+          {
+            "line": 108,
+            "text": "| Integración | 896/896 |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-163",
+          "h:1",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/19_NOVENO_CORTE_DISTRIBUCION_REPRODUCIBLE.md",
+      "queued_sha256": "4c2217e38766779cddf4bd442c8787ed9dee88b06698ff9455b1a5e1760a92ea",
+      "size_queued": 6036,
+      "exists": true,
+      "disk_sha256": "4c2217e38766779cddf4bd442c8787ed9dee88b06698ff9455b1a5e1760a92ea",
+      "disk_size": 6036,
+      "hash_match": true,
+      "head_sha256": "4c2217e38766779cddf4bd442c8787ed9dee88b06698ff9455b1a5e1760a92ea",
+      "extract": {
+        "binary": false,
+        "lines": 120,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Noveno corte — distribución reproducible"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Contrato de build"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Contrato de paquete"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "Incidente de reproducibilidad cerrado"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Evidencia limpia"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Gates sobre el build limpio"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "Límites honestos"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Estado del producto"
+          }
+        ],
+        "lead": "Este corte convierte el directorio de desarrollo en un paquete offline de",
+        "measures": [
+          {
+            "line": 14,
+            "text": "una release firmada. Por eso el progreso global permanece en 5/15 Must y B-005"
+          },
+          {
+            "line": 77,
+            "text": "| Pruebas Python | 95/95 |"
+          },
+          {
+            "line": 78,
+            "text": "| Pruebas .NET | 1.209/1.209 |"
+          },
+          {
+            "line": 79,
+            "text": "| Red-team packaging | 0 P0/P1 abiertos |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-120",
+          "h:1",
+          "m:14"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/20_DECIMO_CORTE_SETUP_REPRODUCIBLE.md",
+      "queued_sha256": "c75fad9ab6c29b12f9a6694b5be70cd4f006e371767dfbcac7a7599ca115d655",
+      "size_queued": 5978,
+      "exists": true,
+      "disk_sha256": "c75fad9ab6c29b12f9a6694b5be70cd4f006e371767dfbcac7a7599ca115d655",
+      "disk_size": 5978,
+      "hash_match": true,
+      "head_sha256": "c75fad9ab6c29b12f9a6694b5be70cd4f006e371767dfbcac7a7599ca115d655",
+      "extract": {
+        "binary": false,
+        "lines": 107,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Décimo corte — Setup embebido y reproducible"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Contrato implementado"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "Reproducción física"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Fallos encontrados por el gate físico"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Regresión y auditoría"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Límites que siguen bloqueando B-005"
+          }
+        ],
+        "lead": "Este corte convierte el ZIP autocontenido del noveno corte en un único",
+        "measures": [
+          {
+            "line": 12,
+            "text": "El progreso permanece en **5/15 Must (33,3 %)** y B-004/B-005/B-006 siguen"
+          },
+          {
+            "line": 54,
+            "text": "produjeron evidencia byte a byte idéntica con estado `passed`. El inspector de"
+          },
+          {
+            "line": 78,
+            "text": "- Suite .NET: **1.270/1.270**; desglose 37 Contracts, 44 Kernel, 61 Setup, 232"
+          },
+          {
+            "line": 81,
+            "text": "- Suite Python: **110/110**, sin omitidas. `test_build_setup.py` aporta 15 casos"
+          },
+          {
+            "line": 83,
+            "text": "hardlinks, junctions, ZIP/CRC, commit/epoch, SemVer, outputs inmutables,"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 71,
+            "text": "pero la revalidación final rechazó el input porque la atestación se había"
+          }
+        ],
+        "ranges": [
+          "1-107",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/21_UNDECIMO_CORTE_DATA_SCHEMA_CONGELADO.md",
+      "queued_sha256": "0f63e8cc1ae146babbd5156b972aea68ad86f8c5165701fd235b4154c8aeb907",
+      "size_queued": 3222,
+      "exists": true,
+      "disk_sha256": "0f63e8cc1ae146babbd5156b972aea68ad86f8c5165701fd235b4154c8aeb907",
+      "disk_size": 3222,
+      "hash_match": true,
+      "head_sha256": "0f63e8cc1ae146babbd5156b972aea68ad86f8c5165701fd235b4154c8aeb907",
+      "extract": {
+        "binary": false,
+        "lines": 74,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Undécimo corte: `data_schema=1` congelado"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Resultado"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Contratos versionados"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Reproducción física"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "Regresión del corte"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Límite honesto"
+          }
+        ],
+        "lead": "Fecha del corte: 2026-07-15",
+        "measures": [
+          {
+            "line": 58,
+            "text": "- .NET Release: **1.277/1.277** pruebas superadas."
+          },
+          {
+            "line": 59,
+            "text": "- Python: **112/112** pruebas superadas y 172 subtests."
+          },
+          {
+            "line": 60,
+            "text": "- Builder de Setup: **16/16**."
+          }
+        ],
+        "dates": [
+          "2026-07-15"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-74",
+          "h:1",
+          "m:58"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/22_INVENTARIO_ARQUEOLOGICO_CARTER_BAXY.md",
+      "queued_sha256": "d8f4054d3fe63dc6166db626039cf19de3cf1ad81f13be3040c34244399b5459",
+      "size_queued": 9062,
+      "exists": true,
+      "disk_sha256": "d8f4054d3fe63dc6166db626039cf19de3cf1ad81f13be3040c34244399b5459",
+      "disk_size": 9062,
+      "hash_match": true,
+      "head_sha256": "d8f4054d3fe63dc6166db626039cf19de3cf1ad81f13be3040c34244399b5459",
+      "extract": {
+        "binary": false,
+        "lines": 66,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Inventario arqueológico Carter → BAXY"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Fuentes inspeccionadas"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Activos encontrados"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "Descartes explícitos"
+          }
+        ],
+        "lead": "Estado: inventario cerrado sobre el cutoff histórico `2026-07-14T10:51:49.161254Z`.",
+        "measures": [
+          {
+            "line": 9,
+            "text": "- Manifest y reporte del cutoff; los tres JSONL históricos; ledgers 07/09; ADR-0005; `GATES_MENTE.md`; frontera vigente; README de `baxy_mind`; catálogo y `hello` actuales."
+          },
+          {
+            "line": 18,
+            "text": "| `app.open` | `app.open`, apps launcher | 38 / 307 | `tooling/providers/desktop.py`, `tools/apps.py`, `9c67495` | provider Windows + verificador | `app.open` allowlist Notepad | conservar-actual |"
+          },
+          {
+            "line": 19,
+            "text": "| `app.close` | `app.resolve_close_targets`, `app.close_targets` | 6 / 62 | v2 `desktop.py`, workflows `desktop_close_safely` | handle + cierre verificado | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 20,
+            "text": "| `window.manage` | `window.resolve/focus/minimize/maximize/restore` | 29 / 178 | v2 `windows_control.py` | IDs efímeros, revalidación y verifier | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 21,
+            "text": "| `audio.volume` | `audio.set_volume`, `volume_up/down` | 21 / 277 | v2 `desktop.py`; v3 `33b62bc`, `17d85bd` | Core Audio y postlectura | `audio.volume` | conservar-actual |"
+          },
+          {
+            "line": 22,
+            "text": "| `audio.mute` | `audio.set_mute` | 8 / 108 | mismas fuentes de audio | Core Audio y postlectura | `audio.mute` | conservar-actual |"
+          },
+          {
+            "line": 23,
+            "text": "| `audio.status` | `audio.status`, now volume | 1 / 16 | mismas fuentes; enmienda corpus v3 | lectura Core Audio | `audio.status` | conservar-actual |"
+          },
+          {
+            "line": 24,
+            "text": "| `media.play` | `media.play`, `spotify.play_exact` | 49 / 524 | v2 `desktop.py`, `spotify_play*.py`; D20/D21 | SMTC/Spotify, gates parciales | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 25,
+            "text": "| `media.control` | `media.pause/next/previous/stop`, `now_playing` | 22 / 199 | v2 `desktop.py`, `tools/media.py` | SMTC + verificación | no | portar-sin-cambios-funcionales |"
+          },
+          {
+            "line": 26,
+            "text": "| `streaming.navigate` | streaming/media apps | 35 / 230 | `tools/streaming*`, `legacy_export/.../media_apps.py` | adapters de apps/web | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 27,
+            "text": "| `web.search` | `web.search` | 45 / 321 | v2 `services.py`, `tools/web_search.py` | provider remoto read-only | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 28,
+            "text": "| `browser.navigate` | browser v2 open/navigate/read | 24 / 164 | `tooling/providers/browser_v2.py`, `browser_v2_identity.py` | CDP con identidad y lifecycle | no | completar-implementacion-parcial |"
+          }
+        ],
+        "dates": [
+          "2026-07-14"
+        ],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 20,
+            "text": "| `window.manage` | `window.resolve/focus/minimize/maximize/restore` | 29 / 178 | v2 `windows_control.py` | IDs efímeros, revalidación y verifier | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 39,
+            "text": "| `message.send` | WhatsApp resolve/send; Discord v2 | 12 / 98 | v2 `services.py`, `discord_message_v2.py`, D33 | recipient handle + verifier | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 56,
+            "text": "| `clipboard.manage` | read/write text | 6 / 36 | v2 `clipboard.py` | provider y verifier | no | adaptar-al-contrato-actual |"
+          },
+          {
+            "line": 66,
+            "text": "- No se portan credenciales, rutas personales, UI automation sin handles, éxitos sin verifier ni acciones monetarias reales."
+          }
+        ],
+        "ranges": [
+          "1-66",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/23_CENSO_FUNCIONAL_TOOLS_CONGELADO.md",
+      "queued_sha256": "d33646b0499270b895d16a5a834edeb80d4e4761c1c60cf76de6caef032aef54",
+      "size_queued": 11689,
+      "exists": true,
+      "disk_sha256": "d33646b0499270b895d16a5a834edeb80d4e4761c1c60cf76de6caef032aef54",
+      "disk_size": 11689,
+      "hash_match": true,
+      "head_sha256": "d33646b0499270b895d16a5a834edeb80d4e4761c1c60cf76de6caef032aef54",
+      "extract": {
+        "binary": false,
+        "lines": 74,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Censo funcional de tools (congelado)"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Catálogo ejecutable final"
+          }
+        ],
+        "lead": "Congelado: 2026-07-16, después de inspeccionar todas las referencias Git locales, el snapshot `legacy/`, el corpus de 2.084 misiones/14.836 mensajes y el catálogo ejecutable. Congelar significa que las 43 filas no crecerán; los cortes solo pueden cambiar su estado y evidencia.",
+        "measures": [
+          {
+            "line": 7,
+            "text": "| `app.open` | apps launch | 38 / 307 | Notepad+Calculadora; apps especializadas separadas | ninguna del censo | adapters de identidad por app + postlectura | baja reversible | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 8,
+            "text": "| `app.close` | close_targets | 6 / 62 | `app.close` portado | falta gate físico mutante | windowId + WM_CLOSE + ausencia verificada | pérdida de trabajo | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 9,
+            "text": "| `window.manage` | resolve/focus/min/max/restore/move/resize | 29 / 178 | 7 tools nuevas | ninguna; close vive en `app.close` | provider Win32 + identidad efímera + verifier separado | baja reversible | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 10,
+            "text": "| `audio.volume` | set/up/down | 21 / 277 | ejecutable | relativo componible con status+absolute | conservar Core Audio | baja reversible | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 11,
+            "text": "| `audio.mute` | set_mute | 8 / 108 | ejecutable | ninguna | conservar Core Audio | baja reversible | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 12,
+            "text": "| `audio.status` | now volume | 1 / 16 | ejecutable | ninguna | conservar lectura endpoint | solo lectura | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 13,
+            "text": "| `media.play` | spotify exact | 49 / 524 | contrato+seam+probe | falta sesión Spotify autenticada | adapter oficial + now-playing verifier | externa | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 14,
+            "text": "| `media.control` | pause/next/previous/stop | 22 / 199 | contrato+seam SMTC | no hay sesión SMTC seleccionable en gate | adapter SMTC + postlectura | baja reversible | `bloqueada-por-entorno` |"
+          },
+          {
+            "line": 15,
+            "text": "| `streaming.navigate` | streaming apps | 35 / 230 | contrato+seam | falta sesión autenticada por servicio | resourceUri exacta + postlectura | externa | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 16,
+            "text": "| `web.search` | web.search | 45 / 321 | contrato+seam | proveedor web no configurado | provider oficial + resultados acotados | solo lectura remota | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 17,
+            "text": "| `browser.navigate` | browser v2 | 24 / 164 | contrato+seam CDP | no hay sesión CDP autenticada | URL exacta + postlectura | externa | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 18,
+            "text": "| `reminder.create` | reminder/timer | 6 / 79 | 5 tools portadas | ninguna del lifecycle durable | store separado + reloj UTC + postlectura | baja reversible | `cubierta-y-verificada` |"
+          }
+        ],
+        "dates": [
+          "2026-07-16"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 9,
+            "text": "| `window.manage` | resolve/focus/min/max/restore/move/resize | 29 / 178 | 7 tools nuevas | ninguna; close vive en `app.close` | provider Win32 + identidad efímera + verifier separado | baja reversible | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 13,
+            "text": "| `media.play` | spotify exact | 49 / 524 | contrato+seam+probe | falta sesión Spotify autenticada | adapter oficial + now-playing verifier | externa | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 26,
+            "text": "| `filesystem.trash` | prepare/commit/restore | 4 / 42 | tres tools portadas | ninguna | handle de un uso + papelera privada + verifier | borrado recuperable | `cubierta-y-verificada` |"
+          },
+          {
+            "line": 35,
+            "text": "| `game.install` | Steam install dialog | 5 / 74 | prepare/commit contracts+seam | cuenta/cliente no autorizados | confirmationId + job verifier | instalación | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 38,
+            "text": "| `game.launch` | launcher/AppID | 2 / 46 | contract+Steam seam | sesión/propiedad no autorizadas | AppID + process verifier | baja reversible | `bloqueada-por-dependencia-externa` |"
+          },
+          {
+            "line": 42,
+            "text": "| `memory.save` | save/correct/sensitive | 9 / 102 | ejecutable | ninguna del censo | conservar DPAPI+verifier | privacidad | `cubierta-y-verificada` |"
+          }
+        ],
+        "ranges": [
+          "1-74",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/24_ARQUEOLOGIA_PLANNER_CARTER_BAXY.md",
+      "queued_sha256": "aed9b201746bd0738e3fa707de04786884574527412e785b0630973ce058895e",
+      "size_queued": 6523,
+      "exists": true,
+      "disk_sha256": "aed9b201746bd0738e3fa707de04786884574527412e785b0630973ce058895e",
+      "disk_size": 6523,
+      "hash_match": true,
+      "head_sha256": "d37e5f6b30efe76b7d52e48ae11f533bf81b628fbb98c6a2cc0716bd6376d98e",
+      "extract": {
+        "binary": false,
+        "lines": 96,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Arqueología del planner: Carter → BAXY Python → BAXY .NET"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Generaciones encontradas"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Qué decía realmente el corpus"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "Activos recuperados y decisiones"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Brechas históricas convertidas en regresiones"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Evidencia física exploratoria"
+          }
+        ],
+        "lead": "Fecha de corte: 2026-07-16. Esta arqueología no trata a «BAXY» como una sola",
+        "measures": [
+          {
+            "line": 79,
+            "text": "La primera salida útil obtuvo 0/6 por contrato. Las iteraciones revelaron plan"
+          },
+          {
+            "line": 84,
+            "text": "La batería diagnóstica terminó 6/6: conversación, app→audio, search→hash,"
+          }
+        ],
+        "dates": [
+          "2026-07-16"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 56,
+            "text": "- Se descartó CodeAct/código arbitrario porque rompería el catálogo cerrado,"
+          }
+        ],
+        "ranges": [
+          "1-96",
+          "h:1",
+          "m:79"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/25_INTEGRACION_GENERACIONAL_CARTER_SCHEMA_BAXY.md",
+      "queued_sha256": "3e010ab1e3451a1548be8dd7abf7d1d5172226d67154df17ba6bdd37ecc9dd20",
+      "size_queued": 6745,
+      "exists": true,
+      "disk_sha256": "3e010ab1e3451a1548be8dd7abf7d1d5172226d67154df17ba6bdd37ecc9dd20",
+      "disk_size": 6745,
+      "hash_match": true,
+      "head_sha256": "ee0a1e868ed3c793cc8c0580ea6b980c0895cb08c96e0b78afc2bc1dd7f13b8d",
+      "extract": {
+        "binary": false,
+        "lines": 98,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Integración generacional Carter → Schema Agent → BAXY"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Alcance auditado"
+          },
+          {
+            "line": 28,
+            "level": 2,
+            "text": "Resultado de la comparación"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Recuperación nueva de esta pasada"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "`browser.page.read`"
+          },
+          {
+            "line": 58,
+            "level": 3,
+            "text": "`browser.tabs.list`"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "Componentes históricos que deliberadamente no se copiaron"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Invariantes finales"
+          }
+        ],
+        "lead": "Fecha de corte: 2026-07-22.",
+        "measures": [
+          {
+            "line": 16,
+            "text": "- FunctionGemma, el router lean y el perfil de 4 GiB;"
+          },
+          {
+            "line": 42,
+            "text": "| Planner Carter/Tool Ecosystem v2 | DAG durable, dependencias tipadas, confirmación, leases y replan acotado | integrado en planner .NET; máximo dos replans y fail-closed ante efecto ambiguo |"
+          },
+          {
+            "line": 82,
+            "text": "- perfiles completos duplicados por VRAM, Whisper cuando Parakeet medido es la ruta"
+          }
+        ],
+        "dates": [
+          "2026-07-22"
+        ],
+        "models": [
+          "gemma 4",
+          "functiongemma",
+          "whisper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 8,
+            "text": "porque las ramas Python antiguas y la reconstrucción .NET actual no comparten un"
+          },
+          {
+            "line": 54,
+            "text": "produce efecto. Se clasifica como `privacy_sensitive` porque puede exponer contenido"
+          }
+        ],
+        "ranges": [
+          "1-98",
+          "h:1",
+          "m:16"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/26_ESTRUCTURA_Y_RUTAS_DE_MAQUINA.md",
+      "queued_sha256": "6a997206f7b29a026fba6ee3e10e85e7ba3c330574072dc58292a1cb9adfb34d",
+      "size_queued": 4332,
+      "exists": true,
+      "disk_sha256": "6a997206f7b29a026fba6ee3e10e85e7ba3c330574072dc58292a1cb9adfb34d",
+      "disk_size": 4332,
+      "hash_match": true,
+      "head_sha256": "fe6c4306e002bc0db11c4585bbcf5033de4e174a88a1535915e26a8611dcc705",
+      "extract": {
+        "binary": false,
+        "lines": 110,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Estructura y rutas de máquina"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fuente de verdad"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Override local fuera de Git"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Bootstrap reproducible"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "Registro y diagnóstico"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "Compuerta contra regresiones"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "Divergencias deliberadas"
+          }
+        ],
+        "lead": "Estado posterior a la normalización de portabilidad iniciada el 2026-07-28.",
+        "measures": [
+          {
+            "line": 12,
+            "text": "- modelo conversacional GGUF y `llama-server`;"
+          },
+          {
+            "line": 32,
+            "text": "`MindRuntimeDiscovery` de forma fail-closed."
+          },
+          {
+            "line": 48,
+            "text": "\"conversation_model\": [\"E:\\\\BAXY-assets\\\\model.gguf\"],"
+          },
+          {
+            "line": 82,
+            "text": "SHA-256 para Python, GGUF, `llama-server`, bundle STT y wake cuando está activo."
+          },
+          {
+            "line": 89,
+            "text": "fail-closed. Si el registro no es válido, la mente no arranca y el cuerpo"
+          }
+        ],
+        "dates": [
+          "2026-07-28"
+        ],
+        "models": [
+          "nemotron"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 80,
+            "text": "`%LOCALAPPDATA%\\BAXYRuntime\\mind-runtime-v1.json` contiene rutas absolutas porque"
+          }
+        ],
+        "ranges": [
+          "1-110",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/agentes/INDICE.md",
+      "queued_sha256": "7b88bca03e1670a67c37d9259f3a888945e736520988f21408ba6a85b4e951da",
+      "size_queued": 25892,
+      "exists": true,
+      "disk_sha256": "7b88bca03e1670a67c37d9259f3a888945e736520988f21408ba6a85b4e951da",
+      "disk_size": 25892,
+      "hash_match": true,
+      "head_sha256": "7b88bca03e1670a67c37d9259f3a888945e736520988f21408ba6a85b4e951da",
+      "extract": {
+        "binary": false,
+        "lines": 337,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Índice recuperado de subagentes Codex"
+          }
+        ],
+        "lead": "- Hilo raíz: 019f5027-c684-75a1-a47b-5af2edd2339b",
+        "measures": [
+          {
+            "line": 5,
+            "text": "- Tamaño bruto referenciado: 5.10 GiB"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-337",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/agentes/README.md",
+      "queued_sha256": "3f0170b9609defc7136a773e60a386288dace57f5010ed2c58db213a29747961",
+      "size_queued": 3006,
+      "exists": true,
+      "disk_sha256": "3f0170b9609defc7136a773e60a386288dace57f5010ed2c58db213a29747961",
+      "disk_size": 3006,
+      "hash_match": true,
+      "head_sha256": "2320c1e9aeda3745fda62df5f52cb452c67e972784aa119d5a2fdd34bfc50c09",
+      "extract": {
+        "binary": false,
+        "lines": 88,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Recuperación de subagentes Codex"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Qué se recupera"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "Capas"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "Versionada y sanitizada"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "Local y privada"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Limitaciones"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Regenerar"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Cómo reutilizar sin inundar el contexto"
+          }
+        ],
+        "lead": "Esta carpeta permite reutilizar el trabajo de los subagentes ejecutados en el",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 48,
+            "text": "Está ignorada por Git porque puede contener rutas, comandos, outputs, contexto"
+          }
+        ],
+        "ranges": [
+          "1-88",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/00_INDICE.md",
+      "queued_sha256": "2427b104775c5598717fc916b67bdce6831c4a0623e1441e2343b8f56d609647",
+      "size_queued": 5351,
+      "exists": true,
+      "disk_sha256": "2427b104775c5598717fc916b67bdce6831c4a0623e1441e2343b8f56d609647",
+      "disk_size": 5351,
+      "hash_match": true,
+      "head_sha256": "2427b104775c5598717fc916b67bdce6831c4a0623e1441e2343b8f56d609647",
+      "extract": {
+        "binary": false,
+        "lines": 102,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY por sprints — once prompts para GPT-5.6 Sol"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Los once"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Las reglas que llevan los diez"
+          },
+          {
+            "line": 72,
+            "level": 2,
+            "text": "Por qué están escritos así"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Fuera de alcance"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "Invariantes — ningún sprint los re-deriva"
+          }
+        ],
+        "lead": "Once prompts. Cada uno se lanza en una sesión nueva con un agente nuevo, en",
+        "measures": [
+          {
+            "line": 45,
+            "text": "**Cuanto menos consuma, mejor.** 4 GB de VRAM es el techo, no el objetivo. Entre"
+          },
+          {
+            "line": 49,
+            "text": "tiene 16 GB de VRAM: eso es holgura para trabajar, no el presupuesto del producto."
+          },
+          {
+            "line": 88,
+            "text": "certificado de 4 GB de VRAM y perfil CPU de 8 GB; instalación limpia, primer"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 23,
+            "text": "El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes"
+          }
+        ],
+        "ranges": [
+          "1-102",
+          "h:1",
+          "m:45"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/01_HERENCIA.md",
+      "queued_sha256": "e7084a8fd65280391a2ea7573d63c9aaf873f183d515f2a11899ee3b44caf0e2",
+      "size_queued": 5060,
+      "exists": true,
+      "disk_sha256": "e7084a8fd65280391a2ea7573d63c9aaf873f183d515f2a11899ee3b44caf0e2",
+      "disk_size": 5060,
+      "hash_match": true,
+      "head_sha256": "e7084a8fd65280391a2ea7573d63c9aaf873f183d515f2a11899ee3b44caf0e2",
+      "extract": {
+        "binary": false,
+        "lines": 108,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 01 — Herencia"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Por qué existe este sprint"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "Cómo decides qué se hereda"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 96,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 72,
+            "text": "basta: un STT excelente que necesita 8 GB de VRAM no sirve, porque BAXY tiene que"
+          },
+          {
+            "line": 73,
+            "text": "correr en un portátil normal. La máquina de desarrollo tiene 16 GB de VRAM y"
+          },
+          {
+            "line": 74,
+            "text": "32 GB de RAM — eso es holgura para trabajar, no el presupuesto del producto."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "livekit",
+          "functiongemma"
+        ],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 44,
+            "text": "- **Qué no se hereda y por qué** — un rechazo con el mecanismo entendido vale"
+          },
+          {
+            "line": 72,
+            "text": "basta: un STT excelente que necesita 8 GB de VRAM no sirve, porque BAXY tiene que"
+          }
+        ],
+        "ranges": [
+          "1-108",
+          "h:1",
+          "m:72"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/02_BASE.md",
+      "queued_sha256": "b674a2cb66c0da15a7f083abc468119fdb442b29deaffb70ab861d1b751a4d09",
+      "size_queued": 3424,
+      "exists": true,
+      "disk_sha256": "b674a2cb66c0da15a7f083abc468119fdb442b29deaffb70ab861d1b751a4d09",
+      "disk_size": 3424,
+      "hash_match": true,
+      "head_sha256": "b674a2cb66c0da15a7f083abc468119fdb442b29deaffb70ab861d1b751a4d09",
+      "extract": {
+        "binary": false,
+        "lines": 75,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 02 — Base reproducible"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Dónde está hoy"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "Defectos"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 34,
+            "text": "R280 — léela antes de empezar, porque la mitad del trabajo ya está hecho:"
+          }
+        ],
+        "ranges": [
+          "1-75",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/03_COMPRENSION.md",
+      "queued_sha256": "8ca50f10fcc90a49be3fbb4b1e0e6285c2a222ea7681180e7a132806847897aa",
+      "size_queued": 6977,
+      "exists": true,
+      "disk_sha256": "8ca50f10fcc90a49be3fbb4b1e0e6285c2a222ea7681180e7a132806847897aa",
+      "disk_size": 6977,
+      "hash_match": true,
+      "head_sha256": "8ca50f10fcc90a49be3fbb4b1e0e6285c2a222ea7681180e7a132806847897aa",
+      "extract": {
+        "binary": false,
+        "lines": 145,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 03 — Comprensión"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "Lo que ya se sabe — no lo repitas"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Cómo eliges el camino"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Cómo mides sin engañarte"
+          },
+          {
+            "line": 120,
+            "level": 2,
+            "text": "Lo que no puedes romper"
+          },
+          {
+            "line": 129,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 135,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 141,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 33,
+            "text": "Apunta a **≥ 90 %**, medido sobre paráfrasis que el sistema no ha visto, con la"
+          },
+          {
+            "line": 90,
+            "text": "Y elige **el más ligero que cumpla**. 4 GB de VRAM es el techo, no el objetivo:"
+          },
+          {
+            "line": 92,
+            "text": "pena buscar activamente si existe. Un decisor que resuelve el sprint con 8 GB de"
+          },
+          {
+            "line": 93,
+            "text": "VRAM no sirve, porque BAXY corre en el portátil de una persona normal y compite"
+          },
+          {
+            "line": 107,
+            "text": "una gramática que no sale de la gramática del reconocedor, así que su 700/700 no"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma-4",
+          "qwen3"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 54,
+            "text": "peticiones servibles llegan con cero candidatos porque el camino determinista las"
+          },
+          {
+            "line": 93,
+            "text": "VRAM no sirve, porque BAXY corre en el portátil de una persona normal y compite"
+          }
+        ],
+        "ranges": [
+          "1-145",
+          "h:1",
+          "m:33"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/04_HONESTIDAD.md",
+      "queued_sha256": "9afb5eaa429cbf8231ef0a1a2961c6f3bcda39b6308963b6265790508504ed71",
+      "size_queued": 4877,
+      "exists": true,
+      "disk_sha256": "9afb5eaa429cbf8231ef0a1a2961c6f3bcda39b6308963b6265790508504ed71",
+      "disk_size": 4877,
+      "hash_match": true,
+      "head_sha256": "9afb5eaa429cbf8231ef0a1a2961c6f3bcda39b6308963b6265790508504ed71",
+      "extract": {
+        "binary": false,
+        "lines": 108,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 04 — Honestidad"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Por qué es su propio sprint"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Lo que ya se sabe"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Cómo mides"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "Defectos"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 43,
+            "text": "Porque es el criterio que más fácil se pierde persiguiendo exactitud. Una mejora"
+          }
+        ],
+        "ranges": [
+          "1-108",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/05_EJECUCION.md",
+      "queued_sha256": "18fab50a4c06c6e30c7fb115d8c00c98c15b27c7eba0a45c0f5ac20f9f0d6a90",
+      "size_queued": 4502,
+      "exists": true,
+      "disk_sha256": "18fab50a4c06c6e30c7fb115d8c00c98c15b27c7eba0a45c0f5ac20f9f0d6a90",
+      "disk_size": 4502,
+      "hash_match": true,
+      "head_sha256": "18fab50a4c06c6e30c7fb115d8c00c98c15b27c7eba0a45c0f5ac20f9f0d6a90",
+      "extract": {
+        "binary": false,
+        "lines": 103,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 05 — Ejecución verificada"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Qué cubre"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "Lo que ya se sabe"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "Cómo mides"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "Defectos"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 94,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 33,
+            "text": "- Un efecto externo ambiguo que no se puede reintentar es `failed` terminal con"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 75,
+            "text": "BAXY** — sobre todo el provider que informa éxito sin haber hecho nada, porque"
+          }
+        ],
+        "ranges": [
+          "1-103",
+          "h:1",
+          "m:33"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/06_VOZ_DEL_PRODUCTO.md",
+      "queued_sha256": "9a8239585eca373069b3169590d79fc439671020ad70a828b92ff742556285fb",
+      "size_queued": 4396,
+      "exists": true,
+      "disk_sha256": "9a8239585eca373069b3169590d79fc439671020ad70a828b92ff742556285fb",
+      "disk_size": 4396,
+      "hash_match": true,
+      "head_sha256": "9a8239585eca373069b3169590d79fc439671020ad70a828b92ff742556285fb",
+      "extract": {
+        "binary": false,
+        "lines": 99,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 06 — La voz del producto"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "Lo que ya se sabe"
+          },
+          {
+            "line": 57,
+            "level": 2,
+            "text": "Qué cubre"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "Cómo mides"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Defectos"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 39,
+            "text": "«alredad». El guardián por terminaciones no las ve, porque son terminaciones"
+          },
+          {
+            "line": 87,
+            "text": "—porque el modelo no responde a tiempo, por ejemplo— resuélvelo sin constantes:"
+          }
+        ],
+        "ranges": [
+          "1-99",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/07_MISIONES.md",
+      "queued_sha256": "2f9eccbdab8613071b19572e3d493632ab48cc61527518d93766e6e704e28bd1",
+      "size_queued": 4242,
+      "exists": true,
+      "disk_sha256": "2f9eccbdab8613071b19572e3d493632ab48cc61527518d93766e6e704e28bd1",
+      "disk_size": 4242,
+      "hash_match": true,
+      "head_sha256": "2f9eccbdab8613071b19572e3d493632ab48cc61527518d93766e6e704e28bd1",
+      "extract": {
+        "binary": false,
+        "lines": 101,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 07 — Misiones compuestas"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Qué cubre"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "Lo que ya se sabe"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Cómo mides"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "Lo que no puedes romper"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Defectos"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 97,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 29,
+            "text": "Apunta a **≥ 90 %** de planes completos y verificados, sin un solo paso huérfano."
+          },
+          {
+            "line": 46,
+            "text": "**Ya cerró una vez, 6/6 misiones y 25/25 pasos verificados**, sobre un oráculo"
+          },
+          {
+            "line": 50,
+            "text": "**La causa de aquel 2/6 está aislada y reparada:** una cláusula dependiente"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 56,
+            "text": "repite y el más difícil de ver, porque el sistema informa éxito."
+          }
+        ],
+        "ranges": [
+          "1-101",
+          "h:1",
+          "m:29"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/08_PRIMERA_SENAL.md",
+      "queued_sha256": "d9fcd996bfdcf2318a9a7637ce46846d62266c8af7ef9acb7463c33bcf93947f",
+      "size_queued": 4645,
+      "exists": true,
+      "disk_sha256": "d9fcd996bfdcf2318a9a7637ce46846d62266c8af7ef9acb7463c33bcf93947f",
+      "disk_size": 4645,
+      "hash_match": true,
+      "head_sha256": "d9fcd996bfdcf2318a9a7637ce46846d62266c8af7ef9acb7463c33bcf93947f",
+      "extract": {
+        "binary": false,
+        "lines": 110,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 08 — La primera señal"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Dónde está hoy"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Lo que ya se sabe — no lo repitas"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Cómo mides"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Lo que no puedes romper"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 28,
+            "text": "- Primera señal: **p50 ≤ 1,0 s y p95 ≤ 2,0 s**."
+          },
+          {
+            "line": 29,
+            "text": "- Acción simple completa y verificada: p50 ≤ 2,5 s."
+          },
+          {
+            "line": 30,
+            "text": "- Misión compuesta: sin techo fijo, pero narrando un hito cada ≤ 3 s de trabajo"
+          },
+          {
+            "line": 41,
+            "text": "reconocedor en ≤ 0,071 s; las otras 8 van de 0,698 s a 2,957 s. p95 del producto:"
+          },
+          {
+            "line": 42,
+            "text": "**2,668 s**. En el camino por modelo puro se midió p50 2,440 s y p95 4,109 s."
+          },
+          {
+            "line": 43,
+            "text": "Arranque en frío: 4,154 s."
+          },
+          {
+            "line": 45,
+            "text": "Descomposición por llamada, mediana: `turn_policy_native_tools` **2,0379 s**,"
+          },
+          {
+            "line": 46,
+            "text": "`conversation_reply` 0,8867 s, `semantic_effect_guard` 0,5103 s,"
+          },
+          {
+            "line": 47,
+            "text": "`operation_compatibility` 0,4055 s, `final_writers` 0,3381 s,"
+          },
+          {
+            "line": 48,
+            "text": "`response_language` 0,1705 s."
+          },
+          {
+            "line": 51,
+            "text": "suma de las llamadas es prácticamente el turno completo: 3,37 s de 3,39 s. No hay"
+          },
+          {
+            "line": 57,
+            "text": "**Streaming está rechazado como palanca.** Techo de ganancia 0,33 s; faltan"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-110",
+          "h:1",
+          "m:28"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/09_VOZ_Y_OIDO.md",
+      "queued_sha256": "c8e349b4fc7afa08d71ec20bf00a4f479d6e1688e9dac8a2bbc697436b53737b",
+      "size_queued": 6045,
+      "exists": true,
+      "disk_sha256": "c8e349b4fc7afa08d71ec20bf00a4f479d6e1688e9dac8a2bbc697436b53737b",
+      "disk_size": 6045,
+      "hash_match": true,
+      "head_sha256": "c8e349b4fc7afa08d71ec20bf00a4f479d6e1688e9dac8a2bbc697436b53737b",
+      "extract": {
+        "binary": false,
+        "lines": 133,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 09 — Voz y oído"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Empieza por lo que ya existe"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Lo que ya se sabe en este repositorio"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Cómo eliges"
+          },
+          {
+            "line": 97,
+            "level": 2,
+            "text": "Cómo mides"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "Lo que no puedes romper"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 124,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 129,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 57,
+            "text": "Y el reloj: de **fin de habla a primera señal, p50 ≤ 1,5 s**."
+          },
+          {
+            "line": 64,
+            "text": "- Una compuerta física de wake se abrió una vez y quedó **rechazada**: 46/48"
+          },
+          {
+            "line": 65,
+            "text": "positivos, 0/96 falsas activaciones. Falló sólo por dos candidatos acústicos"
+          },
+          {
+            "line": 67,
+            "text": "- Sobre un corpus confusable distinto, la misma cascada produjo **10/96 falsas"
+          },
+          {
+            "line": 84,
+            "text": "Elige **el más ligero que cumpla**. Voz y STT van en CPU, para no comerse la VRAM"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-133",
+          "h:1",
+          "m:57"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/10_USO_DIARIO.md",
+      "queued_sha256": "cb70a8fdccb403f0e2c02a30c990a9af569da9f16a9078a5f649254ea809c201",
+      "size_queued": 3647,
+      "exists": true,
+      "disk_sha256": "cb70a8fdccb403f0e2c02a30c990a9af569da9f16a9078a5f649254ea809c201",
+      "disk_size": 3647,
+      "hash_match": true,
+      "head_sha256": "cb70a8fdccb403f0e2c02a30c990a9af569da9f16a9078a5f649254ea809c201",
+      "extract": {
+        "binary": false,
+        "lines": 88,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 10 — Uso diario"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "El resultado que cuenta"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Qué haces"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Lo que sigue en pie"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Defectos"
+          },
+          {
+            "line": 67,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 36,
+            "text": "Este es el que encuentra lo que ningún corpus contenía, porque el uso real siempre"
+          },
+          {
+            "line": 53,
+            "text": "Todo. Los tres ceros no se relajan porque el sprint sea de uso: cero efectos no"
+          }
+        ],
+        "ranges": [
+          "1-88",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/sprints/11_VALIDACION.md",
+      "queued_sha256": "b0ec352d84c78de84bd5ecb9194d5fe6bd118bb9218adbcfd30fa19643a2611c",
+      "size_queued": 4580,
+      "exists": true,
+      "disk_sha256": "b0ec352d84c78de84bd5ecb9194d5fe6bd118bb9218adbcfd30fa19643a2611c",
+      "disk_size": 4580,
+      "hash_match": true,
+      "head_sha256": "b0ec352d84c78de84bd5ecb9194d5fe6bd118bb9218adbcfd30fa19643a2611c",
+      "extract": {
+        "binary": false,
+        "lines": 101,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint 11 — Validación y cierre"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Cómo trabajas"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Este sprint invierte una regla"
+          },
+          {
+            "line": 28,
+            "level": 2,
+            "text": "Lo que cuenta"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Cómo decides qué merece arreglo"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "Limitaciones: nombrarlas es cerrarlas"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Qué entregas"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Cuándo has terminado"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "Cierra"
+          }
+        ],
+        "lead": "Modelo: GPT-5.6 Sol, `reasoning.effort: high`. Repositorio:",
+        "measures": [
+          {
+            "line": 81,
+            "text": "limitaciones abiertas: el perfil certificado de 4 GB de VRAM y el de 8 GB de RAM,"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 33,
+            "text": "Cuatro frentes, y el orden importa porque el primero paga el resto:"
+          }
+        ],
+        "ranges": [
+          "1-101",
+          "h:1",
+          "m:81"
+        ]
+      }
+    },
+    {
+      "path": "experiments/functiongemma_selector/README.md",
+      "queued_sha256": "3855b73cd8d07119eee093d63836726bf7520a72eb186d95e0d1467e6bbbd57e",
+      "size_queued": 2269,
+      "exists": true,
+      "disk_sha256": "3855b73cd8d07119eee093d63836726bf7520a72eb186d95e0d1467e6bbbd57e",
+      "disk_size": 2269,
+      "hash_match": true,
+      "head_sha256": "caa8723f56c233db3ab5ab66b430168d930a3aeeac05997c0bde2c49acae7782",
+      "extract": {
+        "binary": false,
+        "lines": 46,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "FunctionGemma como selector de hoja de BAXY"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Entorno reproducible"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Prueba de aprendizaje inicial"
+          }
+        ],
+        "lead": "Este experimento mide si un modelo pequeño especializado puede resolver la",
+        "measures": [
+          {
+            "line": 17,
+            "text": "permite medir exactitud, latencia y VRAM de forma independiente. Ningún asset"
+          },
+          {
+            "line": 44,
+            "text": "El oracle de 90 casos es solo desarrollo. Aunque esta prueba alcance 100% en"
+          },
+          {
+            "line": 45,
+            "text": "su porción de audio, no constituye el gate final de 99% ni autoriza promoción."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 37,
+            "text": "de volumen relativo y micrófono se corrigen de forma explícita porque entonces"
+          }
+        ],
+        "ranges": [
+          "1-46",
+          "h:1",
+          "m:17"
+        ]
+      }
+    },
+    {
+      "path": "experiments/functiongemma_selector/requirements-lock.txt",
+      "queued_sha256": "0f81520d788c4e1786ad23a28ee2aaff9b00b6c3d8e21498c41a48ededfe6c77",
+      "size_queued": 349,
+      "exists": true,
+      "disk_sha256": "0f81520d788c4e1786ad23a28ee2aaff9b00b6c3d8e21498c41a48ededfe6c77",
+      "disk_size": 349,
+      "hash_match": true,
+      "head_sha256": "77160f547d5ae7d2f4d85874c429487726478ebc975a6769789178eaa23d94ca",
+      "extract": {
+        "binary": false,
+        "lines": 13,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Install torch from the official PyTorch CUDA 12.8 index first:"
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128"
+          }
+        ],
+        "lead": "torch==2.10.0+cu128",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-13",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/mind_llm_tournament/convo_transcripts.txt",
+      "queued_sha256": "c23d8ea59674869252344ff5ed4d6032a74c3c36367cc3680c2c7f5fb7257dc7",
+      "size_queued": 13541,
+      "exists": true,
+      "disk_sha256": "c23d8ea59674869252344ff5ed4d6032a74c3c36367cc3680c2c7f5fb7257dc7",
+      "disk_size": 13541,
+      "hash_match": true,
+      "head_sha256": "c23d8ea59674869252344ff5ed4d6032a74c3c36367cc3680c2c7f5fb7257dc7",
+      "extract": {
+        "binary": false,
+        "lines": 123,
+        "headings": [],
+        "lead": "gemma4-e2b-qat: auto-pass 27/30",
+        "measures": [
+          {
+            "line": 1,
+            "text": "gemma4-e2b-qat: auto-pass 27/30"
+          },
+          {
+            "line": 6,
+            "text": "--- [2] <FAIL-AUTO> en Q: what's the foreground process"
+          },
+          {
+            "line": 10,
+            "text": "--- [4] <FAIL-AUTO> en Q: open calcualtor"
+          },
+          {
+            "line": 38,
+            "text": "--- [18] <FAIL-AUTO> en Q: is Steam open right now?"
+          },
+          {
+            "line": 62,
+            "text": "qwen3.5-4b: auto-pass 23/30"
+          },
+          {
+            "line": 67,
+            "text": "--- [2] <FAIL-AUTO> en Q: what's the foreground process"
+          },
+          {
+            "line": 69,
+            "text": "--- [3] <FAIL-AUTO> en Q: Thanku what a great work!"
+          },
+          {
+            "line": 71,
+            "text": "--- [4] <FAIL-AUTO> en Q: open calcualtor"
+          },
+          {
+            "line": 77,
+            "text": "--- [7] <FAIL-AUTO> en Q: Can you please make it easier to understand?"
+          },
+          {
+            "line": 99,
+            "text": "--- [18] <FAIL-AUTO> en Q: is Steam open right now?"
+          },
+          {
+            "line": 109,
+            "text": "--- [23] <FAIL-AUTO> es Q: recordame tomar la pastilla a las 3"
+          },
+          {
+            "line": 114,
+            "text": "--- [25] <FAIL-AUTO> en Q: who are you and what can you do on this pc?"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4",
+          "qwen3"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 86,
+            "text": "A: No puedo traducir ese código porque no tengo acceso a ningún código que hayas mencionado.  Para ayudarte, por favor: 1.  Indícame en qué aplicación estás trabajando (por ejemplo, Notepad) para poder abrirlo. 2.  O simple"
+          },
+          {
+            "line": 108,
+            "text": "A: No puedo darte esa información porque no tengo acceso a internet ni a aplicaciones externas para consultar el clima. Mi conocimiento se limita a lo que puedes darme o lo que haya almacenado en mi memoria local, y no teng"
+          }
+        ],
+        "ranges": [
+          "1-123",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/mind_llm_tournament/results/convo_judged_review.md",
+      "queued_sha256": "83f4bbe3b16156a9af793b60043dcf35ddf4ca181ce09091b0f48c95944489a7",
+      "size_queued": 2983,
+      "exists": true,
+      "disk_sha256": "83f4bbe3b16156a9af793b60043dcf35ddf4ca181ce09091b0f48c95944489a7",
+      "disk_size": 2983,
+      "hash_match": true,
+      "head_sha256": "83f4bbe3b16156a9af793b60043dcf35ddf4ca181ce09091b0f48c95944489a7",
+      "extract": {
+        "binary": false,
+        "lines": 63,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Revisión juzgada — tarea B (conversación) de los finalistas LLM"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "gemma4-e2b-qat — 26/30 (0,87)"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "qwen3.5-4b — 23/30 (0,77)"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Lectura"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Fórmula de decisión del protocolo (pos·0,4 + abst·0,3 + convo·0,3)"
+          }
+        ],
+        "lead": "- Fecha: 2026-07-16. Revisor: Fable. Rúbrica congelada del protocolo:",
+        "measures": [
+          {
+            "line": 19,
+            "text": "Notas: cero llamadas mutantes en 30/30; identidad y límites consistentes"
+          },
+          {
+            "line": 45,
+            "text": "responde en español a prompts en inglés (6/30). Para el compromiso"
+          },
+          {
+            "line": 48,
+            "text": "- Gemma-4 E2B mantiene el idioma (fallos 2/30 de idioma + 1 de coherencia) y"
+          },
+          {
+            "line": 58,
+            "text": "Diferencia 0,6 pts < 2 pts → desempate congelado por menor VRAM pico:"
+          }
+        ],
+        "dates": [
+          "2026-07-16"
+        ],
+        "models": [
+          "qwen3",
+          "gemma-4",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-63",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "experiments/mind_router_spike/VEREDICTO.md",
+      "queued_sha256": "01485b89160fb1c0a78bee4f033ea9c0e1927d564341fab5b0a770c9a16b0cde",
+      "size_queued": 5173,
+      "exists": true,
+      "disk_sha256": "01485b89160fb1c0a78bee4f033ea9c0e1927d564341fab5b0a770c9a16b0cde",
+      "disk_size": 5173,
+      "hash_match": true,
+      "head_sha256": "01485b89160fb1c0a78bee4f033ea9c0e1927d564341fab5b0a770c9a16b0cde",
+      "extract": {
+        "binary": false,
+        "lines": 91,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Veredicto del spike — router de intención por embeddings"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Veredicto: **PROCEDE**"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Protocolo (congelado antes de medir)"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Diseño del router validado"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Historia de iteración (honesta)"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Implicaciones para las fases siguientes"
+          }
+        ],
+        "lead": "- Fecha: 2026-07-15. Fase 2 del plan de la mente (Fable).",
+        "measures": [
+          {
+            "line": 12,
+            "text": "| Cobertura de oráculos congelados (config producción) | **674/675 (99,85 %)** — 12 de 13 sets al 100 % | 675/675 (100 %) por construcción |"
+          },
+          {
+            "line": 14,
+            "text": "| Generalización a fraseos no vistos (LOO) | **89,3 %** (602/675) | ≈0 % fuera de patrones literales |"
+          },
+          {
+            "line": 15,
+            "text": "| Fallos LOO peligrosos (ruta equivocada) | 37/675 (5,5 %) | n/a |"
+          },
+          {
+            "line": 16,
+            "text": "| Fallos LOO seguros (sobre-abstención → cae al LLM) | 35/675 (5,2 %) | n/a |"
+          },
+          {
+            "line": 17,
+            "text": "| Latencia por consulta (CPU puro) | ~23 ms | ~0 ms |"
+          },
+          {
+            "line": 24,
+            "text": "contratos reales la paridad es **675/675**. El regex, en cambio, se abstiene y"
+          },
+          {
+            "line": 33,
+            "text": "publicados (40/40, 113/113, 171/171, 77, 100+5/34)."
+          },
+          {
+            "line": 50,
+            "text": "- score(clase) = máx coseno contra su pool; abstención **fail-closed** si gana"
+          },
+          {
+            "line": 69,
+            "text": "| v1 | solo anclas autoradas, tau 0,90 | 76,9 % — huecos de pool y sobre-abstención |"
+          },
+          {
+            "line": 70,
+            "text": "| v2 | + corpus como exemplars (positivos y negativos), scorer con modos | cobertura 99,56 % / LOO 88,0 % |"
+          },
+          {
+            "line": 71,
+            "text": "| v2 fix | clave de identidad con tildes | **cobertura 99,85 % / LOO 89,3 %** |"
+          },
+          {
+            "line": 80,
+            "text": "paridad de oráculos y +89 % de generalización que el regex no tiene."
+          }
+        ],
+        "dates": [
+          "2026-07-15"
+        ],
+        "models": [
+          "e5-small",
+          "qwen3"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-91",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "experiments/stt_quality/wordfreq_semantic_fusion_requirements.txt",
+      "queued_sha256": "230ebb5ed3b737c4e9a0747098f16084d917a8d623fd2a891a22fbb25120e25b",
+      "size_queued": 722,
+      "exists": true,
+      "disk_sha256": "230ebb5ed3b737c4e9a0747098f16084d917a8d623fd2a891a22fbb25120e25b",
+      "disk_size": 722,
+      "hash_match": true,
+      "head_sha256": "230ebb5ed3b737c4e9a0747098f16084d917a8d623fd2a891a22fbb25120e25b",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [],
+        "lead": "--only-binary=:all:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-16"
+        ]
+      }
+    },
+    {
+      "path": "experiments/technology_tournament/README.md",
+      "queued_sha256": "02be7899f94abfa765feaa52fa3fd8cce83477ef7856874d0dc9fc0cecfdd209",
+      "size_queued": 835,
+      "exists": true,
+      "disk_sha256": "02be7899f94abfa765feaa52fa3fd8cce83477ef7856874d0dc9fc0cecfdd209",
+      "disk_size": 835,
+      "hash_match": true,
+      "head_sha256": "02be7899f94abfa765feaa52fa3fd8cce83477ef7856874d0dc9fc0cecfdd209",
+      "extract": {
+        "binary": false,
+        "lines": 15,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Cortes verticales del torneo tecnológico"
+          }
+        ],
+        "lead": "Este directorio contiene contendientes desechables y equivalentes. No es el",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-15",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/technology_tournament/python_core/README.md",
+      "queued_sha256": "33b01e6229a2ef8be9a762a202b20a494e9bc9bfbad3bc3af83aae53ee970304",
+      "size_queued": 247,
+      "exists": true,
+      "disk_sha256": "33b01e6229a2ef8be9a762a202b20a494e9bc9bfbad3bc3af83aae53ee970304",
+      "disk_size": 247,
+      "hash_match": true,
+      "head_sha256": "33b01e6229a2ef8be9a762a202b20a494e9bc9bfbad3bc3af83aae53ee970304",
+      "extract": {
+        "binary": false,
+        "lines": 10,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Python core contender"
+          }
+        ],
+        "lead": "Run with CPython 3.12:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-10",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/technology_tournament/python_core/packaging-requirements.txt",
+      "queued_sha256": "de29de76e69f28f069d681b214fd783b83e235794768cbe1767929127d77b639",
+      "size_queued": 216,
+      "exists": true,
+      "disk_sha256": "de29de76e69f28f069d681b214fd783b83e235794768cbe1767929127d77b639",
+      "disk_size": 216,
+      "hash_match": true,
+      "head_sha256": "de29de76e69f28f069d681b214fd783b83e235794768cbe1767929127d77b639",
+      "extract": {
+        "binary": false,
+        "lines": 8,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Exact environment used only to compare Python distribution formats."
+          }
+        ],
+        "lead": "altgraph==0.17.5",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-8",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/dotnet_webview/README.md",
+      "queued_sha256": "28425cce93ecb785a56124abd753761e2821c918f55dbdd31af45c9c7220da06",
+      "size_queued": 608,
+      "exists": true,
+      "disk_sha256": "28425cce93ecb785a56124abd753761e2821c918f55dbdd31af45c9c7220da06",
+      "disk_size": 608,
+      "hash_match": true,
+      "head_sha256": "28425cce93ecb785a56124abd753761e2821c918f55dbdd31af45c9c7220da06",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": ".NET + WebView2 integrated finalist"
+          }
+        ],
+        "lead": "This WPF shell hosts the shared offline BAXY interface and owns the Native AOT",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-16",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/technology_tournament/round_b/tauri_rust/README.md",
+      "queued_sha256": "a074742f2c982166671c43c4223e8c0ad3760929f14bcf6795291ba914d7b0a0",
+      "size_queued": 655,
+      "exists": true,
+      "disk_sha256": "a074742f2c982166671c43c4223e8c0ad3760929f14bcf6795291ba914d7b0a0",
+      "disk_size": 655,
+      "hash_match": true,
+      "head_sha256": "a074742f2c982166671c43c4223e8c0ad3760929f14bcf6795291ba914d7b0a0",
+      "extract": {
+        "binary": false,
+        "lines": 17,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tauri + Rust integrated finalist"
+          }
+        ],
+        "lead": "This Tauri 2 shell hosts the same offline HTML/CSS/JavaScript as the .NET",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-17",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/assets/baxy_open_vocab_keywords_v1.txt",
+      "queued_sha256": "4d9186513a9e14d188ffe5f6e5c317d63a4e5bd3c14e60956b4cd68a6d5500f9",
+      "size_queued": 174,
+      "exists": true,
+      "disk_sha256": "4d9186513a9e14d188ffe5f6e5c317d63a4e5bd3c14e60956b4cd68a6d5500f9",
+      "disk_size": 174,
+      "hash_match": true,
+      "head_sha256": "4d9186513a9e14d188ffe5f6e5c317d63a4e5bd3c14e60956b4cd68a6d5500f9",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "B AE1 K S IY0 @BAXY",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords.v1.txt",
+      "queued_sha256": "16f244fdc59fb061254e3c3d2dc78c1cdfbd5d1b1e0994fae85932e21d929216",
+      "size_queued": 468,
+      "exists": true,
+      "disk_sha256": "16f244fdc59fb061254e3c3d2dc78c1cdfbd5d1b1e0994fae85932e21d929216",
+      "disk_size": 468,
+      "hash_match": true,
+      "head_sha256": "cc5071b436c2a2c112b11949cd78a024728e7b83ec7ead1b529f6b843c3d78ea",
+      "extract": {
+        "binary": false,
+        "lines": 12,
+        "headings": [],
+        "lead": "B AA1 K S IY0 :1.0 #0.25 @BAXY_BOXY",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-12"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords_development_v2.txt",
+      "queued_sha256": "337b7cb66fa1d6d1e164fdeb4fe25e7bd4c561d10514a96833c11fc290e835d1",
+      "size_queued": 468,
+      "exists": true,
+      "disk_sha256": "337b7cb66fa1d6d1e164fdeb4fe25e7bd4c561d10514a96833c11fc290e835d1",
+      "disk_size": 468,
+      "hash_match": true,
+      "head_sha256": "cb814c5be9f2e6c6abe49208817ac227aa979f11987b7a55016c04bec27e9ea1",
+      "extract": {
+        "binary": false,
+        "lines": 12,
+        "headings": [],
+        "lead": "B AA1 K S IY0 :4.0 #0.10 @BAXY_BOXY",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-12"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords_raw.v1.txt",
+      "queued_sha256": "afe0e0d3830c52de031c05541e0ed8b908f5f98d5467405109b067a87df27bfc",
+      "size_queued": 64,
+      "exists": true,
+      "disk_sha256": "afe0e0d3830c52de031c05541e0ed8b908f5f98d5467405109b067a87df27bfc",
+      "disk_size": 64,
+      "hash_match": true,
+      "head_sha256": "60f22c0eafd4b6c98fc1ddf24c18a6c9f382b6de654957268f19a11fcf6c74f5",
+      "extract": {
+        "binary": false,
+        "lines": 2,
+        "headings": [],
+        "lead": "BOXY :1.0 #0.25 @BAXY_BOXY",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-2"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/baxy_kws_keywords_tokens.v1.txt",
+      "queued_sha256": "9ccc3439b2409695530b11f88e7d1b6d74bd25dcfaa6b23be5645e7cfc538dcf",
+      "size_queued": 336,
+      "exists": true,
+      "disk_sha256": "9ccc3439b2409695530b11f88e7d1b6d74bd25dcfaa6b23be5645e7cfc538dcf",
+      "disk_size": 336,
+      "hash_match": true,
+      "head_sha256": "599c97adcdd666a28ff02f21e3fbb4d9e78dddd5d12043a186af0f714e99d0c4",
+      "extract": {
+        "binary": false,
+        "lines": 12,
+        "headings": [],
+        "lead": "B AA1 K S IY0 @BAXY_BOXY",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-12"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/keywords_baxy_raw.txt",
+      "queued_sha256": "0001b236f9d407a51e0008505c56d185a7eef98705e3d117908d6fa2a58eb72c",
+      "size_queued": 85,
+      "exists": true,
+      "disk_sha256": "0001b236f9d407a51e0008505c56d185a7eef98705e3d117908d6fa2a58eb72c",
+      "disk_size": 85,
+      "hash_match": true,
+      "head_sha256": "8d0813320f08e88baf917387d8907f386faf25c75e88b7d89ab6154663bd2a26",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "BAXY :1.5 #0.35 @BAXY",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "experiments/voice_latency/keywords_baxy_sherpa.txt",
+      "queued_sha256": "3a004ffd23dfa2d513b2fbf1234d15dd70bbda59eb2061b7d8f423d91f3c42c0",
+      "size_queued": 112,
+      "exists": true,
+      "disk_sha256": "3a004ffd23dfa2d513b2fbf1234d15dd70bbda59eb2061b7d8f423d91f3c42c0",
+      "disk_size": 112,
+      "hash_match": true,
+      "head_sha256": "6377839e37115e8c44d1181af0fb391ef4a8ad707d1d6e841dc6b978983145be",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "B AE1 K S IY0 :1.5 #0.35 @BAXY_AE",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Codex.md",
+      "queued_sha256": "1f5207e9cb0a0445eb529aab62d30442b66f568f5db0e1cbfed118b42494431e",
+      "size_queued": 94761,
+      "exists": true,
+      "disk_sha256": "1f5207e9cb0a0445eb529aab62d30442b66f568f5db0e1cbfed118b42494431e",
+      "disk_size": 94761,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/Codex.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 1184,
+        "headings": [],
+        "lead": "Procesado durante 33m 58s",
+        "measures": [
+          {
+            "line": 3,
+            "text": "Procesado durante 33m 58s"
+          },
+          {
+            "line": 8,
+            "text": "28.83%: 6 h 55 min de 24 h."
+          },
+          {
+            "line": 9,
+            "text": "83/83 operaciones correctas; cero fallos."
+          },
+          {
+            "line": 11,
+            "text": "Máxima interrupción: 5.015 s; límite: 30 s."
+          },
+          {
+            "line": 35,
+            "text": "Procesado durante 13m 15s"
+          },
+          {
+            "line": 36,
+            "text": "¡Holaa! 😄 Avancé bastante, pero siendo estricto sitúo el producto completo en ≈47%. La base Gemma 4 está mucho más madura que el resto del producto."
+          },
+          {
+            "line": 40,
+            "text": "Soak: 7 h 06 min de 24 h — 29,6%."
+          },
+          {
+            "line": 41,
+            "text": "86/86 ciclos reales de chat + visión, sin fallos."
+          },
+          {
+            "line": 42,
+            "text": "Dos reinicios controlados del servidor superados; recuperación máxima de 5,015 s frente al límite de 30 s."
+          },
+          {
+            "line": 52,
+            "text": "Los servidores de modelos aún no tienen autenticación efímera central ni un árbitro que impida cargar Gemma y Qwen simultáneamente y exceder la VRAM."
+          },
+          {
+            "line": 56,
+            "text": "Routing 29/29 y aceptación 8/8."
+          },
+          {
+            "line": 57,
+            "text": "Prueba segura en vivo: 160/160."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "functiongemma",
+          "piper",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "VRAM",
+          "vram"
+        ],
+        "mechanisms": [
+          {
+            "line": 21,
+            "text": "Encontré que el WebSocket actual puede perder eventos porque no tiene ACK ni reproducción durable."
+          },
+          {
+            "line": 47,
+            "text": "Final estimado: mañana alrededor de las 07:08. Todavía no está aprobado porque falta final.json y comprobar la limpieza final."
+          },
+          {
+            "line": 306,
+            "text": "También voy a pausar la vigilancia automática del soak; apagar solo el proceso no basta, porque el monitor podría volver a despertarse cada 30 minutos. La reprogramaré para el sábado como tarea final, sin relanzar nada hoy."
+          },
+          {
+            "line": 482,
+            "text": "No fallos reportados hasta ahora. Al terminar también verificaré que no queden procesos ni puertos abiertos y reconstruiré la atestación de 91/39, porque “tests verdes” sin cleanup o identidad exacta no es suficiente."
+          },
+          {
+            "line": 484,
+            "text": "La suite sigue corriendo; aún no hay resumen parcial porque la salida está agrupada hasta el final. No estoy iniciando ninguna otra tarea en paralelo para preservar esta corrida como evidencia limpia."
+          },
+          {
+            "line": 557,
+            "text": "La validación sigue estable y sin tocar tu sesión gráfica. Estoy dejando que complete de punta a punta porque este tipo de error aparecía solo por temporización; una corrida parcial habría dado una falsa sensación de seguridad."
+          }
+        ],
+        "ranges": [
+          "1-1184",
+          "m:3"
+        ]
+      }
+    }
+  ]
+}

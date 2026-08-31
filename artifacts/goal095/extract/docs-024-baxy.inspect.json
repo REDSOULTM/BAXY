@@ -1,0 +1,5550 @@
+{
+  "batch_id": "docs-024-baxy",
+  "kind": "docs",
+  "source_id": "baxy",
+  "subsystem": "baxy_legacy_docs",
+  "file_count": 100,
+  "hash_ok": 100,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "legacy/docs/decision_log.md",
+      "queued_sha256": "baadf1002d0acbbee785414847b9a0b445a0a93b862713c1f96883bf9a7fbf7d",
+      "size_queued": 149058,
+      "exists": true,
+      "disk_sha256": "baadf1002d0acbbee785414847b9a0b445a0a93b862713c1f96883bf9a7fbf7d",
+      "disk_size": 149058,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/decision_log.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 2274,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Registro de decisiones técnicas"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "D1 — Arquitectura del split: encoder ONNX + FunctionGemma + QAT"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "D2 — Router del core: coseno multi-vector sobre exemplars por capacidad"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "D3 — Sin safety layer (pedido explícito de producto)"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "D4 — Motor de streaming: bloque literal, no reescritura"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "D5 — Apps: motor copiado byte-idéntico con shim de imports"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "D6 — ddgs como buscador primario"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "D7 — Recordatorios: Scheduled Task + runner PS con toast estilizado + voz"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "D8 — GUI: la web real del viejo (ui_field) sobre un backend nuevo"
+          },
+          {
+            "line": 96,
+            "level": 2,
+            "text": "D9 — Artefactos pesados referenciados, no duplicados"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "D10 — Idiomas: es/en/spanglish solamente"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "D11 — numpy < 2"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "D12 — Split completo por DEFAULT (pedido del usuario, 2026-07-02)"
+          },
+          {
+            "line": 137,
+            "level": 2,
+            "text": "D13 — Stage-1 de familias en el subset FG + blend Tool2Vec (2026-07-02)"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "D14 — WhatsApp GUI-search cableado a run() + executor de streaming (2026-07-02)"
+          },
+          {
+            "line": 176,
+            "level": 2,
+            "text": "D15 — Voz end-to-end + entorno verificado (2026-07-02)"
+          },
+          {
+            "line": 203,
+            "level": 2,
+            "text": "D16 — Runtime único: re-exec al Python 3.10 verificado (2026-07-02)"
+          },
+          {
+            "line": 218,
+            "level": 2,
+            "text": "D17 — Prewarm del router semántico al boot (2026-07-02)"
+          },
+          {
+            "line": 233,
+            "level": 2,
+            "text": "D18 — Auditoría integral vs proyecto viejo + lecciones del git aplicadas (2026-07-02)"
+          },
+          {
+            "line": 264,
+            "level": 2,
+            "text": "D19 — QAT al techo: historia, streaming, cache_prompt, warmup, args-rescue (2026-07-02)"
+          },
+          {
+            "line": 298,
+            "level": 2,
+            "text": "D20 — FG al techo: multi-intent, shortcut now_playing, import roto (2026-07-02)"
+          },
+          {
+            "line": 334,
+            "level": 2,
+            "text": "D21 — Router semántico al techo + catálogo ACTIVO de 9 tools (2026-07-02)"
+          },
+          {
+            "line": 373,
+            "level": 2,
+            "text": "D22 — Retrain del encoder para 9 tools: MEDIDO y NO adoptado (2026-07-02)"
+          },
+          {
+            "line": 418,
+            "level": 2,
+            "text": "D23 — Escalado sintético del retrain: medido, techo confirmado (2026-07-02)"
+          }
+        ],
+        "lead": "Cada decisión importante, con su porqué y su fuente (documentación local",
+        "measures": [
+          {
+            "line": 9,
+            "text": "−379MB RAM medidos), FunctionGemma-270M para tools (opcional), Gemma 4"
+          },
+          {
+            "line": 12,
+            "text": "capacidades (~1.8GB VRAM vs 2.9 del perfil clásico)."
+          },
+          {
+            "line": 14,
+            "text": "`infra/profiles.py` (números de VRAM por perfil, medidos con nvidia-smi)."
+          },
+          {
+            "line": 24,
+            "text": "para el LLM 4B — con 9 capacidades el coseno directo rutea 9/9 los"
+          },
+          {
+            "line": 97,
+            "text": "**Decisión:** GGUFs (2-3GB), encoder (118MB), wake models quedan en el"
+          },
+          {
+            "line": 101,
+            "text": "**Por qué:** duplicar ~9GB no agrega capacidad; si se mueve el viejo, son"
+          },
+          {
+            "line": 123,
+            "text": "tiene el long-tail de hermanas del 270M; el semántico rutea 9/9 los"
+          },
+          {
+            "line": 124,
+            "text": "comandos base. Juntos: 5/9 por FG con args + 4/9 rescatados — cero"
+          },
+          {
+            "line": 126,
+            "text": "**Validado EN VIVO (2026-07-02):** FG boot 2.6s; QAT boot real"
+          },
+          {
+            "line": 127,
+            "text": "(gemma-4-E2B-it-qat-UD-Q4_K_XL confirmado por /props); chitchat y"
+          },
+          {
+            "line": 159,
+            "text": "subset-hit 34→35/35, gate-pass acción 27→34/35, gate-block chitchat 17/18,"
+          },
+          {
+            "line": 184,
+            "text": "captura con VAD por energía (piso adaptativo, preroll 0.4s, fin a 0.8s de"
+          }
+        ],
+        "dates": [
+          "2026-06-17",
+          "2026-07-01",
+          "2026-07-02",
+          "2026-06-18",
+          "2026-06-25",
+          "2026-06-19",
+          "2026-07-03",
+          "2026-07-04"
+        ],
+        "models": [
+          "functiongemma",
+          "gemma 4",
+          "gemma-4",
+          "livekit",
+          "piper",
+          "llama.cpp",
+          "gemma4",
+          "e5-small"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 4060 Ti",
+          "4060",
+          "6GB",
+          "RTX 4060 Ti 16 GB",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 79,
+            "text": "**Decisión:** portar el mecanismo completo del viejo (task \\Baxy\\ +"
+          },
+          {
+            "line": 174,
+            "text": "window.focus porque el motor manda \"query\"."
+          },
+          {
+            "line": 289,
+            "text": "vacíos (commits 0234768 + 3b3cbaa del viejo), con few-shot porque el"
+          },
+          {
+            "line": 778,
+            "text": "autocontenidos porque BAXY no tiene agente que lea archivos."
+          },
+          {
+            "line": 932,
+            "text": "ventana (1080×640), no un cap. data-maximized queda solo para el padding fino."
+          },
+          {
+            "line": 1007,
+            "text": "MiniLM-FT; `knowledge(action=search)` — no existe; estados del verifier viejo) y"
+          }
+        ],
+        "ranges": [
+          "1-2274",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/dependency_map.md",
+      "queued_sha256": "b678751dad60d22390738859780e78101662a838645169b4d5aecd974dad2d99",
+      "size_queued": 17108,
+      "exists": true,
+      "disk_sha256": "b678751dad60d22390738859780e78101662a838645169b4d5aecd974dad2d99",
+      "disk_size": 17108,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/dependency_map.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 313,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mapa de dependencias por módulo"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Core (`core/`, `main.py --cli`)"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Router semántico (`core/encoder.py`)"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Tools"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "Tool Ecosystem v2"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Modelos e inferencia"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "llama.cpp reproducible"
+          },
+          {
+            "line": 146,
+            "level": 2,
+            "text": "GUI"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "Módulos opcionales"
+          },
+          {
+            "line": 180,
+            "level": 2,
+            "text": "Variables de entorno (todas opcionales)"
+          },
+          {
+            "line": 182,
+            "level": 3,
+            "text": "Artefactos y endpoints"
+          },
+          {
+            "line": 197,
+            "level": 3,
+            "text": "Server Gemma 4"
+          },
+          {
+            "line": 219,
+            "level": 3,
+            "text": "Selección de motores y fallback"
+          },
+          {
+            "line": 243,
+            "level": 3,
+            "text": "Capas de producto y observabilidad"
+          },
+          {
+            "line": 263,
+            "level": 2,
+            "text": "Herramientas de mantenimiento"
+          }
+        ],
+        "lead": "Estado: 2026-07-14, perfil unificado Gemma 4 y Tool Ecosystem v2 predeterminado.",
+        "measures": [
+          {
+            "line": 27,
+            "text": "- `model_int8.onnx` (~118 MB) + `tokenizer.json`. Si faltan, se usa routing"
+          },
+          {
+            "line": 42,
+            "text": "| web_search | ddgs opcional | scrapers propios de fallback | red |"
+          },
+          {
+            "line": 57,
+            "text": "experimental separada 95/92/3/39. El registro no acredita disponibilidad"
+          },
+          {
+            "line": 100,
+            "text": "| `function_gemma` | Fallback de decisión si el unificado no está sano o devuelve una tool inválida; CPU `:8082` | `models/artifacts/functiongemma-ft-270m-it-Q8_0.gguf` (~292 MB), `numpy` + encoder |"
+          },
+          {
+            "line": 101,
+            "text": "| `gemma4_stt` | Opt-in con `BAXY_STT_ENGINE=gemma`; mismo server `:8080` | mmproj con audio, Silero VAD, lexicón dinámico y cola de 500 ms; fallback caliente a Parakeet |"
+          },
+          {
+            "line": 102,
+            "text": "| `qwen_asr` | STT experimental con `BAXY_STT_ENGINE=qwen`; server `:8083` | Qwen3-ASR 0.6B + mmproj bajo `~/.gemma4/models/qwen3-asr-gguf/` |"
+          },
+          {
+            "line": 103,
+            "text": "| `qwen_vl` | Visión opt-in con `BAXY_VISION_ENGINE=qwen`; server `:8084` | Qwen3-VL 2B Q4_K_M + mmproj por defecto; 4B/8B solo por override |"
+          },
+          {
+            "line": 106,
+            "text": "entidades 0.843750 y p50 77.559 ms, frente a 0.796875 y 212.114 ms de Gemma"
+          },
+          {
+            "line": 110,
+            "text": "Los GGUF estables se fijan por revisión, tamaño y SHA-256: QAT"
+          },
+          {
+            "line": 133,
+            "text": "--no-cache-idle-slots -fa on -ctk q8_0 -ctv q8_0"
+          },
+          {
+            "line": 157,
+            "text": "Windows, o 94/91/3 con el kill switch; ambos tienen 39 workflows. `/tools` es"
+          },
+          {
+            "line": 208,
+            "text": "BAXY_LLM_BOOT_TIMEOUT          180 s"
+          }
+        ],
+        "dates": [
+          "2026-07-14"
+        ],
+        "models": [
+          "gemma 4",
+          "functiongemma",
+          "gemma4",
+          "qwen3",
+          "piper"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 301,
+            "text": "`media.pause`, porque esa operación global puede apuntar a otra sesión; el"
+          }
+        ],
+        "ranges": [
+          "1-313",
+          "h:1",
+          "m:27"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/discord_message_v2_security.md",
+      "queued_sha256": "d4d7ba489c62828bdec9d0acae3f5dcd50c00a612580c5a332d1f3d567c91e00",
+      "size_queued": 8542,
+      "exists": true,
+      "disk_sha256": "d4d7ba489c62828bdec9d0acae3f5dcd50c00a612580c5a332d1f3d567c91e00",
+      "disk_size": 8542,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/discord_message_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 170,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Discord exact-message provider v2: security and promotion gate"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Product intent"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Two-phase contract"
+          },
+          {
+            "line": 33,
+            "level": 3,
+            "text": "`message.discord_prepare_exact`"
+          },
+          {
+            "line": 59,
+            "level": 3,
+            "text": "`message.discord_send_exact`"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Privacy and content rules"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "Discord platform-compliance blocker"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "Missing live authorities (promotion blockers)"
+          },
+          {
+            "line": 155,
+            "level": 2,
+            "text": "Local evidence"
+          }
+        ],
+        "lead": "Status: **experimental, inert and unregistered**.  The implementation is",
+        "measures": [
+          {
+            "line": 152,
+            "text": "Until those authorities pass review, the correct product status is"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 49,
+            "text": "message.  A plain SHA-256 of the message is also intentionally absent because a"
+          },
+          {
+            "line": 80,
+            "text": "Public send output and verifier evidence expose only keyed commitments and"
+          },
+          {
+            "line": 142,
+            "text": "8. An independent postcondition verifier.  For an official bot route this is"
+          }
+        ],
+        "ranges": [
+          "1-170",
+          "h:1",
+          "m:152"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/filesystem_write_transaction_blocker.md",
+      "queued_sha256": "37f21ac1022bce086ff448a5aec6db30c67321ddb30ad705c4876312ed5a8458",
+      "size_queued": 6206,
+      "exists": true,
+      "disk_sha256": "37f21ac1022bce086ff448a5aec6db30c67321ddb30ad705c4876312ed5a8458",
+      "disk_size": 6206,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/filesystem_write_transaction_blocker.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 103,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Bloqueo transaccional de `write_text` y `restore_backup`"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Contrato que debe demostrarse antes de promoverlas"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Por qué la implementación actual no alcanza ese contrato"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Decisión"
+          }
+        ],
+        "lead": "Estado: **registradas, pero en cuarentena de producto**. Este documento no",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 86,
+            "text": "porque puede no estar disponible en futuras versiones de Windows:"
+          }
+        ],
+        "ranges": [
+          "1-103",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/gemma4_validation.md",
+      "queued_sha256": "1055665837123e455aebe6e95d88be12584b74ae60a008f86707869cd2e2f434",
+      "size_queued": 32895,
+      "exists": true,
+      "disk_sha256": "1055665837123e455aebe6e95d88be12584b74ae60a008f86707869cd2e2f434",
+      "disk_size": 32895,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/gemma4_validation.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 598,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Validación Gemma 4 E2B para BAXY"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Estado de producto reconciliado — 2026-07-14"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Actualización D56: vertical real y abstención verificable"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Actualización D55: replay durable y repetición live"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Actualización D52: b9980 y soak continuo"
+          },
+          {
+            "line": 152,
+            "level": 2,
+            "text": "Veredicto de producto"
+          },
+          {
+            "line": 173,
+            "level": 2,
+            "text": "Investigación primaria"
+          },
+          {
+            "line": 220,
+            "level": 2,
+            "text": "Runtime fijado"
+          },
+          {
+            "line": 265,
+            "level": 2,
+            "text": "Causa raíz del intento anterior"
+          },
+          {
+            "line": 278,
+            "level": 2,
+            "text": "Hardware y memoria"
+          },
+          {
+            "line": 285,
+            "level": 3,
+            "text": "Smoke funcional"
+          },
+          {
+            "line": 291,
+            "level": 3,
+            "text": "Soak estable"
+          },
+          {
+            "line": 317,
+            "level": 3,
+            "text": "Proxy sintético de presión VRAM/WDDM"
+          },
+          {
+            "line": 400,
+            "level": 2,
+            "text": "Routing de tools"
+          },
+          {
+            "line": 431,
+            "level": 2,
+            "text": "STT"
+          },
+          {
+            "line": 461,
+            "level": 3,
+            "text": "Probe privado de hardware de voz"
+          },
+          {
+            "line": 482,
+            "level": 2,
+            "text": "Visión"
+          },
+          {
+            "line": 498,
+            "level": 2,
+            "text": "Robustez adicional"
+          },
+          {
+            "line": 562,
+            "level": 2,
+            "text": "Rollback"
+          },
+          {
+            "line": 585,
+            "level": 2,
+            "text": "Riesgos que esta máquina no cierra"
+          }
+        ],
+        "lead": "Base histórica congelada: **2026-07-11**; actualización de runtime y soak:",
+        "measures": [
+          {
+            "line": 19,
+            "text": "experimental separada **95/92/3/39** hasta completar el gate físico supervisado"
+          },
+          {
+            "line": 23,
+            "text": "La repetición verificable del worktree actual es focal: backend **150/150**,"
+          },
+          {
+            "line": 24,
+            "text": "frontend **73/73**, lint/build del frontend y Ruff focal limpios. No se presenta"
+          },
+          {
+            "line": 27,
+            "text": "declaran completados una prueba en GPU física de 4 GB ni el corpus guiado de voz."
+          },
+          {
+            "line": 64,
+            "text": "`live-gates-final-b9980-20260713-065546` pasó routing **29/29** en capacidad y"
+          },
+          {
+            "line": 65,
+            "text": "contrato (p50 **307.139 ms**, p95 **696.526 ms**) y tooling live **8/8**. Esta"
+          },
+          {
+            "line": 70,
+            "text": "aceptado y no se declaran GPU física de 4 GB, comodidad real en 3 GB ni corpus"
+          },
+          {
+            "line": 90,
+            "text": "`tooling-v2-live-durable-20-20260713.json` registran **20/20 rondas y 160/160"
+          },
+          {
+            "line": 95,
+            "text": "`gemma4-routing-live-durable-20260713.json` pasó **29/29** en capacidad y"
+          },
+          {
+            "line": 96,
+            "text": "contrato, con p50 **275.777 ms**, p95 **746.598 ms** y máximo **860.044 ms**."
+          },
+          {
+            "line": 97,
+            "text": "La suite completa histórica de D55 cerró en **4423 passed, 1 skipped**; el skip es el E2E"
+          },
+          {
+            "line": 101,
+            "text": "La evidencia de soak tampoco cambia: b9959 completó 86400 s, pero sigue en"
+          }
+        ],
+        "dates": [
+          "2026-07-11",
+          "2026-07-12",
+          "2026-07-13"
+        ],
+        "models": [
+          "gemma4",
+          "llama.cpp",
+          "functiongemma",
+          "gemma 4",
+          "qwen3",
+          "piper",
+          "e4b",
+          "gemma-4"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM",
+          "RTX 4060 Ti 16 GB",
+          "vram"
+        ],
+        "mechanisms": [
+          {
+            "line": 6,
+            "text": "`data/logs/gemma4-audit/` y no se versionan porque contienen estado local; los"
+          },
+          {
+            "line": 256,
+            "text": "rechaza por default aunque sea compatible, porque `/props` no expone todos sus"
+          }
+        ],
+        "ranges": [
+          "1-598",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/gui_reminders_v2_security.md",
+      "queued_sha256": "21aec51548a32e29efa89f2bf170bd4ad71cacc7e51bdb5f5b8291dd84a9723e",
+      "size_queued": 15148,
+      "exists": true,
+      "disk_sha256": "21aec51548a32e29efa89f2bf170bd4ad71cacc7e51bdb5f5b8291dd84a9723e",
+      "disk_size": 15148,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/gui_reminders_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 286,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Recordatorios GUI v2: seguridad, recuperación y límites"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Alcance exacto"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Flujo de autoridad"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Contrato de entrada y transporte"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Outbox durable de entrega privada (schema v7)"
+          },
+          {
+            "line": 131,
+            "level": 2,
+            "text": "Recuperación tras pérdida de respuesta o reinicio"
+          },
+          {
+            "line": 194,
+            "level": 2,
+            "text": "Claim, revelación y ACK"
+          },
+          {
+            "line": 215,
+            "level": 2,
+            "text": "Evidencia disponible y límites pendientes"
+          },
+          {
+            "line": 256,
+            "level": 2,
+            "text": "Rollback operativo"
+          },
+          {
+            "line": 270,
+            "level": 2,
+            "text": "Fuentes primarias"
+          }
+        ],
+        "lead": "Estado: superficie `trusted_v2` integrada para **listar** y **crear**",
+        "measures": [
+          {
+            "line": 188,
+            "text": "más temprano se conserva ante churn de visibilidad, red o WebSocket y su"
+          },
+          {
+            "line": 190,
+            "text": "`401/403` o una forma de respuesta inesperada. Un manifest exacto `empty` es"
+          },
+          {
+            "line": 232,
+            "text": "| ecosistema `test_tooling*.py` | 2518 passed |"
+          },
+          {
+            "line": 233,
+            "text": "| GUI `test_gui*.py` | 100 passed |"
+          },
+          {
+            "line": 234,
+            "text": "| matriz integrada store/mission/private/HTTP/security | 406 passed |"
+          },
+          {
+            "line": 235,
+            "text": "| frontend Node, incluidos deadlines/churn/contratos | 45 passed |"
+          },
+          {
+            "line": 236,
+            "text": "| suite global `pytest -q` | 3082 passed, 1 E2E FunctionGemma opt-in skipped |"
+          }
+        ],
+        "dates": [
+          "2026-07-13"
+        ],
+        "models": [
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 40,
+            "text": "-> journal cifrado + adaptador de Windows + verifier"
+          },
+          {
+            "line": 180,
+            "text": "hace cleanup automático porque convertir revocación en transferencia rompería"
+          },
+          {
+            "line": 253,
+            "text": "Hasta medir ese corpus, el provider y el verifier están integrados pero la"
+          }
+        ],
+        "ranges": [
+          "1-286",
+          "h:1",
+          "m:188"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/inventory.md",
+      "queued_sha256": "895ff8b751749969c34dbeb28a6faebf306812da6c4cdd57c3789049e04f29f8",
+      "size_queued": 8177,
+      "exists": true,
+      "disk_sha256": "895ff8b751749969c34dbeb28a6faebf306812da6c4cdd57c3789049e04f29f8",
+      "disk_size": 8177,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/inventory.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 120,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Inventario del proyecto anterior (auditoría FASE 1)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "1. Tools"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "2. Router / encoder"
+          },
+          {
+            "line": 38,
+            "level": 2,
+            "text": "3. Function Gemma / FGemma4 QAT"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "4. RAG"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "5. Memoria"
+          },
+          {
+            "line": 72,
+            "level": 2,
+            "text": "6. Skills"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "7. Microagents"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "8. Voz"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "9. Visión"
+          },
+          {
+            "line": 108,
+            "level": 2,
+            "text": "10. Configuraciones útiles"
+          }
+        ],
+        "lead": "Auditado: `C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\Probando Gemma 4`",
+        "measures": [
+          {
+            "line": 30,
+            "text": "(`data/router_encoder_ft/model_int8.onnx`, paridad top-1 19/20 vs torch"
+          },
+          {
+            "line": 34,
+            "text": "separación medida 0.485/0.565). Fallback léxico word-boundary."
+          },
+          {
+            "line": 40,
+            "text": "- **FunctionGemma-270M FT (run9 / tools-reduce)**: GGUF Q8_0 278MB en"
+          },
+          {
+            "line": 43,
+            "text": "(~70-150ms/decisión). → portado a `models/function_gemma.py` con TODA la"
+          },
+          {
+            "line": 48,
+            "text": "- **FGemma4 QAT** = `models/E2B-QAT/gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf`"
+          },
+          {
+            "line": 49,
+            "text": "(2.5GB; también Q2_K_XL 2.1GB): el modelo QAT base oficial que HABLA en"
+          },
+          {
+            "line": 58,
+            "text": "BM25** con chunking por párrafos (2200/250) + snippet() + rerank opcional"
+          },
+          {
+            "line": 78,
+            "text": "encoder. Probado: 11/11 cargan."
+          },
+          {
+            "line": 110,
+            "text": "- Perfiles medidos (VRAM/CPU): vram4 (E2B-Q4 FT, 3.36GB todo incluido),"
+          },
+          {
+            "line": 111,
+            "text": "**vram4_lean** (split QAT+FG, ~1.8GB, ctx 6144, ubatch 320 vision-safe,"
+          },
+          {
+            "line": 117,
+            "text": "localhost (+2s IPv6), CUDA_VISIBLE_DEVICES=-1 para 0 VRAM del FG,"
+          },
+          {
+            "line": 119,
+            "text": "numpy<2 (incompatibilidad medida), puerto abre antes que el GGUF cargue"
+          }
+        ],
+        "dates": [
+          "2026-06-26",
+          "2026-06-02",
+          "2026-06-07",
+          "2026-06-20",
+          "2026-06-17"
+        ],
+        "models": [
+          "gemma 4",
+          "functiongemma",
+          "gemma-4",
+          "livekit",
+          "piper",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-120",
+          "h:1",
+          "m:30"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/local_calendar_v2_security.md",
+      "queued_sha256": "16c19fca3581b8b3f8a3b2580adfaaecf86b4bace7cd64950eee3e07f57cf819",
+      "size_queued": 8258,
+      "exists": true,
+      "disk_sha256": "16c19fca3581b8b3f8a3b2580adfaaecf86b4bace7cd64950eee3e07f57cf819",
+      "disk_size": 8258,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/local_calendar_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 143,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Local Calendar v2: contrato de seguridad y estado experimental"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Superficie deliberadamente pequeña"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "Autoridades y aislamiento"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Privacidad e integridad durable"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Concurrencia, idempotencia y rollback"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "Exportación RFC 5545"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "Evidencia automatizada actual"
+          },
+          {
+            "line": 121,
+            "level": 2,
+            "text": "Bloqueantes antes de promoción"
+          }
+        ],
+        "lead": "Estado: **aislado, no registrado y no promovido al producto estable**.",
+        "measures": [
+          {
+            "line": 7,
+            "text": "Google Calendar, Outlook, red ni apertura de aplicaciones. El código histórico"
+          },
+          {
+            "line": 119,
+            "text": "no usan red y no escriben fuera de `tmp_path`."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 54,
+            "text": "- `list` sí devuelve los eventos solicitados porque ésa es su función, pero su"
+          }
+        ],
+        "ranges": [
+          "1-143",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/migration_plan.md",
+      "queued_sha256": "441dc265e88f605d386e61d739db59eec06474bdf6377150a0da65efe7876385",
+      "size_queued": 3766,
+      "exists": true,
+      "disk_sha256": "441dc265e88f605d386e61d739db59eec06474bdf6377150a0da65efe7876385",
+      "disk_size": 3766,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/migration_plan.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 51,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan de migración — qué se migró, cómo, y qué sigue"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Hecho (esta migración)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Cómo conectar lo pendiente (orden sugerido)"
+          },
+          {
+            "line": 45,
+            "level": 2,
+            "text": "Reglas que se siguieron (FASE 9)"
+          }
+        ],
+        "lead": "1. **Prueba física de WhatsApp y streaming** (requieren sesión logueada y",
+        "measures": [
+          {
+            "line": 7,
+            "text": "| 1 | Core (encoder/router/registry/dispatcher) | nuevo, mínimo | pipeline puro; 9/9 comandos ruteados (semantic 0.87-0.99) |"
+          },
+          {
+            "line": 21,
+            "text": "| 15 | skills | 11 carpetas copiadas + registry nuevo | 11/11 cargan; match semántico listo |"
+          },
+          {
+            "line": 22,
+            "text": "| 16 | microagents | 4 md copiados + registry nuevo | trigger GGUF→glossary probado |"
+          },
+          {
+            "line": 25,
+            "text": "| 19 | legacy_export | 298 archivos curados (5.8MB, sin safety) | reserva completa |"
+          }
+        ],
+        "dates": [
+          "2026-07-02"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-51",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/mission_ledger_v1_integration.md",
+      "queued_sha256": "13ded29944c600c62659a8fc275da9a299a77aaa64986f8651522c79dd2944c3",
+      "size_queued": 5068,
+      "exists": true,
+      "disk_sha256": "13ded29944c600c62659a8fc275da9a299a77aaa64986f8651522c79dd2944c3",
+      "disk_size": 5068,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/mission_ledger_v1_integration.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 99,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Mission ledger v1 — integración tipada experimental"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Estado"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Lo que ya existe"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Contratos implementados"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "Matriz de crash obligatoria"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "Retención y tombstones"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Gate de promoción"
+          }
+        ],
+        "lead": "No existe un segundo ledger ni un segundo motor. `MissionStore` schema v4 sigue",
+        "measures": [
+          {
+            "line": 7,
+            "text": "orquestación. Un prototipo read-only fue eliminado después del red-team porque"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 7,
+            "text": "orquestación. Un prototipo read-only fue eliminado después del red-team porque"
+          },
+          {
+            "line": 86,
+            "text": "3. Registro inmutable de ledger/verifier/observer/predicate y preflight que no"
+          }
+        ],
+        "ranges": [
+          "1-99",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/office_document_v2_security.md",
+      "queued_sha256": "1091b09cb35e06392d0c9bb89d54872efe73e58f8583f015754cb3ad2bdc52fd",
+      "size_queued": 9472,
+      "exists": true,
+      "disk_sha256": "1091b09cb35e06392d0c9bb89d54872efe73e58f8583f015754cb3ad2bdc52fd",
+      "disk_size": 9472,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/office_document_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 172,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Office Document v2: creación segura de un DOCX nuevo"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Por qué no se reutilizó `office(action=...)`"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Contrato exacto"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Límites y privacidad"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "Autoridad de generación"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "Evidencia automatizada actual"
+          },
+          {
+            "line": 144,
+            "level": 2,
+            "text": "Bloqueantes antes de promoción"
+          }
+        ],
+        "lead": "Estado: **experimental, aislado y no conectado al inventario estable**.",
+        "measures": [
+          {
+            "line": 140,
+            "text": "Resultado local de este corte: `35 passed`."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-172",
+          "h:1",
+          "m:140"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/pending_modules.md",
+      "queued_sha256": "4d64cf0ee17e8cf85260bca394e1261acb544defd5964cee41172afd470b6a2c",
+      "size_queued": 5628,
+      "exists": true,
+      "disk_sha256": "4d64cf0ee17e8cf85260bca394e1261acb544defd5964cee41172afd470b6a2c",
+      "disk_size": 5628,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/pending_modules.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 95,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Módulos pendientes (conservados, no conectados)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "1. ~~Cadena de voz completa (wake → STT → turno → TTS)~~ — HECHO (2026-07-02)"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "2. ~~computer_use (UIA + click + type + verificación visual)~~ — HECHO (2026-07-02)"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "3. ~~QAT conversacional por default~~ — HECHO (2026-07-02)"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "4. Visión avanzada (cámara/gestos/ventanas)"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "5. ~~Capa Jarvis (memoria viva)~~ — HECHO (2026-07-03/04, D29–D31)"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "6. Los otros ~40 dominios de tools"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "7. ~~Multi-comando (\"abrí X y poné Y\")~~ — HECHO (2026-07-02, D20)"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "8. MCP (cliente/servidor) — DIFERIDO con razón (D39)"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "9. Pruebas físicas pendientes (requieren sesión/ojos)"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "10. NO exportado a propósito (auditoría D18, 2026-07-02)"
+          }
+        ],
+        "lead": "Nada de esto se perdió: el código real está en `legacy_export/` (o portado",
+        "measures": [
+          {
+            "line": 21,
+            "text": "hablado end-to-end por parlantes (4.6s de audio reproducido)."
+          },
+          {
+            "line": 74,
+            "text": "están en su GGUF: requiere diseñar un camino de routing nuevo), (c) no"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 72,
+            "text": "`mcp` instalado. Diferido porque: (a) es EXPANSIÓN de tools (contra la"
+          }
+        ],
+        "ranges": [
+          "1-95",
+          "h:1",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/productivity_v2_security.md",
+      "queued_sha256": "937391aab75801a4094eacf45219aaa9d9b22ffb340d93308392c97f005d7b15",
+      "size_queued": 5429,
+      "exists": true,
+      "disk_sha256": "937391aab75801a4094eacf45219aaa9d9b22ffb340d93308392c97f005d7b15",
+      "disk_size": 5429,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/productivity_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 90,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Productividad local v2: notas y temporizadores"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Decisiones tomadas"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Límite de autoridad actual"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Persistencia y privacidad"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Fuentes primarias contrastadas"
+          }
+        ],
+        "lead": "Estado: implementado y probado en la rama de Tool Ecosystem v2. El flag de",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 41,
+            "text": "una colección acotada en memoria; no se crea FTS5 porque el índice de FTS guarda"
+          }
+        ],
+        "ranges": [
+          "1-90",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/routines_v2_security.md",
+      "queued_sha256": "21d5404162a880967ea1bc3ae3ddfc024ccfd08dcfb558b65e0b460f71f6c5b5",
+      "size_queued": 7155,
+      "exists": true,
+      "disk_sha256": "21d5404162a880967ea1bc3ae3ddfc024ccfd08dcfb558b65e0b460f71f6c5b5",
+      "disk_size": 7155,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/routines_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 141,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Rutinas v2: recetas exactas, no macros con autoridad"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Decisión"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Flujo alcanzable por el usuario"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Política para ejecución automática"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Persistencia, crash y límites"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Por qué no hay cron ni Scheduled Task todavía"
+          },
+          {
+            "line": 131,
+            "level": 2,
+            "text": "Evidencia histórica revisada"
+          }
+        ],
+        "lead": "Estado: implementado detrás de `BAXY_TOOL_ECOSYSTEM_V2` (el flag de producto",
+        "measures": [
+          {
+            "line": 37,
+            "text": "-> draft efímero (120 s, sesión + request, un solo uso)"
+          },
+          {
+            "line": 69,
+            "text": "- red, ejecución genérica, borrado, instalación, escritura externa, compras,"
+          },
+          {
+            "line": 72,
+            "text": "- secretos, privilegio y providers con timeout mayor a 60 s."
+          },
+          {
+            "line": 77,
+            "text": "apps, WhatsApp, foco dinámico, copiar a clipboard y las rutas de visión de 95 s"
+          },
+          {
+            "line": 96,
+            "text": "- Lease de 300 s para un budget de misión de 120 s, timeout de paso <=60 s y"
+          }
+        ],
+        "dates": [
+          "2025-03-26",
+          "2026-06-07"
+        ],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 47,
+            "text": "-> MissionEngine -> Invoker -> PolicyEngine -> verifier"
+          },
+          {
+            "line": 140,
+            "text": "migran sus JSON/macros automáticamente porque contienen una gramática de"
+          }
+        ],
+        "ranges": [
+          "1-141",
+          "h:1",
+          "m:37"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/skills_authoring.md",
+      "queued_sha256": "aa6e45bfe00f1ac89f251c326d81fc537eac1b38b2b96c871b3e15dccf0515fc",
+      "size_queued": 4678,
+      "exists": true,
+      "disk_sha256": "aa6e45bfe00f1ac89f251c326d81fc537eac1b38b2b96c871b3e15dccf0515fc",
+      "disk_size": 4678,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/skills_authoring.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 84,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Cómo escribir skills de BAXY (D37, elegibilidad y caveats D43)"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Qué es una skill acá"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Progressive disclosure en BAXY"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "La selección es por EMBEDDINGS (ley de producto: cero keywords por idioma)"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "El cuerpo (para un 2B, no para Opus)"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Checklist antes de sumar una skill"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "Depurar la selección"
+          }
+        ],
+        "lead": "Guía destilada de la spec Agent Skills de Anthropic y sus best practices,",
+        "measures": [
+          {
+            "line": 32,
+            "text": "examples — D43 midió 55/60 positivos y 17/17 negativos rechazados;"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-84",
+          "h:1",
+          "m:32"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/steam_spotify_compound_security.md",
+      "queued_sha256": "0115fa87b8d052d9e185419c2bad9e3a447049e92ef3c04270fe8066d6e93567",
+      "size_queued": 19500,
+      "exists": true,
+      "disk_sha256": "0115fa87b8d052d9e185419c2bad9e3a447049e92ef3c04270fe8066d6e93567",
+      "disk_size": 19500,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/steam_spotify_compound_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 330,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Steam + Spotify compound mission security note"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Product promotion audit (updated 2026-07-14)"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "Product semantics"
+          },
+          {
+            "line": 94,
+            "level": 3,
+            "text": "Effect-free product preview"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "Spotify branch"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "Current Windows candidate and readiness boundary"
+          },
+          {
+            "line": 165,
+            "level": 2,
+            "text": "Steam branch"
+          },
+          {
+            "line": 167,
+            "level": 3,
+            "text": "Catalog identity is not ownership"
+          },
+          {
+            "line": 178,
+            "level": 3,
+            "text": "Authenticated offline snapshot"
+          },
+          {
+            "line": 206,
+            "level": 3,
+            "text": "Reviewed two-phase flow"
+          },
+          {
+            "line": 240,
+            "level": 2,
+            "text": "Crash and concurrency semantics"
+          },
+          {
+            "line": 259,
+            "level": 2,
+            "text": "Deterministic verification completed"
+          },
+          {
+            "line": 281,
+            "level": 2,
+            "text": "Required gates before product readiness or Steam registration"
+          },
+          {
+            "line": 310,
+            "level": 2,
+            "text": "Primary references"
+          }
+        ],
+        "lead": "Status: the compound Steam + Spotify mission remains experimental,",
+        "measures": [
+          {
+            "line": 18,
+            "text": "The three-operation compiler and a fail-closed registration seam are internally"
+          },
+          {
+            "line": 33,
+            "text": "intentional fail-closed state whose availability reason is"
+          },
+          {
+            "line": 41,
+            "text": "key epoch or `minimum_revision`.  Manually constructing a resolver is"
+          },
+          {
+            "line": 49,
+            "text": "signer identity/epoch, minimum revision and durable rollback database. It does"
+          },
+          {
+            "line": 134,
+            "text": "or executable-identity changes fail closed. Microsoft Store activation remains"
+          },
+          {
+            "line": 135,
+            "text": "fail-closed until its exact activation path has a live compatibility matrix."
+          },
+          {
+            "line": 145,
+            "text": "denial, stale RuntimeId, or ambiguous row must fail closed."
+          },
+          {
+            "line": 182,
+            "text": "the 32-byte public key, key ID and monotonic key epoch. Algorithm, epoch, key"
+          },
+          {
+            "line": 189,
+            "text": "derived as `steam-snapshot-e{epoch}-r{revision}-{sha256}`; an entry cannot supply"
+          },
+          {
+            "line": 194,
+            "text": "epoch/ID, revision and digest. `BEGIN IMMEDIATE` plus compare-and-swap serializes"
+          },
+          {
+            "line": 264,
+            "text": "- focused backend matrix: **150/150**;"
+          },
+          {
+            "line": 265,
+            "text": "- frontend attestation and security matrix: **73/73**, with lint and production"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 91,
+            "text": "to an artist identity.  It requires a separate read-only resolver because it"
+          }
+        ],
+        "ranges": [
+          "1-330",
+          "h:1",
+          "m:18"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/tasks_v2_security.md",
+      "queued_sha256": "d1b66ca426b9c388cf8929aaf8513bed89549a703306e1cff7dcbcb2f35c9925",
+      "size_queued": 6673,
+      "exists": true,
+      "disk_sha256": "d1b66ca426b9c388cf8929aaf8513bed89549a703306e1cff7dcbcb2f35c9925",
+      "disk_size": 6673,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/tasks_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 129,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tareas locales cifradas v2"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Alcance implementado"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Due es metadata, no autoridad temporal"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "Persistencia y privacidad"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "Límite de autoridad tras la integración"
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "Evidencia y fuentes primarias"
+          }
+        ],
+        "lead": "Estado: provider integrado en `tooling.providers`, `BUILTIN_TOOL_IDS`, runtime y",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-129",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/tool_ecosystem_v2.md",
+      "queued_sha256": "9aee0eb57b58a88605cea6ce7beeb4b4de9fa548012a9594e40da9586a3bb3c5",
+      "size_queued": 44201,
+      "exists": true,
+      "disk_sha256": "9aee0eb57b58a88605cea6ce7beeb4b4de9fa548012a9594e40da9586a3bb3c5",
+      "disk_size": 44201,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/tool_ecosystem_v2.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 787,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tool Ecosystem v2 de BAXY"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Misión"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "Lo que revelan los sistemas históricos"
+          },
+          {
+            "line": 38,
+            "level": 3,
+            "text": "Catálogo histórico"
+          },
+          {
+            "line": 59,
+            "level": 3,
+            "text": "Baseline legacy de BAXY"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "Evidencia histórica de misiones"
+          },
+          {
+            "line": 114,
+            "level": 3,
+            "text": "Carter como corpus de fallos"
+          },
+          {
+            "line": 143,
+            "level": 3,
+            "text": "Corte implementado v2 y activo por defecto"
+          },
+          {
+            "line": 212,
+            "level": 3,
+            "text": "Recordatorios GUI trusted v2"
+          },
+          {
+            "line": 249,
+            "level": 3,
+            "text": "Lecturas del filesystem v2"
+          },
+          {
+            "line": 285,
+            "level": 3,
+            "text": "Transferencias y ZIP del filesystem v2"
+          },
+          {
+            "line": 353,
+            "level": 2,
+            "text": "Decisiones no negociables"
+          },
+          {
+            "line": 387,
+            "level": 2,
+            "text": "Arquitectura objetivo"
+          },
+          {
+            "line": 407,
+            "level": 3,
+            "text": "Capas"
+          },
+          {
+            "line": 420,
+            "level": 2,
+            "text": "Contrato de una operación"
+          },
+          {
+            "line": 444,
+            "level": 2,
+            "text": "Permisos y confirmaciones"
+          },
+          {
+            "line": 446,
+            "level": 3,
+            "text": "`TurnPermit`"
+          },
+          {
+            "line": 460,
+            "level": 3,
+            "text": "`ConfirmationToken`"
+          },
+          {
+            "line": 478,
+            "level": 2,
+            "text": "Resultados y evidencia"
+          },
+          {
+            "line": 501,
+            "level": 2,
+            "text": "Retrieval optimizado para E2B"
+          },
+          {
+            "line": 518,
+            "level": 2,
+            "text": "Misiones"
+          },
+          {
+            "line": 567,
+            "level": 2,
+            "text": "Skills v2"
+          },
+          {
+            "line": 679,
+            "level": 2,
+            "text": "Windows y accesibilidad"
+          },
+          {
+            "line": 693,
+            "level": 2,
+            "text": "MCP y providers externos"
+          }
+        ],
+        "lead": "Estado: **cutover activo, 2026-07-14**. Tool Ecosystem v2 es el modo",
+        "measures": [
+          {
+            "line": 11,
+            "text": "**95/92/3/39** hasta completar el gate físico supervisado y la revisión de"
+          },
+          {
+            "line": 51,
+            "text": "UIA, navegador, productividad, comunicación, documentos, desarrollo, red,"
+          },
+          {
+            "line": 103,
+            "text": "- el modelo de 4B producía planes razonables en aproximadamente 7/10 casos;"
+          },
+          {
+            "line": 135,
+            "text": "- el tier mínimo usa E4B y no cabe en el objetivo de 3–4 GB de BAXY."
+          },
+          {
+            "line": 151,
+            "text": "- 2 lecturas acotadas de red;"
+          },
+          {
+            "line": 178,
+            "text": "ambas superficies hace alcanzables **90/91 operaciones permitidas**. La única"
+          },
+          {
+            "line": 190,
+            "text": "adjuntos continúan fail-closed; y recordatorios, mutaciones UIA y ventanas"
+          },
+          {
+            "line": 195,
+            "text": "acceptance v2 offline **8/8** y routing sin retroceso frente al baseline. El skip"
+          },
+          {
+            "line": 196,
+            "text": "corresponde al E2E FunctionGemma opt-in que requiere GGUF y `llama-server`; estos"
+          },
+          {
+            "line": 199,
+            "text": "acreditan como repetición nueva backend focal **150/150**, frontend **73/73** y"
+          },
+          {
+            "line": 202,
+            "text": "declaran completados ese soak, una validación en GPU física de 4 GB ni el corpus"
+          },
+          {
+            "line": 398,
+            "text": "-> Gemma 4 decide: call | ask_user | complete | fail"
+          }
+        ],
+        "dates": [
+          "2026-07-14"
+        ],
+        "models": [
+          "functiongemma",
+          "gemma 4",
+          "e4b",
+          "gemma4",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 88,
+            "text": "un camino alterno sin schema, policy, audit y verifier."
+          },
+          {
+            "line": 91,
+            "text": "exacto y la fase `handler` o `verifier` mediante contexto aislado por thread."
+          },
+          {
+            "line": 118,
+            "text": "dispatcher real; el flujo normal vuelve a ejecutar el composite y el verifier"
+          },
+          {
+            "line": 169,
+            "text": "verifier. Esto todavía no significa paridad con los 525 nombres históricos:"
+          },
+          {
+            "line": 173,
+            "text": "executor real, policy, verifier y pruebas de estado final."
+          },
+          {
+            "line": 281,
+            "text": "el verifier; la proyección privada conserva sólo `created`, sin ruta ni receipt."
+          }
+        ],
+        "ranges": [
+          "1-787",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/tool_ecosystem_v2_coverage.md",
+      "queued_sha256": "c0be5e9e49c8fd37f96163dea001d7cf189c9fb1fa641280745a1aad9e9a6a29",
+      "size_queued": 37770,
+      "exists": true,
+      "disk_sha256": "c0be5e9e49c8fd37f96163dea001d7cf189c9fb1fa641280745a1aad9e9a6a29",
+      "disk_size": 37770,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/tool_ecosystem_v2_coverage.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 685,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tool Ecosystem v2 — baseline, cobertura y matriz de migración"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "1. Baseline congelado"
+          },
+          {
+            "line": 33,
+            "level": 3,
+            "text": "Convenciones que evitan inflar los números"
+          },
+          {
+            "line": 51,
+            "level": 3,
+            "text": "Baseline de calidad que no debe retroceder"
+          },
+          {
+            "line": 80,
+            "level": 3,
+            "text": "Corte v2 implementado y activo por defecto"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "2. Inventario por macrodominio"
+          },
+          {
+            "line": 138,
+            "level": 3,
+            "text": "2.1 Superficie pública actual"
+          },
+          {
+            "line": 157,
+            "level": 3,
+            "text": "2.2 Inventario inactivo preservado"
+          },
+          {
+            "line": 182,
+            "level": 2,
+            "text": "3. Contrato actual y deuda que v2 debe cerrar"
+          },
+          {
+            "line": 219,
+            "level": 2,
+            "text": "4. Caminos de ejecución y bypasses"
+          },
+          {
+            "line": 221,
+            "level": 3,
+            "text": "Camino protegido principal"
+          },
+          {
+            "line": 238,
+            "level": 3,
+            "text": "Bypasses que deben converger en un Invoker único"
+          },
+          {
+            "line": 259,
+            "level": 2,
+            "text": "5. Gates vigentes que deben conservarse"
+          },
+          {
+            "line": 261,
+            "level": 3,
+            "text": "Routing y selección"
+          },
+          {
+            "line": 278,
+            "level": 3,
+            "text": "Verificadores locales existentes"
+          },
+          {
+            "line": 295,
+            "level": 3,
+            "text": "Policy v2 existente y deuda de convergencia"
+          },
+          {
+            "line": 396,
+            "level": 2,
+            "text": "6. Estados de cobertura de la matriz"
+          },
+          {
+            "line": 412,
+            "level": 2,
+            "text": "7. Matriz de operaciones reales actuales"
+          },
+          {
+            "line": 417,
+            "level": 3,
+            "text": "7.1 Apps"
+          },
+          {
+            "line": 425,
+            "level": 3,
+            "text": "7.2 Media"
+          },
+          {
+            "line": 439,
+            "level": 3,
+            "text": "7.3 Música y streaming"
+          },
+          {
+            "line": 446,
+            "level": 3,
+            "text": "7.4 Web y visión"
+          },
+          {
+            "line": 456,
+            "level": 3,
+            "text": "7.5 Recordatorios y estado del PC"
+          },
+          {
+            "line": 483,
+            "level": 3,
+            "text": "7.6 Rutinas y WhatsApp"
+          }
+        ],
+        "lead": "Baseline congelado: 2026-07-11. Corte v2 actual: 2026-07-14. Raíz auditada:",
+        "measures": [
+          {
+            "line": 31,
+            "text": "| Skills / microagents | **12 / 4** | contexto conversacional; no son tools ejecutables |"
+          },
+          {
+            "line": 59,
+            "text": "| Routing unificado: capacidad + args mínimos | **29/29** |"
+          },
+          {
+            "line": 60,
+            "text": "| FunctionGemma fallback: capacidad + args mínimos | **29/29** |"
+          },
+          {
+            "line": 61,
+            "text": "| Semántico directo histórico | **482/749** |"
+          },
+          {
+            "line": 62,
+            "text": "| Capacidad correcta visible para FG | **745/749** |"
+          },
+          {
+            "line": 63,
+            "text": "| Subset de acciones | **34/34** |"
+          },
+          {
+            "line": 64,
+            "text": "| Gate-pass de acciones | **33/34** |"
+          },
+          {
+            "line": 65,
+            "text": "| Chitchat bloqueado | **17/18** |"
+          },
+          {
+            "line": 66,
+            "text": "| Fuera de catálogo bloqueado | **4/4** |"
+          },
+          {
+            "line": 67,
+            "text": "| Skills: holdout positivo | **55/60** |"
+          },
+          {
+            "line": 68,
+            "text": "| Skills: negativos rechazados | **17/17** |"
+          },
+          {
+            "line": 69,
+            "text": "| Suite de repo histórica documentada | **260 passed, 1 skipped** |"
+          }
+        ],
+        "dates": [
+          "2026-07-11",
+          "2026-07-14"
+        ],
+        "models": [
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 43,
+            "text": "- `tool_categories.json` tiene 68 keys porque incluye `_meta`. Por eso hay 67"
+          },
+          {
+            "line": 192,
+            "text": "idempotencia, timeout, disponibilidad, versión ni verifier. Los contratos de"
+          },
+          {
+            "line": 212,
+            "text": "└─ verifier"
+          },
+          {
+            "line": 290,
+            "text": "- Recordatorios v2: el verifier exige journal y Scheduled Task exactos; las"
+          },
+          {
+            "line": 415,
+            "text": "`operation / spec / handler / verifier / policy / tests / live / status`."
+          },
+          {
+            "line": 419,
+            "text": "| operation | spec | handler | verifier | policy | tests | live | status |"
+          }
+        ],
+        "ranges": [
+          "1-685",
+          "h:1",
+          "m:31"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/tts_landscape_2026.md",
+      "queued_sha256": "535e1c994f59a6b90dc2da1b77c9e2c82d70f8e13dd78f07182fbc8a49010677",
+      "size_queued": 9678,
+      "exists": true,
+      "disk_sha256": "535e1c994f59a6b90dc2da1b77c9e2c82d70f8e13dd78f07182fbc8a49010677",
+      "disk_size": 9678,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/tts_landscape_2026.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 128,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "TTS local para BAXY: estado y gates al 2026-07-11"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Decisión provisional"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Matriz de evidencia"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "Baseline local preservado"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "Contrato común que ningún backend puede romper"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Bakeoff reproducible post-soak"
+          },
+          {
+            "line": 88,
+            "level": 3,
+            "text": "Corpus"
+          },
+          {
+            "line": 97,
+            "level": 3,
+            "text": "Mediciones automáticas"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "Evaluación humana"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Gate de promoción"
+          }
+        ],
+        "lead": "Este documento decide qué motores merecen medición para la voz de BAXY. No",
+        "measures": [
+          {
+            "line": 6,
+            "text": "restar VRAM al servidor Gemma 4."
+          },
+          {
+            "line": 78,
+            "text": "9. El motor CPU no puede seleccionar CUDA ni aumentar la VRAM del perfil Gemma."
+          },
+          {
+            "line": 100,
+            "text": "- RSS/private bytes, hilos, CPU, handles y VRAM baseline/pico/final."
+          },
+          {
+            "line": 101,
+            "text": "- Cancelación durante espera, síntesis y playback; objetivo p95 <=100 ms."
+          },
+          {
+            "line": 103,
+            "text": "- Crecimiento retenido <=64 MiB y delta VRAM <=16 MiB, sin provider CUDA."
+          },
+          {
+            "line": 120,
+            "text": "- cumple TTFA caliente p95 <=500 ms y cancelación p95 <=100 ms;"
+          },
+          {
+            "line": 122,
+            "text": "- usa exclusivamente CPU en el perfil de 3–4 GB;"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "piper",
+          "llama.cpp",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 4090"
+        ],
+        "mechanisms": [
+          {
+            "line": 10,
+            "text": "- **Piper sigue siendo el fallback**, porque es el único motor actualmente"
+          }
+        ],
+        "ranges": [
+          "1-128",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "legacy/docs/vision_attachment_v2_security.md",
+      "queued_sha256": "9cc0ec925e72f11f48de45d0172e5ac2aca86d9a85a776492eec7f64ed4c228a",
+      "size_queued": 5401,
+      "exists": true,
+      "disk_sha256": "9cc0ec925e72f11f48de45d0172e5ac2aca86d9a85a776492eec7f64ed4c228a",
+      "disk_size": 5401,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/docs/vision_attachment_v2_security.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 107,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Vision attachment v2 security note"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Authority flow"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "File and decoder boundary"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "Handle, cancellation, and privacy semantics"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "Verified tests"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Gates before registration"
+          }
+        ],
+        "lead": "Status: experimental, unregistered, and not connected to the GUI or product",
+        "measures": [
+          {
+            "line": 60,
+            "text": "replayed handles fail closed."
+          },
+          {
+            "line": 86,
+            "text": "- provider-focused suite: 18/18 passed;"
+          },
+          {
+            "line": 87,
+            "text": "- provider plus Invoker/private-projection matrix: 68/68 passed;"
+          },
+          {
+            "line": 103,
+            "text": "- measure latency, RAM and VRAM against the active Gemma 4 profile and repeat a"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-107",
+          "h:1",
+          "m:60"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/README.md",
+      "queued_sha256": "9c8448a2b3b6d504ad18c5e346703b926d2cd42f57df0e33aacdb2918aaee2e6",
+      "size_queued": 3565,
+      "exists": true,
+      "disk_sha256": "9c8448a2b3b6d504ad18c5e346703b926d2cd42f57df0e33aacdb2918aaee2e6",
+      "disk_size": 3565,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/README.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 33,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "legacy_export — código real del BAXY anterior, conservado"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Qué NO se exportó (decisión de producto: BAXY puro)"
+          }
+        ],
+        "lead": "Copias **curadas y revisadas** del proyecto anterior",
+        "measures": [],
+        "dates": [
+          "2026-06-26"
+        ],
+        "models": [
+          "gemma 4",
+          "livekit"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-33",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/core.md",
+      "queued_sha256": "ad52c9ff5ec70cd36709597777bd3c6a8937f9563b2b30310bd8b86eb05a640f",
+      "size_queued": 12332,
+      "exists": true,
+      "disk_sha256": "ad52c9ff5ec70cd36709597777bd3c6a8937f9563b2b30310bd8b86eb05a640f",
+      "disk_size": 12332,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/core.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 209,
+        "headings": [],
+        "lead": "You are Baxy, a local Windows agent powered by the Gemma 4 model. Your NAME is",
+        "measures": [
+          {
+            "line": 27,
+            "text": "do NOT fall back to a value from training. \"Te quedan ~350 GB libres"
+          },
+          {
+            "line": 88,
+            "text": "tool ran\", not automatically \"the user goal is complete\". If status is failed,"
+          },
+          {
+            "line": 162,
+            "text": "5. For misheard proper names (artist/movie/game titles), pass YOUR"
+          },
+          {
+            "line": 176,
+            "text": "or status=\"failed\"."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 94,
+            "text": "because they promise something instead of executing/answering it:"
+          },
+          {
+            "line": 166,
+            "text": "6. NEVER respond with \"no entendí\" purely because of poor diction. Only"
+          },
+          {
+            "line": 186,
+            "text": "- The post-tool verifier checks that your reply mentions the action"
+          }
+        ],
+        "ranges": [
+          "1-209",
+          "m:27"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/core_lean.md",
+      "queued_sha256": "651953307087dab55baebb9b76ba755092a5554e5052fe857c735a4c287be5e6",
+      "size_queued": 4786,
+      "exists": true,
+      "disk_sha256": "651953307087dab55baebb9b76ba755092a5554e5052fe857c735a4c287be5e6",
+      "disk_size": 4786,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/core_lean.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 73,
+        "headings": [],
+        "lead": "You are Baxy, a local Windows voice agent powered by the Gemma 4 model. ALWAYS reply in",
+        "measures": [
+          {
+            "line": 48,
+            "text": "\"the tool ran\", not \"the goal is done\"; if status is failed/attempted/"
+          },
+          {
+            "line": 61,
+            "text": "YouTube, \"estim\"=Steam. Pass your best-guess query to the tool (search fixes minor"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-73",
+          "m:48"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/accessibility.md",
+      "queued_sha256": "6f49380d067ff01e96a3a8962ec3f4130fcc8558619128c15922ee8a577baa94",
+      "size_queued": 499,
+      "exists": true,
+      "disk_sha256": "6f49380d067ff01e96a3a8962ec3f4130fcc8558619128c15922ee8a577baa94",
+      "disk_size": 499,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/accessibility.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Accessibility rule: accessibility(...) for Windows Ease of Access features. Actions: status, magnifier_start, magnifier_stop, narrator_start, narrator_stop, dictation_status, settings_panel.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/app.lean.md",
+      "queued_sha256": "39ee141ea3b335a9078591eaa183417bb16f4fc242396bdcd3177f04fc9daf87",
+      "size_queued": 1517,
+      "exists": true,
+      "disk_sha256": "39ee141ea3b335a9078591eaa183417bb16f4fc242396bdcd3177f04fc9daf87",
+      "disk_size": 1517,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/app.lean.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "app(action=\"open\", name=\"<user-facing name>\") for apps/games. The runtime discovers installed apps dynamically (Windows sources, Start Menu, PATH, registry, Steam, Epic) — no hardcoded exe unless the user gives one.",
+        "measures": [
+          {
+            "line": 5,
+            "text": "NOT for \"what's open NOW\": app.search finds an installed app BY NAME to open it. \"¿qué juego estoy jugando?\" / \"what app is open\" = window(action='active'), NOT app.search. The question's verb ('jugando'/'playing') is NOT an app name — neve"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/app.md",
+      "queued_sha256": "ba1552c8e954f83e059d961b14f9240f62d829932bd7d107bf7c9a14d14ac42e",
+      "size_queued": 1994,
+      "exists": true,
+      "disk_sha256": "ba1552c8e954f83e059d961b14f9240f62d829932bd7d107bf7c9a14d14ac42e",
+      "disk_size": 1994,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/app.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "For apps and games, use app(action=\"open\", name=\"<user-facing name>\"). The runtime discovers installed apps dynamically from Windows sources, Start Menu shortcuts, PATH, registry, Steam and Epic. Do not require hardcoded exe names unless the user gives one.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/audio.md",
+      "queued_sha256": "1858bc0be5387465410d3dfd838a8972d5e620f29627c31efc33ae819f92fb9f",
+      "size_queued": 1173,
+      "exists": true,
+      "disk_sha256": "1858bc0be5387465410d3dfd838a8972d5e620f29627c31efc33ae819f92fb9f",
+      "disk_size": 1173,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/audio.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "Audio rule: audio(...) controls system master volume and media keys. Actions: get_volume, set_volume, mute, devices, set_default, media_play_pause, media_stop, next, previous.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/audio_device.md",
+      "queued_sha256": "49477d6a41afaecdb8c8e5a3b0fd637d9065ef5fb83f5028c06e398c4bf29761",
+      "size_queued": 488,
+      "exists": true,
+      "disk_sha256": "49477d6a41afaecdb8c8e5a3b0fd637d9065ef5fb83f5028c06e398c4bf29761",
+      "disk_size": 488,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/audio_device.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Per-app audio rule: to route a single app's audio (e.g. \"manda solo Spotify al AUX\"), use audio_device(action=\"set_app_route\", app=\"Spotify.exe\", device=\"<device>\", role=\"1\"). get_app_routes lists current per-app overrides.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/backup_sync.md",
+      "queued_sha256": "ad7e5038740312086033865e46911de12767e0434e07b30f991304f3a13cbfd8",
+      "size_queued": 485,
+      "exists": true,
+      "disk_sha256": "ad7e5038740312086033865e46911de12767e0434e07b30f991304f3a13cbfd8",
+      "disk_size": 485,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/backup_sync.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Backup rule: backup_sync(...) creates and restores local ZIP backups. Actions: status, backup_create, list, restore, dedupe, verify.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/browser.md",
+      "queued_sha256": "52219053e69d3c964808b7fa55f993441cf26c277a1c719dd9687983d6ca3f9d",
+      "size_queued": 4177,
+      "exists": true,
+      "disk_sha256": "52219053e69d3c964808b7fa55f993441cf26c277a1c719dd9687983d6ca3f9d",
+      "disk_size": 4177,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/browser.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 35,
+        "headings": [],
+        "lead": "LAUNCH-THE-APP vs NAVIGATE: browser(action=open) REQUIRES a url (or a search query for action=search) — it NAVIGATES an already-running browser to a page. To merely LAUNCH the browser program itself (\"abrí Chrome\", \"lanzá Google Chrome\", \"open Firefox\", \"starte Edge\" — no page/URL mentioned), use app(action=open, name=\"Chrome\"/\"Firefox\"/...) instead. Do NOT call browser.open without a url. General",
+        "measures": [
+          {
+            "line": 17,
+            "text": "Gaming, Epic, GOG, or any brand whose EXACT domain/TLD you are not 100%"
+          },
+          {
+            "line": 26,
+            "text": "are not 100% certain of its exact domain, do this instead:"
+          },
+          {
+            "line": 33,
+            "text": "For the user's typed URLs, pass them through unchanged."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-35",
+          "m:17"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/browser_real.md",
+      "queued_sha256": "74601dca35e1465d3300e2e49e3a026a73c4a369c5310f4e83b8736c69f49708",
+      "size_queued": 651,
+      "exists": true,
+      "disk_sha256": "74601dca35e1465d3300e2e49e3a026a73c4a369c5310f4e83b8736c69f49708",
+      "disk_size": 651,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/browser_real.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Visible browser rule: for tasks like \"compra esto\", \"rellena este formulario\" or any web action where the user expects the work to happen in their own visible browser, call browser_real(action=\"attach_visible\", browser=\"chrome|edge|opera|brave\"). If it returns needs_user with launch_instructions, relay those instructions and stop — do not start a hidden headless browser silently, and do not preten",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/clipboard.md",
+      "queued_sha256": "2dde9f6faab326a13456960644019f55b6ffe947f4796b5e04b213745dca610e",
+      "size_queued": 245,
+      "exists": true,
+      "disk_sha256": "2dde9f6faab326a13456960644019f55b6ffe947f4796b5e04b213745dca610e",
+      "disk_size": 245,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/clipboard.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Clipboard rule: clipboard(...) for the Windows clipboard. Actions: read, write.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/container.md",
+      "queued_sha256": "1a39c539d1df772dd2c5877fc20a9287c3522da388f41374e3abea7de6a0615f",
+      "size_queued": 503,
+      "exists": true,
+      "disk_sha256": "1a39c539d1df772dd2c5877fc20a9287c3522da388f41374e3abea7de6a0615f",
+      "disk_size": 503,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/container.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Container rule: container(...) is a Docker / docker-compose wrapper. Actions: status, ps, ps_all, images, inspect, logs, start, stop, restart, exec, compose_up, compose_down, compose_ps.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/creative_local.md",
+      "queued_sha256": "1977fb83bc4db365c58c8f031062c9c0cbaed7db5b7ffd37bd4649a3d99a716f",
+      "size_queued": 504,
+      "exists": true,
+      "disk_sha256": "1977fb83bc4db365c58c8f031062c9c0cbaed7db5b7ffd37bd4649a3d99a716f",
+      "disk_size": 504,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/creative_local.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Creative-local rule: creative_local(...) bridges to a local ComfyUI server (default http://127.0.0.1:8188) for image generation. Actions: status, submit, result, wait, queue, interrupt, models.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/data_analysis.md",
+      "queued_sha256": "4124589848f64bdbd685cef6b7d98056d5fa194dd785834a389c6f6f6f9b29b5",
+      "size_queued": 875,
+      "exists": true,
+      "disk_sha256": "4124589848f64bdbd685cef6b7d98056d5fa194dd785834a389c6f6f6f9b29b5",
+      "disk_size": 875,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/data_analysis.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Data-analysis rule: data_analysis(...) is local CSV/XLSX analysis with pandas + matplotlib. Actions: status, csv_profile, csv_describe, csv_query, csv_head, csv_to_xlsx, plot_histogram, plot_scatter, plot_line.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/database.md",
+      "queued_sha256": "afe94afe37b832aec032bc533c5e8dfc9479f9f555a6e1555630d92c6ebceb70",
+      "size_queued": 566,
+      "exists": true,
+      "disk_sha256": "afe94afe37b832aec032bc533c5e8dfc9479f9f555a6e1555630d92c6ebceb70",
+      "disk_size": 566,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/database.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Database rule: database(...) queries SQLite / Postgres / MySQL. Actions: status, list_tables, schema, query, execute, export_csv.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/dependency.md",
+      "queued_sha256": "6069dc49cd616e80fddc3ef92ef8e63fa3904857a811c6f0bf4f0e5b37f12a16",
+      "size_queued": 498,
+      "exists": true,
+      "disk_sha256": "6069dc49cd616e80fddc3ef92ef8e63fa3904857a811c6f0bf4f0e5b37f12a16",
+      "disk_size": 498,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/dependency.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Dependency rule: dependency(...) diagnoses Python modules and system binaries that other tools rely on. Actions: status, list, verify, explain_missing, install, repair.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/desktop_layout.md",
+      "queued_sha256": "50dd3ed8d0974b99036ebc99b6da9c7b0fc3ed68e1464f7aa1ea87b8a858ab97",
+      "size_queued": 492,
+      "exists": true,
+      "disk_sha256": "50dd3ed8d0974b99036ebc99b6da9c7b0fc3ed68e1464f7aa1ea87b8a858ab97",
+      "disk_size": 492,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/desktop_layout.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Desktop-layout rule: desktop_layout(...) snapshots and restores top-level window positions. Actions: status, windows, list_windows, displays, snapshot, restore.",
+        "measures": [
+          {
+            "line": 3,
+            "text": "snapshot captures rect/pid/process for visible windows via Win32 EnumWindows; restore replays positions via MoveWindow. Pass snapshot_id or an explicit windows list to restore."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/device_settings.md",
+      "queued_sha256": "245f008e2806b29a7596e64430fe0db37a35e2bf1b59316146222d48251b908b",
+      "size_queued": 557,
+      "exists": true,
+      "disk_sha256": "245f008e2806b29a7596e64430fe0db37a35e2bf1b59316146222d48251b908b",
+      "disk_size": 557,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/device_settings.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Device-settings rule: device_settings(...) manages WiFi, Bluetooth, displays and power plans. WiFi actions: wifi_status, wifi_list, wifi_scan, wifi_connect, wifi_disconnect, wifi_add_profile, wifi_delete_profile, plus bluetooth_* and display/power equivalents (see schema).",
+        "measures": [
+          {
+            "line": 3,
+            "text": "wifi_connect auto-creates a WPA2-Personal profile when a password is passed. Profile changes register checkpoints so state(action='rollback') can undo them."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/download.md",
+      "queued_sha256": "9cf6dac5c19c9f32cb0fb0b90838bf888ab5c1307d2ec4fc507e8ee8227d04ee",
+      "size_queued": 499,
+      "exists": true,
+      "disk_sha256": "9cf6dac5c19c9f32cb0fb0b90838bf888ab5c1307d2ec4fc507e8ee8227d04ee",
+      "disk_size": 499,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/download.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Download rule: download(...) fetches a URL to disk with integrity checks. Actions: fetch, hash, signature.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/env.md",
+      "queued_sha256": "162e7d21d064769902d9fcb24076341a88ac0b2ef379e5f5282e965fdf589a48",
+      "size_queued": 537,
+      "exists": true,
+      "disk_sha256": "162e7d21d064769902d9fcb24076341a88ac0b2ef379e5f5282e965fdf589a48",
+      "disk_size": 537,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/env.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Environment-variable rule: env(...) reads and writes Windows environment variables. Actions: get, set, delete, list. scope is one of process, user, machine.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/filesystem.md",
+      "queued_sha256": "0488daca51166f208da212b4a831d29d1070005ba60b3c97d67877a790d39d6c",
+      "size_queued": 1024,
+      "exists": true,
+      "disk_sha256": "0488daca51166f208da212b4a831d29d1070005ba60b3c97d67877a790d39d6c",
+      "disk_size": 1024,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/filesystem.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Filesystem rule: filesystem(...) for local file operations. Actions: list, read, write, search, delete, copy, move, rename, mkdir, diff, archive, unarchive, open. Distinct from download(...) (web fetches) and backup_sync(...) (ZIP backups with restore policy).",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/gui.md",
+      "queued_sha256": "466a4d984ea041a5240ed9bd3149b78117351416eef9ac6d058c5d8e76b09bec",
+      "size_queued": 2014,
+      "exists": true,
+      "disk_sha256": "466a4d984ea041a5240ed9bd3149b78117351416eef9ac6d058c5d8e76b09bec",
+      "disk_size": 2014,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/gui.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "GUI rule: gui(...) is the mouse/keyboard/screen synthesis layer. Actions: screenshot, click, double_click, right_click, type, keypress, hotkey, scroll, drag, wait_for, locate_text, click_text, locate_image.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/habit_tracker.md",
+      "queued_sha256": "a9f4f401989b5cb15af8762c8f12a7518ba45721b6517838a30e2615e68cb17b",
+      "size_queued": 385,
+      "exists": true,
+      "disk_sha256": "a9f4f401989b5cb15af8762c8f12a7518ba45721b6517838a30e2615e68cb17b",
+      "disk_size": 385,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/habit_tracker.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Habit-tracker rule: habit_tracker(...) is a local habit log. Actions: status, create, list, log, stats, delete.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/input.md",
+      "queued_sha256": "412a78ec417af36cda7f7439474c8700bff4af308dc841262b5d804e7c60a234",
+      "size_queued": 457,
+      "exists": true,
+      "disk_sha256": "412a78ec417af36cda7f7439474c8700bff4af308dc841262b5d804e7c60a234",
+      "disk_size": 457,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/input.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Input rule: input(...) manages Windows keyboard layouts and input languages. Actions: language_list, keyboard_layouts, current_keyboard, set_language_list, switch_keyboard.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/job_manager.md",
+      "queued_sha256": "089ee60954defa974617377545faecb64bd084faaf09bfc78c761fd06da32eb5",
+      "size_queued": 563,
+      "exists": true,
+      "disk_sha256": "089ee60954defa974617377545faecb64bd084faaf09bfc78c761fd06da32eb5",
+      "disk_size": 563,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/job_manager.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Job-manager rule: job_manager(...) tracks long-running detached subprocesses. Actions: status, start, list, log, status_of, cancel.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/local_calendar.md",
+      "queued_sha256": "2211c6bf3134d4fc8d15a6111eada88e7f41cfcf0cdb0ea1d3d13eeb15a79f20",
+      "size_queued": 492,
+      "exists": true,
+      "disk_sha256": "2211c6bf3134d4fc8d15a6111eada88e7f41cfcf0cdb0ea1d3d13eeb15a79f20",
+      "disk_size": 492,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/local_calendar.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Local-calendar rule: local_calendar(...) is an offline ICS-compatible calendar in local state. Actions: status, event_create, event_list, event_update, event_delete, ics_export, ics_import, list, delete.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/local_search.md",
+      "queued_sha256": "189a0170a5c9969cf689cb9f34792a111c1fbf0c6bec3dcebdbbf59a3224ad70",
+      "size_queued": 391,
+      "exists": true,
+      "disk_sha256": "189a0170a5c9969cf689cb9f34792a111c1fbf0c6bec3dcebdbbf59a3224ad70",
+      "disk_size": 391,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/local_search.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Local-search rule: local_search(...) finds files by name (and optionally small file contents) under a local root, no cloud involved. Actions: status, search, recent.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/media.lean.md",
+      "queued_sha256": "67770875783ee18ad2ca6d8805e5db4e5a98a647def03a8c49424f3328b410df",
+      "size_queued": 4900,
+      "exists": true,
+      "disk_sha256": "67770875783ee18ad2ca6d8805e5db4e5a98a647def03a8c49424f3328b410df",
+      "disk_size": 4900,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/media.lean.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 34,
+        "headings": [],
+        "lead": "MEDIA (streaming + playback). ALL streaming goes via the media tool — never say a platform is unsupported.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-34"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/media.md",
+      "queued_sha256": "251953f0a4144aa25ffef30b05f3a39ba5f5d7fc0f90346873d17d6140e305a8",
+      "size_queued": 7270,
+      "exists": true,
+      "disk_sha256": "251953f0a4144aa25ffef30b05f3a39ba5f5d7fc0f90346873d17d6140e305a8",
+      "disk_size": 7270,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/media.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 59,
+        "headings": [],
+        "lead": "For YouTube/music requests, distinguish searching from playing. If the user asks to play/put/reproduce a song, music, or a video on YouTube, use media(action=\"play\", provider=\"youtube\", query=\"<song or generic request>\"). If media is unavailable, fall back to browser(action=\"youtube_play\", query=...). If the user says \"ve a YouTube y pon una cancion, tu eligela\", choose a concrete song in the quer",
+        "measures": [
+          {
+            "line": 20,
+            "text": "\"mi usuario de Spotify es ema123\" -> remember it; next generic request pass spotify_user=\"ema123\"."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-59",
+          "m:20"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/media_edit.md",
+      "queued_sha256": "b1774b3e51c7e66c1f7b31b9160e493a26f7e5a7f57662b42e06f769951fa5f5",
+      "size_queued": 547,
+      "exists": true,
+      "disk_sha256": "b1774b3e51c7e66c1f7b31b9160e493a26f7e5a7f57662b42e06f769951fa5f5",
+      "disk_size": 547,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/media_edit.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Media-edit rule: media_edit(...) wraps ffmpeg for audio/video editing. Actions: status, probe, trim, concat, extract_audio, subtitles_extract, normalize, thumbnail, transcode.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/memory.md",
+      "queued_sha256": "db9138ae0d573e5852cd115fa5eb8180ea4e0626e9c47f405d6b641ae5800d64",
+      "size_queued": 496,
+      "exists": true,
+      "disk_sha256": "db9138ae0d573e5852cd115fa5eb8180ea4e0626e9c47f405d6b641ae5800d64",
+      "disk_size": 496,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/memory.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Memory rule: memory(...) is persistent across sessions. Actions: save, recall, list, delete.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/notes_tasks.md",
+      "queued_sha256": "1a008b874acfb747a78ab7f7b23fe8d788c746871ee9cb41cbac737ef9279bc2",
+      "size_queued": 542,
+      "exists": true,
+      "disk_sha256": "1a008b874acfb747a78ab7f7b23fe8d788c746871ee9cb41cbac737ef9279bc2",
+      "disk_size": 542,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/notes_tasks.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Notes/tasks rule: notes_tasks(...) is a local notes + tasks store. Note actions: note_create, note_list, note_search, note_update, note_delete. Task actions: task_create, task_list, task_search, task_complete, task_update, task_delete.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/office.md",
+      "queued_sha256": "14810bbff00bfa1bf58fbb8076a97143463fab2c04dac70ab7ac0910ec4f0731",
+      "size_queued": 1714,
+      "exists": true,
+      "disk_sha256": "14810bbff00bfa1bf58fbb8076a97143463fab2c04dac70ab7ac0910ec4f0731",
+      "disk_size": 1714,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/office.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 10,
+        "headings": [],
+        "lead": "Office/document rule: if the user asks for a PowerPoint, Word document, Excel file, spreadsheet, or PDF export, use office(...). Do not say there is no tool for PowerPoint. If office returns needs_dependency, report the missing local dependency and the install hint.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 8,
+            "text": "This is critical because in subsequent turns the tool_result is dropped from history; only your reply text survives. If you don't cite the path, the user (and your future self) will lose track of where the file is."
+          }
+        ],
+        "ranges": [
+          "1-10"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/package.md",
+      "queued_sha256": "b9342cef13718034ccfd40a18a551bd99e3d0e5b2b2d54389f28cc8e0f7f447d",
+      "size_queued": 455,
+      "exists": true,
+      "disk_sha256": "b9342cef13718034ccfd40a18a551bd99e3d0e5b2b2d54389f28cc8e0f7f447d",
+      "disk_size": 455,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/package.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Package rule: package(...) installs/uninstalls/updates desktop applications via winget. Actions: list, search, install, uninstall. Distinct from dependency(...) (Python modules / system binaries needed by the agent itself).",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/peripheral.md",
+      "queued_sha256": "e72ce9057fe706312dc24c2e8104be903f52353b90982b987cbfa62410ccfb28",
+      "size_queued": 561,
+      "exists": true,
+      "disk_sha256": "e72ce9057fe706312dc24c2e8104be903f52353b90982b987cbfa62410ccfb28",
+      "disk_size": 561,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/peripheral.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Peripheral rule: peripheral(...) inspects and toggles USB / HID devices via Get-PnpDevice. Actions: status, usb_list, hid_list, controller_status, device_manager_problems, device_disable, device_enable.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/photo_library.md",
+      "queued_sha256": "30ebf79cb5a052b86732a89aa5fb49133759b17b6928bd52b8401a9e03a0383f",
+      "size_queued": 471,
+      "exists": true,
+      "disk_sha256": "30ebf79cb5a052b86732a89aa5fb49133759b17b6928bd52b8401a9e03a0383f",
+      "disk_size": 471,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/photo_library.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Photo-library rule: photo_library(...) is a local photo organizer. Actions: status, scan, exif, group_by_date, thumbnails, find_by_date.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/printer_scanner.md",
+      "queued_sha256": "e88e58702ddf9658c95c562e2df0457ebcfcbfdae21ee6657565dbd0261dfbfb",
+      "size_queued": 556,
+      "exists": true,
+      "disk_sha256": "e88e58702ddf9658c95c562e2df0457ebcfcbfdae21ee6657565dbd0261dfbfb",
+      "disk_size": 556,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/printer_scanner.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Printer/scanner rule: printer_scanner(...) wraps local print + scan. Actions: status, printers_list, printer_default_get, printer_default_set, print_queue, print_file, cancel_job, scanners_list, scan_document, list.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/registry.md",
+      "queued_sha256": "9ebc17e0e8fed00fe379f0da9eec563b96cee83a11232bab4342b866d79dba93",
+      "size_queued": 570,
+      "exists": true,
+      "disk_sha256": "9ebc17e0e8fed00fe379f0da9eec563b96cee83a11232bab4342b866d79dba93",
+      "disk_size": 570,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/registry.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Registry rule: registry(...) is the safe Windows registry surface. Actions: query, export, import, add, delete, backup.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/routine.md",
+      "queued_sha256": "48820603d426a4157080adbfabb7dc83e2b6bb919990a7071cb1e73788491259",
+      "size_queued": 3895,
+      "exists": true,
+      "disk_sha256": "48820603d426a4157080adbfabb7dc83e2b6bb919990a7071cb1e73788491259",
+      "disk_size": 3895,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/routine.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 42,
+        "headings": [],
+        "lead": "Voice-command-like routines rule (on_phrase) - CRITICAL:",
+        "measures": [
+          {
+            "line": 21,
+            "text": "Process-triggered routine rule: for \"when X opens / closes, do Y\", pass trigger={type:\"on_app_open\"|\"on_app_close\", process:\"<exe>\", interval_minutes:2}. This installs a polling watcher that fires routine.run_now on the right edge; deleting"
+          }
+        ],
+        "dates": [
+          "2026-05-17"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-42",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/safety.md",
+      "queued_sha256": "9f9145651be057575feac2382e21be83f1eb557753d139986d6224e4f4d65440",
+      "size_queued": 590,
+      "exists": true,
+      "disk_sha256": "9f9145651be057575feac2382e21be83f1eb557753d139986d6224e4f4d65440",
+      "disk_size": 590,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/safety.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Safety rule: safety(...) is the confirmation surface for destructive actions. Actions: status, pending, confirm, cancel.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/session.md",
+      "queued_sha256": "2b48a2b865d519cc3b70097a58ac7f8b584929e3d2514d72601ce7c1e8d6b79a",
+      "size_queued": 454,
+      "exists": true,
+      "disk_sha256": "2b48a2b865d519cc3b70097a58ac7f8b584929e3d2514d72601ce7c1e8d6b79a",
+      "disk_size": 454,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/session.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "Session rule: session(action='cancel_turn') is the ONLY available action. Use it when the user is interrupting / aborting the agent mid-turn (any phrasing in any language signaling stop, wait, hold on, cancel). Not a domain tool — does not perform filesystem / network / etc. work.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/skill_load.md",
+      "queued_sha256": "d1601b2772f9f4f0e6f44b3533a62ba525ebc8c08109de46a52f2dbea7eb348b",
+      "size_queued": 488,
+      "exists": true,
+      "disk_sha256": "d1601b2772f9f4f0e6f44b3533a62ba525ebc8c08109de46a52f2dbea7eb348b",
+      "disk_size": 488,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/skill_load.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Skill-load rule: skill_load(...) reads the full body of a skill recipe by name. The agent advertises available skills in the system prompt under # SKILLS AVAILABLE.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/source_manager.md",
+      "queued_sha256": "8690fc82cb00d23d65883d15416768ad50d11c6bbce3b255fc1574d35eb37d73",
+      "size_queued": 534,
+      "exists": true,
+      "disk_sha256": "8690fc82cb00d23d65883d15416768ad50d11c6bbce3b255fc1574d35eb37d73",
+      "disk_size": 534,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/source_manager.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Source-manager rule: source_manager(...) is a local citation / source store. Actions: status, save, add, list, sources, search, read, get, delete, snapshot_file.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/state.md",
+      "queued_sha256": "696b7a07df72a9532b6e3333eda29e2b2cb601415d656f885eb06d0dd30d37bd",
+      "size_queued": 629,
+      "exists": true,
+      "disk_sha256": "696b7a07df72a9532b6e3333eda29e2b2cb601415d656f885eb06d0dd30d37bd",
+      "disk_size": 629,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/state.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "State rule: state(...) tracks the agent's operational state. Actions: resources, cleanup_plan, cleanup, checkpoint, checkpoints, rollback_plan, rollback, note.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/system.md",
+      "queued_sha256": "f33142f6b9ca7a260c79fce92bf8dd6de77222ad1b430deb2fabb87e2fb2d585",
+      "size_queued": 1349,
+      "exists": true,
+      "disk_sha256": "f33142f6b9ca7a260c79fce92bf8dd6de77222ad1b430deb2fabb87e2fb2d585",
+      "disk_size": 1349,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/system.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "System rule: system(...) is the Windows control surface for read-only system state and power actions. Actions: time, processes, cpu_ram_gpu, disk, battery, brightness_get, brightness_set, shutdown, restart, sleep.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/terminal.md",
+      "queued_sha256": "062f464b1dbb7ab53aa49405d7cd4e45088d9cd43de25833e4308b7b19d8edc3",
+      "size_queued": 638,
+      "exists": true,
+      "disk_sha256": "062f464b1dbb7ab53aa49405d7cd4e45088d9cd43de25833e4308b7b19d8edc3",
+      "disk_size": 638,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/terminal.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "Terminal rule: terminal(action='run') executes a shell command with command, args, cwd, timeout_sec, shell. Lower-level than developer(...) (which is git/build-aware).",
+        "measures": [
+          {
+            "line": 3,
+            "text": "HARD GATE: any terminal.run call requires confirmed=true. shell defaults to false — pass shell=true only when shell expansion is needed."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/uia.md",
+      "queued_sha256": "a3f1bfa2ab42949af8a6cf82b09a0a9c84d32ab67aca83297fd90d062e760a6c",
+      "size_queued": 541,
+      "exists": true,
+      "disk_sha256": "a3f1bfa2ab42949af8a6cf82b09a0a9c84d32ab67aca83297fd90d062e760a6c",
+      "disk_size": 541,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/uia.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "UIA rule: uia(...) is Windows UI Automation — the structured way to interact with standard app controls. Actions: tree, find, click, focus, set_value.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/verify.md",
+      "queued_sha256": "43793eefa5f9aa4d3f1a774afd51c23f671e1134be9254e393e3f15057cee7d1",
+      "size_queued": 574,
+      "exists": true,
+      "disk_sha256": "43793eefa5f9aa4d3f1a774afd51c23f671e1134be9254e393e3f15057cee7d1",
+      "disk_size": 574,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/verify.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Verify rule: verify(...) checks observable structural facts after another action. Actions: app_opened, file_exists, window_exists, clipboard_contains.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 5,
+            "text": "Each per-tool verifier registered in verifiers.py also runs automatically post-call; verify(...) is the on-demand surface when the agent needs to assert a fact independently of the tool that produced it."
+          }
+        ],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/vision.md",
+      "queued_sha256": "6a1220da0678846574ecf3edd595de470b8bb8d052dc7fe2e7452b4317045b60",
+      "size_queued": 517,
+      "exists": true,
+      "disk_sha256": "6a1220da0678846574ecf3edd595de470b8bb8d052dc7fe2e7452b4317045b60",
+      "disk_size": 517,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/vision.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "Vision rule: vision(...) is the Gemma-4-vision / OCR bridge. Actions: describe_screen, find_element, ocr, compare_before_after.",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "gemma-4",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/whatsapp.md",
+      "queued_sha256": "36c490947f223f4f9858c8cd07013e99fd1fa0e59c6b9cd7ef26fa4b62a1d423",
+      "size_queued": 1891,
+      "exists": true,
+      "disk_sha256": "36c490947f223f4f9858c8cd07013e99fd1fa0e59c6b9cd7ef26fa4b62a1d423",
+      "disk_size": 1891,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/whatsapp.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [],
+        "lead": "WhatsApp messaging rule. When the user says \"mandale X a <persona> en wsp/whatsapp\", \"escribile X a <persona>\", \"dile X a <persona> por WhatsApp\", CALL whatsapp(action=\"send_message\", contact=\"<persona>\", text=\"<message>\"). The contact lookup uses the local contacts store; if the user has not added the contact yet, the tool returns needs_user and you should ask for the phone number, then call cont",
+        "measures": [
+          {
+            "line": 5,
+            "text": "When to pass auto_send=false: when the user says \"prepárame un mensaje para X\", \"abrime el chat de X\" (sin mensaje), \"escribime un mensaje para X pero no lo mandes\", \"quiero revisar antes de enviar\". In those cases pass auto_send=false so t"
+          },
+          {
+            "line": 7,
+            "text": "Phone format: WhatsApp requires the country code (54 Argentina, 1 USA, 34 Spain, 52 Mexico, 57 Colombia, etc.). Numbers without country code will return needs_user. The tool normalizes spaces/dashes/parens automatically — pass them readable"
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/window.lean.md",
+      "queued_sha256": "76b93aa10b98679036048dcd9a450dbbda962fdb17d02ac151c194091085ba83",
+      "size_queued": 607,
+      "exists": true,
+      "disk_sha256": "76b93aa10b98679036048dcd9a450dbbda962fdb17d02ac151c194091085ba83",
+      "disk_size": 607,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/window.lean.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 5,
+        "headings": [],
+        "lead": "window(...): ventanas OS top-level. Actions: list, active, focus, close, minimize, maximize, restore, move_resize.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-5"
+        ]
+      }
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/window.md",
+      "queued_sha256": "e2dcefa59eb41cc9a08b1b52fcc6a9d0432b53b15b2bd4a582bd45ad40f9c502",
+      "size_queued": 977,
+      "exists": true,
+      "disk_sha256": "e2dcefa59eb41cc9a08b1b52fcc6a9d0432b53b15b2bd4a582bd45ad40f9c502",
+      "disk_size": 977,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/legacy_export/prompts/tool_rules/window.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "Window rule: window(...) operates on top-level OS windows. Actions: list, active, focus, close, minimize, maximize, restore, move_resize.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/microagents/README.md",
+      "queued_sha256": "d596b661ce141bcaaa9fb6d51c598b1ed55b7398e93b792b30546b6ee3aa8dfe",
+      "size_queued": 2042,
+      "exists": true,
+      "disk_sha256": "d596b661ce141bcaaa9fb6d51c598b1ed55b7398e93b792b30546b6ee3aa8dfe",
+      "disk_size": 2042,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/microagents/README.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 52,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY microagents"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Formato"
+          },
+          {
+            "line": 16,
+            "level": 1,
+            "text": "Título"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Presupuesto y ciclo de vida (D43)"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "Incluidos"
+          }
+        ],
+        "lead": "Markdown con frontmatter que se inyecta al system prompt del QAT (turnos",
+        "measures": [
+          {
+            "line": 12,
+            "text": "triggers: [\"GGUF\", \"HKLM\"]"
+          },
+          {
+            "line": 44,
+            "text": "| `glossary_modelos.md` | GGUF, llama.cpp, mmproj, QAT, quantization, VRAM… |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-52",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "legacy/microagents/glossary_libs.md",
+      "queued_sha256": "e17c85a936fc9ae92996bda3fb2dcad323798ef743dbcf456ab936162983f332",
+      "size_queued": 1045,
+      "exists": true,
+      "disk_sha256": "e17c85a936fc9ae92996bda3fb2dcad323798ef743dbcf456ab936162983f332",
+      "disk_size": 1045,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/microagents/glossary_libs.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [
+          {
+            "line": 7,
+            "level": 1,
+            "text": "Glosario: librerías y patrones"
+          }
+        ],
+        "lead": "name: glossary-libs",
+        "measures": [
+          {
+            "line": 9,
+            "text": "- **psutil**: lib Python de procesos/CPU/RAM sin spawn de PowerShell (~30ms vs ~5s de tasklist)."
+          },
+          {
+            "line": 11,
+            "text": "- **win32gui** (pywin32): APIs nativas de ventanas (EnumWindows ~10ms)."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-16",
+          "h:7",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "legacy/microagents/glossary_modelos.md",
+      "queued_sha256": "61652b5f08a4edb0902b1296772cd69f797e38293880ab8a5b2bdab7fc70923b",
+      "size_queued": 1301,
+      "exists": true,
+      "disk_sha256": "61652b5f08a4edb0902b1296772cd69f797e38293880ab8a5b2bdab7fc70923b",
+      "disk_size": 1301,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/microagents/glossary_modelos.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [
+          {
+            "line": 7,
+            "level": 1,
+            "text": "Glosario: modelos y runtime"
+          }
+        ],
+        "lead": "name: glossary-modelos",
+        "measures": [
+          {
+            "line": 3,
+            "text": "triggers: [\"GGUF\", \"GGML\", \"llama.cpp\", \"llama-server\", \"mmproj\", \"KV cache\", \"prewarm\", \"quantization\", \"cuantizacion\", \"Q4_K_M\", \"Q5_K_M\", \"Q6_K\", \"QAT\", \"VRAM\"]"
+          },
+          {
+            "line": 9,
+            "text": "- **GGUF**: formato de archivo de modelos cuantizados para llama.cpp (binario, `.gguf`). Reemplaza GGML."
+          },
+          {
+            "line": 10,
+            "text": "- **llama.cpp**: motor de inferencia C++ que corre GGUF (CUDA/Metal/CPU)."
+          },
+          {
+            "line": 15,
+            "text": "- **Quantization**: comprimir los pesos a menos bits. Q4_K_M (4-bit, más chico y rápido) < Q5_K_M < Q6_K (casi calidad nativa). **QAT** = quantization-aware training: el modelo se entrena YA sabiendo que va a estar cuantizado (el Gemma de B"
+          },
+          {
+            "line": 16,
+            "text": "- **VRAM**: memoria de la GPU. Windows (WDDM) reserva ~1.5 GB para el escritorio aun sin jugar — contarlo en el presupuesto."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "functiongemma"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-16",
+          "h:7",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "legacy/microagents/glossary_windows.md",
+      "queued_sha256": "01f69f4c9d1c40af9a497b9f356317f38077d46ae1428732a4ac989b1a7d6ade",
+      "size_queued": 653,
+      "exists": true,
+      "disk_sha256": "01f69f4c9d1c40af9a497b9f356317f38077d46ae1428732a4ac989b1a7d6ade",
+      "disk_size": 653,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/microagents/glossary_windows.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 14,
+        "headings": [
+          {
+            "line": 7,
+            "level": 1,
+            "text": "Glosario: Windows"
+          }
+        ],
+        "lead": "name: glossary-windows",
+        "measures": [
+          {
+            "line": 13,
+            "text": "- **WDDM**: Windows Display Driver Model; reserva ~1.5 GB de VRAM para el escritorio aun sin jugar."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-14",
+          "h:7",
+          "m:13"
+        ]
+      }
+    },
+    {
+      "path": "legacy/microagents/windows_commands.md",
+      "queued_sha256": "b40c69f876608609f35e1a611c4323bdbd220bf0deaf8f1009ad3f67ae277833",
+      "size_queued": 1931,
+      "exists": true,
+      "disk_sha256": "b40c69f876608609f35e1a611c4323bdbd220bf0deaf8f1009ad3f67ae277833",
+      "disk_size": 1931,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/microagents/windows_commands.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 41,
+        "headings": [
+          {
+            "line": 7,
+            "level": 1,
+            "text": "Windows commands cheatsheet"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "bash ↔ PowerShell ↔ cmd"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Gotchas"
+          }
+        ],
+        "lead": "name: windows-commands",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-41",
+          "h:7"
+        ]
+      }
+    },
+    {
+      "path": "legacy/requirements.txt",
+      "queued_sha256": "7a9aaaf6dce92baa507d24a9dae86b929e79c5d0d011dc3f8da925db1f77ee86",
+      "size_queued": 2877,
+      "exists": true,
+      "disk_sha256": "7a9aaaf6dce92baa507d24a9dae86b929e79c5d0d011dc3f8da925db1f77ee86",
+      "disk_size": 2877,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/requirements.txt' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 48,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY — dependencias por capa. El CORE corre solo con la stdlib."
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Versiones pineadas = las verificadas en el runtime del proyecto anterior"
+          },
+          {
+            "line": 3,
+            "level": 1,
+            "text": "(requirements.txt congelado v0.9.2, 2026-06-19) salvo donde se indica."
+          },
+          {
+            "line": 5,
+            "level": 1,
+            "text": "---- BASE (runtime actual + Tool Ecosystem v2) ---------------------------"
+          },
+          {
+            "line": 18,
+            "level": 1,
+            "text": "---- ROUTER SEMÁNTICO (recomendado; sin esto cae al fallback léxico) ------"
+          },
+          {
+            "line": 23,
+            "level": 1,
+            "text": "---- GUI real (ui_field web) ----------------------------------------------"
+          },
+          {
+            "line": 30,
+            "level": 1,
+            "text": "---- VOZ (BAXY_VOICE, default ON; carga lazy en /voice/start) --------------"
+          },
+          {
+            "line": 36,
+            "level": 1,
+            "text": "---- VISIÓN OCR (fallback del gate de header de WhatsApp + locate_text) ----"
+          },
+          {
+            "line": 40,
+            "level": 1,
+            "text": "---- computer_use / WhatsApp -----------------------------------------------"
+          },
+          {
+            "line": 44,
+            "level": 1,
+            "text": "---- OPCIONALES (activar por flag; ver docs/dependency_map.md) -------------"
+          },
+          {
+            "line": 45,
+            "level": 1,
+            "text": "Voz VAD ML:      silero-vad==6.2.1  (el pipeline usa VAD por energía; silero opcional)"
+          },
+          {
+            "line": 46,
+            "level": 1,
+            "text": "RAG rerank:      sentence-transformers==5.3.0  (trae torch; solo si BAXY_RAG_RERANK=1)"
+          },
+          {
+            "line": 47,
+            "level": 1,
+            "text": "Streaming CDP:   perfil BAXY dedicado; login manual una vez, sin clonar credenciales"
+          },
+          {
+            "line": 48,
+            "level": 1,
+            "text": "Juegos:          sin deps extra (deeplinks + ctypes)"
+          }
+        ],
+        "lead": "psutil==7.2.0            # pc_status, apps verify, metrics de la GUI",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "piper",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-48",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/README.md",
+      "queued_sha256": "c39363ebb55fff50f1b8543b7f102f087c9151b8c1fcafa7ce4338a7726660ad",
+      "size_queued": 1813,
+      "exists": true,
+      "disk_sha256": "c39363ebb55fff50f1b8543b7f102f087c9151b8c1fcafa7ce4338a7726660ad",
+      "disk_size": 1813,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/README.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 37,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY skills"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "¿Skill o microagent?"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Cuándo crear una skill"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Cuándo NO"
+          }
+        ],
+        "lead": "Workflows y conocimiento en markdown que el motor de skills (D37/D43,",
+        "measures": [
+          {
+            "line": 19,
+            "text": "| microagent (`microagents/*.md`) | léxica — término técnico exacto, word-boundary | QUÉ SIGNIFICA un término (GGUF, HKLM…) |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-37",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/backup-then-clean/SKILL.md",
+      "queued_sha256": "0723bdc7722003874bb416a82b53c9dbd34e0e3927d7b955ecd7bcb99c4bc394",
+      "size_queued": 2647,
+      "exists": true,
+      "disk_sha256": "0723bdc7722003874bb416a82b53c9dbd34e0e3927d7b955ecd7bcb99c4bc394",
+      "disk_size": 2647,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/backup-then-clean/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 50,
+        "headings": [
+          {
+            "line": 14,
+            "level": 1,
+            "text": "Backup antes de limpiar"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Workflow guiado"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Reglas de honestidad"
+          }
+        ],
+        "lead": "name: backup-then-clean",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-50",
+          "h:14"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/capabilities-overview/SKILL.md",
+      "queued_sha256": "e668bcd4e48a72d2dba36931d0d92113bde51aba57985cdf0438fb5e05da08f1",
+      "size_queued": 2322,
+      "exists": true,
+      "disk_sha256": "e668bcd4e48a72d2dba36931d0d92113bde51aba57985cdf0438fb5e05da08f1",
+      "disk_size": 2322,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/capabilities-overview/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 54,
+        "headings": [
+          {
+            "line": 26,
+            "level": 1,
+            "text": "Qué puede hacer BAXY (hoy, honesto)"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Límites honestos (no prometas esto)"
+          }
+        ],
+        "lead": "name: capabilities-overview",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-54",
+          "h:26"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/debug-app-crash/SKILL.md",
+      "queued_sha256": "b412e6fd38ac283e67bbb3765f5c40761edbf30c0d45a6382b5edc2843d6d6fc",
+      "size_queued": 2105,
+      "exists": true,
+      "disk_sha256": "b412e6fd38ac283e67bbb3765f5c40761edbf30c0d45a6382b5edc2843d6d6fc",
+      "disk_size": 2105,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/debug-app-crash/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 44,
+        "headings": [
+          {
+            "line": 17,
+            "level": 1,
+            "text": "Diagnosticar una app que se colgó o crasheó"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Workflow (diagnóstico honesto, sin inventar causas)"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "Reglas de honestidad"
+          }
+        ],
+        "lead": "name: debug-app-crash",
+        "measures": [
+          {
+            "line": 29,
+            "text": "2. **¿Colgada (no responde)?** Opciones honestas en orden: esperar 30-60s"
+          },
+          {
+            "line": 33,
+            "text": "3. **Recursos**: «cuánta CPU hay» / «cuánta RAM libre tengo» — si CPU>95%"
+          },
+          {
+            "line": 34,
+            "text": "o RAM>95%, eso ES un hallazgo medible; reportá los números reales."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-44",
+          "h:17",
+          "m:29"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/download-file/SKILL.md",
+      "queued_sha256": "16ad293fb9e4e6d3a30bce319553ca357a1ca794526109aa216a96e07ddf00da",
+      "size_queued": 2478,
+      "exists": true,
+      "disk_sha256": "16ad293fb9e4e6d3a30bce319553ca357a1ca794526109aa216a96e07ddf00da",
+      "disk_size": 2478,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/download-file/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 52,
+        "headings": [
+          {
+            "line": 27,
+            "level": 1,
+            "text": "Descargar un archivo de internet"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Workflow guiado"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Reglas de honestidad"
+          }
+        ],
+        "lead": "name: download-file",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-52",
+          "h:27"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/install-steam-game/SKILL.md",
+      "queued_sha256": "313a61cfbee7d19c267a8dae8e9743192dc1ac5a159adc207df55125bf52cd7b",
+      "size_queued": 2966,
+      "exists": true,
+      "disk_sha256": "313a61cfbee7d19c267a8dae8e9743192dc1ac5a159adc207df55125bf52cd7b",
+      "disk_size": 2966,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/install-steam-game/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 59,
+        "headings": [
+          {
+            "line": 19,
+            "level": 1,
+            "text": "Instalar o abrir un juego de Steam"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Workflow"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Reportes honestos"
+          }
+        ],
+        "lead": "name: install-steam-game",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-59",
+          "h:19"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/new-development-project/SKILL.md",
+      "queued_sha256": "f05f0beca962eff773d1da84db6f266b33cf8c06684ceb575b0870d4bd71f635",
+      "size_queued": 1728,
+      "exists": true,
+      "disk_sha256": "f05f0beca962eff773d1da84db6f266b33cf8c06684ceb575b0870d4bd71f635",
+      "disk_size": 1728,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/new-development-project/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 47,
+        "headings": [
+          {
+            "line": 18,
+            "level": 1,
+            "text": "Proyecto de desarrollo nuevo"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Antes de tocar el disco"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Checklist guiado (terminal)"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "Reglas"
+          }
+        ],
+        "lead": "name: new-development-project",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-47",
+          "h:18"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/purchase-guard/SKILL.md",
+      "queued_sha256": "53c752484cbe6b1db8d099bd39b0c163ed4e9c4db141e7a7ff2108d87f10e9b2",
+      "size_queued": 2318,
+      "exists": true,
+      "disk_sha256": "53c752484cbe6b1db8d099bd39b0c163ed4e9c4db141e7a7ff2108d87f10e9b2",
+      "disk_size": 2318,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/purchase-guard/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 55,
+        "headings": [
+          {
+            "line": 27,
+            "level": 1,
+            "text": "Purchase guard (regla dura universal)"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "La regla"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "En BAXY hoy"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Por qué es crítico"
+          }
+        ],
+        "lead": "name: purchase-guard",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-55",
+          "h:27"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/research-and-summarize/SKILL.md",
+      "queued_sha256": "16d86eb5bf6304e87b3f4029bad1bd5e2e54bddc263c7247a143df1eaea9edb1",
+      "size_queued": 2646,
+      "exists": true,
+      "disk_sha256": "16d86eb5bf6304e87b3f4029bad1bd5e2e54bddc263c7247a143df1eaea9edb1",
+      "disk_size": 2646,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/research-and-summarize/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 53,
+        "headings": [
+          {
+            "line": 25,
+            "level": 1,
+            "text": "Investigar y resumir"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Workflow"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Reportes honestos"
+          }
+        ],
+        "lead": "name: research-and-summarize",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-53",
+          "h:25"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/safe-file-cleanup/SKILL.md",
+      "queued_sha256": "628c0c101239e04088be495b340c62e8a960abc6b89551f702ebba2fbffc1955",
+      "size_queued": 3452,
+      "exists": true,
+      "disk_sha256": "628c0c101239e04088be495b340c62e8a960abc6b89551f702ebba2fbffc1955",
+      "disk_size": 3452,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/safe-file-cleanup/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 70,
+        "headings": [
+          {
+            "line": 26,
+            "level": 1,
+            "text": "Limpieza segura de archivos"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Ejecución acotada"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Workflow guiado para lo demás"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Reglas de honestidad"
+          }
+        ],
+        "lead": "name: safe-file-cleanup",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 45,
+            "text": "4. Informar «en cuarentena reversible» sólo si el verifier confirmó el cambio;"
+          }
+        ],
+        "ranges": [
+          "1-70",
+          "h:26"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/schedule-recurring-task/SKILL.md",
+      "queued_sha256": "844db240010adc44d60b4bbd667566e9e0b2b76eb39f23e99451105ad6529873",
+      "size_queued": 2423,
+      "exists": true,
+      "disk_sha256": "844db240010adc44d60b4bbd667566e9e0b2b76eb39f23e99451105ad6529873",
+      "disk_size": 2423,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/schedule-recurring-task/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 48,
+        "headings": [
+          {
+            "line": 21,
+            "level": 1,
+            "text": "Programar tareas recurrentes"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Workflow"
+          }
+        ],
+        "lead": "name: schedule-recurring-task",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-48",
+          "h:21"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/screenshot-and-analyze/SKILL.md",
+      "queued_sha256": "b4428700885160513f9f458708d207277c62e07f554a9e4ced293e90dd5397fc",
+      "size_queued": 2031,
+      "exists": true,
+      "disk_sha256": "b4428700885160513f9f458708d207277c62e07f554a9e4ced293e90dd5397fc",
+      "disk_size": 2031,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/screenshot-and-analyze/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 46,
+        "headings": [
+          {
+            "line": 24,
+            "level": 1,
+            "text": "Capturar y analizar la pantalla"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Workflow"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Honestidad (crítica)"
+          }
+        ],
+        "lead": "name: screenshot-and-analyze",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-46",
+          "h:24"
+        ]
+      }
+    },
+    {
+      "path": "legacy/skills/voice-record-transcribe/SKILL.md",
+      "queued_sha256": "c79bda09bce09f144a55b289406d7df4951776ae5069e31295ab51aca895eeec",
+      "size_queued": 2190,
+      "exists": true,
+      "disk_sha256": "c79bda09bce09f144a55b289406d7df4951776ae5069e31295ab51aca895eeec",
+      "disk_size": 2190,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "fatal: path 'legacy/skills/voice-record-transcribe/SKILL.md' exists on disk, but not in 'HEAD'\n",
+      "extract": {
+        "binary": false,
+        "lines": 49,
+        "headings": [
+          {
+            "line": 25,
+            "level": 1,
+            "text": "Grabar voz y transcribir"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Workflow"
+          },
+          {
+            "line": 45,
+            "level": 2,
+            "text": "Reglas"
+          }
+        ],
+        "lead": "name: voice-record-transcribe",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-49",
+          "h:25"
+        ]
+      }
+    },
+    {
+      "path": "AGENTS.md",
+      "queued_sha256": "e2d4dfb5bb126fa37f1bf2800a5f22e63fb623086f9403f513f756bd9147144e",
+      "size_queued": 5146,
+      "exists": true,
+      "disk_sha256": "e2d4dfb5bb126fa37f1bf2800a5f22e63fb623086f9403f513f756bd9147144e",
+      "disk_size": 5146,
+      "hash_match": true,
+      "head_sha256": "29221fffb9fd81e175ca5d86eed1c28f538292528a0cd0eb876a6c1504d6238e",
+      "extract": {
+        "binary": false,
+        "lines": 110,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY: guía obligatoria para agentes"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Ubicación canónica"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "No empezar de cero"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Mapa del proyecto"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Runtime e instalación"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Estado certificado en este notebook"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Experiencia del usuario"
+          }
+        ],
+        "lead": "El checkout que contiene este archivo es el repositorio activo y la única",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-110",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "AGENT_HANDOFF.md",
+      "queued_sha256": "3dbab7a22a61833de018b9f406fb190a5969131ce35cb1621777c46646011c69",
+      "size_queued": 6849,
+      "exists": true,
+      "disk_sha256": "3dbab7a22a61833de018b9f406fb190a5969131ce35cb1621777c46646011c69",
+      "disk_size": 6849,
+      "hash_match": true,
+      "head_sha256": "5023bd794b7dfbd6fa0e54e196ca6d1c255391f0767999d2f3db03adc54f0c13",
+      "extract": {
+        "binary": false,
+        "lines": 144,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY private asset handoff"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Restore the canonical private bundle"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "Turn-evidence runtime corpus"
+          }
+        ],
+        "lead": "Use branch `codex/baxy-rebuild-v3`. The default branch has unrelated history.",
+        "measures": [
+          {
+            "line": 38,
+            "text": "If `FunctionGemma` must live elsewhere, pass its root explicitly:"
+          },
+          {
+            "line": 96,
+            "text": "if ($LASTEXITCODE -ne 0) { throw 'Turn-evidence rebuild failed' }"
+          },
+          {
+            "line": 132,
+            "text": "one-sided evaluation reports precision 0.994083, recall 0.42 and 0/400 false"
+          },
+          {
+            "line": 138,
+            "text": "Its gate selected only 12/2,300 `supported_effect` utterances"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma",
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 63,
+            "text": "because its 25,156 rows combine 17,784 licensed public train rows with 7,372"
+          }
+        ],
+        "ranges": [
+          "1-144",
+          "h:1",
+          "m:38"
+        ]
+      }
+    },
+    {
+      "path": "BAXY_GPT56_ULTRA_PROMPT.md",
+      "queued_sha256": "c5c98f8b2c4e5173fa55ab99ad9c00771c3cc72140bb3af515161e8ee1e30cc9",
+      "size_queued": 46405,
+      "exists": true,
+      "disk_sha256": "c5c98f8b2c4e5173fa55ab99ad9c00771c3cc72140bb3af515161e8ee1e30cc9",
+      "disk_size": 46405,
+      "hash_match": true,
+      "head_sha256": "c5c98f8b2c4e5173fa55ab99ad9c00771c3cc72140bb3af515161e8ee1e30cc9",
+      "extract": {
+        "binary": false,
+        "lines": 974,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt maestro — reconstrucción definitiva de BAXY"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "1. Misión de producto"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "2. Ubicaciones y estado inicial"
+          },
+          {
+            "line": 70,
+            "level": 3,
+            "text": "Archivo recuperado de subagentes"
+          },
+          {
+            "line": 98,
+            "level": 3,
+            "text": "Genealogía completa que debes reconstruir"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "Conocimiento ya descubierto que debes reutilizar y revalidar"
+          },
+          {
+            "line": 261,
+            "level": 2,
+            "text": "3. Descubrimiento histórico obligatorio antes de diseñar"
+          },
+          {
+            "line": 365,
+            "level": 2,
+            "text": "4. Contrato funcional no negociable"
+          },
+          {
+            "line": 367,
+            "level": 3,
+            "text": "Conversación y resultado"
+          },
+          {
+            "line": 381,
+            "level": 3,
+            "text": "Planificación y herramientas"
+          },
+          {
+            "line": 424,
+            "level": 3,
+            "text": "Memoria local"
+          },
+          {
+            "line": 437,
+            "level": 3,
+            "text": "Interfaz"
+          },
+          {
+            "line": 447,
+            "level": 3,
+            "text": "Personalidad"
+          },
+          {
+            "line": 455,
+            "level": 2,
+            "text": "5. Política de acción, riesgo y confirmación"
+          },
+          {
+            "line": 498,
+            "level": 2,
+            "text": "6. Ejemplos que el producto debe resolver"
+          },
+          {
+            "line": 500,
+            "level": 3,
+            "text": "Música"
+          },
+          {
+            "line": 509,
+            "level": 3,
+            "text": "Misión compuesta"
+          },
+          {
+            "line": 529,
+            "level": 3,
+            "text": "Documento"
+          },
+          {
+            "line": 537,
+            "level": 3,
+            "text": "Fallo y alternativa"
+          },
+          {
+            "line": 544,
+            "level": 2,
+            "text": "7. Arquitectura que debes evaluar"
+          },
+          {
+            "line": 621,
+            "level": 2,
+            "text": "8. Estrategia de construcción"
+          },
+          {
+            "line": 647,
+            "level": 3,
+            "text": "Contexto persistente obligatorio"
+          },
+          {
+            "line": 716,
+            "level": 3,
+            "text": "Alcance finito y obligación de terminar"
+          },
+          {
+            "line": 757,
+            "level": 2,
+            "text": "9. Calidad y pruebas obligatorias"
+          }
+        ],
+        "lead": "Copia desde la siguiente línea hasta el final en una sesión nueva de GPT-5.6",
+        "measures": [
+          {
+            "line": 171,
+            "text": "perfil experimental de Spotify declaraba 95/92/3/39. Esos números sirven"
+          },
+          {
+            "line": 175,
+            "text": "epochs, counts y attestation eran incompatibles a propósito. Conserva el"
+          },
+          {
+            "line": 194,
+            "text": "- inventariar siete procesos de Spotify podía superar un timeout de 8 s en"
+          },
+          {
+            "line": 201,
+            "text": "10. Otro intento de promover Gemma 4 unificado terminó con 0/11 activaciones,"
+          },
+          {
+            "line": 233,
+            "text": "- evidencias de VRAM, latencia y estabilidad;"
+          },
+          {
+            "line": 554,
+            "text": "efectos verificados, seguridad proporcional y perfil cómodo en 4 GB de VRAM."
+          },
+          {
+            "line": 570,
+            "text": "5. Puntúa antes de conocer el ganador: misiones verificadas 25 %, recursos"
+          },
+          {
+            "line": 571,
+            "text": "15 %, latencia 10 %, UX/accesibilidad 10 %, privacidad/seguridad 10 %,"
+          },
+          {
+            "line": 572,
+            "text": "instalación/lifecycle 10 %, mantenibilidad/testabilidad 10 %,"
+          },
+          {
+            "line": 573,
+            "text": "licencia/madurez 5 % y migración/reutilización 5 %."
+          },
+          {
+            "line": 610,
+            "text": "4 GB de VRAM y apuntar aproximadamente a 3 GB de uso cuando sea viable. No"
+          },
+          {
+            "line": 611,
+            "text": "declares validación física de 4 GB si solo mediste en una GPU mayor. Incluye"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "functiongemma",
+          "gemma 4",
+          "llama.cpp",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 80,
+            "text": "manifest_private.json e informes_finales.jsonl. Está ignorada por Git porque"
+          },
+          {
+            "line": 242,
+            "text": "- arquitectura fragmentada solo porque ya existe;"
+          },
+          {
+            "line": 341,
+            "text": "No existe la categoría “lo omitimos porque había demasiados mensajes”. Un caso"
+          },
+          {
+            "line": 548,
+            "text": "porque ya exista, porque aparezca en documentacion\\04 o porque resulte cómodo."
+          },
+          {
+            "line": 720,
+            "text": "porque todavía existan mejoras posibles."
+          }
+        ],
+        "ranges": [
+          "1-974",
+          "h:1",
+          "m:171"
+        ]
+      }
+    },
+    {
+      "path": "R209_CROSS_ENCODER_HANDOFF.md",
+      "queued_sha256": "9923e4ad5ebee5265782dd92bfd9741bead652b8f1a2227263c601ae9725bc87",
+      "size_queued": 8824,
+      "exists": true,
+      "disk_sha256": "9923e4ad5ebee5265782dd92bfd9741bead652b8f1a2227263c601ae9725bc87",
+      "disk_size": 8824,
+      "hash_match": true,
+      "head_sha256": "af1edb3eaff47819fffc09245c15622c4bcb9f95e7a6c37b5263d88f712c0be2",
+      "extract": {
+        "binary": false,
+        "lines": 161,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Handoff — cross-encoder BAXY R207–R209"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Prompt operativo para el relevo"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Objetivo de la misión"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "Estado transferible"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "Resultado R209"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Archivos de la línea"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "Continuación obligatoria"
+          },
+          {
+            "line": 139,
+            "level": 2,
+            "text": "Siguiente frente según el ledger canónico leído el 2026-08-14"
+          }
+        ],
+        "lead": "Rama transferible: `codex/baxy-cross-encoder-r209-handoff`.",
+        "measures": [
+          {
+            "line": 31,
+            "text": "al menos 74/77 de R146 model-owned y 9/9 controles OOS con cero candidatos."
+          },
+          {
+            "line": 68,
+            "text": "16/77 exactos (mínimo 74), 5/9 OOS con cero candidatos (requeridos 9/9) y"
+          },
+          {
+            "line": 69,
+            "text": "p95 0,370289 s. La pérdida bajó 0,238768 → 0,148729 → 0,128127, pero no es"
+          },
+          {
+            "line": 89,
+            "text": "97/169 (57,3964 %). Puede validar una llamada ya conocida, pero no groundear un"
+          },
+          {
+            "line": 156,
+            "text": "catálogo, rechazado porque aumentó el sobre-veto del corte B de 224/560 a"
+          },
+          {
+            "line": 157,
+            "text": "385/560. Por tanto la siguiente hipótesis debe ser estructural y evaluarse en"
+          }
+        ],
+        "dates": [
+          "2026-08-14"
+        ],
+        "models": [
+          "qwen3",
+          "functiongemma"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 13,
+            "text": "porque reduzca su pérdida: debe cumplir exactitud y abstención fuera de"
+          },
+          {
+            "line": 40,
+            "text": "- R208 está prerregistrado antes de la GPU. El mecanismo es un cross-encoder"
+          },
+          {
+            "line": 44,
+            "text": "`D:\\BAXYRuntime\\experiments\\mtop-operation-compatibility-verifier-v16`."
+          },
+          {
+            "line": 144,
+            "text": "las descripciones para seleccionar volvería a ser un mecanismo textual y no"
+          },
+          {
+            "line": 156,
+            "text": "catálogo, rechazado porque aumentó el sobre-veto del corte B de 224/560 a"
+          }
+        ],
+        "ranges": [
+          "1-161",
+          "h:1",
+          "m:31"
+        ]
+      }
+    },
+    {
+      "path": "README.md",
+      "queued_sha256": "e11d307aa119fc83e58d77aa283e1e41127db0959656d66e980f1b49bfaea8dd",
+      "size_queued": 6340,
+      "exists": true,
+      "disk_sha256": "e11d307aa119fc83e58d77aa283e1e41127db0959656d66e980f1b49bfaea8dd",
+      "disk_size": 6340,
+      "hash_match": true,
+      "head_sha256": "118a489e7f54b627813d90c930e305143544eaeaf537c2c7c5f413135f9335c1",
+      "extract": {
+        "binary": false,
+        "lines": 131,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY — reconstrucción v3"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Ejecutar durante el desarrollo"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Punto de partida"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Estado y continuidad"
+          },
+          {
+            "line": 108,
+            "level": 2,
+            "text": "Evidencia y límites"
+          }
+        ],
+        "lead": "El manual operativo para agentes de IA empieza en",
+        "measures": [
+          {
+            "line": 17,
+            "text": "completa de las 169 operaciones, latencias GPU/CPU, picos de VRAM/RAM y la lista"
+          }
+        ],
+        "dates": [
+          "2026-08-11"
+        ],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-131",
+          "h:1",
+          "m:17"
+        ]
+      }
+    },
+    {
+      "path": "constraints-runtime-win-x64.txt",
+      "queued_sha256": "15bd88f3ed744bfb6dff6e37c460d4a6514d47ad5e2287c2e161314df967c434",
+      "size_queued": 1308,
+      "exists": true,
+      "disk_sha256": "15bd88f3ed744bfb6dff6e37c460d4a6514d47ad5e2287c2e161314df967c434",
+      "disk_size": 1308,
+      "hash_match": true,
+      "head_sha256": "33cdb22a66a8a0294f355974ef0b88cfff76ed0ac4e133cd4576315762db1b96",
+      "extract": {
+        "binary": false,
+        "lines": 63,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Grafo exacto medido y aprobado para CPython 3.12 / Windows x64."
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Este archivo es un input curado: lock_python_dependencies.ps1 lo consume,"
+          },
+          {
+            "line": 3,
+            "level": 1,
+            "text": "pero sólo genera pylock.runtime-win-x64.toml. Revisar sus pins deliberadamente."
+          }
+        ],
+        "lead": "annotated-doc==0.0.4",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "livekit"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-63",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "constraints-test-win-x64.txt",
+      "queued_sha256": "dc49423d00f8f7fcd8521c60cef36bd9d96a277e56f45953a4c55b8d41a91d1f",
+      "size_queued": 322,
+      "exists": true,
+      "disk_sha256": "dc49423d00f8f7fcd8521c60cef36bd9d96a277e56f45953a4c55b8d41a91d1f",
+      "disk_size": 322,
+      "hash_match": true,
+      "head_sha256": "f816fa23bee6bd0b782b193f71a6bd88cd323caa13a9080240c77996316b38e2",
+      "extract": {
+        "binary": false,
+        "lines": 10,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Clausura exacta de pytest para CPython 3.12 / Windows x64."
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Este archivo es un input curado: lock_python_dependencies.ps1 lo consume,"
+          },
+          {
+            "line": 3,
+            "level": 1,
+            "text": "pero sólo genera pylock.test-win-x64.toml. Revisar sus pins deliberadamente."
+          }
+        ],
+        "lead": "colorama==0.4.6",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-10",
+          "h:1"
+        ]
+      }
+    }
+  ]
+}

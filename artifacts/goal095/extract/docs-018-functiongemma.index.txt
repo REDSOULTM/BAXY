@@ -1,0 +1,10 @@
+batch_id=docs-018-functiongemma
+kind=docs
+file_count=4
+hash_ok=4 drift=0 miss=0
+subsystem=fg_router
+---FILES---
+OK router/data/router_encoder_ft.bak_pre_retrain_2026-06-18/README.md	SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniL
+OK router/data/router_encoder_ft/README.md	SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniL
+OK AGENTS.md	
+OK CLAUDE.md	

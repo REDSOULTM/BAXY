@@ -1,0 +1,117 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-021-baxy",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:50Z",
+  "closed_utc": "2026-08-31T04:29:50Z",
+  "estimated_tokens": 298878,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 3,
+  "subsystem": "baxy_docs_01_ARQUITECTURA",
+  "files": [
+    {
+      "path": "documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md",
+      "sha256": "f9d42d4006e31c8af653aa67bc5bf4b2ecafda1e2020858538c48083b2cef65e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9689",
+        "h:1",
+        "m:165"
+      ]
+    },
+    {
+      "path": "documentacion/01_CONTRATO_PRODUCTO.md",
+      "sha256": "7943a5312b66c41f4d8d289a6a304e6dba9b954d5d57b40e1c1f6becd44c9422",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-110",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/02_INDICE_FUENTES.md",
+      "sha256": "56c5b97089a410c11f3fb81fc300a2b88db3518bf27e3b04721b59fc06514910",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-193",
+        "h:1",
+        "m:115"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-021-baxy-01-documentacion",
+      "claim_kind": "documental",
+      "problem": "Contrato de producto de BAXY: BAXY es un asistente local y privado para Windows. La persona habla o escribe",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY es un asistente local y privado para Windows. La persona habla o escribe",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "juegos, hábitos, búsqueda local, mantenimiento, multimedia, red, notas, | finales y hashes. La materia prima referenciada suma 5,10 GiB; los segmentos",
+      "provenance": {
+        "path": "documentacion/01_CONTRATO_PRODUCTO.md",
+        "ranges": [
+          "1-110",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/01_CONTRATO_PRODUCTO.md",
+        "documentacion/02_INDICE_FUENTES.md"
+      ],
+      "repeats": [
+        "documentacion/02_INDICE_FUENTES.md"
+      ]
+    },
+    {
+      "card_id": "docs-021-baxy-02-documentacion-01_ARQUITECTURA",
+      "claim_kind": "documental",
+      "problem": "Registro de mantenibilidad: Estado: **registro vivo de la campaña de cimentación, 2026-08-01**.",
+      "outcome": "contexto",
+      "solution_or_failure": "Estado: **registro vivo de la campaña de cimentación, 2026-08-01**.",
+      "causal_mechanism": "midieron 0,032–0,194 s. `gpu_usage` conservó 1,058 s porque el contador PDH | de voz a 500 ms porque cambió transcripciones/rutas. El 5/6 del gate fresco | candidato 500 ms + 192 ms de padding ASR fue exacto en la muestra sintética | candidato no alcanzó `ready` porque el GGUF registrado no contiene capas",
+      "measurement": "- Python: **1.132 pruebas + 367 subtests**, cero fallos, en 185,65 s. | - Python: **1.298 pruebas + 382 subtests**, cero fallos, en 224,47 s. | Las omisiones conservan su condición ambiental y no se cuentan como pass. | subtests**, cero fallos, en 156,93 s. Son **+115** sobre las 1.984 del cierre | fallos — Contracts 54/0, Kernel 109/2, Providers 432/5, Setup 469/8, | Integration 1.218/3. Sin cam…",
+      "provenance": {
+        "path": "documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md",
+        "ranges": [
+          "1-9689",
+          "h:1",
+          "m:165"
+        ],
+        "date": "2026-08-01",
+        "hardware": "RTX 3060",
+        "model": "gemma-4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/01_ARQUITECTURA: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/01_ARQUITECTURA/REGISTRO_DE_MANTENIBILIDAD.md"
+      ],
+      "repeats": []
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=3 drift=0 miss=0",
+  "next_docs_batch_id": "docs-022-baxy",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-021-baxy.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

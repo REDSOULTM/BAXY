@@ -1,0 +1,1845 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-019-baxy",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:43Z",
+  "closed_utc": "2026-08-31T04:29:48Z",
+  "estimated_tokens": 297789,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 79,
+  "subsystem": "baxy_art_audit",
+  "files": [
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/BACKLOG.md",
+      "sha256": "f3e5615a1e0043c839a2f7dc3e08ad188504aeb2c8b72c9c953943615e9f6234",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1421",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/README.md",
+      "sha256": "9037ffce0cadd5703418fbfe879f6478cdd45966eac58a5b8d62a32db0560f93",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-74",
+        "h:1",
+        "m:55"
+      ]
+    },
+    {
+      "path": "artifacts/audit/2026-07-27-night-audit/RESULTS.md",
+      "sha256": "761fc23f3f7cf9af8aca65fe7f4ba0f650fd07ddd56c6ce602d91d40efb9914f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-468",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/README.md",
+      "sha256": "bf14fbe337274f08ba3d9c2d6fe3e8723f13c16b605583bff70483717e3d4f3a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-73",
+        "h:1"
+      ]
+    },
+    {
+      "path": "artifacts/fixes/2026-07-27-audit-remediation/PROGRESS.md",
+      "sha256": "bc8b87a6dee991c836ce5f7402f3a3705911af2c4c99ae599ac937e0f0e43f39",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-91",
+        "h:1",
+        "m:62"
+      ]
+    },
+    {
+      "path": "artifacts/fixes/app_visible_path_v3_aborted_run/DISCARDED.md",
+      "sha256": "e8271a42b98c5b5a72aaed7acc6a61da624cbfb6f900c3b702bed10bcd071250",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-18",
+        "h:1"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/README.md",
+      "sha256": "9c2601e1b2cd9fd7642d53877eb460685f76e9c326fcf21cd8a7937036a8733e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-14",
+        "h:1"
+      ]
+    },
+    {
+      "path": "artifacts/historical_exhaustive/runtime_model_gate.finalfix2_cases.txt",
+      "sha256": "60123a9dfe9a72a15d4d82c4a5b8a87c4ee70afc3f78ea0cad23cfd13d4778e9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/LICENSE.txt",
+      "sha256": "e502c6b880ff58d614901495a9009c136539cd0b1e2a2abb8fc00b934c203419",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-702",
+        "m:4"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/warn-baxy-python-onedir.txt",
+      "sha256": "f7a394734ba681705e3dbcb4233ad439030febb37d9cd69170fc0bab0e25b85e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-24"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core/README.md",
+      "sha256": "b2df4c049c2aed0fc719401a66cb57ad01f3662db6bb6c61814828d040e2bbb2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-12",
+        "h:1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/README.md",
+      "sha256": "7ab3ce15fdb929c7fae0161a861a04d00c18c35b6fe020a4a75bd6f3b0f8110f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-11",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/README.md",
+      "sha256": "fa7ed38bdc9db5080500439c86cf7e1fcef25aa5e2d421d23188c076998ef3ce",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-16",
+        "h:1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/notes/ideas.txt",
+      "sha256": "6bb8b31640aefcbe2535947d9c2b42da8838223579eb99ba52fa9cd86c233b25",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/plan.txt",
+      "sha256": "e66e1eec61080f0d0a7891406000d591ac7f7ae672a3052b422f31debf4b8eaa",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/reunión-ñ.txt",
+      "sha256": "e3ec04234b52f1de30849063ef47c7ba1beaea40a9adc10cabd63e9cf4250d96",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/unica.txt",
+      "sha256": "3dca6c154d911e5b7c11fa76cfa0ee1423c0721d829829cd237eb854f0385b78",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_capture/data/workspace/notes/ideas.txt",
+      "sha256": "4eed0c7f6e50635651631a6edc6555111d425602aa0ea0d3e45b9ac053cdecdc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/notes/recovery.txt",
+      "sha256": "46fb981cfa0d2d8f2349b0fe44aabb4711549bbd0a2def5366ac38bdf558dc0e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/core/runtime.txt",
+      "sha256": "521fe5c9ece1aa1f8b66228171598263574aefc6fa4ba06a61747ec81ee9f5a3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/release-marker.txt",
+      "sha256": "272403369de1a43781b954801a59d537a08bc7a475ad436b885e69e8f3328028",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/version.txt",
+      "sha256": "92521fc3cbd964bdc9f584a991b89fddaa5754ed1cc96d6d42445338669c1305",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/release-marker.txt",
+      "sha256": "0b5119c2eb165d24087aa372b96dec81198a746079cbd70e91b9a22ecef0e8ab",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/version.txt",
+      "sha256": "d51e6ec94058554a84558a5b402ee6ef5fdf5455e35c902feda61cda8752943a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/release-marker.txt",
+      "sha256": "d899147849bc93682cd0c8ce601abbcff969d83cbebb6dff30b25598c7f99d8c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/version.txt",
+      "sha256": "f02f5adb8282bf3589fcc90a8720e50bbfd6c9333cb0207add6a48f86b2dcbf2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/release-marker.txt",
+      "sha256": "35b574e7366bcc79b974cd26eab5bfe5aa044e5fda17709720c9f8733a51bbf6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/version.txt",
+      "sha256": "20d2cb096d1ab41a4140246d12f07bf6b8cb743fd48122b72532c03d44c5c14a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/core/runtime.txt",
+      "sha256": "91c5d8faaa8d607846ac222dbfb48be6ad3916e2da204717af39273829eb748c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-1"
+      ]
+    },
+    {
+      "path": "artifacts/tool_recovery/EVIDENCIA_CORTES.md",
+      "sha256": "9858bcc68ff4adecf6d245c4b3993c1d7f6d0262f99a773c793776edc8c718e0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-99",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "contexto/00_control/ALCANCE_Y_DEFINITION_OF_DONE.md",
+      "sha256": "65a52ed45b4c05d6b1ecc24c1bde0be61d2146b7a74ff33b29eed3dbf9f4c180",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-82",
+        "h:1",
+        "m:32"
+      ]
+    },
+    {
+      "path": "contexto/00_control/ESTADO_ACTUAL.md",
+      "sha256": "a62e305f8cf21ee05eaa402fc8b287997036f30fc050f397d841d595c3c43518",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-262",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "contexto/00_control/MAPA.md",
+      "sha256": "b8b1c595fa7d3fb085ed85ff5d452b954a6511cd800ef04ae053983f017d4788",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-39",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/01_producto/CORPUS_HISTORICO_Y_CUTOFF.md",
+      "sha256": "1f80674fd150d4ef5f036db488e41738f5e994f742cc11e58675f62462fc17f6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-104",
+        "h:1",
+        "m:102"
+      ]
+    },
+    {
+      "path": "contexto/01_producto/MISIONES_PRIORIZADAS.md",
+      "sha256": "4dc7462239cce786ccfd5333d9cc93107f05468bf13be74375d7991910461103",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-15",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/01_producto/VISION_Y_DECISIONES_DEL_USUARIO.md",
+      "sha256": "02e32a7aec8780da44ad08bf936737af64d0c6aa689d3ea67eb63c2758b50f88",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-34",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "contexto/02_historia/FUENTES_Y_GENEALOGIA.md",
+      "sha256": "2bafa373e44250825a79690be784e20591156965fe89152aa751d6552e51cbbd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-30",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "contexto/02_historia/LECCIONES_RECUPERADAS.md",
+      "sha256": "9c27d0cbfc9c6f052504bd8e781c220c239588a65d96dffbd3da961a6819de52",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-25",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/ADAPTADORES_EXTERNOS_ESTADO_DEL_ARTE_2026-07-16.md",
+      "sha256": "1728ee91e3efc88cafd85de0d8ec51d5c8078802c5c1b2131519fdb15f474d61",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-88",
+        "h:1",
+        "m:60"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/ALTERNATIVAS_Y_EVIDENCIA.md",
+      "sha256": "7b856433ca628833bc809255a36e439a02ea8fc182e6687276b4d8c60dd888b8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-82",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/BRIEF_MODELOS_MENTE_2026-07-15.md",
+      "sha256": "51e71c645cf6cff4ddc3b1d299e5539a0b1efd3db77eb9b133f7e744bd25b818",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-108",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/HALLAZGOS.md",
+      "sha256": "8182034e60f1db2a33e79a821ff0eecd4de6661ba3e82e43602c25a8c1ffdba0",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-212",
+        "h:1",
+        "m:23"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/LLM_ESTADO_DEL_ARTE_2026-07-23.md",
+      "sha256": "5cc5d7bbf183a03165c628dac1a304d4b341a0310f3b835279fe4f172f777168",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-71",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/PLANNER_ESTADO_DEL_ARTE_2026-07-16.md",
+      "sha256": "1ff29ed760b28ee7985546df2832665c0f36bd9099340bf39157d3e1b74de424",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-70",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/SKILLS_ESTADO_DEL_ARTE_2026-07-16.md",
+      "sha256": "46fab4423915d19852a2328b0f22c59585970ca53a408ebf5cadd113effb2236",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-66",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/03_investigacion/VOZ_ESTADO_DEL_ARTE_2026-07-16.md",
+      "sha256": "e670ba168cde60995e04be3949d14874b231ec5e995144910879ca5c650462c4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-132",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0001-arquitectura-base-baxy-1.md",
+      "sha256": "9009d3e6e261e4494062fbce79cb921721481a46cffb4b4c64c946d1458d5f0a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-150",
+        "h:1",
+        "m:27"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0002-estado-gpu-local.md",
+      "sha256": "79d941ea5f2f02b4661ac60fe9c502442b9c177e8181abe0b8642aa5341f715e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-96",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0003-paquete-release-reproducible.md",
+      "sha256": "7ad63f1fb4dd89fe7de37cb8f8d4f741ab516776fc0f48e3a64a2fcb12b620a6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-80",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0004-setup-embebido-transaccional.md",
+      "sha256": "06fb0c3666717b0a60c8ed9b446cdf869494336f8a768c868bdeb15df7c51fcb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-69",
+        "h:1",
+        "m:34"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0005-mente-modelos-y-runtime.md",
+      "sha256": "6f4d70f388921dfc82b952cb73a6168c78c6bc8d8d9787f0b894dde7ad4d14df",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-181",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0006-planner-hibrido-durable.md",
+      "sha256": "12bf9eb958ab74f5d613380ddb162518fc1984c3131b8c85aed0535ad6e3069b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-74",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0007-voz-local-wake-stt-tts.md",
+      "sha256": "fe1838407fe41fcdce9a7df3acb8b7d18df2ce94f255ee93bf87af6654a543ca",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-67",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0008-restauracion-field-ui-historica.md",
+      "sha256": "b9040216ae8f9ec9756acff1e269053c2127d39610ae6aba19f0edde0e1da24c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-85",
+        "h:1",
+        "m:40"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/ADR-0009-evidencia-corpus-turnos.md",
+      "sha256": "5acab6802ee57368f243599ed790ceb5ada904057eda49a9462fbb7fd0a15a36",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-255",
+        "h:1",
+        "m:50"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/ADR/README.md",
+      "sha256": "fef9c167c3c714838b9e6c322049028adf6717c68b0b93b94cf491a384958a6d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-17",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/DECISION_VIGENTE.md",
+      "sha256": "b304870572b5acd0ca7fdb906ef0544961785391d4b9c45bdef85e83a54c5050",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-40",
+        "h:1",
+        "m:26"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/FRONTERA_CODEX_FABLE.md",
+      "sha256": "10971a343fcee3aea560134530deedbc28471b7c63c0bc7f308ef55d71bef485",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-151",
+        "h:1",
+        "m:111"
+      ]
+    },
+    {
+      "path": "contexto/04_arquitectura/FRONTERA_CODEX_FABLE_V2.md",
+      "sha256": "0a8d5770d77babd5a012ba1fc95fecce8606a1338b7c8286d9e087705fe222ff",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-35",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/05_implementacion/CAMBIOS_Y_MIGRACIONES.md",
+      "sha256": "5abca4f5392bd78ac36ccc9ebe9ab2a76be3e57bfc06cbfc8770c645be8b6122",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-427",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "contexto/05_implementacion/ENTRADA_MISION_TIPADA.md",
+      "sha256": "576cd706f90c262f40bc7666f7fa5c9c22d5718718abcec28389c647a1bb3a3e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-52",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/05_implementacion/MAPA_DEL_SISTEMA.md",
+      "sha256": "935ea58d3e50432c9c2ed2c8e7640fe31b69ece938277f45b07542c3eabd0518",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-365",
+        "h:1",
+        "m:94"
+      ]
+    },
+    {
+      "path": "contexto/06_pruebas_y_mediciones/GATES_APLAZADOS_EQUIPO_LIMPIO.md",
+      "sha256": "e6f75d2b43e96b65e02f7f8b50721ee6eabd0551311ac0e6de0df421d6edb90e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-69",
+        "h:1",
+        "m:67"
+      ]
+    },
+    {
+      "path": "contexto/06_pruebas_y_mediciones/GATES_MENTE.md",
+      "sha256": "0d2029203fbe1caa84013fbf846cb3e29e4772b0361c81dffe5eec108cf3a8be",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-184",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "contexto/06_pruebas_y_mediciones/MATRIZ_DE_ACEPTACION.md",
+      "sha256": "b088fa98f24bf499ea814885d53a05a300527e21ab12ccc72afbd25abe7336c4",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-40",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "contexto/06_pruebas_y_mediciones/MENSAJE_A_MISION_TOOL_PRUEBA.md",
+      "sha256": "75324a913b0069612d3c248058773319e19cd06d2bccfe1afbefcfc6210b29db",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-155",
+        "h:1",
+        "m:67"
+      ]
+    },
+    {
+      "path": "contexto/06_pruebas_y_mediciones/RESULTADOS.md",
+      "sha256": "0b76a10d48f23d45102581901cede8420fc0dbfb3d9a4e9707d78b6aad5a4e50",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-586",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "contexto/07_riesgos_y_pendientes/BACKLOG_POST_ENTREGA.md",
+      "sha256": "d1fb34d9e55cb515303ecc925fc80c9a7fa0435539dea7cb0c3073700a7af73e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-4",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/07_riesgos_y_pendientes/BLOQUEANTES.md",
+      "sha256": "88a301e3ff392c5bdc0bd4a6625781234135e07e4400d35085cc3b4b65938cbc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-185",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "contexto/08_entrega/OPERACION_Y_ROLLBACK.md",
+      "sha256": "635bb6dd073d5b7aaf01d3f71cba546148ba59a08533fe7569efe935d2810a8f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-94",
+        "h:1"
+      ]
+    },
+    {
+      "path": "contexto/08_entrega/RELEASE_CHECKLIST.md",
+      "sha256": "a6368944c387ff73a8f4acf0e0388f3c25c3d8f84534d99bf2e2eebca003d52a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-31",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "contexto/README.md",
+      "sha256": "bee08ddd1d66e70e797a0879b93b9db00b91c5fe8df2a1963f171d6dd80495f2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-23",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md",
+      "sha256": "d90cc7a1747d573fba13d0d6c7004ba5241937a5da0e5bfa5917fd339e359d3a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-140",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/00_GOAL_SIGUIENTE_SESION.md",
+      "sha256": "3bf9686f7a883a3ac3b51737b3057649d2218e6760e3c9e46a4adba6df4e520d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-223",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "documentacion/00_HANDOFF_TERRA_ALTO_R257.md",
+      "sha256": "b18b0c71ea67885b07a49c4ad489f9d6925703e2628e61d48a08ebfe8a599d8f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-339",
+        "h:1",
+        "m:23"
+      ]
+    },
+    {
+      "path": "documentacion/00_LEEME.md",
+      "sha256": "2c701a6a3be4d26863df509b953ebd0816adc8070218dc81851b9db618125635",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-316",
+        "h:1",
+        "m:147"
+      ]
+    },
+    {
+      "path": "documentacion/00_META_VIGENTE.md",
+      "sha256": "f23de14cfc0b7f0c9dcafbb9e81c1d6062e22882728e84208dd10305abf95262",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-491",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/00_MVP_2026-08-11.md",
+      "sha256": "23c9009e35bdacc55f3839b07da22910aeaab5a1a2eefe7b2746aa41848d0f92",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-184",
+        "h:1",
+        "m:30"
+      ]
+    },
+    {
+      "path": "documentacion/00_MVP_CONSOLIDADO_2026-08-11.md",
+      "sha256": "12f61dd5ae17be580131c58d761b29fa6f8c06ccab050488c7fb6674816f0351",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-621",
+        "h:1",
+        "m:9"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-019-baxy-01-artifacts-audit-2026-07-27-night-audit",
+      "claim_kind": "documental",
+      "problem": "Backlog de defectos: - Severidad: P1",
+      "outcome": "contexto",
+      "solution_or_failure": "- Severidad: P1",
+      "causal_mechanism": "mecanismo y permanece visible. | 2. No confirmar nada porque la interfaz no ofrece la confirmación. | disponible porque falta cargar `UIAutomationTypes`; la referencia lanza | La causa se registra como probable porque esta sesión es de auditoría y no se | se modificó esa referencia porque no pertenece al producto auditado.",
+      "measurement": "- Reproducción: 8/8 (dos intentos por operación y por binario) | - Reproducción: 4/4 (dos intentos por binario) | - Reproducción: 5/5 antes de la sonda de proceso (20 segundos en el barrido | - Reproducción física: 3/3 saludos válidos, en dos procesos/sesiones | - Reproducción focalizada: 3/3 por la ruta contextual | mismo modelo, sin historial, fue correcta 3/3. | - Reproducción: 2/2 ciclos | 4.…",
+      "provenance": {
+        "path": "artifacts/audit/2026-07-27-night-audit/BACKLOG.md",
+        "ranges": [
+          "1-1421",
+          "h:1",
+          "m:10"
+        ],
+        "date": "2026-07-27",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "livekit",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/audit/2026-07-27-night-audit: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/audit/2026-07-27-night-audit/BACKLOG.md",
+        "artifacts/audit/2026-07-27-night-audit/README.md",
+        "artifacts/audit/2026-07-27-night-audit/RESULTS.md"
+      ],
+      "repeats": [
+        "artifacts/audit/2026-07-27-night-audit/README.md",
+        "artifacts/audit/2026-07-27-night-audit/RESULTS.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-02-artifacts-field-ui-4a83f2d-export-gui-ui_field",
+      "claim_kind": "documental",
+      "problem": "React + TypeScript + Vite: This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+      "outcome": "contexto",
+      "solution_or_failure": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+      "causal_mechanism": "The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/field-ui-4a83f2d-export/gui/ui_field/README.md",
+        "ranges": [
+          "1-73",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/field-ui-4a83f2d-export/gui/ui_field: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/field-ui-4a83f2d-export/gui/ui_field/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-03-artifacts-fixes-2026-07-27-audit-remediation",
+      "claim_kind": "documental",
+      "problem": "Remediación de auditoría BAXY — 2026-07-27: - Repositorio canónico: `D:\\BAXY\\source`.",
+      "outcome": "contexto",
+      "solution_or_failure": "- Repositorio canónico: `D:\\BAXY\\source`.",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "| Smoke de 168 operaciones | verificado: 168/168 resultados de frontera seguros; 157 rechazos de esquema + 11 rechazos privados autenticados; `evidence/global/catalog-smoke-168.json` | | | Matrices reales de routing/planificación | verificado: 60/60 canónica, 62/62 adversarial, 12/12 cardinalidad, 4/4 conservación parcial, 10/10 regresiones | | | Casos físicos seguros | verificado: grupos de prov…",
+      "provenance": {
+        "path": "artifacts/fixes/2026-07-27-audit-remediation/PROGRESS.md",
+        "ranges": [
+          "1-91",
+          "h:1",
+          "m:62"
+        ],
+        "date": "2026-07-27",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/fixes/2026-07-27-audit-remediation: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/fixes/2026-07-27-audit-remediation/PROGRESS.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-04-artifacts-fixes-app_visible_path_v3_aborted_run",
+      "claim_kind": "documental",
+      "problem": "Corrida descartada del harness de camino visible: Estas trazas son de una corrida de `scripts/measure_app_visible_path.ps1` que se",
+      "outcome": "contexto",
+      "solution_or_failure": "Estas trazas son de una corrida de `scripts/measure_app_visible_path.ps1` que se",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/fixes/app_visible_path_v3_aborted_run/DISCARDED.md",
+        "ranges": [
+          "1-18",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/fixes/app_visible_path_v3_aborted_run: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/fixes/app_visible_path_v3_aborted_run/DISCARDED.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-05-artifacts-historical_exhaustive",
+      "claim_kind": "documental",
+      "problem": "Evidencia exhaustiva histórica: Los archivos `runtime_fast_gate*.json` son evidencia histórica de una auditoría",
+      "outcome": "contexto",
+      "solution_or_failure": "Los archivos `runtime_fast_gate*.json` son evidencia histórica de una auditoría",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/historical_exhaustive/README.md",
+        "ranges": [
+          "1-14",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/historical_exhaustive: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/historical_exhaustive/README.md",
+        "artifacts/historical_exhaustive/runtime_model_gate.finalfix2_cases.txt"
+      ],
+      "repeats": [
+        "artifacts/historical_exhaustive/runtime_model_gate.finalfix2_cases.txt"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-06-artifacts-technology_tournament-build-packaging-py",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle: A. HISTORY OF THE SOFTWARE",
+      "outcome": "contexto",
+      "solution_or_failure": "A. HISTORY OF THE SOFTWARE",
+      "causal_mechanism": "because its license has a choice of law clause. According to",
+      "measurement": "Python was created in the early 1990s by Guido van Rossum at Stichting | unique, persistent identifier (known as a handle): 1895.22/1013. This | using the following URL: http://hdl.handle.net/1895.22/1013\". | libffi - Copyright (c) 1996-2022 Anthony Green, Red Hat, Inc and others. | otherwise, or (ii) ownership of fifty percent (50%) or more of the",
+      "provenance": {
+        "path": "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/LICENSE.txt",
+        "ranges": [
+          "1-702",
+          "m:4"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/technology_tournament/build/packaging/python_embedded_runtime/bundle/LICENSE.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-07-artifacts-technology_tournament-build-packaging-py",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir: This file lists modules PyInstaller was not able to find. This does not",
+      "outcome": "contexto",
+      "solution_or_failure": "This file lists modules PyInstaller was not able to find. This does not",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/warn-baxy-python-onedir.txt",
+        "ranges": [
+          "1-24"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/technology_tournament/build/packaging/python_pyinstaller_onedir/work/baxy-python-onedir/warn-baxy-python-onedir.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-08-artifacts-technology_tournament-build-rb-a-experim",
+      "claim_kind": "documental",
+      "problem": ".NET/Windows core contender: Build and run with .NET 10:",
+      "outcome": "contexto",
+      "solution_or_failure": "Build and run with .NET 10:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core/README.md",
+        "ranges": [
+          "1-12",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/dotnet_windows_core/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-09-artifacts-technology_tournament-build-rb-a-experim",
+      "claim_kind": "documental",
+      "problem": "BAXY Round B — WPF nativo: Tercera alternativa seria para el subsistema de interfaz. Conserva la",
+      "outcome": "contexto",
+      "solution_or_failure": "Tercera alternativa seria para el subsistema de interfaz. Conserva la",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "WebView2. El objetivo del corte es medir si una GUI Windows nativa evita red de",
+      "provenance": {
+        "path": "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/README.md",
+        "ranges": [
+          "1-11",
+          "h:1",
+          "m:5"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/round_b/native_wpf/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-10-artifacts-technology_tournament-build-rb-a-experim",
+      "claim_kind": "documental",
+      "problem": "Rust core contender: Build and run with the MSVC toolchain:",
+      "outcome": "contexto",
+      "solution_or_failure": "Build and run with the MSVC toolchain:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/README.md",
+        "ranges": [
+          "1-16",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/technology_tournament/build/rb/a/experiments/technology_tournament/rust_core/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-11-artifacts-technology_tournament-runtime-round_b-do",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/notes: comprar té",
+      "outcome": "contexto",
+      "solution_or_failure": "comprar té",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/notes/ideas.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/notes: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "artifacts/technology_tournament/runtime/round_b/dotnet-ui/workspace/notes/ideas.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-12-artifacts-technology_tournament-work-dotnet_fdd_si",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes: fase uno",
+      "outcome": "contexto",
+      "solution_or_failure": "fase uno",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/plan.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/plan.txt",
+        "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/reunión-ñ.txt",
+        "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/unica.txt"
+      ],
+      "repeats": [
+        "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/reunión-ñ.txt",
+        "artifacts/technology_tournament/work/dotnet_fdd_single/functional_01/workspace/notes/unica.txt"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-13-artifacts-technology_tournament-work-round_b_captu",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_capture/data/workspace/notes: comprar te",
+      "outcome": "contexto",
+      "solution_or_failure": "comprar te",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_capture/data/workspace/notes/ideas.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_capture/data/workspace/notes: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_capture/data/workspace/notes/ideas.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-14-artifacts-technology_tournament-work-round_b_lifec",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/notes: vive",
+      "outcome": "contexto",
+      "solution_or_failure": "vive",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/notes/recovery.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/notes: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_lifecycle/dotnet-wpf-rust/lifecycle_data/workspace/notes/recovery.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-15-artifacts-technology_tournament-work-round_b_packa",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0: BAXY tournament payload 1.0.0",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY tournament payload 1.0.0",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/release-marker.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/release-marker.txt",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/version.txt"
+      ],
+      "repeats": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/version.txt"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-16-artifacts-technology_tournament-work-round_b_packa",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/core: rust",
+      "outcome": "contexto",
+      "solution_or_failure": "rust",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/core/runtime.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/core: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.0/core/runtime.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-17-artifacts-technology_tournament-work-round_b_packa",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1: BAXY tournament payload 1.0.1",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY tournament payload 1.0.1",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/release-marker.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/release-marker.txt",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/version.txt"
+      ],
+      "repeats": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.1/version.txt"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-18-artifacts-technology_tournament-work-round_b_packa",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2: BAXY tournament payload 1.0.2",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY tournament payload 1.0.2",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/release-marker.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/release-marker.txt",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/version.txt"
+      ],
+      "repeats": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.2/version.txt"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-19-artifacts-technology_tournament-work-round_b_packa",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3: BAXY tournament payload 1.0.3",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY tournament payload 1.0.3",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/release-marker.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/release-marker.txt",
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/version.txt"
+      ],
+      "repeats": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf-rust/packages/1.0.3/version.txt"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-20-artifacts-technology_tournament-work-round_b_packa",
+      "claim_kind": "documental",
+      "problem": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/core: dotnet",
+      "outcome": "contexto",
+      "solution_or_failure": "dotnet",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/core/runtime.txt",
+        "ranges": [
+          "1-1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/core: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "artifacts/technology_tournament/work/round_b_package/dotnet-wpf/packages/1.0.0/core/runtime.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-21-artifacts-tool_recovery",
+      "claim_kind": "documental",
+      "problem": "Evidencia mínima — recuperación de tools: - Rama/commit: `codex/baxy-rebuild-v3` / `c5a12952f7960163766f19d09651f6153a69ba13`.",
+      "outcome": "contexto",
+      "solution_or_failure": "- Rama/commit: `codex/baxy-rebuild-v3` / `c5a12952f7960163766f19d09651f6153a69ba13`.",
+      "causal_mechanism": "- Contratos: schemas cerrados; `windowId` opaco; resultados con PID/nombre/estado/foco, sin título ni ruta; riesgo read-only o low-reversible; verifier ID único. | - Seguridad: selector sin rutas; inventario acotado; handle de 5 minutos, máximo 512, un solo uso; identidad HWND+PID+creation-time; revalidación antes del efecto; verifier separado; cancelación propagada; journal/replay del core. | -…",
+      "measurement": "- .NET: 1.787/1.787 verdes (46 Contracts, 75 Kernel, 241 Providers, 953 Integration, 472 Setup). Tres gates físicos omitidos por contrato de entorno. | - Comando de regresión histórica acotada: 529/529 verdes en 31,42 s. Incluye registro, windows control, UIA, filesystem, transferencias, tareas, recordatorios, rutinas, red, portapapeles, accesibilidad y matriz de misiones. | - `network.status` re…",
+      "provenance": {
+        "path": "artifacts/tool_recovery/EVIDENCIA_CORTES.md",
+        "ranges": [
+          "1-99",
+          "h:1",
+          "m:7"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo artifacts/tool_recovery: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "artifacts/tool_recovery/EVIDENCIA_CORTES.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-22-contexto",
+      "claim_kind": "documental",
+      "problem": "Contexto operativo de BAXY 1.0: Esta carpeta es la memoria versionada de la reconstrucción. Permite reanudar el",
+      "outcome": "contexto",
+      "solution_or_failure": "Esta carpeta es la memoria versionada de la reconstrucción. Permite reanudar el",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "contexto/README.md",
+        "ranges": [
+          "1-23",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-019-baxy-23-contexto-00_control",
+      "claim_kind": "documental",
+      "problem": "Alcance y Definition of Done: El corpus probatorio de BAXY 1.0 conserva todos los mensajes históricos",
+      "outcome": "contexto",
+      "solution_or_failure": "El corpus probatorio de BAXY 1.0 conserva todos los mensajes históricos",
+      "causal_mechanism": "post-hardcode aprobó 4/4 recorridos read-only shell→mente→core en 142,772 s,",
+      "measurement": "2. 100 % de mensajes del cutoff preservados, clasificados y enlazados a un | 3. 100 % de misiones canónicas con estado esperado, plan, operaciones, | 12. Perfil cómodo para 4 GB de VRAM con objetivo aproximado de 3 GB cuando sea | viable, CPU fallback y mediciones honestas de RAM/VRAM/latencia/estabilidad. | - Definition of Done formal: **13/15 gates Must aprobados (86,7 %)**. Los | personal y el…",
+      "provenance": {
+        "path": "contexto/00_control/ALCANCE_Y_DEFINITION_OF_DONE.md",
+        "ranges": [
+          "1-82",
+          "h:1",
+          "m:32"
+        ],
+        "date": "2026-08-15",
+        "hardware": "VRAM",
+        "model": "e5-small",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/00_control: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/00_control/ALCANCE_Y_DEFINITION_OF_DONE.md",
+        "contexto/00_control/ESTADO_ACTUAL.md",
+        "contexto/00_control/MAPA.md"
+      ],
+      "repeats": [
+        "contexto/00_control/ESTADO_ACTUAL.md",
+        "contexto/00_control/MAPA.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-24-contexto-01_producto",
+      "claim_kind": "documental",
+      "problem": "Corpus histórico y cutoff: - Hora local: `2026-07-14T06:51:49.1607549-04:00`.",
+      "outcome": "contexto",
+      "solution_or_failure": "- Hora local: `2026-07-14T06:51:49.1607549-04:00`.",
+      "causal_mechanism": "providers deliberadamente porque no autorizan efectos en BAXY 1.0. | sola fuera de alcance, porque órdenes cortas de los idiomas objetivo pueden",
+      "measurement": "a byte con el builder `341e86f3…c62c74ea`; 37/37 pruebas de contrato del corpus | - El perfil base apunta a equipos Windows con 4 GB de VRAM y aproximadamente | 3 GB cuando sea viable, sin afirmar validación física no realizada.",
+      "provenance": {
+        "path": "contexto/01_producto/CORPUS_HISTORICO_Y_CUTOFF.md",
+        "ranges": [
+          "1-104",
+          "h:1",
+          "m:102"
+        ],
+        "date": "2026-07-14",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/01_producto: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/01_producto/CORPUS_HISTORICO_Y_CUTOFF.md",
+        "contexto/01_producto/MISIONES_PRIORIZADAS.md",
+        "contexto/01_producto/VISION_Y_DECISIONES_DEL_USUARIO.md"
+      ],
+      "repeats": [
+        "contexto/01_producto/MISIONES_PRIORIZADAS.md",
+        "contexto/01_producto/VISION_Y_DECISIONES_DEL_USUARIO.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-25-contexto-02_historia",
+      "claim_kind": "documental",
+      "problem": "Fuentes y genealogía: Estado: **cerrada documentalmente** para el cutoff BAXY 1.0. Autoridad completa:",
+      "outcome": "contexto",
+      "solution_or_failure": "Estado: **cerrada documentalmente** para el cutoff BAXY 1.0. Autoridad completa:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "- commits Carter y reporte 417/540 real;",
+      "provenance": {
+        "path": "contexto/02_historia/FUENTES_Y_GENEALOGIA.md",
+        "ranges": [
+          "1-30",
+          "h:1",
+          "m:21"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/02_historia: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/02_historia/FUENTES_Y_GENEALOGIA.md",
+        "contexto/02_historia/LECCIONES_RECUPERADAS.md"
+      ],
+      "repeats": [
+        "contexto/02_historia/LECCIONES_RECUPERADAS.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-26-contexto-03_investigacion",
+      "claim_kind": "documental",
+      "problem": "Adaptadores externos: contraste y decisiones (2026-07-16): La arqueología Carter → dos BAXY mostró el mismo patrón de fallo: activar una",
+      "outcome": "contexto",
+      "solution_or_failure": "La arqueología Carter → dos BAXY mostró el mismo patrón de fallo: activar una",
+      "causal_mechanism": "job de impresión. Ninguna operación declara éxito sólo porque se abrió una | y relee cada monitor. Luz nocturna permanece fail-closed porque no existe una | de 7 puntos y para medir su hipótesis Windows/GUI, no porque se oculte la | ganador porque accesibilidad, instalación, lifecycle, secretos y tamper | Confianza: alta same-host; no acredita cross-host ni editor porque permanece | → core: schem…",
+      "measurement": "y relee cada monitor. Luz nocturna permanece fail-closed porque no existe una | - No se elige un dispositivo, impresora, red, canción o juego por “primero de | - `external_adapters_gate_v2.json`: **14/14 verificados**, incluidos calendario | | Misiones verificadas | 25 % | | | Recursos | 15 % | | | Latencia | 10 % | | | UX y accesibilidad | 10 % | | | Privacidad y seguridad | 10 % | | | Instalaci…",
+      "provenance": {
+        "path": "contexto/03_investigacion/ADAPTADORES_EXTERNOS_ESTADO_DEL_ARTE_2026-07-16.md",
+        "ranges": [
+          "1-88",
+          "h:1",
+          "m:60"
+        ],
+        "date": "2026-07-14",
+        "hardware": "16 GB",
+        "model": "functiongemma",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/03_investigacion: 8 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/03_investigacion/ADAPTADORES_EXTERNOS_ESTADO_DEL_ARTE_2026-07-16.md",
+        "contexto/03_investigacion/ALTERNATIVAS_Y_EVIDENCIA.md",
+        "contexto/03_investigacion/BRIEF_MODELOS_MENTE_2026-07-15.md",
+        "contexto/03_investigacion/HALLAZGOS.md",
+        "contexto/03_investigacion/LLM_ESTADO_DEL_ARTE_2026-07-23.md",
+        "contexto/03_investigacion/PLANNER_ESTADO_DEL_ARTE_2026-07-16.md",
+        "contexto/03_investigacion/SKILLS_ESTADO_DEL_ARTE_2026-07-16.md",
+        "contexto/03_investigacion/VOZ_ESTADO_DEL_ARTE_2026-07-16.md"
+      ],
+      "repeats": [
+        "contexto/03_investigacion/ALTERNATIVAS_Y_EVIDENCIA.md",
+        "contexto/03_investigacion/BRIEF_MODELOS_MENTE_2026-07-15.md",
+        "contexto/03_investigacion/HALLAZGOS.md",
+        "contexto/03_investigacion/LLM_ESTADO_DEL_ARTE_2026-07-23.md",
+        "contexto/03_investigacion/PLANNER_ESTADO_DEL_ARTE_2026-07-16.md",
+        "contexto/03_investigacion/SKILLS_ESTADO_DEL_ARTE_2026-07-16.md",
+        "contexto/03_investigacion/VOZ_ESTADO_DEL_ARTE_2026-07-16.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-27-contexto-04_arquitectura",
+      "claim_kind": "documental",
+      "problem": "Decisión de arquitectura vigente: Estado de la arquitectura base: **aceptada el 2026-07-14**. Las decisiones de",
+      "outcome": "exito",
+      "solution_or_failure": "Estado de la arquitectura base: **aceptada el 2026-07-14**. Las decisiones de",
+      "causal_mechanism": "5. El provider queda confinado a una operación; el verifier observa el estado por una vía separada. | 7. Un handler puede informar que emitió un efecto, pero solo hay éxito si el verifier aporta evidencia positiva. Estado desconocido, dependencia ausente o verificación inconclusa nunca se proyectan como éxito.",
+      "measurement": "La decisión anterior ganó 82,004484/100 frente a 79,992351/100 del híbrido | el perfil físico de 4 GB, Narrator/NVDA, DPI físico al 200 %, firma, | La base topa en **~10/15 Must**. Los gates **7 (voz al cerebro), 9 (conversación | general) y 12 (medición 4 GB VRAM)** son de Fable y quedan abiertos a propósito, | marcados como frontera Codex→Fable. Los aplazados por entorno (partes de 13/14) | las…",
+      "provenance": {
+        "path": "contexto/04_arquitectura/DECISION_VIGENTE.md",
+        "ranges": [
+          "1-40",
+          "h:1",
+          "m:26"
+        ],
+        "date": "2026-07-14",
+        "hardware": "VRAM",
+        "model": "e5-small",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/04_arquitectura: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "contexto/04_arquitectura/DECISION_VIGENTE.md",
+        "contexto/04_arquitectura/FRONTERA_CODEX_FABLE.md",
+        "contexto/04_arquitectura/FRONTERA_CODEX_FABLE_V2.md"
+      ],
+      "repeats": [
+        "contexto/04_arquitectura/FRONTERA_CODEX_FABLE.md",
+        "contexto/04_arquitectura/FRONTERA_CODEX_FABLE_V2.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR",
+      "claim_kind": "documental",
+      "problem": "ADR-0001 — Arquitectura base de BAXY 1.0: - Estado: **aceptado**.",
+      "outcome": "contexto",
+      "solution_or_failure": "- Estado: **aceptado**.",
+      "causal_mechanism": "El mecanismo anterior publicaba un directorio local, pero no congelaba un | - El modelo no declara riesgo, confirmación, retry, verifier ni éxito. | 10. La escucha al inicio es opt-in por entorno; `run_baxy.ps1` la activa porque | rechaza con `501` porque `MissionInput` actual aún no tiene un contrato de | por modo, split y número de grupos. No se sube el resultado porque conserva",
+      "measurement": "autoaprobaba y la observación de red no fallaba cerrado. La corrida final | | .NET 10 WPF nativo + core .NET NativeAOT | **82,004484/100**; no descalificado; Pareto; ganador | | | .NET 10 WPF nativo + core Rust estático | 79,992351/100; no descalificado; Pareto; fallback | | | Host .NET + WebView2 + core .NET | Descartado por gate de red observado en su hash medido | | | Tauri/WebView2 + Rust | D…",
+      "provenance": {
+        "path": "contexto/04_arquitectura/ADR/ADR-0001-arquitectura-base-baxy-1.md",
+        "ranges": [
+          "1-150",
+          "h:1",
+          "m:27"
+        ],
+        "date": "2026-07-14",
+        "hardware": "VRAM",
+        "model": "e5-small",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/04_arquitectura/ADR: 10 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "contexto/04_arquitectura/ADR/ADR-0001-arquitectura-base-baxy-1.md",
+        "contexto/04_arquitectura/ADR/ADR-0002-estado-gpu-local.md",
+        "contexto/04_arquitectura/ADR/ADR-0003-paquete-release-reproducible.md",
+        "contexto/04_arquitectura/ADR/ADR-0004-setup-embebido-transaccional.md",
+        "contexto/04_arquitectura/ADR/ADR-0005-mente-modelos-y-runtime.md",
+        "contexto/04_arquitectura/ADR/ADR-0006-planner-hibrido-durable.md",
+        "contexto/04_arquitectura/ADR/ADR-0007-voz-local-wake-stt-tts.md",
+        "contexto/04_arquitectura/ADR/ADR-0008-restauracion-field-ui-historica.md",
+        "contexto/04_arquitectura/ADR/ADR-0009-evidencia-corpus-turnos.md",
+        "contexto/04_arquitectura/ADR/README.md"
+      ],
+      "repeats": [
+        "contexto/04_arquitectura/ADR/ADR-0002-estado-gpu-local.md",
+        "contexto/04_arquitectura/ADR/ADR-0003-paquete-release-reproducible.md",
+        "contexto/04_arquitectura/ADR/ADR-0004-setup-embebido-transaccional.md",
+        "contexto/04_arquitectura/ADR/ADR-0005-mente-modelos-y-runtime.md",
+        "contexto/04_arquitectura/ADR/ADR-0006-planner-hibrido-durable.md",
+        "contexto/04_arquitectura/ADR/ADR-0007-voz-local-wake-stt-tts.md",
+        "contexto/04_arquitectura/ADR/ADR-0008-restauracion-field-ui-historica.md",
+        "contexto/04_arquitectura/ADR/ADR-0009-evidencia-corpus-turnos.md",
+        "contexto/04_arquitectura/ADR/README.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-29-contexto-05_implementacion",
+      "claim_kind": "documental",
+      "problem": "Cambios y migraciones: - El HEAD limpio `455243c` cerró el release determinista final. Predecesor 1.0.0",
+      "outcome": "contexto",
+      "solution_or_failure": "- El HEAD limpio `455243c` cerró el release determinista final. Predecesor 1.0.0",
+      "causal_mechanism": "porque `app.status` es salud interna. `app.status` usa schema vacío estricto y | aplicación final debe sobrevivir al core porque es el efecto solicitado, y su | notas ya existe; falta todavía el mecanismo general del producto completo.",
+      "measurement": "y candidato 1.0.1 A/B comparten commit/epoch y las candidatas coinciden byte | - La validación final añadió 118/118 pruebas Python con 176 subtests y Ruff | audio queda en 171/171 IDs, 120 literales, tres misiones y 14 fuentes. | coincidieron 4/4 byte a byte; no se editó ningún JSONL congelado a mano. | - La suite vigente aprobó 1.270/1.270 .NET y 110/110 Python; Setup aporta 61 | - No cambia el…",
+      "provenance": {
+        "path": "contexto/05_implementacion/CAMBIOS_Y_MIGRACIONES.md",
+        "ranges": [
+          "1-427",
+          "h:1",
+          "m:6"
+        ],
+        "date": "2026-07-15",
+        "hardware": "VRAM",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/05_implementacion: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/05_implementacion/CAMBIOS_Y_MIGRACIONES.md",
+        "contexto/05_implementacion/ENTRADA_MISION_TIPADA.md",
+        "contexto/05_implementacion/MAPA_DEL_SISTEMA.md"
+      ],
+      "repeats": [
+        "contexto/05_implementacion/ENTRADA_MISION_TIPADA.md",
+        "contexto/05_implementacion/MAPA_DEL_SISTEMA.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-30-contexto-06_pruebas_y_mediciones",
+      "claim_kind": "documental",
+      "problem": "Gates aplazados — equipo/perfil limpio: Estado: **pendiente-por-entorno (esperando equipo limpio del usuario)**.",
+      "outcome": "contexto",
+      "solution_or_failure": "Estado: **pendiente-por-entorno (esperando equipo limpio del usuario)**.",
+      "causal_mechanism": "capacidades interactivas porque `app.status` permanece como salud interna. | - El ZIP reproducible es un mecanismo offline autocontenido, no MSI/MSIX ni",
+      "measurement": "`status=passed`. Gate 14 solo completa su tramo pendiente cuando | `gate14_clean_environment_gate.json` diga `status=passed`. Hasta entonces no se | enruta **675/675** casos de los oráculos congelados (40 notas, 113 estado, | - Generalización que el regex no tiene: **89,3 %** leave-one-out | LLM, los peligrosos quedaron en 5,5 % y el LLM+core validan detrás. | **6/6 segmentaciones, 3/3 wakes y 6/…",
+      "provenance": {
+        "path": "contexto/06_pruebas_y_mediciones/GATES_APLAZADOS_EQUIPO_LIMPIO.md",
+        "ranges": [
+          "1-69",
+          "h:1",
+          "m:67"
+        ],
+        "date": "2026-07-15",
+        "hardware": "VRAM",
+        "model": "e5-small",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/06_pruebas_y_mediciones: 5 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "contexto/06_pruebas_y_mediciones/GATES_APLAZADOS_EQUIPO_LIMPIO.md",
+        "contexto/06_pruebas_y_mediciones/GATES_MENTE.md",
+        "contexto/06_pruebas_y_mediciones/MATRIZ_DE_ACEPTACION.md",
+        "contexto/06_pruebas_y_mediciones/MENSAJE_A_MISION_TOOL_PRUEBA.md",
+        "contexto/06_pruebas_y_mediciones/RESULTADOS.md"
+      ],
+      "repeats": [
+        "contexto/06_pruebas_y_mediciones/GATES_MENTE.md",
+        "contexto/06_pruebas_y_mediciones/MATRIZ_DE_ACEPTACION.md",
+        "contexto/06_pruebas_y_mediciones/MENSAJE_A_MISION_TOOL_PRUEBA.md",
+        "contexto/06_pruebas_y_mediciones/RESULTADOS.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-31-contexto-07_riesgos_y_pendientes",
+      "claim_kind": "documental",
+      "problem": "Backlog posterior a 1.0: Vacío hasta congelar y aprobar el corpus. Ninguna solicitud histórica",
+      "outcome": "contexto",
+      "solution_or_failure": "Vacío hasta congelar y aprobar el corpus. Ninguna solicitud histórica",
+      "causal_mechanism": "host no pudo probar porque no ofreció dispositivo Bluetooth emparejable, | porque el oráculo curado de creación standalone —40 mensajes únicos, 13",
+      "measurement": "Spotify y streaming pasaron **14/14** por el core real. El gate de hardware pasó impresión | 1.270/1.270 pruebas .NET y 110/110 pruebas Python —1.380 pruebas principales—, | El sexto corte congela 143/143 mensajes de audio —109 literales, 14 fuentes y | NativeAOT por JSONL: baseline 0,98/98 %/no silenciado, volumen 88 %, mute activo, | incidente fail-closed del harness y el baseline fue restaurad…",
+      "provenance": {
+        "path": "contexto/07_riesgos_y_pendientes/BACKLOG_POST_ENTREGA.md",
+        "ranges": [
+          "1-4",
+          "h:1"
+        ],
+        "date": "2026-07-16",
+        "hardware": "VRAM",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/07_riesgos_y_pendientes: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/07_riesgos_y_pendientes/BACKLOG_POST_ENTREGA.md",
+        "contexto/07_riesgos_y_pendientes/BLOQUEANTES.md"
+      ],
+      "repeats": [
+        "contexto/07_riesgos_y_pendientes/BLOQUEANTES.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-32-contexto-08_entrega",
+      "claim_kind": "documental",
+      "problem": "Operación y rollback: BAXY 1.0 se entrega como `Baxy.Setup.exe` NativeAOT autocontenido para Windows",
+      "outcome": "contexto",
+      "solution_or_failure": "BAXY 1.0 se entrega como `Baxy.Setup.exe` NativeAOT autocontenido para Windows",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "- [ ] 15/15 gates Must aprobados —estado honesto: 8/15; cinco son frontera",
+      "provenance": {
+        "path": "contexto/08_entrega/OPERACION_Y_ROLLBACK.md",
+        "ranges": [
+          "1-94",
+          "h:1"
+        ],
+        "date": "2026-08-15",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "functiongemma",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo contexto/08_entrega: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "contexto/08_entrega/OPERACION_Y_ROLLBACK.md",
+        "contexto/08_entrega/RELEASE_CHECKLIST.md"
+      ],
+      "repeats": [
+        "contexto/08_entrega/RELEASE_CHECKLIST.md"
+      ]
+    },
+    {
+      "card_id": "docs-019-baxy-33-documentacion",
+      "claim_kind": "documental",
+      "problem": "Alcance: qué se mide ahora y qué se difiere al producto final: Estado: **vigente desde 2026-08-15**. Este documento manda sobre cualquier",
+      "outcome": "contexto",
+      "solution_or_failure": "Estado: **vigente desde 2026-08-15**. Este documento manda sobre cualquier",
+      "causal_mechanism": "atribución equivocada. Empieza por entender lo segundo, porque cambia dónde está | **El mecanismo del frente B fue mal atribuido y R280 lo retiró.** R277 localizó | **No arrastres un mecanismo entre modelos.** Es el error que R280 tuvo que | fallback. Ambiental es sólo lo que BAXY no puede reparar porque su causa está | - El gate físico directo de core/provider quedó `skipped` porque ya existía |…",
+      "measurement": "| RAM | **31,77 GB** | | reporta **4 GB** para esta tarjeta por un desbordamiento de 32 bits conocido. | - **Perfil certificado GPU de 4 GB de VRAM.** | - **Perfil CPU ≤ 8 GB de RAM.** | **Por qué se difiere.** La máquina de desarrollo tiene 16 GB de VRAM y 32 GB de | en 4 GB de VRAM; el perfil CPU cumple la **misma barra de exactitud y de | A > 95 %, B > 90 %, C > 90 % de planes completos, D con…",
+      "provenance": {
+        "path": "documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md",
+        "ranges": [
+          "1-140",
+          "h:1",
+          "m:28"
+        ],
+        "date": "2026-08-15",
+        "hardware": "RTX 4060 Ti",
+        "model": "qwen3",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/00_ALCANCE_DESARROLLO_VS_PRODUCTO.md",
+        "documentacion/00_GOAL_SIGUIENTE_SESION.md",
+        "documentacion/00_HANDOFF_TERRA_ALTO_R257.md",
+        "documentacion/00_LEEME.md",
+        "documentacion/00_META_VIGENTE.md",
+        "documentacion/00_MVP_2026-08-11.md",
+        "documentacion/00_MVP_CONSOLIDADO_2026-08-11.md"
+      ],
+      "repeats": [
+        "documentacion/00_GOAL_SIGUIENTE_SESION.md",
+        "documentacion/00_HANDOFF_TERRA_ALTO_R257.md",
+        "documentacion/00_LEEME.md",
+        "documentacion/00_META_VIGENTE.md",
+        "documentacion/00_MVP_2026-08-11.md",
+        "documentacion/00_MVP_CONSOLIDADO_2026-08-11.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=79 drift=0 miss=0",
+  "next_docs_batch_id": "docs-020-baxy",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-019-baxy.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

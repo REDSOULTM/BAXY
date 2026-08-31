@@ -1,0 +1,808 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-011-probando_gemma4",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:36Z",
+  "closed_utc": "2026-08-31T04:29:37Z",
+  "estimated_tokens": 294816,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 44,
+  "subsystem": "pg4_docs_08_memoria_jarvis",
+  "files": [
+    {
+      "path": "documentacion/08_memoria_jarvis/research/2_memoria.md",
+      "sha256": "4438b92ccb948aa34e41a935e5c0e3da791a9f75bc46d394424ada7320764391",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-572",
+        "h:1",
+        "m:16"
+      ]
+    },
+    {
+      "path": "documentacion/08_memoria_jarvis/research/5_jarvis.md",
+      "sha256": "c67be0fa84e7131a8aa4f47484a7ca89fb21e9dee6b4ce7e6c283bfe9729e284",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-352",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/AUDITORIA_flags.md",
+      "sha256": "82f2906f8a4b6a5e825e06fba505b35eec5b91bd79c2d217736c63441eaf231a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-285",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/01_lo_que_valida.md",
+      "sha256": "01cd0bfa223d5991a9bd682646af4cfe53b3dcea2a140aab32e90ac9d22d0e57",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-28",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/02_antipatrones_a_revisar.md",
+      "sha256": "13cab4f316e313e39c2bd6cd4b6d8c1d09b5a4594b812f3bd4aaf2f1aad0565c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-40",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/03_features_candidatas.md",
+      "sha256": "14c66ea04b5da4a0ee8f36416006f65c2cbe85551343ec2c6a6dda64e89c0e8a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-151",
+        "h:1",
+        "m:29"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/04_de_las_investigaciones.md",
+      "sha256": "7c7668b0bb58e932b36f67bafa6a0b68a150cc1643fb70bf59f362b71da672cf",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-60",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/05_analisis_profundo_codigo.md",
+      "sha256": "69fc5f6e70ee16db70ca980a386a806db62c38e4358862f9b1082a6c67b6281d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-130",
+        "h:1",
+        "m:26"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/06_matriz_gaps_verificada.md",
+      "sha256": "5f461a286a8e0e231da677a9bac39b945f20e610b130e3726131654f39e270de",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-73",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/10_auditorias/carter_os/README.md",
+      "sha256": "0e992bd8539e1e7fd1663ed90e8c692a8cfd59a58ff72ca611b23d3c917e1763",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-102",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/0_arquitectura_general.md",
+      "sha256": "a797c7dfc6a0c4f8bb36c24b7786510c006747e0215b2c89562e5fc763ae456f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-330",
+        "h:1",
+        "m:38"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/10_auditoria_360.md",
+      "sha256": "78892a271eb75c0cb40832cec4241394a8b74788949ffe0ca86366a4d0208173",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/9_computer_use_gui.md",
+      "sha256": "a408112147812537ea9116814de316c9abc6466b5ea8edbb0a0af3d0e054d03d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-28",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/README.md",
+      "sha256": "e39167d2c1532334c800d73ffef6bea73b71a795867a9425367c28603bcd533f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-35",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/_ESTADO_SESION.md",
+      "sha256": "145048f9c287e7a8a955b22fd52ebf6dfc784625d3c95bec754cca213422cf9d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-97",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/_PLAN_APLICACION.md",
+      "sha256": "d44a70d4152ef20a020dcc07ea1e8e07c6ba7435582eafb3ca7269cf6b987737",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-62",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe1_diagnostico_v2_mtp.md",
+      "sha256": "a573be8cf5d9e980e59b7db5cff9c9c87491e414379a5f87a2e78dd81f8e31f9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-270",
+        "h:1",
+        "m:16"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe2_briefing_gemma4_llamacpp.md",
+      "sha256": "b2d54ce382509a5425ae9472029ebd25d44960e29178011f8373be081bd2c66a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-235",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe3_diagnostico_seccion7.md",
+      "sha256": "778394693313a92c996205eb67edf8642e513da9b4bc8ac683fcedc1e46b851d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-358",
+        "h:1",
+        "m:70"
+      ]
+    },
+    {
+      "path": "documentacion/DATASET_V3_finetune_grounded_2026-06-11.md",
+      "sha256": "f72610a359311b027f32380ddae38bdae29923e3542c346d369361176ce78f60",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-283",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/DISENO_jarvis_proactivo_2026-06-07.md",
+      "sha256": "242574803a59b1ac2f158c2264cf25c97acbbcc0854aebe9fe209bad60a5c79c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-158",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md",
+      "sha256": "5cb09ef968d7fae2e354753ddf8a7db3ec2dfe0f895c0ed5c210908a2b7fe523",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-474",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/README.md",
+      "sha256": "e886295521d2851e4e7d80550f4e7252b028d24f74d8644bb5b7bfb5f488bbe0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-76",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/_AUDITORIA_FT_V3_2026-06-11.md",
+      "sha256": "f59ae18f40c4ddba2d149c3970c9bf304fbc1ed937f6294af45d5e29cb092dfc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-76",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "documentacion/_BASELINE_encoder_retrain_2026-06-09.md",
+      "sha256": "99f828dbe473e920acbc7b30afc76c096193d1bbe6755a52d9ef5552391a9be9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-69",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_FT_V3_GATES_ROUND1_2026-06-11.md",
+      "sha256": "7859d51eae3313658750d481686c8df811c9e9d953d0cc97a339b587668e8939",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-82",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_FUNCTIONGEMMA_INTEGRACION_2026-06-17.md",
+      "sha256": "9be5bb284efbe8be4712795a50f0087cdad2bcf59038d89e889a348fb16e5459",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-131",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_HANDOFF_CACERIA_TANDA1_2026-06-04.md",
+      "sha256": "7b57e6f7c3af78b5db397b3930b2fd22c7a357da4ba4f66e47741d94b300d5e1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-151",
+        "h:1",
+        "m:35"
+      ]
+    },
+    {
+      "path": "documentacion/_HANDOFF_CACERIA_TANDAS2-6_2026-06-05.md",
+      "sha256": "00fc9fcf0c513a28e03b9366f1f81ae16f4742f0e6a0b38b62b9415ade660e3c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-154",
+        "h:1",
+        "m:47"
+      ]
+    },
+    {
+      "path": "documentacion/_HANDOFF_sesion_2026-06-10.md",
+      "sha256": "62159c6c7c7940c7e097baec8c3ba35fb2b5e75d8cad6eaa95339e9a9019c880",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-243",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/_JARVIS_auditoria_2026-06-07.md",
+      "sha256": "05942a4bb639aef416b325af0d8041b240b41742036d28bb027b5a4c9932db0f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-68",
+        "h:1",
+        "m:45"
+      ]
+    },
+    {
+      "path": "documentacion/_MISSION_EVAL_CIERRE.md",
+      "sha256": "0efa906dff4a80901692f7e3740be0ce9857015aa970d91847e860ad6c06286c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-321",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/_MISSION_HANDOFF.md",
+      "sha256": "70a0b33fd0c951091ae31ffc45d586ec64a8ee78daf40e631c6fff328fc379f8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-37",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "documentacion/_ROUTER_RETRAIN_V3CORPUS_2026-06-11.md",
+      "sha256": "ecc34165a2b01c8b38e057e8673f6f44c9837d6bfc9fff55114249e33454952e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-117",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "documentacion/_backlog/BACKLOG_MAESTRO.md",
+      "sha256": "80c07f9b37eb7abe3af9cfe3c1740d29d73667e29c1c6244039c2cd68a9728b8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-412",
+        "h:1",
+        "m:37"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/INFORME_AUDIO_PARA_CARTER.md",
+      "sha256": "0c9d0d1b6ba6ba7b106522055948e02965de2f22a4c103df6ff82fd7ceca106a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-217",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/PROMPT_FOR_ROUTING_RESEARCH.md",
+      "sha256": "79adf112746cf6b811c3ef901bda5dc29334b3528c301fbfd6e6892b80e4e762",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-199",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/6gb_followup_log.md",
+      "sha256": "f9cbcad17d673d83708f718ec5a2bbd88f72454d8c82c9af40af3b158175b8e1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-132",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/AUDITORIA_2026_05_14.md",
+      "sha256": "2229c41a17ceae643a6d3432158d146217fb0da9dc49868c3ede4f25884a2544",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-562",
+        "h:1",
+        "m:53"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/AUDIT_REPORT_2026-05-16.md",
+      "sha256": "0534ba6e63f0818e9fed3a89c4ec4eba3c455e810d63a25e6d13ce16c4195fd5",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-399",
+        "h:1",
+        "m:102"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/MERGE_CHECKLIST.md",
+      "sha256": "cdb3bb24c5c8b7f78f27ac519d470bf8fc88d221ff9677155fe298deb64ba6ac",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-127",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/NIGHT_AUDIT_2026_05_16.md",
+      "sha256": "53df6e9d1b490c6398bc6fa43f3254a447c4e0fa882b4ccfde9f81f7474400db",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-161",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/PROJECT_CONSOLIDATION_FINAL.md",
+      "sha256": "b03ac6fcc981bc3dc7068f4bb9330f6d2a4fc7a355efcdfe6f9d3fa0bb6dacf3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-127",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/UPSTREAM_CHECK_CRON.md",
+      "sha256": "999ea4a2b30e8d89fa3ef98039ef0bc45ebcbae7b22e1edac77fa529bf17bf9c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-43",
+        "h:1",
+        "m:41"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-011-probando_gemma4-01-documentacion",
+      "claim_kind": "documental",
+      "problem": "Dataset v3 — fine-tuning con tool-results y replies grounded (2026-06-11): Las alucinaciones cazadas en vivo (2026-06-10: \"Es las 10:42 de la mañana.\" con",
+      "outcome": "fracaso",
+      "solution_or_failure": "Las alucinaciones cazadas en vivo (2026-06-10: \"Es las 10:42 de la mañana.\" con",
+      "causal_mechanism": "- Gate global `GEMMA4_LLM_ACTION_REPLY=0` para desactivar todo el mecanismo. | No se usa la iGPU (Intel UHD) porque: el build de llama.cpp es CUDA-only (sin Vulkan/SYCL), | sigue 17-21s porque lo dominan 2-3 pasadas del LLM (2-6s c/u según carga) — | la PC, abro X\" se programaba para las 9 AM (no al arranque) porque no hay trigger | **pelado** sin «ahora»/opener («La X está en primer plano» a sec…",
+      "measurement": "atractor: ~14% del dataset respondía igual). | Más: ~5% de results `ok:false` con reply honesto (enseña a reportar fallos); | 4. **Epochs default 2** (rollback v1 midió que 3 sobreajustan el E2B). | python train_ft.py --smoke # 200 ej, valida pipeline + VRAM | 8. media play ahora incluye ~25% estado ATTEMPTED real (Spotify no auto-play) | | G1 grounding | 0 cifras/horas del reply sin sustento en…",
+      "provenance": {
+        "path": "documentacion/DATASET_V3_finetune_grounded_2026-06-11.md",
+        "ranges": [
+          "1-283",
+          "h:1",
+          "m:11"
+        ],
+        "date": "2026-06-10",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion: 15 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/DATASET_V3_finetune_grounded_2026-06-11.md",
+        "documentacion/DISENO_jarvis_proactivo_2026-06-07.md",
+        "documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md",
+        "documentacion/README.md",
+        "documentacion/_AUDITORIA_FT_V3_2026-06-11.md",
+        "documentacion/_BASELINE_encoder_retrain_2026-06-09.md",
+        "documentacion/_FT_V3_GATES_ROUND1_2026-06-11.md",
+        "documentacion/_FUNCTIONGEMMA_INTEGRACION_2026-06-17.md",
+        "documentacion/_HANDOFF_CACERIA_TANDA1_2026-06-04.md",
+        "documentacion/_HANDOFF_CACERIA_TANDAS2-6_2026-06-05.md",
+        "documentacion/_HANDOFF_sesion_2026-06-10.md",
+        "documentacion/_JARVIS_auditoria_2026-06-07.md",
+        "documentacion/_MISSION_EVAL_CIERRE.md",
+        "documentacion/_MISSION_HANDOFF.md",
+        "documentacion/_ROUTER_RETRAIN_V3CORPUS_2026-06-11.md"
+      ],
+      "repeats": [
+        "documentacion/DISENO_jarvis_proactivo_2026-06-07.md",
+        "documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md",
+        "documentacion/README.md",
+        "documentacion/_AUDITORIA_FT_V3_2026-06-11.md",
+        "documentacion/_BASELINE_encoder_retrain_2026-06-09.md",
+        "documentacion/_FT_V3_GATES_ROUND1_2026-06-11.md",
+        "documentacion/_FUNCTIONGEMMA_INTEGRACION_2026-06-17.md",
+        "documentacion/_HANDOFF_CACERIA_TANDA1_2026-06-04.md",
+        "documentacion/_HANDOFF_CACERIA_TANDAS2-6_2026-06-05.md",
+        "documentacion/_HANDOFF_sesion_2026-06-10.md",
+        "documentacion/_JARVIS_auditoria_2026-06-07.md"
+      ]
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-02-documentacion-08_memoria_jarvis-research",
+      "claim_kind": "documental",
+      "problem": "Arquitectura de memoria y grounding de entidades para un asistente de voz local con Gemma 4 E4B-it (Q4_K_M, llama.cpp b9090, Parakeet, Windows, 100% offline): - **El bug \"mamá → grupo Música\" no es un problema del LLM, es un problema de grounding pre-tool-call.** La solución es…",
+      "outcome": "contexto",
+      "solution_or_failure": "- **El bug \"mamá → grupo Música\" no es un problema del LLM, es un problema de grounding pre-tool-call.** La solución es dejar de pasarle al LLM una *cadena de búsqueda* como argumento y obligarlo a elegir un `contact_id` de una lista de candidatos resuelta determinísticamente (inventario + fuzzy + memoria), forzada por GBNF/JSON-Schema `enum` en llama.cpp (el README oficial confirma soporte nativo",
+      "causal_mechanism": "El bug ocurre porque el flujo actual es: | El backend WhatsApp (UI automation) **nunca** vuelve a hacer fuzzy search: recibe un `contact_id` y abre el chat exacto por número/JID. Esto **elimina por completo** el bug \"mamá → grupo Música\" porque el espacio de salida del LLM ya no inc",
+      "measurement": "3. **La memoria es un volcado plano** sin importancia, sin TTL y sin separación per-user/global, lo que permite que basura de pruebas contamine el 52% de la SQLite. | **Adoptar D, inspirado en MemGPT/Letta pero sin self-editing**. Con Gemma 4 E4B Q4_K_M no se puede gastar inferencia en \"decidir qué recordar\" durante el turno del usuario; eso se hace offline en un job de consolidación. La capa con…",
+      "provenance": {
+        "path": "documentacion/08_memoria_jarvis/research/2_memoria.md",
+        "ranges": [
+          "1-572",
+          "h:1",
+          "m:16"
+        ],
+        "date": "2026-08-31",
+        "hardware": "6 GB",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/08_memoria_jarvis/research: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Providers.Windows/Memory/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/08_memoria_jarvis/research/2_memoria.md",
+        "documentacion/08_memoria_jarvis/research/5_jarvis.md"
+      ],
+      "repeats": [
+        "documentacion/08_memoria_jarvis/research/5_jarvis.md"
+      ]
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-03-documentacion-10_auditorias",
+      "claim_kind": "documental",
+      "problem": "Auditoría de flags GEMMA4_* (scripts/_diag/_flag_audit.py): Total: **284** | leídos como TOGGLE/config: **225** | solo IPC de subproceso ($env:/env[...]): **47** | DEAD (sin lectura): **0**",
+      "outcome": "contexto",
+      "solution_or_failure": "Total: **284** | leídos como TOGGLE/config: **225** | solo IPC de subproceso ($env:/env[...]): **47** | DEAD (sin lectura): **0**",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "documentacion/10_auditorias/AUDITORIA_flags.md",
+        "ranges": [
+          "1-285",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/10_auditorias: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/10_auditorias/AUDITORIA_flags.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-04-documentacion-10_auditorias-carter_os",
+      "claim_kind": "documental",
+      "problem": "01 — Lo que Carter VALIDA de nuestras decisiones: Carter llegó, por un camino independiente y 4 generaciones de bench, a las mismas",
+      "outcome": "contexto",
+      "solution_or_failure": "Carter llegó, por un camino independiente y 4 generaciones de bench, a las mismas",
+      "causal_mechanism": "| **Deeplinks vía registry HKCR, no hardcode** | Carter §2.2 + L4. Nuestro `microagents.py` ya resuelve por protocolo. | | | **Verifier por-misión (Voyager), no solo por-tool** | Carter L6 + `mission/goal.py`. Nosotros YA tenemos `mission_goal.py`. | | bien**. La coincidencia es alta porque ambos proyectos comparten stack y filosofía | universales (no hardcode por idioma/app). Cada una con ROI/ri…",
+      "measurement": "| **Sampling oficial Gemma (T=1.0/top_p=0.95/top_k=64)** en modos de razonamiento; bajar T degrada | Carter §2.2: *\"T<0.7 degrada\"*, 540/540 con valores oficiales. Coincide con nuestro Inv 0/T4: greedy SOLO para tool-call, defaults en think | | **NO multi-modelo / dual-LLM pipeline** (latencia 2-3× sin ganancia) | Carter §2.1: dual-LLM tiene bug head-of-line + CARGO 76% router. Coincide con nuest…",
+      "provenance": {
+        "path": "documentacion/10_auditorias/carter_os/01_lo_que_valida.md",
+        "ranges": [
+          "1-28",
+          "h:1",
+          "m:9"
+        ],
+        "date": "2026-05-23",
+        "hardware": "VRAM",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/10_auditorias/carter_os: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/10_auditorias/carter_os/01_lo_que_valida.md",
+        "documentacion/10_auditorias/carter_os/02_antipatrones_a_revisar.md",
+        "documentacion/10_auditorias/carter_os/03_features_candidatas.md",
+        "documentacion/10_auditorias/carter_os/04_de_las_investigaciones.md",
+        "documentacion/10_auditorias/carter_os/05_analisis_profundo_codigo.md",
+        "documentacion/10_auditorias/carter_os/06_matriz_gaps_verificada.md",
+        "documentacion/10_auditorias/carter_os/README.md"
+      ],
+      "repeats": [
+        "documentacion/10_auditorias/carter_os/02_antipatrones_a_revisar.md",
+        "documentacion/10_auditorias/carter_os/03_features_candidatas.md",
+        "documentacion/10_auditorias/carter_os/04_de_las_investigaciones.md",
+        "documentacion/10_auditorias/carter_os/05_analisis_profundo_codigo.md",
+        "documentacion/10_auditorias/carter_os/06_matriz_gaps_verificada.md",
+        "documentacion/10_auditorias/carter_os/README.md"
+      ]
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-05-documentacion-11_research_recibido-investigaciones",
+      "claim_kind": "documental",
+      "problem": "Refinamiento del Bucle Agentic con Gemma 4 E4B-it sobre llama.cpp — Veredictos por Tensión: **TL;DR**",
+      "outcome": "exito",
+      "solution_or_failure": "**TL;DR**",
+      "causal_mechanism": "- \"Cambiar a xLAM-2-3b-fc-r\" se debe validar en tu pipeline porque NO es Gemma — chat template, formato de tool_call (Hermes-style vs `<|tool_call|>`) y respuesta al sampling cambian; no es \"swap el GGUF\". Reservar como plan B si la fiabili | - Speculative decoding \"tradicional\" en sistemas con 6 GB VRAM es típicamente **peor** que autoregresivo porque el draft requiere su propio KV-cache (coment…",
+      "measurement": "| B. **Forced-retry `tool_choice=\"required\"` + subset-of-1** cuando el reply_validator detecta \"promesa sin acción\" en el segundo turno | +15–25 pp en chains de 2 pasos | +1 turno completo (~1.5–3 s) sólo en caso de fallo | Bajo | 0.5 día ( | **A + B en cascada; mantener E como plan B si tras eso sigues <80% en chains.** **No abrir QLoRA todavía**: ROI alto pero el cuello es el dataset (2k trazas…",
+      "provenance": {
+        "path": "documentacion/11_research_recibido/investigaciones_recibidas/0_arquitectura_general.md",
+        "ranges": [
+          "1-330",
+          "h:1",
+          "m:38"
+        ],
+        "date": "2026-05-24",
+        "hardware": "6 GB",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/11_research_recibido/investigaciones_recibidas: 9 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/11_research_recibido/investigaciones_recibidas/0_arquitectura_general.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/10_auditoria_360.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/9_computer_use_gui.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/README.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/_ESTADO_SESION.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/_PLAN_APLICACION.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe1_diagnostico_v2_mtp.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe2_briefing_gemma4_llamacpp.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe3_diagnostico_seccion7.md"
+      ],
+      "repeats": [
+        "documentacion/11_research_recibido/investigaciones_recibidas/10_auditoria_360.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/9_computer_use_gui.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/README.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/_ESTADO_SESION.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/_PLAN_APLICACION.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe1_diagnostico_v2_mtp.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe2_briefing_gemma4_llamacpp.md",
+        "documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe3_diagnostico_seccion7.md"
+      ]
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-06-documentacion-_backlog",
+      "claim_kind": "documental",
+      "problem": "BACKLOG MAESTRO — Baxy: **Fuente única de verdad.** Consolida los 5 backlogs históricos (ROADMAP_perfeccion,",
+      "outcome": "fracaso",
+      "solution_or_failure": "**Fuente única de verdad.** Consolida los 5 backlogs históricos (ROADMAP_perfeccion,",
+      "causal_mechanism": "| footer del verifier en prosa | \"[N no confirmada(s)]\" crudo → prosa | `c8ac105` |",
+      "measurement": "| C6 | vram_watchdog actúa + pre-flight imagen inline (0 OOM 4GB) | ✅ | `agent.py:3515-3520,5550` | | | C7 | atexit por-instancia (no deja VRAM huérfana) | ✅ | `infra/llama_server.py:843-870` | | | flash-attn OFF (mató el crash, 37/37 turnos) | ✅ default | `llama_server.py:372` | | | keep-tools pass-2 (prefix-cache hit, −1s acción) | ✅ default | `agent.py:197-200` | | | LEAN_RULES (prompt −30%, p…",
+      "provenance": {
+        "path": "documentacion/_backlog/BACKLOG_MAESTRO.md",
+        "ranges": [
+          "1-412",
+          "h:1",
+          "m:37"
+        ],
+        "date": "2026-06-02",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_backlog: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_backlog/BACKLOG_MAESTRO.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-07-documentacion-_historico",
+      "claim_kind": "documental",
+      "problem": "Informe técnico: estado de audio multimodal Gemma 4 (para Carter v4): **Para:** agente del proyecto Carter v4.",
+      "outcome": "inconcluso",
+      "solution_or_failure": "**Para:** agente del proyecto Carter v4.",
+      "causal_mechanism": "un mDeBERTa NLI de 280MB hace un sprint porque su cache hit rate | B) Sin keyword regex (cero hardcode de palabras). | - **Sparse retrieval** (BM25 sobre descripciones, sin hardcode). | porque el modelo es multilingual).",
+      "measurement": "**Contexto previo:** [REPORTE.md](REPORTE.md) (10 tests texto, 9/10 PASS con E2B-Q5_K_M y E4B-UD-IQ2_M). Validación extendida 60 tests en curso. | - mmproj `mmproj-F16.gguf` que descargamos contiene tanto vision como audio: confirmado al cargar con llama-server (ver log abajo). | - **Lo que funciona:** `llama-mtmd-cli.exe -m model.gguf --mmproj mmproj.gguf --audio file.wav -p \"transcribe\"` produc…",
+      "provenance": {
+        "path": "documentacion/_historico/INFORME_AUDIO_PARA_CARTER.md",
+        "ranges": [
+          "1-217",
+          "h:1",
+          "m:6"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "documentacion/_historico/INFORME_AUDIO_PARA_CARTER.md",
+        "documentacion/_historico/PROMPT_FOR_ROUTING_RESEARCH.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/PROMPT_FOR_ROUTING_RESEARCH.md"
+      ]
+    },
+    {
+      "card_id": "docs-011-probando_gemma4-08-documentacion-_historico-auditorias_baseline",
+      "claim_kind": "documental",
+      "problem": "Followup — Soporte 6 GB VRAM + Voice por perfil: - Sesión: 2026-05-15 (autónoma nocturna, tercera continuación)",
+      "outcome": "exito",
+      "solution_or_failure": "- Sesión: 2026-05-15 (autónoma nocturna, tercera continuación)",
+      "causal_mechanism": "raro porque solo el agente write-states tools, pero el caso parallel_tools | estado porque el segundo verifica `self._state == S_LISTENING` antes | signals fueron desconectados). El thread no se joina porque `wait(2000)` | 4. **Errores del Stop-Process se silencian** (`except Exception: pass`). Si el Stop falla porque hay un handle abierto (download en curso), `relaunched=True` queda mintiendo, y…",
+      "measurement": "- Disparador: target de producción es 6 GB VRAM. Hoy un usuario con 6 GB lanza la app y se rompe (default apunta a Q6_K de 6.6 GB). | - **balanced**: `voice_enabled=True`, `model_path=models/E4B/gemma-4-E4B-it-Q4_K_M.gguf`, `context_size=8192` (bajado de 16K para entrar en 6 GB), `vision_enabled=False` (mmproj rompe el budget). Este es el perfil objetivo para 6 GB. | - **light**: `voice_enabled=T…",
+      "provenance": {
+        "path": "documentacion/_historico/auditorias_baseline/6gb_followup_log.md",
+        "ranges": [
+          "1-132",
+          "h:1",
+          "m:3"
+        ],
+        "date": "2026-05-15",
+        "hardware": "6 GB",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/auditorias_baseline: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/auditorias_baseline/6gb_followup_log.md",
+        "documentacion/_historico/auditorias_baseline/AUDITORIA_2026_05_14.md",
+        "documentacion/_historico/auditorias_baseline/AUDIT_REPORT_2026-05-16.md",
+        "documentacion/_historico/auditorias_baseline/MERGE_CHECKLIST.md",
+        "documentacion/_historico/auditorias_baseline/NIGHT_AUDIT_2026_05_16.md",
+        "documentacion/_historico/auditorias_baseline/PROJECT_CONSOLIDATION_FINAL.md",
+        "documentacion/_historico/auditorias_baseline/UPSTREAM_CHECK_CRON.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/auditorias_baseline/AUDITORIA_2026_05_14.md",
+        "documentacion/_historico/auditorias_baseline/AUDIT_REPORT_2026-05-16.md",
+        "documentacion/_historico/auditorias_baseline/MERGE_CHECKLIST.md",
+        "documentacion/_historico/auditorias_baseline/NIGHT_AUDIT_2026_05_16.md",
+        "documentacion/_historico/auditorias_baseline/PROJECT_CONSOLIDATION_FINAL.md",
+        "documentacion/_historico/auditorias_baseline/UPSTREAM_CHECK_CRON.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=44 drift=0 miss=0",
+  "next_docs_batch_id": "docs-012-probando_gemma4-pg4_docs__historico",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-011-probando_gemma4.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

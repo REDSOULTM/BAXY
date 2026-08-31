@@ -1,0 +1,2153 @@
+{
+  "batch_id": "docs-017-probando_gemma4",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_scripts",
+  "file_count": 23,
+  "hash_ok": 23,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "scripts/_out_peak_threshold.txt",
+      "queued_sha256": "9878743a0a44e70254d68dbc4ad29c9b46ab9838853e7e7ecb836cd4a8784d79",
+      "size_queued": 837,
+      "exists": true,
+      "disk_sha256": "9878743a0a44e70254d68dbc4ad29c9b46ab9838853e7e7ecb836cd4a8784d79",
+      "disk_size": 837,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 10,
+        "headings": [],
+        "lead": "============================================================",
+        "measures": [
+          {
+            "line": 2,
+            "text": "PEAK-KEEP 0.50 LIVE: 5/7 OK (27s)"
+          },
+          {
+            "line": 7,
+            "text": "[MISS] (net) 'cuál es mi ip en esta red' -> ['web'] | 'La dirección IP de tu red local no es algo que'"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-10",
+          "m:2"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_reminder_routing.txt",
+      "queued_sha256": "036630b822d4812fc3b4afbf5de1337c1cad56ddf4a20e97c7bdab402d6f0669",
+      "size_queued": 825,
+      "exists": true,
+      "disk_sha256": "036630b822d4812fc3b4afbf5de1337c1cad56ddf4a20e97c7bdab402d6f0669",
+      "disk_size": 825,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [],
+        "lead": "============================================================",
+        "measures": [
+          {
+            "line": 2,
+            "text": "REMINDER ROUTING: 3/6 OK (47s)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 4,
+            "text": "[MISS] 'recordame comprar pan a las 5' -> ['session'] | 'No pude registrar esa nota porque la herramienta s'"
+          }
+        ],
+        "ranges": [
+          "1-9",
+          "m:2"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_skills_fp.txt",
+      "queued_sha256": "8eeaadf82f43836081ee01d4c17a7db5dad9f9325ba1fdee637caf9656ac2674",
+      "size_queued": 784,
+      "exists": true,
+      "disk_sha256": "8eeaadf82f43836081ee01d4c17a7db5dad9f9325ba1fdee637caf9656ac2674",
+      "disk_size": 784,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 15,
+        "headings": [],
+        "lead": "9 skills cargadas: ['purchase-guard', 'backup-then-clean', 'safe-file-cleanup', 'debug-app-crash', 'research-and-summarize', 'schedule-recurring-task', 'screenshot-and-analyze', 'voice-record-transcribe', 'new-development-project']",
+        "measures": [
+          {
+            "line": 15,
+            "text": "falsos positivos: 0/10"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-15",
+          "m:15"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_skills_quality.txt",
+      "queued_sha256": "740a55932cccfde399ad4566458d99e663416e6b75e8746b932bfeb976994ac6",
+      "size_queued": 1497,
+      "exists": true,
+      "disk_sha256": "740a55932cccfde399ad4566458d99e663416e6b75e8746b932bfeb976994ac6",
+      "disk_size": 1497,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 28,
+        "headings": [],
+        "lead": "================================================================",
+        "measures": [
+          {
+            "line": 2,
+            "text": "SKILLS QUALITY LIVE (41s) — 9 skills"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-28",
+          "m:2"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_subset_diag.txt",
+      "queued_sha256": "ac282ead69006e066f198d8ccc0069abc0f775221a9c59698682a83847a165ce",
+      "size_queued": 2686,
+      "exists": true,
+      "disk_sha256": "ac282ead69006e066f198d8ccc0069abc0f775221a9c59698682a83847a165ce",
+      "disk_size": 2686,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 44,
+        "headings": [
+          {
+            "line": 2,
+            "level": 3,
+            "text": "app"
+          },
+          {
+            "line": 10,
+            "level": 3,
+            "text": "browser"
+          },
+          {
+            "line": 16,
+            "level": 3,
+            "text": "media"
+          },
+          {
+            "line": 20,
+            "level": 3,
+            "text": "gui"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "filesystem"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "reminder"
+          },
+          {
+            "line": 38,
+            "level": 3,
+            "text": "SMALLTALK"
+          }
+        ],
+        "lead": "abrí la calculadora                subset=['app', 'window', 'verify', 'session']",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-44",
+          "h:2"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_suite_full.txt",
+      "queued_sha256": "3cc9dc13851dc84b9e32cc0ea35ec5c5ff3ce0b462c63561569aaf509bbd3aa6",
+      "size_queued": 17461,
+      "exists": true,
+      "disk_sha256": "3cc9dc13851dc84b9e32cc0ea35ec5c5ff3ce0b462c63561569aaf509bbd3aa6",
+      "disk_size": 17461,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 220,
+        "headings": [],
+        "lead": "============================= test session starts =============================",
+        "measures": [
+          {
+            "line": 8,
+            "text": "gemma4_agent\\tests\\test_a11y_continue_meta_guard.py ...                  [  0%]"
+          },
+          {
+            "line": 9,
+            "text": "gemma4_agent\\tests\\test_abstain_head.py ...                              [  0%]"
+          },
+          {
+            "line": 10,
+            "text": "gemma4_agent\\tests\\test_accessibility.py ...........                     [  0%]"
+          },
+          {
+            "line": 11,
+            "text": "gemma4_agent\\tests\\test_accessibility_voice.py ...........               [  1%]"
+          },
+          {
+            "line": 12,
+            "text": "gemma4_agent\\tests\\test_action_screenshot_no_vision.py .....             [  1%]"
+          },
+          {
+            "line": 13,
+            "text": "gemma4_agent\\tests\\test_agent_workers_parity.py ..............           [  2%]"
+          },
+          {
+            "line": 14,
+            "text": "gemma4_agent\\tests\\test_app_resolver_rank.py ...                         [  2%]"
+          },
+          {
+            "line": 15,
+            "text": "gemma4_agent\\tests\\test_app_score_guard.py ......                        [  2%]"
+          },
+          {
+            "line": 16,
+            "text": "gemma4_agent\\tests\\test_architectural_invariants.py .............        [  3%]"
+          },
+          {
+            "line": 17,
+            "text": "gemma4_agent\\tests\\test_audit_8r_verification.py ............            [  4%]"
+          },
+          {
+            "line": 18,
+            "text": "gemma4_agent\\tests\\test_audit_metrics.py .................               [  4%]"
+          },
+          {
+            "line": 19,
+            "text": "gemma4_agent\\tests\\test_autorepair_path.py ......                        [  5%]"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-220",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_threshold_safety.txt",
+      "queued_sha256": "fafb5135e72cc3d419fcf3f21720e0d33f0c90296729c332e17198ddbff290d8",
+      "size_queued": 1231,
+      "exists": true,
+      "disk_sha256": "fafb5135e72cc3d419fcf3f21720e0d33f0c90296729c332e17198ddbff290d8",
+      "disk_size": 1231,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 17,
+        "headings": [],
+        "lead": "=== SMALLTALK (no deben ESCAPAR, o si escapan a web es OK) ===",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-17"
+        ]
+      }
+    },
+    {
+      "path": "scripts/_out_tools_report.txt",
+      "queued_sha256": "ff4f4ff285a4c5c8c50e19e96d97163de42afc0558ed5c035321fb94b7ea7538",
+      "size_queued": 6720,
+      "exists": true,
+      "disk_sha256": "ff4f4ff285a4c5c8c50e19e96d97163de42afc0558ed5c035321fb94b7ea7538",
+      "disk_size": 6720,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 94,
+        "headings": [
+          {
+            "line": 5,
+            "level": 3,
+            "text": "app (acepta ['app', 'window'])"
+          },
+          {
+            "line": 11,
+            "level": 3,
+            "text": "audio (acepta ['audio'])"
+          },
+          {
+            "line": 17,
+            "level": 3,
+            "text": "system (acepta ['device_settings', 'system'])"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "window (acepta ['gui', 'window'])"
+          },
+          {
+            "line": 29,
+            "level": 3,
+            "text": "web (acepta ['browser', 'web'])"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "media (acepta ['audio', 'media'])"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "browser (acepta ['app', 'browser', 'web'])"
+          },
+          {
+            "line": 48,
+            "level": 3,
+            "text": "filesystem (acepta ['filesystem', 'local_search'])"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "reminder (acepta ['notification', 'reminder'])"
+          },
+          {
+            "line": 60,
+            "level": 3,
+            "text": "notification (acepta ['notification', 'reminder'])"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "network (acepta ['device_settings', 'network'])"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "vision (acepta ['gui', 'uia', 'vision', 'window'])"
+          },
+          {
+            "line": 78,
+            "level": 3,
+            "text": "gui (acepta ['computer_use', 'gui', 'input', 'uia'])"
+          },
+          {
+            "line": 84,
+            "level": 3,
+            "text": "whatsapp (acepta ['whatsapp'])"
+          },
+          {
+            "line": 90,
+            "level": 3,
+            "text": "email (acepta ['email'])"
+          }
+        ],
+        "lead": "================================================================",
+        "measures": [
+          {
+            "line": 2,
+            "text": "ROUTING: 49/60 pedidos rutearon a una tool aceptable (190s)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 55,
+            "text": "[MISS] 'recordame comprar pan a las 5' -> ['session'] | 'No pude registrar la nota porque la herramienta session solo'"
+          }
+        ],
+        "ranges": [
+          "1-94",
+          "h:5",
+          "m:2"
+        ]
+      }
+    },
+    {
+      "path": "scripts/app_accessibility_census.md",
+      "queued_sha256": "29ec9185e04dc9bc8c570c400ed3be344530a3e7a50ae1934a5703ddf7f59412",
+      "size_queued": 4242,
+      "exists": true,
+      "disk_sha256": "29ec9185e04dc9bc8c570c400ed3be344530a3e7a50ae1934a5703ddf7f59412",
+      "disk_size": 4242,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 65,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Censo de apps por tecnología — ¿cuáles llevan el flag de accesibilidad?"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Regla de decisión"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Resultado en esta PC"
+          },
+          {
+            "line": 19,
+            "level": 3,
+            "text": "✅ Chromium/Electron — accesibilidad activable (VALIDADO 2026-05-25)"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "✅ UWP / nativo — UIA NATIVO, no necesitan flag (cubierto por diseño)"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "❌ CEF/Qt embebido especial — FLAG NO APLICA limpio (mismo caso que Steam)"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "Por qué NO se agregan las del último grupo al flag"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Apps Chromium/Electron que NO tenés instaladas pero el agente reconoce"
+          }
+        ],
+        "lead": "Generado 2026-05-24 sobre la PC del dev (567 entradas en Get-StartApps, filtradas a",
+        "measures": [],
+        "dates": [
+          "2026-05-24"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-65",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "gemma4_agent/skills/README.md",
+      "queued_sha256": "2cd4746eb695459476f470a231b257f1095238f2b1b4049dc8daa58b8568e38b",
+      "size_queued": 4962,
+      "exists": true,
+      "disk_sha256": "2cd4746eb695459476f470a231b257f1095238f2b1b4049dc8daa58b8568e38b",
+      "disk_size": 4962,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 139,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Carter Agent skills"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "¿Skill vs microagent vs TOOL_RULES?"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Cuándo crear una skill"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Formato"
+          },
+          {
+            "line": 55,
+            "level": 1,
+            "text": "Install a Steam game"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "Steps"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "Reglas de naming"
+          },
+          {
+            "line": 70,
+            "level": 3,
+            "text": "`priority`"
+          },
+          {
+            "line": 87,
+            "level": 3,
+            "text": "`requires` (eligibility filter)"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "CLI"
+          },
+          {
+            "line": 102,
+            "level": 1,
+            "text": "Listar skills + menu preview"
+          },
+          {
+            "line": 105,
+            "level": 1,
+            "text": "Imprimir el body de uno"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "Opt-out"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Skills incluidos (10)"
+          },
+          {
+            "line": 129,
+            "level": 2,
+            "text": "Cuándo NO crear más skills"
+          }
+        ],
+        "lead": "Skills son **recetas markdown** que el LLM carga **lazy** via la tool",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-139",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "gemma4_agent/voice/tests/testaudio_groundtruth_report.md",
+      "queued_sha256": "769bd2b039157960d1d2eef871b960f94a2edeecdebd0a8b69df7d4433d11fb0",
+      "size_queued": 5848,
+      "exists": true,
+      "disk_sha256": "769bd2b039157960d1d2eef871b960f94a2edeecdebd0a8b69df7d4433d11fb0",
+      "disk_size": 5848,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 118,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "testaudio ground-truth report"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Continuous transcription (first 20 segments)"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Per-wake alignment (small vs large)"
+          },
+          {
+            "line": 48,
+            "level": 3,
+            "text": "Verdict distribution"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "Per-turn detail"
+          },
+          {
+            "line": 56,
+            "level": 4,
+            "text": "Turn k=0 (t=1.82s)"
+          },
+          {
+            "line": 66,
+            "level": 4,
+            "text": "Turn k=1 (t=54.62s)"
+          },
+          {
+            "line": 76,
+            "level": 4,
+            "text": "Turn k=2 (t=108.61s)"
+          },
+          {
+            "line": 86,
+            "level": 4,
+            "text": "Turn k=3 (t=163.10s)"
+          },
+          {
+            "line": 96,
+            "level": 4,
+            "text": "Turn k=4 (t=216.86s)"
+          },
+          {
+            "line": 106,
+            "level": 4,
+            "text": "Turn k=5 (t=272.29s)"
+          }
+        ],
+        "lead": "- Source: `Grabación (2).m4a`",
+        "measures": [
+          {
+            "line": 6,
+            "text": "- Duration: 292.84s (4.88 min)"
+          },
+          {
+            "line": 14,
+            "text": "| 0.00s | 20.24s | Hey Gemma, abre Chrome. Gemma, abre Steam. Hey Gemma, abre Chrome. Gemma, abre Steam. Hey Gemma, cierra WhatsApp. Gemma, cierra WhatsApp. Hey Gemma, minimiza la ventana. Gemma, minimiza la ventana. | 0.4319 | -0.1255 |"
+          },
+          {
+            "line": 16,
+            "text": "| 47.24s | 49.72s | Hey Gemma, pon música clásica. | 0.0071 | -0.0896 |"
+          },
+          {
+            "line": 17,
+            "text": "| 50.24s | 64.24s | Hey Gemma, ponme música tranquila. Hey Gemma, ponme música tranquila. Hey Gemma, ponme música tranquila. Hey Gemma, reproduce algo de los redonditos. Hey Gemma, reproduce algo de los redonditos. | 0.0165 | -0.0744 |"
+          },
+          {
+            "line": 18,
+            "text": "| 64.24s | 78.24s | Gemma, baja el volumen. Hey Gemma, sube el volumen al máximo. Gemma, sube el volumen al máximo. Hey Gemma, subí el volumen al máximo. Hey Gemma, subí el volumen al máximo. Hey Gemma, silencia el sistema. | 0.0165 | -0.07"
+          },
+          {
+            "line": 19,
+            "text": "| 78.24s | 80.24s | Hey Gemma, ¿qué hora es? | 0.0165 | -0.0744 |"
+          },
+          {
+            "line": 20,
+            "text": "| 80.24s | 82.24s | Hey Gemma, ¿qué hora es? | 0.0146 | -0.0422 |"
+          },
+          {
+            "line": 21,
+            "text": "| 82.24s | 84.24s | Hey Gemma, ¿qué fecha es hoy? | 0.0146 | -0.0422 |"
+          },
+          {
+            "line": 22,
+            "text": "| 84.24s | 86.24s | Hey Gemma, ¿cuánto espacio me queda en el disco C? | 0.0146 | -0.0422 |"
+          },
+          {
+            "line": 23,
+            "text": "| 86.24s | 88.24s | Hey Gemma, ¿cuánto espacio me queda en el disco C? | 0.0146 | -0.0422 |"
+          },
+          {
+            "line": 24,
+            "text": "| 88.24s | 90.24s | Hey Gemma, ¿cuánto espacio me queda en el disco C? | 0.0146 | -0.0422 |"
+          },
+          {
+            "line": 25,
+            "text": "| 90.24s | 92.24s | Hey Gemma, ¿cuánto espacio me queda en el disco C? | 0.0146 | -0.0422 |"
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-118",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "@AutomationLog.txt",
+      "queued_sha256": "06d4ba4aa6c2e2a49876178549d998ffebd20a1616598849b98560aa1726292e",
+      "size_queued": 3339,
+      "exists": true,
+      "disk_sha256": "06d4ba4aa6c2e2a49876178549d998ffebd20a1616598849b98560aa1726292e",
+      "disk_size": 3339,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 45,
+        "headings": [],
+        "lead": "[WinError -2147221008] No se ha llamado a CoInitialize",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-45"
+        ]
+      }
+    },
+    {
+      "path": "AGENTS.md",
+      "queued_sha256": "14e65d85d06b8c3568630c0f425b366b4aa9f546545e601fa4db3afb9c211ad2",
+      "size_queued": 14927,
+      "exists": true,
+      "disk_sha256": "14e65d85d06b8c3568630c0f425b366b4aa9f546545e601fa4db3afb9c211ad2",
+      "disk_size": 14927,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 270,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "AGENTS.md — Cómo trabajar en este repo"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Los mandamientos (no negociables)"
+          },
+          {
+            "line": 21,
+            "level": 3,
+            "text": "1. Investigá antes de decidir. Siempre."
+          },
+          {
+            "line": 42,
+            "level": 3,
+            "text": "2. Toda decisión respaldada por mejores prácticas + fuentes citadas."
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "3. Medí, no celebres."
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "3.5. Probá EN VIVO con el LLM y el agente. No entregues sin eso."
+          },
+          {
+            "line": 87,
+            "level": 3,
+            "text": "4. Diagnosticá la causa raíz antes de \"arreglar\"."
+          },
+          {
+            "line": 95,
+            "level": 3,
+            "text": "5. No le pases trabajo de setup al usuario."
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "6. Confirmá antes de lo irreversible y lo que toca recursos del usuario."
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "Restricciones de producto (vienen del usuario, son ley)"
+          },
+          {
+            "line": 144,
+            "level": 2,
+            "text": "Trampas concretas de este repo (ya pagadas caro — no repetir)"
+          },
+          {
+            "line": 146,
+            "level": 3,
+            "text": "ONNX Runtime congela la PC"
+          },
+          {
+            "line": 155,
+            "level": 3,
+            "text": "El wake-word LiveKit espera la frase al FINAL del window de 2 s"
+          },
+          {
+            "line": 161,
+            "level": 3,
+            "text": "VoxCPM segfaulta en RTX 40-series (Ada Lovelace)"
+          },
+          {
+            "line": 166,
+            "level": 3,
+            "text": "Python 3.10 (runtime) vs 3.11 (training)"
+          },
+          {
+            "line": 173,
+            "level": 3,
+            "text": "espeak-ng en Windows escupe UTF-8, el default es cp1252"
+          },
+          {
+            "line": 178,
+            "level": 3,
+            "text": "YAML con paths de Windows"
+          },
+          {
+            "line": 185,
+            "level": 2,
+            "text": "Flujo de trabajo esperado"
+          },
+          {
+            "line": 237,
+            "level": 2,
+            "text": "Recomendaciones para fortalecer esto aún más"
+          }
+        ],
+        "lead": "Instrucciones operativas para cualquier agente Codex que trabaje en",
+        "measures": [
+          {
+            "line": 56,
+            "text": "`recall ≥ 0.60 ∧ fp/hr ≤ 1.0` sobre un held-out universal."
+          },
+          {
+            "line": 57,
+            "text": "- Reportá resultados crudos aunque sean malos. \"recall 0.022, FAIL\" es"
+          },
+          {
+            "line": 91,
+            "text": "- \"recall 0.02\" → no era el modelo, era pad al final vs al inicio."
+          },
+          {
+            "line": 134,
+            "text": "- **CPU para STT.** El target tiene 6 GB de VRAM consumidos por el LLM."
+          },
+          {
+            "line": 138,
+            "text": "4–5 s tope; 8 s es UX catastrófica. No infles el input del LLM."
+          },
+          {
+            "line": 139,
+            "text": "- **Hardware modesto.** Asumí laptop típico, GPU 6 GB o sin GPU dedicada."
+          },
+          {
+            "line": 148,
+            "text": "evals batch (miles de archivos) clava la CPU al 100% y congela Windows."
+          },
+          {
+            "line": 251,
+            "text": "horas o GB, escribí: tiempo estimado, VRAM/CPU/disco, y qué pasa si"
+          }
+        ],
+        "dates": [
+          "2026-05-27"
+        ],
+        "models": [
+          "gemma 4",
+          "whisper",
+          "livekit",
+          "voxcpm"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [
+          {
+            "line": 13,
+            "text": "> proyecto. Acá se repiten como reglas de trabajo porque Codex debe"
+          },
+          {
+            "line": 34,
+            "text": "no la intuición. Un error de padding o de orden de bytes da scores ~0"
+          },
+          {
+            "line": 59,
+            "text": "permitió encontrar el bug de padding que desbloqueó Sprint 7."
+          },
+          {
+            "line": 92,
+            "text": "- \"la PC se congela\" → no era falta de threads bajos, era el busy-wait"
+          },
+          {
+            "line": 93,
+            "text": "(spinning) de ONNX Runtime + falta de afinidad de CPU."
+          },
+          {
+            "line": 147,
+            "text": "ONNX Runtime usa todos los cores + busy-wait (spinning) por defecto. En"
+          }
+        ],
+        "ranges": [
+          "1-270",
+          "h:1",
+          "m:56"
+        ]
+      }
+    },
+    {
+      "path": "CLAUDE.md",
+      "queued_sha256": "a98525abcaa8ad3be87eb23a226c5dadc0048e3406fe0c92fc100bc027743de8",
+      "size_queued": 14930,
+      "exists": true,
+      "disk_sha256": "a98525abcaa8ad3be87eb23a226c5dadc0048e3406fe0c92fc100bc027743de8",
+      "disk_size": 14930,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 270,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "CLAUDE.md — Cómo trabajar en este repo"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Los mandamientos (no negociables)"
+          },
+          {
+            "line": 21,
+            "level": 3,
+            "text": "1. Investigá antes de decidir. Siempre."
+          },
+          {
+            "line": 42,
+            "level": 3,
+            "text": "2. Toda decisión respaldada por mejores prácticas + fuentes citadas."
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "3. Medí, no celebres."
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "3.5. Probá EN VIVO con el LLM y el agente. No entregues sin eso."
+          },
+          {
+            "line": 87,
+            "level": 3,
+            "text": "4. Diagnosticá la causa raíz antes de \"arreglar\"."
+          },
+          {
+            "line": 95,
+            "level": 3,
+            "text": "5. No le pases trabajo de setup al usuario."
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "6. Confirmá antes de lo irreversible y lo que toca recursos del usuario."
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "Restricciones de producto (vienen del usuario, son ley)"
+          },
+          {
+            "line": 144,
+            "level": 2,
+            "text": "Trampas concretas de este repo (ya pagadas caro — no repetir)"
+          },
+          {
+            "line": 146,
+            "level": 3,
+            "text": "ONNX Runtime congela la PC"
+          },
+          {
+            "line": 155,
+            "level": 3,
+            "text": "El wake-word LiveKit espera la frase al FINAL del window de 2 s"
+          },
+          {
+            "line": 161,
+            "level": 3,
+            "text": "VoxCPM segfaulta en RTX 40-series (Ada Lovelace)"
+          },
+          {
+            "line": 166,
+            "level": 3,
+            "text": "Python 3.10 (runtime) vs 3.11 (training)"
+          },
+          {
+            "line": 173,
+            "level": 3,
+            "text": "espeak-ng en Windows escupe UTF-8, el default es cp1252"
+          },
+          {
+            "line": 178,
+            "level": 3,
+            "text": "YAML con paths de Windows"
+          },
+          {
+            "line": 185,
+            "level": 2,
+            "text": "Flujo de trabajo esperado"
+          },
+          {
+            "line": 237,
+            "level": 2,
+            "text": "Recomendaciones para fortalecer esto aún más"
+          }
+        ],
+        "lead": "Instrucciones operativas para cualquier agente Claude que trabaje en",
+        "measures": [
+          {
+            "line": 56,
+            "text": "`recall ≥ 0.60 ∧ fp/hr ≤ 1.0` sobre un held-out universal."
+          },
+          {
+            "line": 57,
+            "text": "- Reportá resultados crudos aunque sean malos. \"recall 0.022, FAIL\" es"
+          },
+          {
+            "line": 91,
+            "text": "- \"recall 0.02\" → no era el modelo, era pad al final vs al inicio."
+          },
+          {
+            "line": 134,
+            "text": "- **CPU para STT.** El target tiene 6 GB de VRAM consumidos por el LLM."
+          },
+          {
+            "line": 138,
+            "text": "4–5 s tope; 8 s es UX catastrófica. No infles el input del LLM."
+          },
+          {
+            "line": 139,
+            "text": "- **Hardware modesto.** Asumí laptop típico, GPU 6 GB o sin GPU dedicada."
+          },
+          {
+            "line": 148,
+            "text": "evals batch (miles de archivos) clava la CPU al 100% y congela Windows."
+          },
+          {
+            "line": 251,
+            "text": "horas o GB, escribí: tiempo estimado, VRAM/CPU/disco, y qué pasa si"
+          }
+        ],
+        "dates": [
+          "2026-05-27"
+        ],
+        "models": [
+          "gemma 4",
+          "whisper",
+          "livekit",
+          "voxcpm"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [
+          {
+            "line": 13,
+            "text": "> proyecto. Acá se repiten como reglas de trabajo porque Claude debe"
+          },
+          {
+            "line": 34,
+            "text": "no la intuición. Un error de padding o de orden de bytes da scores ~0"
+          },
+          {
+            "line": 59,
+            "text": "permitió encontrar el bug de padding que desbloqueó Sprint 7."
+          },
+          {
+            "line": 92,
+            "text": "- \"la PC se congela\" → no era falta de threads bajos, era el busy-wait"
+          },
+          {
+            "line": 93,
+            "text": "(spinning) de ONNX Runtime + falta de afinidad de CPU."
+          },
+          {
+            "line": 147,
+            "text": "ONNX Runtime usa todos los cores + busy-wait (spinning) por defecto. En"
+          }
+        ],
+        "ranges": [
+          "1-270",
+          "h:1",
+          "m:56"
+        ]
+      }
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "queued_sha256": "8aebd6fb80a7d7b0b23824d84cb1c2182209094a906dcece76bed039dce46acb",
+      "size_queued": 2697,
+      "exists": true,
+      "disk_sha256": "8aebd6fb80a7d7b0b23824d84cb1c2182209094a906dcece76bed039dce46acb",
+      "disk_size": 2697,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 63,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Contribuir a Baxy"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Entorno de desarrollo"
+          },
+          {
+            "line": 10,
+            "level": 1,
+            "text": "1. Clonar + venv (Python 3.10 — es el runtime objetivo)"
+          },
+          {
+            "line": 17,
+            "level": 1,
+            "text": "2. (opcional) UI web — necesitás Node + pnpm"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Correr los tests"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Principios no negociables"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Reportar bugs"
+          }
+        ],
+        "lead": "¡Gracias por tu interés! Este proyecto es un asistente de voz local con un fuerte",
+        "measures": [
+          {
+            "line": 21,
+            "text": "Mirá el [README](README.md) para los pasos completos (modelo GGUF, llama.cpp, etc.)."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-63",
+          "h:1",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "ContextoGPT.md",
+      "queued_sha256": "ca8bc8f44ece70863a939a68aa13b5b47e7c7fd38b3adbb6cdb231c127c30569",
+      "size_queued": 185010,
+      "exists": true,
+      "disk_sha256": "ca8bc8f44ece70863a939a68aa13b5b47e7c7fd38b3adbb6cdb231c127c30569",
+      "disk_size": 185010,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 2476,
+        "headings": [
+          {
+            "line": 498,
+            "level": 1,
+            "text": "medir throughput: 20 pasos sobre el dataset COMPLETO (con group_by_length)"
+          },
+          {
+            "line": 1168,
+            "level": 1,
+            "text": "test routing"
+          },
+          {
+            "line": 2076,
+            "level": 1,
+            "text": "Matar apps GPU/no-esenciales. EXCLUYE: python (training), Code (VSCode), dwm/explorer (Windows)"
+          },
+          {
+            "line": 2353,
+            "level": 1,
+            "text": "2) targets validos"
+          },
+          {
+            "line": 2360,
+            "level": 1,
+            "text": "3) no_tool disponible en todas + target presente en contexto"
+          },
+          {
+            "line": 2364,
+            "level": 1,
+            "text": "4) composicion"
+          },
+          {
+            "line": 2370,
+            "level": 1,
+            "text": "5) fuga train/holdout"
+          },
+          {
+            "line": 2373,
+            "level": 1,
+            "text": "6) cobertura por tool"
+          },
+          {
+            "line": 2409,
+            "level": 1,
+            "text": "esperar primeros pasos REALES de entrenamiento"
+          }
+        ],
+        "lead": "Lote 042 + 048–054 completos (8 × 300). Quedan 055–084 (30 lotes). Sigo — ola (055–062):",
+        "measures": [
+          {
+            "line": 131,
+            "text": "ARCHIVOS hc: 85/85 | FALTANTES: []"
+          },
+          {
+            "line": 134,
+            "text": "85/85 lotes, 23.384 ejemplos hand-crafted, CERO errores (JSON, tools, args, duplicados, corruptos). Rebuildeo el dataset completo y mido cobertura final por tool:"
+          },
+          {
+            "line": 164,
+            "text": "tools cubiertos: 524/524"
+          },
+          {
+            "line": 170,
+            "text": "524/524 tools cubiertos (eran 221). 510 con ≥50, y los 524 con ≥40. Cero en 0."
+          },
+          {
+            "line": 183,
+            "text": "[DRYRUN] tokens: media=1461 max=3048 | ejemplos con respuesta supervisada: 28753/28753"
+          },
+          {
+            "line": 185,
+            "text": "Dryrun final OK: 28.753 ejemplos efectivos entrenables (1.142 descartados por largo), 100% supervisados, cuda/bf16. Actualizo README y cierro el tracking:"
+          },
+          {
+            "line": 193,
+            "text": "Central validate + merge hc batches (85/85, 0 errors)"
+          },
+          {
+            "line": 195,
+            "text": "Rebuild dataset + verify per-tool coverage (524/524, 510>=50)"
+          },
+          {
+            "line": 207,
+            "text": "Tools cubiertos\t221/524\t524/524 ✅"
+          },
+          {
+            "line": 211,
+            "text": "Calidad verificada: 85/85 lotes, 0 errores de JSON, 0 tools inválidas, 0 args fuera de schema, 0 duplicados, 0 archivos corruptos. Dryrun en GPU OK: 28.753 ejemplos efectivos entrenables, 100% supervisados."
+          },
+          {
+            "line": 220,
+            "text": "La distribución de idiomas quedó es-dominante pero con menos del 45% en varios lotes — los subagentes priorizaron variedad nativa real en los 6 idiomas sobre cuadrar el porcentaje exacto. Es buena cobertura multilingüe; si preferís más peso"
+          },
+          {
+            "line": 241,
+            "text": "ls \"$USERPROFILE/.cache/huggingface/hub/models--unsloth--functiongemma-270m-it/snapshots\" 2>/dev/null && echo \"cacheado\" || echo \"se descarga en el 1er run (~540MB, ungated)\""
+          }
+        ],
+        "dates": [
+          "2026-06-14"
+        ],
+        "models": [
+          "functiongemma",
+          "gemma 4",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "16GB",
+          "VRAM",
+          "RTX 4060 Ti",
+          "6GB",
+          "vram"
+        ],
+        "mechanisms": [
+          {
+            "line": 486,
+            "text": "Smoke funcionó (entrenó, loss 1.07, merge OK) — pero muy lento: ~24s/paso → el full tardaría ~24h. Inaceptable. La causa: el upcast fp32 de attention de Unsloth + padding a 3072 en cada batch."
+          },
+          {
+            "line": 488,
+            "text": "Lo optimizo: group_by_length (agrupa ejemplos de largo similar → mata el padding desperdiciado, el gran acelerador), batch 4 y checkpointing. Agrego un --maxsteps para medir throughput real antes del full:"
+          },
+          {
+            "line": 506,
+            "text": "group_by_length fue removido de TrainingArguments en transformers 5.5. Lo implemento yo mismo (más robusto): ordeno por largo, armo batches, barajo el orden de batches, y un Trainer con sampler secuencial. Mismo efecto (padding mínimo) sin "
+          },
+          {
+            "line": 561,
+            "text": "FastModel funciona y el merge también (sin OOM). Pero 2 samples/s → ~7.6h para 2 epochs: aún lento, porque batch 4 subutiliza la GPU y seq 3072 es caro (cuadrático). Subo batch a 16 y capeo seq a 2048 (corta la cola larga cara) para maximiz"
+          },
+          {
+            "line": 727,
+            "text": "Ritmo: ~3.5–4 s/paso (varía porque los batches están agrupados por largo — los de secuencias largas tardan más)."
+          },
+          {
+            "line": 729,
+            "text": "ETA: ~3 horas (entre 2.5 y 3.5h según el ritmo de los batches largos). Es un poco más que mi estimación inicial porque el paso promedio salió ~3.5s, no 2.5s."
+          }
+        ],
+        "ranges": [
+          "1-2476",
+          "h:498",
+          "m:131"
+        ]
+      }
+    },
+    {
+      "path": "OVERNIGHT_AUDIT_REPORT.md",
+      "queued_sha256": "058a92356947e507a90b02c1f1c9a7070a3b2c0d264b7a13c41d2e5f6de5bada",
+      "size_queued": 905,
+      "exists": true,
+      "disk_sha256": "058a92356947e507a90b02c1f1c9a7070a3b2c0d264b7a13c41d2e5f6de5bada",
+      "disk_size": 905,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 25,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Overnight Audit Report"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Summary"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Modified Files"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Results"
+          }
+        ],
+        "lead": "Generated: 2026-06-26T09:59:09",
+        "measures": [
+          {
+            "line": 8,
+            "text": "Passed: 0"
+          },
+          {
+            "line": 9,
+            "text": "Failed: 1"
+          },
+          {
+            "line": 13,
+            "text": "Hardness: live-all. No expected policy gate is counted as PASS; missing apps, accounts, local APIs, or OS capabilities are reported as FAIL with evidence."
+          }
+        ],
+        "dates": [
+          "2026-06-26"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 23,
+            "text": "| ID | Module | Status | ms | Verifier | Evidence |"
+          }
+        ],
+        "ranges": [
+          "1-25",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "README.md",
+      "queued_sha256": "bebcb5cc51632262844e958cc6e2e7d86d93bebbad9a6e8d52b0b947d3ae82ed",
+      "size_queued": 36831,
+      "exists": true,
+      "disk_sha256": "bebcb5cc51632262844e958cc6e2e7d86d93bebbad9a6e8d52b0b947d3ae82ed",
+      "disk_size": 36831,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 404,
+        "headings": [
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Baxy Agent"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "¿Qué es?"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "🧭 Principios del proyecto"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "✨ Características"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "🎙️ Voz"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "👁️ Visión"
+          },
+          {
+            "line": 55,
+            "level": 3,
+            "text": "🖥️ Computer-use / Accesibilidad"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "🧰 Herramientas (67 tools compuestas)"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "🧠 Memoria, conocimiento y personalización"
+          },
+          {
+            "line": 81,
+            "level": 3,
+            "text": "🧭 Routing inteligente"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "🧬 El LLM y sus capas inteligentes"
+          },
+          {
+            "line": 93,
+            "level": 3,
+            "text": "🤖 El modelo y su contrato"
+          },
+          {
+            "line": 101,
+            "level": 4,
+            "text": "Fine-tuning del LLM (QLoRA — *honestidad de tool-calling*)"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "📚 RAG / Knowledge base local"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "🧠 Memoria multicapa"
+          },
+          {
+            "line": 132,
+            "level": 3,
+            "text": "🧩 Skills + Microagents"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "🧭 Routing semántico (qué tools se le ofrecen al LLM)"
+          },
+          {
+            "line": 151,
+            "level": 2,
+            "text": "🛠️ Tecnologías"
+          },
+          {
+            "line": 153,
+            "level": 3,
+            "text": "Núcleo LLM / inferencia"
+          },
+          {
+            "line": 160,
+            "level": 3,
+            "text": "Runtime, servidor y UI"
+          },
+          {
+            "line": 171,
+            "level": 3,
+            "text": "Voz"
+          },
+          {
+            "line": 183,
+            "level": 3,
+            "text": "Embeddings / routing"
+          },
+          {
+            "line": 190,
+            "level": 3,
+            "text": "Automatización / computer-use (Windows)"
+          },
+          {
+            "line": 202,
+            "level": 3,
+            "text": "Datos / documentos / integraciones (opcionales)"
+          }
+        ],
+        "lead": "IMPORTANTE LOS MODELOS LLMS SE HAN ELIMINADO DEL REPO PORQUE ESTE PESABA MAS DE 100GB , esto no afecta la evidencia de lo que fue este intento de baxy, se ha dejado un screenshot para que se pueda analizar todos los modelos eliminados y wakeword entrenadas tambien eliminadas, en caso de necesitarse algun modelo, pedirlo al dueño (Que es el mismo que mando este goal y este te lo proporcionara), el ",
+        "measures": [
+          {
+            "line": 4,
+            "text": "**Asistente de voz local para Windows — privado, OSS y corriendo en 4 GB de VRAM.**"
+          },
+          {
+            "line": 5,
+            "text": "*A local-first voice assistant for Windows, powered by Gemma 4 — 100% offline, no paid APIs.*"
+          },
+          {
+            "line": 11,
+            "text": "[![License](https://img.shields.io/badge/License-MIT-green.svg)](#-licencia)"
+          },
+          {
+            "line": 12,
+            "text": "[![LLM](https://img.shields.io/badge/LLM-Gemma%204%20E2B-orange.svg)](https://ai.google.dev/gemma)"
+          },
+          {
+            "line": 58,
+            "text": "- **Modos de accesibilidad** respaldados por WCAG 2.1/2.2, activados por voz (clasificación por embeddings, no por keywords):"
+          },
+          {
+            "line": 77,
+            "text": "- **Personas y perfiles de VRAM** — tono del asistente + perfiles que escalan los *caps* por turno."
+          },
+          {
+            "line": 84,
+            "text": "- **Abstain head** calibrado: decide cuándo *no* ofrecer ninguna tool (charla, preguntas), con forward pass sub-milisegundo."
+          },
+          {
+            "line": 156,
+            "text": "| **Gemma 4 E2B** (GGUF, `Q4_K_M`) | LLM principal (~3.36 GB con visión residente + KV) |"
+          },
+          {
+            "line": 158,
+            "text": "| **llama.cpp / llama-server** (build CUDA) | Servidor de inferencia GGUF; API OpenAI-compatible en loopback |"
+          },
+          {
+            "line": 181,
+            "text": "| **rapidfuzz** / **jellyfish** | 3.14.5 / 1.2.1 | Corrección fuzzy + fonética |"
+          },
+          {
+            "line": 197,
+            "text": "| **comtypes** / **pycaw** | 1.4.16 / 20251023 | COM + control de audio por estado del SO |"
+          },
+          {
+            "line": 211,
+            "text": "- **GPU NVIDIA con 4 GB de VRAM** (perfil `vram4`, recomendado) — el modelo + visión + KV cache entran completos en ese presupuesto (medido ~3.36 GB con visión)."
+          }
+        ],
+        "dates": [
+          "2026-08-30"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "livekit",
+          "whisper",
+          "piper",
+          "gemma-4",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 141,
+            "text": "El router (`routing/`) decide **qué subconjunto de tools ofrecer** al LLM en cada turno. Es una **cascada semántica**, no un árbol de if/else, y su norte es la **precisión** (ofrecer solo lo necesario), porque el recall ya está saturado (ho"
+          }
+        ],
+        "ranges": [
+          "1-404",
+          "h:2",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "constraints.txt",
+      "queued_sha256": "a7d251d7977053f0ddc718e26d176e399a6ce6c95e25ede800c6e7e1ee7ace4a",
+      "size_queued": 958,
+      "exists": true,
+      "disk_sha256": "a7d251d7977053f0ddc718e26d176e399a6ce6c95e25ede800c6e7e1ee7ace4a",
+      "disk_size": 958,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 17,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Constraints de pip — TOPES DUROS que ningún dependiente puede pisar."
+          },
+          {
+            "line": 3,
+            "level": 1,
+            "text": "Uso: pip install -r requirements.txt -c constraints.txt"
+          },
+          {
+            "line": 5,
+            "level": 1,
+            "text": "A diferencia de un pin en requirements.txt (que pip PUEDE sobrescribir al"
+          },
+          {
+            "line": 6,
+            "level": 1,
+            "text": "resolver una dep transitiva), un constraint es un TECHO/PISO inviolable: pip"
+          },
+          {
+            "line": 7,
+            "level": 1,
+            "text": "jamás instalará una versión fuera de lo que acá se declara, venga el pedido de"
+          },
+          {
+            "line": 8,
+            "level": 1,
+            "text": "donde venga."
+          },
+          {
+            "line": 10,
+            "level": 1,
+            "text": "numpy: CRÍTICO. pandas==1.5.3 se compiló contra numpy 1.x; con numpy 2.x falla"
+          },
+          {
+            "line": 11,
+            "level": 1,
+            "text": "al importar (\"numpy.dtype size changed, binary incompatibility\") y ARRASTRA a"
+          },
+          {
+            "line": 12,
+            "level": 1,
+            "text": "sentence-transformers (sklearn->pandas) -> el ENCODER DEL ROUTER no carga ->"
+          },
+          {
+            "line": 13,
+            "level": 1,
+            "text": "routing degradado SILENCIOSO (medido 2026-06-07: \"cuanta RAM tengo\"->cancel_turn"
+          },
+          {
+            "line": 14,
+            "level": 1,
+            "text": "en vez de system). La dep `py3langid>=0.3` declara numpy>=2.0.0 pero funciona"
+          },
+          {
+            "line": 15,
+            "level": 1,
+            "text": "perfecto con 1.26.4 (verificado: clasifica es/en/fr OK). Este constraint hace"
+          },
+          {
+            "line": 16,
+            "level": 1,
+            "text": "que el pin gane SIEMPRE, sin importar el orden de instalación."
+          }
+        ],
+        "lead": "#",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-17",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "log.txt",
+      "queued_sha256": "94667a6060a92661849a791026f4750a340942390ee1526473d243df45386b4a",
+      "size_queued": 523,
+      "exists": true,
+      "disk_sha256": "94667a6060a92661849a791026f4750a340942390ee1526473d243df45386b4a",
+      "disk_size": 523,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 24,
+        "headings": [],
+        "lead": "\"\"\"Deterministic gesture-to-window control state machines.\"\"\"",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-24"
+        ]
+      }
+    },
+    {
+      "path": "requirements-camera.txt",
+      "queued_sha256": "81581eadd02ef80c329a6532a0bda283579eb267827ba5c8c9e2948f82526ac4",
+      "size_queued": 523,
+      "exists": true,
+      "disk_sha256": "81581eadd02ef80c329a6532a0bda283579eb267827ba5c8c9e2948f82526ac4",
+      "disk_size": 523,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 15,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Optional Phase 0 camera-control POC dependencies."
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Kept separate from requirements.txt so the webcam subsystem remains opt-in."
+          },
+          {
+            "line": 4,
+            "level": 1,
+            "text": "Licenses checked 2026-06-01:"
+          },
+          {
+            "line": 5,
+            "level": 1,
+            "text": "- mediapipe: Apache-2.0"
+          },
+          {
+            "line": 6,
+            "level": 1,
+            "text": "- opencv-python / opencv-contrib-python: Apache-2.0"
+          },
+          {
+            "line": 7,
+            "level": 1,
+            "text": "- flatbuffers: Apache-2.0"
+          },
+          {
+            "line": 9,
+            "level": 1,
+            "text": "OpenCV 4.13 currently requires numpy>=2 on Python 3.10. The repo pins"
+          },
+          {
+            "line": 10,
+            "level": 1,
+            "text": "numpy==1.26.4, so this file pins OpenCV 4.11 to avoid moving the LLM stack."
+          }
+        ],
+        "lead": "#",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-15",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "requirements-voice.txt",
+      "queued_sha256": "de3743fe25ab22bd715274e9d13a39a94ca39efe0a3edf0c3f6622e39a5b1c20",
+      "size_queued": 2141,
+      "exists": true,
+      "disk_sha256": "de3743fe25ab22bd715274e9d13a39a94ca39efe0a3edf0c3f6622e39a5b1c20",
+      "disk_size": 2141,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 50,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Voice pipeline dependencies (Sprint VoiceRedesign, 2026-05-19)"
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Architecture: Silero VAD -> openWakeWord (hey_jarvis stock + hey_gemma custom planned)"
+          },
+          {
+            "line": 3,
+            "level": 1,
+            "text": "-> faster-whisper small int8 -> RapidFuzz post-correction -> LLM"
+          },
+          {
+            "line": 5,
+            "level": 1,
+            "text": "All packages have pre-built wheels for Windows + macOS arm64 + Linux,"
+          },
+          {
+            "line": 6,
+            "level": 1,
+            "text": "Python 3.10-3.12. Install: pip install -r requirements-voice.txt"
+          },
+          {
+            "line": 7,
+            "level": 1,
+            "text": "Total ~300 MB install + ~490 MB downloaded models = ~790 MB."
+          },
+          {
+            "line": 9,
+            "level": 1,
+            "text": "STT engine: faster-whisper bundles ctranslate2 + tokenizer + mel."
+          },
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Pinned to a known-good version that supports `initial_prompt`,"
+          },
+          {
+            "line": 11,
+            "level": 1,
+            "text": "`condition_on_previous_text=False`, and int8 CPU compute."
+          },
+          {
+            "line": 14,
+            "level": 1,
+            "text": "Wake-word detection: openWakeWord with ONNX backend. Ships stock"
+          },
+          {
+            "line": 15,
+            "level": 1,
+            "text": "pretrained models (hey_jarvis, alexa, ok_nabu, computer, etc.) and"
+          },
+          {
+            "line": 16,
+            "level": 1,
+            "text": "supports custom trained heads dropped in models/oww/."
+          },
+          {
+            "line": 19,
+            "level": 1,
+            "text": "ONNX runtime for openWakeWord + Silero VAD + future hey_gemma.onnx."
+          },
+          {
+            "line": 20,
+            "level": 1,
+            "text": "CPU-only, no CUDA dependency."
+          },
+          {
+            "line": 23,
+            "level": 1,
+            "text": "Voice Activity Detection: gates the wake detector to reject"
+          },
+          {
+            "line": 24,
+            "level": 1,
+            "text": "ambient/silence audio before spectral pattern matching runs."
+          },
+          {
+            "line": 27,
+            "level": 1,
+            "text": "Audio I/O: PortAudio bindings. Cross-platform wheels."
+          },
+          {
+            "line": 30,
+            "level": 1,
+            "text": "Audio file I/O (WAV read/write)."
+          },
+          {
+            "line": 33,
+            "level": 1,
+            "text": "Required by faster-whisper int8 + Silero ONNX."
+          },
+          {
+            "line": 36,
+            "level": 1,
+            "text": "Fuzzy post-correction against domain inventory (apps, songs, contacts)."
+          },
+          {
+            "line": 37,
+            "level": 1,
+            "text": "This is the key new component: deterministic correction of anglicism"
+          },
+          {
+            "line": 38,
+            "level": 1,
+            "text": "mistranscriptions (\"Benson Mould\" -> \"Benson Boone\") without depending"
+          },
+          {
+            "line": 39,
+            "level": 1,
+            "text": "on a brittle 224-token initial_prompt."
+          },
+          {
+            "line": 42,
+            "level": 1,
+            "text": "Model downloads (faster-whisper auto-fetches via HuggingFace)."
+          }
+        ],
+        "lead": "#",
+        "measures": [
+          {
+            "line": 46,
+            "text": "# which is ~2 GB). Used only for VAD inference (silero ships ONNX but"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-50",
+          "h:1",
+          "m:46"
+        ]
+      }
+    },
+    {
+      "path": "requirements.txt",
+      "queued_sha256": "b7654606b4574cb87946c9ba1595f3f3170f4dee060f7850cc783dea59914aff",
+      "size_queued": 7778,
+      "exists": true,
+      "disk_sha256": "b7654606b4574cb87946c9ba1595f3f3170f4dee060f7850cc783dea59914aff",
+      "disk_size": 7778,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 146,
+        "headings": [
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Generated from real top-level imports in gemma4_agent/*.py (Sprint 0.1, 2026-05-16)."
+          },
+          {
+            "line": 3,
+            "level": 1,
+            "text": "Reconciled against the live runtime env (Ola 4 housekeeping, 2026-06-01): an"
+          },
+          {
+            "line": 4,
+            "level": 1,
+            "text": "AST scan of every non-test import found 10 packages that had drifted out of"
+          },
+          {
+            "line": 5,
+            "level": 1,
+            "text": "this list (onnxruntime, sherpa-onnx, rapidfuzz, jellyfish, mss, uiautomation,"
+          },
+          {
+            "line": 6,
+            "level": 1,
+            "text": "dateparser, mcp). They were added below with the versions the env reports"
+          },
+          {
+            "line": 7,
+            "level": 1,
+            "text": "(importlib.metadata). torchvision is intentionally NOT listed â€” it's imported"
+          },
+          {
+            "line": 8,
+            "level": 1,
+            "text": "only by a health test that asserts it must be absent. The invariant is now"
+          },
+          {
+            "line": 9,
+            "level": 1,
+            "text": "locked by gemma4_agent/tests/test_requirements_coverage.py."
+          },
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Pinned versions match the active virtualenv (importlib.metadata / pip freeze)"
+          },
+          {
+            "line": 11,
+            "level": 1,
+            "text": "where available; the rest are lower bounds."
+          },
+          {
+            "line": 12,
+            "level": 1,
+            "text": "Freeze v0.9.2 (2026-06-19): se reconciliaron a == las 9 deps que estaban en >="
+          },
+          {
+            "line": 13,
+            "level": 1,
+            "text": "pero SÍ están instaladas (PyMuPDF/nvidia-ml-py/jiwer/openwakeword/nvidia-cublas-cu12/"
+          },
+          {
+            "line": 14,
+            "level": 1,
+            "text": "nvidia-cudnn-cu12/py3langid/windows-toasts/ddgs). Las 5 que siguen en >= son"
+          },
+          {
+            "line": 15,
+            "level": 1,
+            "text": "OPCIONALES y NO están en este runtime (pdfplumber, PyMySQL, psycopg[binary],"
+          },
+          {
+            "line": 16,
+            "level": 1,
+            "text": "psycopg2-binary, paho-mqtt) -> sin versión verificada para pinear."
+          },
+          {
+            "line": 18,
+            "level": 1,
+            "text": "--- LLM / embeddings stack ---"
+          },
+          {
+            "line": 22,
+            "level": 1,
+            "text": "CRÃTICO â€” NO subir a numpy 2.x. pandas==1.5.3 fue compilado contra numpy 1.x;"
+          },
+          {
+            "line": 23,
+            "level": 1,
+            "text": "con numpy 2.x falla al importar (\"numpy.dtype size changed, binary incompat\")"
+          },
+          {
+            "line": 24,
+            "level": 1,
+            "text": "y ARRASTRA a sentence-transformers (sklearn->pandas) -> EL ENCODER DEL ROUTER"
+          },
+          {
+            "line": 25,
+            "level": 1,
+            "text": "NO CARGA -> routing degradado SILENCIOSO (medido 2026-06-07: \"cuanta RAM\"->"
+          },
+          {
+            "line": 26,
+            "level": 1,
+            "text": "cancel_turn). `py3langid` declara numpy>=2.0.0 pero funciona perfecto con 1.26.4"
+          },
+          {
+            "line": 27,
+            "level": 1,
+            "text": "(verificado: clasifica es/en/fr OK) -> su pin es excesivo. Para que pip NO suba"
+          },
+          {
+            "line": 28,
+            "level": 1,
+            "text": "numpy resolviendo py3langid, instalÃ¡ con el constraints file (tope DURO):"
+          },
+          {
+            "line": 29,
+            "level": 1,
+            "text": "pip install -r requirements.txt -c constraints.txt"
+          }
+        ],
+        "lead": "﻿# gemma4_agent runtime requirements",
+        "measures": [
+          {
+            "line": 121,
+            "text": "# py3langid: clasificador estadÃ­stico de idioma pura-Python (~2MB, sin deps"
+          },
+          {
+            "line": 133,
+            "text": "# windows-toasts: notificaciones toast de Windows 10/11 con botones (SÃ­/No) para"
+          }
+        ],
+        "dates": [
+          "2026-06-03",
+          "2026-06-06",
+          "2026-06-07"
+        ],
+        "models": [
+          "livekit",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-146",
+          "h:2",
+          "m:121"
+        ]
+      }
+    }
+  ]
+}

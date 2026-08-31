@@ -1,0 +1,55 @@
+batch_id=docs-012-probando_gemma4-pg4_docs__historico
+kind=docs
+file_count=49
+hash_ok=49 drift=0 miss=0
+subsystem=pg4_docs__historico
+---FILES---
+OK documentacion/_historico/auditorias_baseline/audit_report.md	Carter Agent — Auditoría Integral de Tools
+OK documentacion/_historico/auditorias_baseline/branch_readiness.md	Estado de la rama `PortandoLoMejor` — listo para review de RED
+OK documentacion/_historico/auditorias_baseline/computer_use_exhaustive_validation_2026_05_25.md	Validación exhaustiva de computer-use — 2026-05-25
+OK documentacion/_historico/auditorias_baseline/computer_use_marathon_2026_05_25.md	Maratón de tests computer-use — 2026-05-25
+OK documentacion/_historico/auditorias_baseline/coverage_gaps.md	Análisis de cobertura — sesión de continuación 2026-05-21
+OK documentacion/_historico/auditorias_baseline/fix_decisions.md	Fix Decisions — Carter Agent
+OK documentacion/_historico/auditorias_baseline/fix_log.md	Fix Log — Carter Agent
+OK documentacion/_historico/auditorias_baseline/fix_notes.md	Fix Notes — Carter Agent
+OK documentacion/_historico/auditorias_baseline/fix_summary.md	Fix Summary — Carter Agent (sesión autónoma 2026-05-15)
+OK documentacion/_historico/auditorias_baseline/followup_log.md	Followup Log — Carter Agent
+OK documentacion/_historico/auditorias_baseline/informe_optimizacion_auditoria_externa.md	Carter Agent — Informe de Optimización (auditoría externa)
+OK documentacion/_historico/auditorias_baseline/optimization_log.md	Optimization Log — Fase 1 del roadmap del informe de auditoría externa
+OK documentacion/_historico/auditorias_baseline/optimization_roadmap.md	Optimization Roadmap — Fases 2 y 3
+OK documentacion/_historico/auditorias_baseline/polish_log.md	Polish Log — post-merge finalize
+OK documentacion/_historico/auditorias_baseline/questions_for_red.md	Preguntas / pendientes para RED — sesión overnight 2026-05-21
+OK documentacion/_historico/auditorias_baseline/research_prompt_gemma4_optimization.md	Prompt de auditoría exhaustiva — Optimización de Carter Agent (local Windows)
+OK documentacion/_historico/auditorias_baseline/review_arquitectonico_3_bugs_voz.md	Review arquitectónico — 3 bugs del agente voice local
+OK documentacion/_historico/auditorias_baseline/smoke_log.md	Smoke Log — Modo A (Direct call con stubs)
+OK documentacion/_historico/auditorias_baseline/smoke_log_mode_b.md	Smoke Log — Modo B (LLM real, Gemma 4 via llama-server)
+OK documentacion/_historico/auditorias_baseline/smoke_summary.md	Smoke Test Summary — Carter Agent
+OK documentacion/_historico/auditorias_baseline/tradeoffs.md	Tradeoffs para decisión de RED — sprint de latencia 2026-05-22
+OK documentacion/_historico/backlogs_superados/ROADMAP_perfeccion.md	Roadmap de perfeccionamiento — Carter Agent (2026-05-29)
+OK documentacion/_historico/baseline_audit/00_inventory.md	Fase 0 — Inventario crudo
+OK documentacion/_historico/baseline_audit/01_system.md	Fase 1 — Diagrama de sistema (C4 niveles 1 y 2)
+OK documentacion/_historico/baseline_audit/02_components/README.md	Fase 2 — Componentes por container (C4 Nivel 3)
+OK documentacion/_historico/baseline_audit/02_components/agent_core.md	02.08 — Agent Core
+OK documentacion/_historico/baseline_audit/02_components/llm_lifecycle.md	02.03 — LLM Lifecycle
+OK documentacion/_historico/baseline_audit/02_components/memory.md	02.06 — Memory & Knowledge + Skills/Microagents/Personas
+OK documentacion/_historico/baseline_audit/02_components/mission_verification.md	02.04 — Mission Outcome + Verification
+OK documentacion/_historico/baseline_audit/02_components/observability.md	02.01 — Observability: Event Bus + 3 sinks
+OK documentacion/_historico/baseline_audit/02_components/routing.md	02.05 — Routing & Validation
+OK documentacion/_historico/baseline_audit/02_components/state_config.md	02.10 — State + Sessions/Routines + Config/Profiles
+OK documentacion/_historico/baseline_audit/02_components/surfaces.md	02.09 — Superficies: CLI + UI Desktop + UI Field + MCP Server
+OK documentacion/_historico/baseline_audit/02_components/tools.md	02.07 — Tools (Registry + Domain + Ops + Safety)
+OK documentacion/_historico/baseline_audit/02_components/voice_loop.md	02.02 — Voice Loop
+OK documentacion/_historico/baseline_audit/03_classes/README.md	Fase 3 — UML de clases por subsistema
+OK documentacion/_historico/baseline_audit/03_classes/agent_core.md	03.08 — Agent Core (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/llm_lifecycle.md	03.03 — LLM Lifecycle (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/memory.md	03.06 — Memory & Knowledge (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/mission_verification.md	03.04 — Mission Outcome + Verification (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/observability.md	03.01 — Observability (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/routing.md	03.05 — Routing & Validation (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/state_config.md	03.10 — State + Config (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/surfaces.md	03.09 — Surfaces (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/tools.md	03.07 — Tools (clases UML)
+OK documentacion/_historico/baseline_audit/03_classes/voice_loop.md	03.02 — Voice Loop (clases UML)
+OK documentacion/_historico/baseline_audit/04_sequences/README.md	Fase 4 — Diagramas de secuencia
+OK documentacion/_historico/baseline_audit/04_sequences/boot.md	04.01 — Cold boot del agente
+OK documentacion/_historico/baseline_audit/04_sequences/router_fallback.md	04.05 — Router fallback: regex no encuentra tool

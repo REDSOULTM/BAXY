@@ -1,0 +1,65 @@
+batch_id=docs-003-carter
+kind=docs
+file_count=59
+hash_ok=59 drift=0 miss=0
+subsystem=carter_legacy_Carter_v3
+---FILES---
+OK legacy/Carter_v3/Roadmap/04_round_4_filesystem_universal.md	Round 4 - filesystem universal
+OK legacy/Carter_v3/Roadmap/05_round_5_terminal_seguro.md	Round 5 - terminal seguro
+OK legacy/Carter_v3/Roadmap/06_round_6_browser_minimo_util.md	Round 6 - browser minimo util
+OK legacy/Carter_v3/Roadmap/07_round_7_consolidacion_final.md	Round 7 - consolidacion final
+OK legacy/Carter_v3/Roadmap/08_round_8_c14_typo_targeting.md	Round 8 - C14 typo y targeting
+OK legacy/Carter_v3/Roadmap/08b_round_8b_app_open_fake_success.md	Round 8b - app_open fake success (BLOQUEANTE - hacer antes que Round 8)
+OK legacy/Carter_v3/Roadmap/09_round_9_refactor_dispatch_src.md	Round 9 - Refactor estructural dispatch + src
+OK legacy/Carter_v3/Roadmap/10_round_10_tool_protocol_robusto.md	Round 10 - Tool protocol robusto con Ollama
+OK legacy/Carter_v3/Roadmap/11_round_11_user_approved_provenance.md	Round 11 - user_approved provenance hardening
+OK legacy/Carter_v3/Roadmap/12_round_12_consolidacion_post_fixes.md	Round 12 - Consolidacion post-fixes
+OK legacy/Carter_v3/Roadmap/README.md	Carter v3 - Roadmap de prompts
+OK legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_PLAN.md	SECOND PASS TEXT CORE HARDENING PLAN
+OK legacy/Carter_v3/SECOND_PASS_TEXT_CORE_HARDENING_REPORT.md	SECOND PASS TEXT CORE HARDENING REPORT
+OK legacy/Carter_v3/STRICT_LIVE_SMOKE_ORACLES.md	STRICT_LIVE_SMOKE_ORACLES
+OK legacy/Carter_v3/STRICT_SMOKE_HARNESS_AUDIT.md	STRICT_SMOKE_HARNESS_AUDIT
+OK legacy/Carter_v3/TEST_FAILURE_AUDIT.md	TEST_FAILURE_AUDIT
+OK legacy/Carter_v3/TEST_TRUE_READY_REPORT.md	TEST_TRUE_READY_REPORT
+OK legacy/Carter_v3/TEXT_CORE_100_MASTER_PLAN.md	TEXT_CORE_100_MASTER_PLAN
+OK legacy/Carter_v3/TEXT_CORE_CLOSURE_AUDIT.md	TEXT_CORE_CLOSURE_AUDIT
+OK legacy/Carter_v3/TEXT_CORE_CLOSURE_REPORT.md	TEXT_CORE_CLOSURE_REPORT
+OK legacy/Carter_v3/TEXT_CORE_MASTER_CONTEXT.md	TEXT_CORE_MASTER_CONTEXT
+OK legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_AUDIT.md	THIRD PASS GUI PERCEPTION AUDIT
+OK legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_PLAN.md	THIRD PASS GUI PERCEPTION PLAN
+OK legacy/Carter_v3/THIRD_PASS_GUI_PERCEPTION_REPORT.md	THIRD PASS GUI PERCEPTION REPORT
+OK legacy/Carter_v3/THIRD_PASS_MISSION_STATUS_TRACE_REPORT.md	THIRD PASS MISSION STATUS TRACE REPORT
+OK legacy/Carter_v3/TRUE_CARTER_V3_TEXT_CORE_READY_REPORT.md	TRUE_CARTER_V3_TEXT_CORE_READY_REPORT
+OK legacy/Carter_v3/V2_IMPORT_ROUND_10_LOG.md	V2 Import Round 10 — Tool protocol robusto con Ollama
+OK legacy/Carter_v3/V2_IMPORT_ROUND_11_LOG.md	V2 Import Round 11b — user_approved provenance hardening
+OK legacy/Carter_v3/V2_IMPORT_ROUND_12_LOG.md	V2 Import Round 12 - Consolidacion post-fixes
+OK legacy/Carter_v3/V2_IMPORT_ROUND_13A_LOG.md	V2 Import Round 13A - residual triage y bugfixes reales
+OK legacy/Carter_v3/V2_IMPORT_ROUND_13B_LOG.md	V2 Import Round 13B - deuda tecnica estructural del agent loop
+OK legacy/Carter_v3/V2_IMPORT_ROUND_13C_LOG.md	V2 Import Round 13C - deuda tecnica del core (agent finish paths + verifier outc
+OK legacy/Carter_v3/V2_IMPORT_ROUND_14_LOG.md	Round 14 - minimum live-safe / follow-ups / REPL routing
+OK legacy/Carter_v3/V2_IMPORT_ROUND_15_LOG.md	Round 15 - REPL follow-ups ambiguos y launches reales de Windows
+OK legacy/Carter_v3/V2_IMPORT_ROUND_1_LOG.md	V2 → V3 Import — Round 1 — Live Log
+OK legacy/Carter_v3/V2_IMPORT_ROUND_2_LOG.md	V2 -> V3 Import Round 2 - Live Log
+OK legacy/Carter_v3/V2_IMPORT_ROUND_3_LOG.md	V2 -> V3 Import Round 3 - Live Log
+OK legacy/Carter_v3/V2_IMPORT_ROUND_4_LOG.md	V2 -> V3 Import Round 4 - Live Log
+OK legacy/Carter_v3/V2_IMPORT_ROUND_5_LOG.md	V2 -> V3 Import Round 5 - Live Log
+OK legacy/Carter_v3/V2_IMPORT_ROUND_6_LOG.md	V2 -> V3 Import Round 6 - Browser minimo util
+OK legacy/Carter_v3/V2_IMPORT_ROUND_7_LOG.md	V2 -> V3 Import Round 7 - Live Log
+OK legacy/Carter_v3/V2_IMPORT_ROUND_8B_LOG.md	V2 Import Round 8b - app_open fake success
+OK legacy/Carter_v3/V2_IMPORT_ROUND_8_LOG.md	V2 -> V3 Import Round 8 - C14 typo y targeting
+OK legacy/Carter_v3/V2_IMPORT_ROUND_9_LOG.md	V2 Import Round 9 - Refactor dispatch/src
+OK legacy/Carter_v3/V2_TO_V3_IMPORT_AUDIT.md	Carter v2 -> v3 import audit
+OK legacy/Carter_v3/VISION_WITHOUT_VLM_AUDIT.md	VISION_WITHOUT_VLM_AUDIT
+OK legacy/Carter_v3/VISION_WITHOUT_VLM_PLAN.md	VISION_WITHOUT_VLM_PLAN
+OK legacy/Carter_v3/VISION_WITHOUT_VLM_REPORT.md	VISION_WITHOUT_VLM_REPORT
+OK legacy/Carter_v3/audit/runs/live_matrix_progress.txt	
+OK legacy/Carter_v3/audit/runs/live_matrix_stderr.txt	
+OK legacy/Carter_v3/docs/audit/CODEX_REVIEW_minimum_live_safe_tool_policy_round.md	Revisión Codex: minimum live-safe — tool policy y ruta acción vs conversación
+OK legacy/Carter_v3/docs/competition/CLAUDE_COMPETITIVE_AUDIT_VERDICT.md	CLAUDE_COMPETITIVE_AUDIT_VERDICT.md
+OK legacy/Carter_v3/docs/competition/COMPETITOR_AGENTS_DEEP_AUDIT.md	COMPETITOR_AGENTS_DEEP_AUDIT.md
+OK legacy/Carter_v3/docs/competition/COMPETITOR_GOOSE_DEEP_AUDIT.md	COMPETITOR_GOOSE_DEEP_AUDIT.md
+OK legacy/Carter_v3/docs/history/CHANGELOG_FASE0.md	Carter v3 — CHANGELOG
+OK legacy/Carter_v3/docs/history/smoke_live_post_cleanup_raw.txt	
+OK legacy/Carter_v4/audit/runs/gemma_vs_qwen_report.md	Auditoría comparativa: Gemma 4 vs Qwen3 para Carter v4
+OK legacy/Carter_v4/requirements.txt	Carter v4 — runtime dependencies.
+OK legacy/Cater_v3_tests/Carter_v2_Matriz_Pruebas_30_por_categoria (1).md	Carter v2 — Matriz brutal de pruebas: 30 tests por categoría

@@ -1,0 +1,3950 @@
+{
+  "batch_id": "docs-010-probando_gemma4",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_docs_03_voz_stt",
+  "file_count": 25,
+  "hash_ok": 25,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/03_voz_stt/research/wake_ruido_fondo_2026-06-11.md",
+      "queued_sha256": "6aade1caed535f76e79e481805794d79c4093aea01d660c6063dcc669ced458d",
+      "size_queued": 11356,
+      "exists": true,
+      "disk_sha256": "6aade1caed535f76e79e481805794d79c4093aea01d660c6063dcc669ced458d",
+      "disk_size": 11356,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 188,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Wake-word con audio de fondo: diagnóstico, plan y fuentes (2026-06-11)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Síntoma de campo"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Causa raíz (medida, no supuesta)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Baseline MEDIDO (scripts/wake_noise_baseline_eval.py)"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Qué hace la industria (fuentes)"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "Plan ejecutado"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Bitácora de iteraciones del retrain (todas medidas, ninguna deployada aún)"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Techo máximo: peldaños restantes (roadmap, NO en este sprint)"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "P1 — AEC con loopback WASAPI (el peldaño \"Alexa de verdad\")"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "P2 — Idiomas débiles en limpio: nl / vi / zh (0/20 ya ANTES del ruido)"
+          },
+          {
+            "line": 152,
+            "level": 3,
+            "text": "P3 — Positivos con voz REAL grabada (techo de los datos sintéticos)"
+          },
+          {
+            "line": 161,
+            "level": 3,
+            "text": "P4 — Modelo más grande (conv_attention large)"
+          },
+          {
+            "line": 170,
+            "level": 3,
+            "text": "Registro de evidencia de campo"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "Fuentes"
+          }
+        ],
+        "lead": "Con una película/serie sonando u otras voces de fondo, el wake (\"Baxy\") NO",
+        "measures": [
+          {
+            "line": 22,
+            "text": "0.2s ≥ 1.6×piso, y el piso EMA converge al nivel del ambiente en ~1-2 s"
+          },
+          {
+            "line": 23,
+            "text": "(α=0.05/chunk de 32 ms). Con una peli sonando, una voz a SNR 0 dB da una"
+          },
+          {
+            "line": 31,
+            "text": "deslizante hop 0.5 s como el harness oficial, threshold de prod 0.25:"
+          },
+          {
+            "line": 41,
+            "text": "threshold. FP solo-ruido: 0/300. Reproducido también EN VIVO por el pipeline"
+          },
+          {
+            "line": 43,
+            "text": "FAIL, limpio PASS, FP-en-silencio rechazado PASS, solo-ruido PASS)."
+          },
+          {
+            "line": 45,
+            "text": "Idiomas ya débiles en limpio (preexistente, documentado): nl 0/20, vi 0/20,"
+          },
+          {
+            "line": 46,
+            "text": "zh 0/20."
+          },
+          {
+            "line": 51,
+            "text": "de TV/película** a distintos SIR en el training del KWS → **30-45% menos"
+          },
+          {
+            "line": 66,
+            "text": "pre-carga TODO a RAM en float32; MUSAN completo ≈ 25 GB no entra)."
+          },
+          {
+            "line": 76,
+            "text": "- G4 FP: 0/300 ventanas solo-ruido por fuente Y fp/hr ≤ 1.0 sobre el pool"
+          },
+          {
+            "line": 80,
+            "text": "4. **Capa 2 — gate de energía**: si tras el retrain el gate 1.6× rechaza >5%"
+          },
+          {
+            "line": 94,
+            "text": "| orig | (backgrounds vacío) | 0.820 | 0.000 | 0.500 | 66% | nunca vio ruido + atajo posicional |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "livekit",
+          "piper",
+          "voxcpm"
+        ],
+        "hardware": [
+          "4060"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-188",
+          "h:1",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/wake_v5_diseno_entrenamiento_2026-06-11.md",
+      "queued_sha256": "67d7e5530861352253784d594f41fe3dd1739cc7ceafe8ad6c9f505437f4eef0",
+      "size_queued": 10905,
+      "exists": true,
+      "disk_sha256": "67d7e5530861352253784d594f41fe3dd1739cc7ceafe8ad6c9f505437f4eef0",
+      "disk_size": 10905,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 153,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Diseño del entrenamiento v5 del wake word — arqueología + estado del arte (2026-06-11)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Parte 1 — Arqueología: las 8 generaciones de wake word de este repo"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Parte 2 — Estado del arte: qué hacen los que SÍ les funciona"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "LiveKit producción (el mismo stack nuestro)"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "openWakeWord (la base de Home Assistant; mismo embedding congelado que LiveKit)"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "microWakeWord / Home Assistant"
+          },
+          {
+            "line": 81,
+            "level": 3,
+            "text": "Papers"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "Parte 3 — Gap analysis (nosotros v4 vs estado del arte)"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Parte 4 — Diseño v5 PROPUESTO (no lanzado; ~3-4 h de GPU)"
+          },
+          {
+            "line": 118,
+            "level": 1,
+            "text": "confusables end-aligned); large ya dio +0.23 y"
+          },
+          {
+            "line": 119,
+            "level": 1,
+            "text": "el costo runtime es ~0 (el frontend domina)"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "Fuentes"
+          }
+        ],
+        "lead": "Investigación previa al v5 (pedida explícitamente: \"documentate profundamente",
+        "measures": [
+          {
+            "line": 22,
+            "text": "| v1-v4 | 06-11 | LiveKit+MUSAN | baxy | 5k→large 45k | bitácora en `wake_ruido_fondo_2026-06-11.md`; v4: 0.662/0.134/0.584/30% | augment corregido (3 bugs), capacidad subida; **val interna ESTANCADA en 0.70 = el cuello es DATA** |"
+          },
+          {
+            "line": 41,
+            "text": "50/50/1024/50, augment rounds 3, clip 2.0 s."
+          },
+          {
+            "line": 42,
+            "text": "**Nosotros SIEMPRE entrenamos la versión \"overnight reducida\": 5k/30k = 1/5"
+          },
+          {
+            "line": 43,
+            "text": "del dato y 1/3 de los steps de su producción.** El comentario está en"
+          },
+          {
+            "line": 84,
+            "text": "varios SIR en train → 30-45% menos FRR bajo playback. Implementado (v2+)."
+          },
+          {
+            "line": 90,
+            "text": "los negativos mejoró 66→30% con end-alignment pero sigue lejos de ≤1%)."
+          },
+          {
+            "line": 96,
+            "text": "| positivos | 5.000 | LiveKit prod 25k; oWW 50k; \"scaling suave\" | **GAP PRINCIPAL — 1/5 del estándar** |"
+          },
+          {
+            "line": 102,
+            "text": "| target_fp/hr | 0.5 | LiveKit 0.1; mWW FP-first | **endurecer a 0.1-0.25** (ataca G6 fake-calls) |"
+          },
+          {
+            "line": 121,
+            "text": "batch_n_per_class: igual (100/100/2048/100)"
+          },
+          {
+            "line": 138,
+            "text": "Gates de deploy: SIN CAMBIOS (6/6, prod no se pisa)."
+          }
+        ],
+        "dates": [
+          "2026-06-11"
+        ],
+        "models": [
+          "piper",
+          "livekit",
+          "voxcpm"
+        ],
+        "hardware": [
+          "4060"
+        ],
+        "mechanisms": [
+          {
+            "line": 26,
+            "text": "arreglar un bug del pipeline (padding, backgrounds vacíos, atajo"
+          }
+        ],
+        "ranges": [
+          "1-153",
+          "h:1",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/whisper_small_cpu_spanglish_accuracy.md",
+      "queued_sha256": "c900109fd8dfede5d5684dd2cbc87ab9f95ea6aa236facc71bf7174cd82dff72",
+      "size_queued": 24005,
+      "exists": true,
+      "disk_sha256": "c900109fd8dfede5d5684dd2cbc87ab9f95ea6aa236facc71bf7174cd82dff72",
+      "disk_size": 24005,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 151,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Maximizing Whisper-small CPU Accuracy for a Local Spanglish Voice Assistant"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Key Findings"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Details — Answers to your research questions, with ROI ordering"
+          },
+          {
+            "line": 38,
+            "level": 3,
+            "text": "Tier 1 — Solid evidence, deploy first"
+          },
+          {
+            "line": 76,
+            "level": 3,
+            "text": "Tier 2 — Worth trying, plausible gains"
+          },
+          {
+            "line": 91,
+            "level": 3,
+            "text": "Tier 3 — Bigger investment, only if Tiers 1–2 are insufficient"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Recommendations — staged plan"
+          },
+          {
+            "line": 142,
+            "level": 2,
+            "text": "Caveats"
+          }
+        ],
+        "lead": "- **The single highest-ROI change is to stop relying on `initial_prompt`/`hotwords` for proper-noun biasing** (in faster-whisper both are just decoder-prompt token prepends, not shallow fusion — confirmed by reading `transcribe.py` and the maintainer's own statement that \"shallow fusion … is not yet available in faster-whisper nor in CTranslate2\") and instead invest in (1) CPU denoising via DeepFi",
+        "measures": [
+          {
+            "line": 43,
+            "text": "- **Latency/CPU/RAM cost:** ~40 ms algorithmic look-ahead + ~RTF 0.19 of audio duration; for a 2 s command on a 4-core x86 this is ~80 ms additional CPU. RAM ~80 MB."
+          },
+          {
+            "line": 44,
+            "text": "- **Risk to universal use:** Very low — denoising acts speaker-agnostically. The one documented failure is over-suppression of soft consonants; mitigate by keeping wet/dry mix at 80/20."
+          },
+          {
+            "line": 72,
+            "text": "- **Cost:** ~5% CPU during TTS playback, near-zero otherwise."
+          },
+          {
+            "line": 86,
+            "text": "**R10. Use the LLM that is already running for a *constrained* second-pass repair.** [Post-processing Q9]"
+          },
+          {
+            "line": 89,
+            "text": "- **Risk:** Latency. Only invoke when post-corrector flags ambiguity (no inventory match within fuzzy threshold). With a 6 GB GPU LLM already warm, a 30-token completion is typically <150 ms."
+          },
+          {
+            "line": 96,
+            "text": "- **Cost:** ~600 M params, 1.2–1.8 GB RAM INT8; comparable or higher CPU per inference than whisper-small int8 — not a free win."
+          },
+          {
+            "line": 102,
+            "text": "- **Cost:** ~6 h on a single 24 GB consumer GPU (rentable), no GPU at inference (LoRA can be merged into the FP16/INT8 CT2 export or kept as a small adapter swap)."
+          },
+          {
+            "line": 118,
+            "text": "- (b) Pad <1.0 s clips to 1.0 s with –45 dBFS pink noise (R2)."
+          },
+          {
+            "line": 121,
+            "text": "- **Continue if:** WER drops below ~0.45 on the existing 105-command bench AND Anglicism entity-recall is >80%. Else stop here, you are done."
+          },
+          {
+            "line": 126,
+            "text": "- (g) Wire constrained LLM second-pass repair on low-confidence transcripts (R10)."
+          },
+          {
+            "line": 127,
+            "text": "- **Escalate if:** intent accuracy still <90% or Anglicism entity-recall <90%."
+          },
+          {
+            "line": 148,
+            "text": "- Whisper-small at int8 (~900 MB RAM) plus DeepFilterNet (~80 MB) plus AEC (~10 MB) plus VAD (~30 MB) totals ~1 GB before LLM/TTS — fits a typical 8 GB laptop but is tight on 4 GB; verify on lowest target hardware."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "piper"
+        ],
+        "hardware": [
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-151",
+          "h:1",
+          "m:43"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/PLAN_mission_planner_executor.md",
+      "queued_sha256": "a557a0f3ebe63a7d11893cc9e93650d547d1d8c68c17eea1a63c6f67c4d19084",
+      "size_queued": 4202,
+      "exists": true,
+      "disk_sha256": "a557a0f3ebe63a7d11893cc9e93650d547d1d8c68c17eea1a63c6f67c4d19084",
+      "disk_size": 4202,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 78,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan: Mission Planner-Executor — que el 4B complete tareas largas SIN subir de modelo"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Diagnóstico (medido, no intuición)"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Conclusión de diseño"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Fases con GATE (CLAUDE.md §2/§3)"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "FASE 0 — MEDIR la ejecución (antes de construir)"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "FASE 1 — Ejecutor robusto por paso"
+          },
+          {
+            "line": 57,
+            "level": 3,
+            "text": "FASE 2 — Recuperación de planificación"
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "FASE 3 — Cierre honesto + checkpoint"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "Límites honestos (no negociables)"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Fuentes"
+          }
+        ],
+        "lead": "**Fecha:** 2026-05-27",
+        "measures": [
+          {
+            "line": 5,
+            "text": "movilidad/no_vidente: control 100% por voz, el agente hace TODO), con E2B-Q4 en"
+          },
+          {
+            "line": 6,
+            "text": "≤4GB. Sin cambiar de modelo."
+          },
+          {
+            "line": 16,
+            "text": "- **Planificación**: el 4B descompone objetivos en sub-pasos **~70-90% bien**"
+          },
+          {
+            "line": 17,
+            "text": "(7/10 en `_measure_4b_plan_results.json`; 2 de los 3 \"fallos\" son ruido del"
+          },
+          {
+            "line": 55,
+            "text": "(no por planificación) suben a ≥80% completadas o fallo-honesto. Falso-PASS 0%."
+          }
+        ],
+        "dates": [
+          "2026-05-27"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-78",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/PLAN_vram4_unico_y_modos_accesibilidad.md",
+      "queued_sha256": "5f591f459e98edb1f1dae750229b0cfbb1332e176f79b6617c0ce22d8a4af2cb",
+      "size_queued": 5524,
+      "exists": true,
+      "disk_sha256": "5f591f459e98edb1f1dae750229b0cfbb1332e176f79b6617c0ce22d8a4af2cb",
+      "disk_size": 5524,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 95,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan: vram4 único + Modos de accesibilidad"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "PARTE A — vram4 como único perfil"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "A1. `profiles.py` — colapsar a un solo perfil"
+          },
+          {
+            "line": 24,
+            "level": 3,
+            "text": "A2. `profile_watcher.py` — neutralizar (no borrar)"
+          },
+          {
+            "line": 30,
+            "level": 3,
+            "text": "A3. UI Python — `ui/main_window.py`, `ui/settings.py`"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "A4. UI React — `ui_field/src/components/SettingsPanel.tsx`, `App.tsx`, `SubstratePanel.tsx`"
+          },
+          {
+            "line": 38,
+            "level": 3,
+            "text": "A5. `server.py`, `config.py`, `chat.py`, `agent_prompt.py`, `domain_tools.py`, `llama_server.py`"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "A6. Tests"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "Gate A (antes de pasar a B)"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "PARTE B — Modos de accesibilidad (después de Gate A)"
+          },
+          {
+            "line": 56,
+            "level": 3,
+            "text": "B1. Capa base — `gemma4_agent/accessibility.py` (nuevo)"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "B2. Activación por voz (multilingüe, sin regex es-only)"
+          },
+          {
+            "line": 70,
+            "level": 3,
+            "text": "B3. `movilidad` primero (el más cercano a listo)"
+          },
+          {
+            "line": 74,
+            "level": 3,
+            "text": "B4. `no_vidente` (después)"
+          },
+          {
+            "line": 79,
+            "level": 3,
+            "text": "B5. Eval + informe"
+          },
+          {
+            "line": 84,
+            "level": 3,
+            "text": "Fuentes (verificadas esta sesión)"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Límites honestos (no negociables)"
+          }
+        ],
+        "lead": "Decisiones del usuario (2026-05-26):",
+        "measures": [
+          {
+            "line": 5,
+            "text": "- **vram4 único, sin selector.** Borrar vram3/6/8/12/16 del código; vram4 (E2B-Q4) es el único perfil real."
+          },
+          {
+            "line": 6,
+            "text": "- **No tocar archivos GGUF.** Solo código; los modelos en disco quedan intactos."
+          },
+          {
+            "line": 16,
+            "text": "- `PROFILES` queda solo con `vram4` (E2B-Q4_K_M, mmproj E2B, ctx 12288, visión ON, voz ON) y `standby` (necesario: apaga el server; la UI lo usa)."
+          },
+          {
+            "line": 19,
+            "text": "- `_LEGACY_ALIASES`: TODOS los nombres viejos (vram3/6/8/12/16/performance/balanced/light…) → `\"vram4\"`. Así un `active_profile.txt` viejo no rompe."
+          },
+          {
+            "line": 21,
+            "text": "- Arreglar el docstring contradictorio de `recommend_profile` (decía E4B-Q4/7.3GB; el real es E2B-Q4/3.36GB)."
+          },
+          {
+            "line": 81,
+            "text": "- Gates: no_vidente=100% acciones narradas; movilidad=0 pasos que requieran input físico del user; normal sin regresión."
+          },
+          {
+            "line": 82,
+            "text": "- Informe con fuentes WCAG 2.1/2.2 + ARIA + el dato de los 4GB de VRAM (lo \"defendible\")."
+          },
+          {
+            "line": 93,
+            "text": "- NO borro GGUF."
+          }
+        ],
+        "dates": [
+          "2026-05-26"
+        ],
+        "models": [
+          "e4b",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-95",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/README.md",
+      "queued_sha256": "ae612128e763d8ccf6bf393aebe1d752a50279dee08f8cde2a2fb73fa7e5a27c",
+      "size_queued": 1887,
+      "exists": true,
+      "disk_sha256": "ae612128e763d8ccf6bf393aebe1d752a50279dee08f8cde2a2fb73fa7e5a27c",
+      "disk_size": 1887,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 32,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04 — Computer Use"
+          }
+        ],
+        "lead": "Control del SO por voz: el agente actúa en cualquier app (abrir, escribir,",
+        "measures": [
+          {
+            "line": 9,
+            "text": "target 4 GB (medido)."
+          }
+        ],
+        "dates": [
+          "2026-06-07",
+          "2026-06-09"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-32",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/11_plan_computer_use_windows_4b.md",
+      "queued_sha256": "2927e7bd9388afbec2466008884fc745beadaeb77a0d17a89b16f07377f06362",
+      "size_queued": 41963,
+      "exists": true,
+      "disk_sha256": "2927e7bd9388afbec2466008884fc745beadaeb77a0d17a89b16f07377f06362",
+      "disk_size": 41963,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 462,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Plan técnico para un agente de voz local que controla Windows con un LLM 4B (Gemma 4 E4B)"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "P1 — Arquitectura del loop observe→act→verify→recover"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "P2 — Verificación post-acción SIN VLM"
+          },
+          {
+            "line": 76,
+            "level": 1,
+            "text": "1) Esperar settling corto (UI necesita refrescar)"
+          },
+          {
+            "line": 79,
+            "level": 1,
+            "text": "2) UIA delta del subárbol del target (con RuntimeId si lo tenemos)"
+          },
+          {
+            "line": 91,
+            "level": 1,
+            "text": "3) Frame-diff ROI (NO full-screen) con dHash 8×8"
+          },
+          {
+            "line": 99,
+            "level": 1,
+            "text": "4) Foreground check (cheap)"
+          },
+          {
+            "line": 102,
+            "level": 1,
+            "text": "5) Event hook (async, leído del buffer)"
+          },
+          {
+            "line": 108,
+            "level": 1,
+            "text": "6) Fusión: cualquier 2 de las 3 señales positivas = confirmed True"
+          },
+          {
+            "line": 134,
+            "level": 2,
+            "text": "P3 — Cascada UIA → OCR → visión"
+          },
+          {
+            "line": 140,
+            "level": 1,
+            "text": "Tier 0: cache de observación por turno (NO re-escanear si <2 s pasaron)"
+          },
+          {
+            "line": 144,
+            "level": 1,
+            "text": "Tier 1: UIA con prefetch (cacheRequest bulk) — apps nativas, ~30-150 ms"
+          },
+          {
+            "line": 153,
+            "level": 1,
+            "text": "Tier 2: relaunch CEF/Chromium con --force-renderer-accessibility=complete"
+          },
+          {
+            "line": 159,
+            "level": 1,
+            "text": "Tier 3: OCR PaddleOCR sobre screenshot mss — apps custom-render, ~200-500 ms"
+          },
+          {
+            "line": 165,
+            "level": 1,
+            "text": "Tier 4: Visión Gemma mmproj — último recurso, SOLO si el step es crítico"
+          },
+          {
+            "line": 194,
+            "level": 2,
+            "text": "P4 — Recuperación de errores (pre-retry actions)"
+          },
+          {
+            "line": 217,
+            "level": 2,
+            "text": "P5 — Riesgo y seguridad"
+          },
+          {
+            "line": 242,
+            "level": 1,
+            "text": "1) Mostrar overlay al user (TTS + Toast): \"Por favor escribí la contraseña, te cedo el control 30 s\""
+          },
+          {
+            "line": 246,
+            "level": 1,
+            "text": "2) Asegurar foco al campo"
+          },
+          {
+            "line": 249,
+            "level": 1,
+            "text": "3) Ceder control: deshabilitar el agent input"
+          },
+          {
+            "line": 252,
+            "level": 1,
+            "text": "4) Monitorear UIA Value (sin leer el contenido — solo length>=min y focus_lost)"
+          },
+          {
+            "line": 261,
+            "level": 1,
+            "text": "5) Resumir control, registrar en history SOLO \"user_typed_secret_into:<AutomationId>\""
+          },
+          {
+            "line": 277,
+            "level": 1,
+            "text": "Pollear estado del input cada 50 ms"
+          },
+          {
+            "line": 286,
+            "level": 1,
+            "text": "Si hubo input del user EN LOS ÚLTIMOS 200 ms y NO fue del agente"
+          }
+        ],
+        "lead": "**TL;DR**",
+        "measures": [
+          {
+            "line": 22,
+            "text": "| Opción | Latencia/paso | Confiabilidad | VRAM | Aplicable a 4B local | Veredicto |"
+          },
+          {
+            "line": 24,
+            "text": "| (a) LLM emite primitivos sueltos (click_xy, type_text) | 1–2 s LLM + 0 verify | Baja: deriva tras 3 pasos | ~5 GB | Sí pero falla | Status quo, **DESCARTAR** |"
+          },
+          {
+            "line": 25,
+            "text": "| (b) Macros deterministas `click_button(label)` con observe→act→verify | 50–300 ms (sin LLM en pasos triviales) | Alta para UIA rico | ~5 GB | **Sí** | **ELEGIR** |"
+          },
+          {
+            "line": 26,
+            "text": "| (c) VLM-style (Gemma mmproj cada paso) | 1.5–3 s solo image-encode + LLM | Media (sin grounding RL) | ~6.5 GB (sobre presupuesto) | No | **NO-VIABLE en vram4** |"
+          },
+          {
+            "line": 65,
+            "text": "| Frame-diff full-screen pHash | 20–40 ms | Alto (cursor, reloj, blink) | Medio | No | **Solo con cropping** |"
+          },
+          {
+            "line": 66,
+            "text": "| Frame-diff de ROI (bbox del target) con dHash 8×8 | 5–10 ms | Bajo si ROI bien acotado | Bajo | Sí (ROI excluye reloj/notif) | **PRIMARIO** |"
+          },
+          {
+            "line": 67,
+            "text": "| Re-lectura UIA del subárbol enfocado, delta Name/Value/State | 30–150 ms (depende de prefetch) | Bajo | Bajo (si UIA responde) | Sí | **PRIMARIO** |"
+          },
+          {
+            "line": 68,
+            "text": "| `SetWinEventHook` (`EVENT_SYSTEM_FOREGROUND`, `EVENT_OBJECT_INVOKED`, `EVENT_OBJECT_VALUECHANGE`) | <5 ms (async push) | Muy bajo | Solo si la app emite eventos | Sí (event_thread_id correlaciona con tu PID) | **SECUNDARIO async** |"
+          },
+          {
+            "line": 69,
+            "text": "| `GetForegroundWindow` + título | <2 ms | Bajo | Alto (no detecta cambios intra-ventana) | Sí | **Solo para verify de \"abrió la app correcta\"** |"
+          },
+          {
+            "line": 70,
+            "text": "| Visión Gemma mmproj (recorte 256×256) | ~1.5–2.5 s (encode+decode) | Bajo | Bajo | Sí | **Último recurso, gateado** |"
+          },
+          {
+            "line": 72,
+            "text": "**Combinación recomendada (<50 ms en el camino feliz):**"
+          },
+          {
+            "line": 77,
+            "text": "time.sleep(0.08)  # 80 ms; ajustar por app"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "gemma-4",
+          "whisper",
+          "gemma4"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 53,
+            "text": "[mission_goal verifier]  ←  estructural por SO (pycaw, Path.stat, EnumWindows)"
+          },
+          {
+            "line": 61,
+            "text": "**El verifier es lo más importante del sistema.** Tabla comparativa por señal:"
+          },
+          {
+            "line": 354,
+            "text": "goal: dict                  # mission_goal verifier spec"
+          },
+          {
+            "line": 390,
+            "text": "| **2. Macros parametrizadas** | `click_button(label)`, `fill_field(label, value)`, `select_menu(path)`, `toggle(label)`, `wait_for(label)`. Cada una con observe→act→verify→recover | Task SR por verifier estructural en eval-set Fase 0 | ≥40"
+          },
+          {
+            "line": 422,
+            "text": "1. **Armá el eval-set de 30 misiones reproducibles** con verifier estructural por misión. Sin esto, todo lo demás es opinión. Tirá el bench actual si está midiendo \"estructura\" en lugar de estado del SO."
+          },
+          {
+            "line": 441,
+            "text": "- Si Fase 1 deja falsos PASS >10 % → arquitectura del verifier mala, NO seguir a Fase 2; revisar señales."
+          }
+        ],
+        "ranges": [
+          "1-462",
+          "h:1",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/3_verificacion.md",
+      "queued_sha256": "e4f63886e604b960d1b1431749f943dc795e4a2a916598e0267b58bd89882897",
+      "size_queued": 50921,
+      "exists": true,
+      "disk_sha256": "e4f63886e604b960d1b1431749f943dc795e4a2a916598e0267b58bd89882897",
+      "disk_size": 50921,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 829,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Verificación de efecto y recuperación robusta para un agente de voz local con Gemma 4 E4B-it (Q4_K_M, llama.cpp b9090, Windows)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Punto 1 — Verificación robusta del efecto real en Windows"
+          },
+          {
+            "line": 12,
+            "level": 3,
+            "text": "(a) Diagnóstico"
+          },
+          {
+            "line": 22,
+            "level": 3,
+            "text": "Hallazgo clave sobre WhatsApp Desktop (2025-2026)"
+          },
+          {
+            "line": 32,
+            "level": 3,
+            "text": "(b) Comparativa de técnicas — Windows + voz + 4B local"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "Qué medir (instrumentar SIEMPRE)"
+          },
+          {
+            "line": 57,
+            "level": 3,
+            "text": "(c) Fuentes (2025-2026)"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "(d) Veredicto"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "(e) Código concreto"
+          },
+          {
+            "line": 75,
+            "level": 1,
+            "text": "uia_verifier.py — cliente UIA persistente, sub-300ms con caché"
+          },
+          {
+            "line": 83,
+            "level": 1,
+            "text": "--- 1) Verificador rápido de ventana (Win32 puro, <5 ms) ---"
+          },
+          {
+            "line": 101,
+            "level": 1,
+            "text": "SendMessageTimeout con SMTO_ABORTIFHUNG detecta apps colgadas"
+          },
+          {
+            "line": 109,
+            "level": 1,
+            "text": "--- 2) Cliente UIA persistente (vive en el proceso del agente) ---"
+          },
+          {
+            "line": 138,
+            "level": 1,
+            "text": "--- 3) Verificadores específicos ---"
+          },
+          {
+            "line": 166,
+            "level": 1,
+            "text": "--- 4) WhatsApp: verificar header (contacto) y estado enviado por UIA ---"
+          },
+          {
+            "line": 181,
+            "level": 1,
+            "text": "En WebView2 el header del chat activo es heading/button cuyo Name contiene el contacto"
+          },
+          {
+            "line": 217,
+            "level": 1,
+            "text": "--- 5) Audio (pycaw — estado real) ---"
+          },
+          {
+            "line": 238,
+            "level": 2,
+            "text": "Punto 2 — Política de recuperación para un LLM 4B local"
+          },
+          {
+            "line": 240,
+            "level": 3,
+            "text": "(a) Diagnóstico"
+          },
+          {
+            "line": 253,
+            "level": 3,
+            "text": "(b) Comparativa de patrones de recuperación"
+          },
+          {
+            "line": 267,
+            "level": 3,
+            "text": "Política recomendada — máquina de estados externa"
+          },
+          {
+            "line": 288,
+            "level": 3,
+            "text": "(c) Fuentes (2024-2026)"
+          },
+          {
+            "line": 299,
+            "level": 3,
+            "text": "(d) Veredicto"
+          }
+        ],
+        "lead": "- **Punto 1 (verificación):** abandona OCR como vía principal y usa el árbol UIA (Microsoft UI Automation) con un cliente persistente y `CacheRequest`. Para WhatsApp Desktop 2025-2026, que ya es un wrapper WebView2 sobre web.whatsapp.com, los `ListItem` del panel de chat exponen el nombre del contacto y los estados \"Sent/Delivered/Read\" en la propiedad `Name`. Es el camino más fiable, más barato (",
+        "measures": [
+          {
+            "line": 18,
+            "text": "3. **Estado semántico:** ¿es el chat correcto? ¿el volumen es 60%? ¿el mensaje muestra el tick de enviado?"
+          },
+          {
+            "line": 34,
+            "text": "| Técnica | Detección de efecto | Latencia añadida (típica) | Riesgo de falso-OK / falso-FAIL | Veredicto |"
+          },
+          {
+            "line": 36,
+            "text": "| Tool returned OK (status quo) | Bajísima — sólo \"se lanzó\" | 0 ms | Falso-OK altísimo (el caso del bug) | Insuficiente como única verificación |"
+          },
+          {
+            "line": 37,
+            "text": "| `EnumWindows` + `GetForegroundWindow` + título regex (win32gui) | Media — confirma HWND visible y foreground | **<5 ms** (Win32 puro) | Falso-OK si hay otra instancia; falso-FAIL si el título tarda en aparecer | **Excelente como primer es"
+          },
+          {
+            "line": 38,
+            "text": "| `WaitForInputIdle` (con timeout) | Alta — confirma que la app procesó su primer mensaje | 50-500 ms (bloqueante hasta input idle) | Falso-FAIL si la app es lenta arrancando | Útil tras `CreateProcess`, antes de UIA |"
+          },
+          {
+            "line": 39,
+            "text": "| `SetWinEventHook(EVENT_SYSTEM_FOREGROUND)` | Alta — evento push, no polling | ~0 ms (asíncrono) | Falso-OK si otra app robó el foreground; requiere thread con message loop | Ideal para detectar foco real tras `SetForegroundWindow` |"
+          },
+          {
+            "line": 42,
+            "text": "| UIA + FlaUI (.NET, `CacheRequest`) | Alta | Sub-300 ms consistente con caché | Bajo | El más rápido, pero requiere bindings .NET |"
+          },
+          {
+            "line": 43,
+            "text": "| OCR del header (Tesseract/PaddleOCR) | Media-alta | 150-500 ms por crop | Falso-OK por glifos similares; falla con render dinámico | Sólo como fallback cuando Chromium no expone UIA |"
+          },
+          {
+            "line": 44,
+            "text": "| Template matching de píxeles | Media | 20-100 ms | Frágil ante DPI/temas/zoom | Sólo para iconos estables (mute icon) |"
+          },
+          {
+            "line": 45,
+            "text": "| `pycaw IAudioEndpointVolume.GetMasterVolumeLevelScalar()` | Altísima — lee el estado real del kernel audio | **<5 ms** | Casi nulo | **Ideal para verify_audio** |"
+          },
+          {
+            "line": 46,
+            "text": "| Filesystem `Path.exists()` / `stat.st_mtime` | Altísima | <1 ms | Nulo | **Ideal para verify_filesystem** |"
+          },
+          {
+            "line": 52,
+            "text": "- Distribución `verified` / `failed` / `unknown` por tool."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 51,
+            "text": "- `t_verify_ms` por verifier, p50/p95/p99."
+          },
+          {
+            "line": 54,
+            "text": "- Latencia desde \"tool fin\" hasta \"verifier dice algo\"."
+          },
+          {
+            "line": 234,
+            "text": "**Qué medir aquí:** latencia de cada verifier por tool (p50/p95), tasa de timeouts UIA en frío vs con caché, comparar tasa de \"verified\" antes/después de migrar de OCR a UIA, y \"cold-start hits\" tras lanzar WhatsApp (donde Chromium tarda en"
+          },
+          {
+            "line": 263,
+            "text": "| Verifier externo determinista (estado actual del proyecto) | **Sí** | la del verifier | Bajo | **Es el approach correcto** |"
+          },
+          {
+            "line": 276,
+            "text": "| `VERIFIER_UNKNOWN` | tool ok pero verifier dice \"unknown\" | re-verify tras 200 ms; si sigue unknown → reportar honestamente | 1 re-verify | sólo si la acción es high-risk |"
+          },
+          {
+            "line": 282,
+            "text": "1. **El LLM nunca se pregunta a sí mismo \"¿lo hice bien?\"** — quien responde es el verifier (señal externa)."
+          }
+        ],
+        "ranges": [
+          "1-829",
+          "h:1",
+          "m:18"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/8_gui.md",
+      "queued_sha256": "1040fdca681811f6d1169af27c3ac5e98e647c5c4121d228a2d515beb2262dc7",
+      "size_queued": 33396,
+      "exists": true,
+      "disk_sha256": "1040fdca681811f6d1169af27c3ac5e98e647c5c4121d228a2d515beb2262dc7",
+      "disk_size": 33396,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 458,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "CARTER OS — Investigación 8/8: Automatización GUI confiable en Windows para un LLM local 4B (Gemma 4 E4B-it Q4_K_M) sin OCR/visión por turno"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Hallazgos clave"
+          },
+          {
+            "line": 11,
+            "level": 3,
+            "text": "Por qué UIA gana a OCR/coordenadas en vram4"
+          },
+          {
+            "line": 18,
+            "level": 3,
+            "text": "El verdadero patrón: macros deterministas, planner ligero"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "Métricas relevantes de la literatura 2025"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "Detalle por punto"
+          },
+          {
+            "line": 52,
+            "level": 3,
+            "text": "Punto 1 (ALTA PRIORIDAD) — UIA como camino primario vs OCR/coordenadas"
+          },
+          {
+            "line": 90,
+            "level": 1,
+            "text": "carter_os/gui/uia_snapshot.py"
+          },
+          {
+            "line": 137,
+            "level": 3,
+            "text": "Punto 4 (ALTA PRIORIDAD) — LLM como PLANNER vs macros deterministas"
+          },
+          {
+            "line": 170,
+            "level": 1,
+            "text": "carter_os/macros/whatsapp.py"
+          },
+          {
+            "line": 196,
+            "level": 1,
+            "text": "1. Caja de búsqueda (AutomationId estable en WA Desktop reciente)"
+          },
+          {
+            "line": 199,
+            "level": 1,
+            "text": "Fallback: Ctrl+F abre búsqueda"
+          },
+          {
+            "line": 205,
+            "level": 1,
+            "text": "2. Seleccionar primer resultado de la lista"
+          },
+          {
+            "line": 212,
+            "level": 1,
+            "text": "3. Caja de mensaje"
+          },
+          {
+            "line": 219,
+            "level": 1,
+            "text": "4. VERIFICACIÓN UIA: el último ListItem del panel de conversación"
+          },
+          {
+            "line": 220,
+            "level": 1,
+            "text": "debe contener `text`. NO usamos OCR aquí."
+          },
+          {
+            "line": 244,
+            "level": 3,
+            "text": "Punto 2 — Política para decidir cuándo usar visión"
+          },
+          {
+            "line": 280,
+            "level": 3,
+            "text": "Punto 3 — Robustez ante cambios de UI"
+          },
+          {
+            "line": 326,
+            "level": 3,
+            "text": "Punto 5 — Frameworks/patrones 2025-2026 viables"
+          },
+          {
+            "line": 348,
+            "level": 1,
+            "text": "opcional, para fallback semántico:"
+          },
+          {
+            "line": 354,
+            "level": 3,
+            "text": "Punto 6 — Verificación post-acción vía UIA"
+          },
+          {
+            "line": 376,
+            "level": 1,
+            "text": "carter_os/verify/uia_verify.py"
+          },
+          {
+            "line": 414,
+            "level": 2,
+            "text": "Recomendaciones (staged)"
+          }
+        ],
+        "lead": "- **Adoptar UI Automation (UIA) como capa primaria y reservar OCR/visión sólo como fallback** es la única arquitectura viable bajo vram4: el árbol de accesibilidad es texto barato (sub-segundo si se acota `searchDepth` y se filtran controles invisibles), mientras que cargar `mmproj` para visión consume VRAM que un 4B Q4_K_M en 4–6 GB compartidos no puede ceder por turno. Microsoft UFO² ya valida e",
+        "measures": [
+          {
+            "line": 39,
+            "text": "| UFO² (Microsoft, abr-2025) | GPT-4o + UIA híbrido | WindowsAgentArena | 27,9% SR vs 20,8% de OpenAI Operator (+7,1 pp absoluto); −51,5% inference cost | UIA + OmniParser-v2 fallback |"
+          },
+          {
+            "line": 40,
+            "text": "| UFO² con o1 | o1 + UIA híbrido | OSWorld-W | 32,7% SR vs 14,3% Operator | UIA + visión |"
+          },
+          {
+            "line": 41,
+            "text": "| Fara-7B (Microsoft Research blog, nov-2025) | 7B nativo | WebVoyager | 73,5% (vs SoM GPT-4o 65,1% y OpenAI computer-use 70,9%) | Visión pura (no-UIA) |"
+          },
+          {
+            "line": 42,
+            "text": "| UI-TARS-1.5-7B | 7B nativo | WebVoyager | 66,4% (Tabla 9 paper Fara-7B); ~41 pasos por tarea vs ~16 de Fara-7B | Visión pura |"
+          },
+          {
+            "line": 43,
+            "text": "| Agent S2 (Simular, abr-2025) | Mixture-of-Grounding | OSWorld 50-step | 34,5% (supera al CUA Operator previo de 32,6%) | Visión pura |"
+          },
+          {
+            "line": 76,
+            "text": "| Enfoque | Confiabilidad | Latencia/turno | VRAM | Robustez a cambios UI | Complejidad |"
+          },
+          {
+            "line": 78,
+            "text": "| UIA por `AutomationId` | Muy alta | 50–300 ms | 0 | Muy alta | Media |"
+          },
+          {
+            "line": 79,
+            "text": "| UIA por `Name`/`ControlType` | Alta | 80–400 ms | 0 | Alta (i18n sensible) | Baja |"
+          },
+          {
+            "line": 80,
+            "text": "| OCR `click_text` (Tesseract) | Media | 800–2500 ms | 0 (CPU) | Baja (depende de fuente/escala) | Baja |"
+          },
+          {
+            "line": 81,
+            "text": "| `locate_image` template | Media-baja | 200–600 ms | 0 | Muy baja (rompe en updates) | Baja |"
+          },
+          {
+            "line": 82,
+            "text": "| Coordenadas absolutas | Muy baja | 10 ms | 0 | Nula | Trivial |"
+          },
+          {
+            "line": 83,
+            "text": "| Visión multimodal (mmproj) | Alta | 2–6 s + carga | +400–900 MB | Alta | Alta |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [
+          "VRAM",
+          "6 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 46,
+            "text": "**Lectura para CARTER OS**: los modelos *nativos* tipo Fara-7B/UI-TARS necesitan visión y son 7B (no caben en vram4 junto con voice + Gemma 4B). En cambio el patrón **UFO²-style con UIA como primary path** es replicable con un 4B porque el "
+          },
+          {
+            "line": 148,
+            "text": "3. **Capa verifier**: tras cada macro, comprobación UIA del estado esperado (mensaje nuevo en el chat, app en foreground, valor seteado)."
+          },
+          {
+            "line": 373,
+            "text": "**Patrón canónico verifier:**"
+          },
+          {
+            "line": 426,
+            "text": "6. Añadir el verifier UIA como paso obligatorio en LangGraph (nodo `verify_after_macro`). Si falla, reintentar la macro hasta 2 veces; si sigue fallando, escalar a planner LLM ciclando sobre snapshot UIA (loop máx 5 turnos)."
+          },
+          {
+            "line": 445,
+            "text": "- Si verifier falla > 10% → introducir un small classifier dedicado para \"did the action succeed?\" (modelo de 80–300 MB que reciba diff UIA pre/post)."
+          },
+          {
+            "line": 452,
+            "text": "- **Apps Electron mal etiquetadas** (e.g. algunas versiones de WhatsApp Desktop) exponen UIA pobre. Las macros deben tener **selectores múltiples y verificación por `Name` parcial** porque los `AutomationId` cambian entre releases."
+          }
+        ],
+        "ranges": [
+          "1-458",
+          "h:1",
+          "m:39"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/computer_use_investigacion_propia_2026_05_24.md",
+      "queued_sha256": "bda69623205805f4e781eb17500651ec60ec5fd0cb0bfd5724235ba16476786d",
+      "size_queued": 11947,
+      "exists": true,
+      "disk_sha256": "bda69623205805f4e781eb17500651ec60ec5fd0cb0bfd5724235ba16476786d",
+      "disk_size": 11947,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 197,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Investigación propia — Control GUI tipo humano (computer-use) para vram4"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "TL;DR (lo que la evidencia ya deja claro, con fuentes)"
+          },
+          {
+            "line": 45,
+            "level": 2,
+            "text": "Hallazgos por tema (con fuentes)"
+          },
+          {
+            "line": 47,
+            "level": 3,
+            "text": "1. Benchmarks reales — el techo del computer-use (2025-2026)"
+          },
+          {
+            "line": 68,
+            "level": 3,
+            "text": "2. UFO² — la arquitectura de referencia (Microsoft, abr 2025)"
+          },
+          {
+            "line": 83,
+            "level": 3,
+            "text": "3. Verificación post-acción SIN VLM (el corazón de la viabilidad vram4)"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "4. CEF / Electron (Discord, Spotify, Obsidian) — el caso difícil + su gotcha"
+          },
+          {
+            "line": 114,
+            "level": 3,
+            "text": "5. Seguridad — un agente que mueve mouse/teclado es superficie de ataque"
+          },
+          {
+            "line": 139,
+            "level": 2,
+            "text": "Puntos de CONTRASTE con el prompt enviado a claude.ai"
+          },
+          {
+            "line": 162,
+            "level": 2,
+            "text": "Mi recomendación preliminar (a validar contra claude.ai + medición propia)"
+          },
+          {
+            "line": 185,
+            "level": 2,
+            "text": "Fuentes (todas verificadas esta sesión)"
+          }
+        ],
+        "lead": "**Fecha:** 2026-05-24",
+        "measures": [
+          {
+            "line": 14,
+            "text": "Windows hoy (CoAct-1, multi-agente con modelos frontera) llega a **52.5% en"
+          },
+          {
+            "line": 15,
+            "text": "WindowsAgentArena** y 60.8% en OSWorld; humanos ~72%. Incluso lo mejor falla"
+          },
+          {
+            "line": 17,
+            "text": "2. **Un VLM de 7B PURPOSE-BUILT para GUI (UI-TARS-1.5-7B) saca 27.5% en OSWorld"
+          },
+          {
+            "line": 18,
+            "text": "y 49.6% de grounding en ScreenSpot-Pro, y es vision-native (pixeles, ~8-16GB"
+          },
+          {
+            "line": 25,
+            "text": "UIA alone\"; y **speculative multi-action baja el costo de inferencia 51.5%**"
+          },
+          {
+            "line": 51,
+            "text": "| CoAct-1 (SOTA, ago 2025) | multi-agente frontera | 60.8% | **52.5%** | híbrido |"
+          },
+          {
+            "line": 52,
+            "text": "| Agent S2.5 | frontera | 56.0% | — | visión |"
+          },
+          {
+            "line": 53,
+            "text": "| UI-TARS-1.5 (full) | grande | 42.5% | — | visión-native |"
+          },
+          {
+            "line": 54,
+            "text": "| **UI-TARS-1.5-7B** | **7B local** | **27.5%** (100 pasos) | — | **visión-native (pixeles)** |"
+          },
+          {
+            "line": 55,
+            "text": "| UI-TARS-1.5-7B grounding | 7B | ScreenSpot-Pro **49.6%** | — | pixeles |"
+          },
+          {
+            "line": 56,
+            "text": "| Humano | — | ~72% | ~72% | — |"
+          },
+          {
+            "line": 62,
+            "text": "verificación dura. Hay que ser honesto con RED: techo real, no promesa de \"todo\"."
+          }
+        ],
+        "dates": [
+          "2026-05-24"
+        ],
+        "models": [
+          "gemma 4",
+          "e4b"
+        ],
+        "hardware": [
+          "16GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-197",
+          "h:1",
+          "m:14"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/computer_use_mejoras_claude_ai_2026_05_25.md",
+      "queued_sha256": "dfb2638d3d187680959129155a3e28f06522d0adf51880f758ee87c5841c9ab9",
+      "size_queued": 7097,
+      "exists": true,
+      "disk_sha256": "dfb2638d3d187680959129155a3e28f06522d0adf51880f758ee87c5841c9ab9",
+      "disk_size": 7097,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 87,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Computer-use GUI — investigación de mejoras (claude.ai, 2026-05-25)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "TL;DR del informe"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "ESTADO DE APLICACIÓN (2026-05-25) — PASADA COMPLETA"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Recomendaciones (resumen)"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Fuentes citadas (links del informe)"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Verificación contra el código (RED + agente, 2026-05-25)"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "Caveats que el informe mismo marca (importantes)"
+          }
+        ],
+        "lead": "Tres palancas de mejor ROI (impacto alto / riesgo bajo / caben en 6GB + Alexa-tier):",
+        "measures": [
+          {
+            "line": 9,
+            "text": "Tres palancas de mejor ROI (impacto alto / riesgo bajo / caben en 6GB + Alexa-tier):"
+          },
+          {
+            "line": 17,
+            "text": "Valida nuestras decisiones medidas: speculative rechazado (UFO2 logra −51.5% pero"
+          },
+          {
+            "line": 18,
+            "text": "con GPT-4o/o1; con 4B local nuestro 0/12 manda) y vision-no-clica-por-coords"
+          },
+          {
+            "line": 19,
+            "text": "(ScreenSpot-Pro: GPT-4o 0.9%, UI-TARS-7B 35.7%, UI-TARS-1.5 61.6% — clicar por"
+          },
+          {
+            "line": 29,
+            "text": "5-20x más rápido → no migrar, 3476e78), **R5** UIA-cache (UIA = 0.6-0.9s vs LLM"
+          },
+          {
+            "line": 30,
+            "text": "3-13s, no es el cuello → no construir, 8f00ab3), **R3** WinEvents (la"
+          },
+          {
+            "line": 31,
+            "text": "UIA-text-confirm de Fase 3 ya da 0/5 falsos-negativos en texto chico → no hace"
+          },
+          {
+            "line": 37,
+            "text": "0/12 fricción, 5/10 protección. Soft-flag (confirmar), no hard-abort."
+          },
+          {
+            "line": 39,
+            "text": "**INFORME RESUELTO AL 100%**: aplicadas R1,R4,R6,R7,R8(.1+.2) + SafeInt;"
+          },
+          {
+            "line": 48,
+            "text": "| R4 | transient-launcher: descartar updater (Squirrel) | Medio | Bajo | **HECHO** (4d141d8): Discord 3 false-pass→0 |"
+          },
+          {
+            "line": 57,
+            "text": "- UFO2 (speculative −51.5%, hybrid UIA+OmniParser): arXiv:2504.14603"
+          },
+          {
+            "line": 58,
+            "text": "- ScreenSpot-Pro (grounding VLM <50%): arXiv:2504.07981"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "6GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-87",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/computer_use_sintesis_decisional_2026_05_24.md",
+      "queued_sha256": "7daf07c7a054809e0e85d1ac2267a45d02e08d961e38672fa0b534b8da4e0140",
+      "size_queued": 12493,
+      "exists": true,
+      "disk_sha256": "7daf07c7a054809e0e85d1ac2267a45d02e08d961e38672fa0b534b8da4e0140",
+      "disk_size": 12493,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 193,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Síntesis decisional — Computer-use GUI (triangulación de 3 fuentes)"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "1. Convergencia (las 3 fuentes coinciden → alta confianza)"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "2. Lo que mi investigación AGREGA a la de claude.ai (complementa)"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "3. Lo que claude.ai AGREGA a la mía (complementa)"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "4. Correcciones contra el ENTORNO REAL (medido esta sesión)"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "5. Lo que YA TENEMOS y NO hay que reconstruir (verificado en código)"
+          },
+          {
+            "line": 91,
+            "level": 2,
+            "text": "6. Roadmap consolidado (adaptado a NUESTRO estado real)"
+          },
+          {
+            "line": 125,
+            "level": 2,
+            "text": "6.bis — BASELINE Fase 0 medido (2026-05-24, contra el agente real)"
+          },
+          {
+            "line": 151,
+            "level": 2,
+            "text": "6.ter — FASE 1 hecha (verify_post_action) — resultado HONESTO"
+          },
+          {
+            "line": 179,
+            "level": 2,
+            "text": "7. Decisión"
+          }
+        ],
+        "lead": "**Fecha:** 2026-05-24",
+        "measures": [
+          {
+            "line": 10,
+            "text": "RED, con evidencia triangulada y no una sola opinión. CLAUDE.md: investigar +"
+          },
+          {
+            "line": 19,
+            "text": "| **Visión-por-paso NO cabe en vram4** | \"NO-VIABLE; ~1.5-2.5s por VLM call rompe budget\" | UI-TARS-7B vision-native ~8-16GB, 27.5% OSWorld | ✅ CONFIRMADO triple |"
+          },
+          {
+            "line": 23,
+            "text": "| **Techo honesto: NO \"misiones arbitrarias\", SÍ subset UIA-rico ≤5 pasos** | \"40-60% Tier-1, 15-25% custom\" | SOTA frontera 52.5% WAA, humano 72% | ✅ CONFIRMADO — decir la verdad a RED |"
+          },
+          {
+            "line": 42,
+            "text": "- **Número de grounding concreto:** UI-TARS-7B saca 49.6% en ScreenSpot-Pro"
+          },
+          {
+            "line": 66,
+            "text": "| \"mmproj 992 MB BF16, dudá del 946 reportado\" | Tenemos AMBOS: `mmproj-BF16.gguf` (991.5MB) y `mmproj-F16.gguf` (990.4MB) en models/E4B/ | ~990MB confirmado; usamos F16 hoy. El watchdog (inv 6) ya contempla ~946-990MB. |"
+          },
+          {
+            "line": 68,
+            "text": "| \"medir si cache-reuse funciona con swa-full\" | YA medido en sesiones previas: cache-reuse SÍ funciona en b9090 (617/625 cacheados) | No es el problema que él teme. ✅ |"
+          },
+          {
+            "line": 99,
+            "text": "| **0** | **Eval-set 30 misiones** con `goal_verifier()` estructural por SO (volumen→pycaw, Notepad+texto→UIA, etc.). Reusar verify_core/mission_goal. | 100% reproducible (2 runs sin agente = mismo estado) | Bajo |"
+          },
+          {
+            "line": 100,
+            "text": "| **1** | **`verify_post_action()`** = UIA-delta (cacheRequest) + dHash ROI (Hamming≥6) + WinEvent drain, fusión 2-de-3. Cablear al `gui` tool (cierra el \"click ciego\"). | <5% falsos PASS en eval-set | Bajo (aditivo) |"
+          },
+          {
+            "line": 101,
+            "text": "| **2** | **Macros `click_button(label)`/`fill_field`/`toggle`/`select_menu`/`wait_for`** observe→act→verify→recover. El 4B da objetivo, no coordenadas. | Task SR ≥40% vs ~15% status quo (Tier-1 UIA-rico) | Medio |"
+          },
+          {
+            "line": 102,
+            "text": "| **3** | **Cascada UIA→OCR→visión** + cache por turno + RuntimeId rebind + **gotcha lazy de Chromium** (reintento walk) + CEF flag con consentimiento | SR Discord/Spotify 0→≥30% | Medio |"
+          },
+          {
+            "line": 103,
+            "text": "| **4** | **Tabla de recovery** (P4) integrada con loop_detector existente | clicks-sin-efecto post-retry <10% | Bajo |"
+          },
+          {
+            "line": 105,
+            "text": "| **6** | **Speculative N=2** validado step-by-step, SOLO si el 4B acierta >80% next-action (medir antes) | latencia p50 −25% vs Fase 2 | Alto (medir) |"
+          }
+        ],
+        "dates": [
+          "2026-05-24"
+        ],
+        "models": [
+          "e4b",
+          "whisper"
+        ],
+        "hardware": [
+          "16GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 24,
+            "text": "| **Eval-set con verifier estructural por SO, no \"tool dijo ok\"** | Fase 0 obligatoria | (implícito en mi crítica al bench de Carter) | ✅ CONFIRMADO |"
+          },
+          {
+            "line": 81,
+            "text": "- `mission_goal.py` verifier por-misión (arg-aware)."
+          },
+          {
+            "line": 110,
+            "text": "- Fase 1 falsos PASS >10% → verifier malo, NO seguir."
+          },
+          {
+            "line": 188,
+            "text": "rico, misiones ≤5 pasos, verificadas) — no \"cualquier misión imposible\", porque"
+          }
+        ],
+        "ranges": [
+          "1-193",
+          "h:1",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/gui_eval_informe_por_tier_2026_05_24.md",
+      "queued_sha256": "be4eba37b5a2c1cc5be89ad0d9d7ab35fba5136aa707dc26cd48666f450c19ec",
+      "size_queued": 19491,
+      "exists": true,
+      "disk_sha256": "be4eba37b5a2c1cc5be89ad0d9d7ab35fba5136aa707dc26cd48666f450c19ec",
+      "disk_size": 19491,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 343,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Computer-use GUI — informe por tier (2026-05-24)"
+          },
+          {
+            "line": 8,
+            "level": 1,
+            "text": "Fase 6 (2026-05-25): speculative multi-action — MEDIDO y RECHAZADO"
+          },
+          {
+            "line": 34,
+            "level": 1,
+            "text": "Fase 8 (2026-05-25): visión gateada — cascada UIA→OCR→VISIÓN completa"
+          },
+          {
+            "line": 58,
+            "level": 1,
+            "text": "Fase 7 (2026-05-25): checkpoint de misión reanudable"
+          },
+          {
+            "line": 75,
+            "level": 1,
+            "text": "Fases 4 y 5 (2026-05-25): recovery + seguridad"
+          },
+          {
+            "line": 104,
+            "level": 1,
+            "text": "Fase 3 (2026-05-25): cascada UIA→OCR + fix DPI crítico"
+          },
+          {
+            "line": 144,
+            "level": 1,
+            "text": "Continuación 2026-05-25: click_button + cierre de falso-PASS"
+          },
+          {
+            "line": 177,
+            "level": 3,
+            "text": "run7 (110 misiones, medido con TODOS los fixes de esta sesión)"
+          },
+          {
+            "line": 200,
+            "level": 2,
+            "text": "Resumen ejecutivo (sesión 2026-05-24)"
+          },
+          {
+            "line": 218,
+            "level": 3,
+            "text": "Los 7 fails de run5 (FINAL)"
+          },
+          {
+            "line": 236,
+            "level": 2,
+            "text": "Qué se arregló (cada uno verificado PASS contra el agente real)"
+          },
+          {
+            "line": 238,
+            "level": 3,
+            "text": "1. Apps de SO con nombre localizado (FR/DE/IT/PT)"
+          },
+          {
+            "line": 249,
+            "level": 3,
+            "text": "2. \"lanzá Chrome\" → browser.open sin URL"
+          },
+          {
+            "line": 257,
+            "level": 3,
+            "text": "3. Cerrar apps con título localizado"
+          },
+          {
+            "line": 267,
+            "level": 3,
+            "text": "4. Escribir en la app recién abierta (\"abrí X y escribí Y\")"
+          },
+          {
+            "line": 281,
+            "level": 2,
+            "text": "Techo honesto (NO forzado con hardcodes — RED vetó regex es/de)"
+          },
+          {
+            "line": 304,
+            "level": 2,
+            "text": "Gotchas de entorno descubiertos (daban falsos FAIL, NO eran del agente)"
+          },
+          {
+            "line": 314,
+            "level": 2,
+            "text": "Reproducir"
+          },
+          {
+            "line": 317,
+            "level": 1,
+            "text": "sandbox OFF (mueve mouse, abre apps, limpia TabState)"
+          },
+          {
+            "line": 322,
+            "level": 2,
+            "text": "Commits de esta sesión (branch PortandoLoMejor, sin push)"
+          },
+          {
+            "line": 334,
+            "level": 2,
+            "text": "Recomendaciones (próximos pasos, no aplicados)"
+          }
+        ],
+        "lead": "El roadmap exige medir ANTES de construir: speculative N=2 solo vale si el 4B",
+        "measures": [
+          {
+            "line": 4,
+            "text": "> (Gemma 4 E4B-it Q4_K_M), no en teoría. El eval verifica por **estado del SO**"
+          },
+          {
+            "line": 6,
+            "text": "> el anti-patrón que hundió a Carter (falso-PASS)."
+          },
+          {
+            "line": 11,
+            "text": "acierta la next-action >80%. **Medido: NO pasa el gate → NO se construye.**"
+          },
+          {
+            "line": 19,
+            "text": "**Resultado: full-sequence 0/12 (0%), first-action 8/12 (67%).** El 4B NUNCA"
+          },
+          {
+            "line": 20,
+            "text": "completó la secuencia de 2 acciones solo: 8/12 abrió la app y se DETUVO sin"
+          },
+          {
+            "line": 21,
+            "text": "teclear (`ntools=1`); 3/12 mis-ruteó \"escribí X\" a `notes_tasks.note_create`;"
+          },
+          {
+            "line": 22,
+            "text": "1/12 no emitió nada. 0% << gate 80%."
+          },
+          {
+            "line": 24,
+            "text": "**Decisión: NO construir speculative.** A 0% de secuencia completa, la"
+          },
+          {
+            "line": 41,
+            "text": "es fiable (ni UI-TARS-7B pasa ~50% en UIs difíciles) y la visión es vector de"
+          },
+          {
+            "line": 47,
+            "text": "misión + idle-reset 120s."
+          },
+          {
+            "line": 48,
+            "text": "- **VRAM** (`VRAMWatchdog.vision_safe()`): no arriesgar OOM con el mmproj ~990MiB"
+          },
+          {
+            "line": 49,
+            "text": "en el target de 6GB. Sin GPU → no bloquea."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM",
+          "6GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 27,
+            "text": "determinista + macros (Fases 2-3) existen precisamente porque el 4B no encadena"
+          },
+          {
+            "line": 159,
+            "text": "él, click_button pasaba aislado pero fallaba en el eval completo porque la"
+          },
+          {
+            "line": 297,
+            "text": "(el agente afirma completado sin confirmación). RECOMENDADO: (b), porque"
+          }
+        ],
+        "ranges": [
+          "1-343",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/informe_abcd_router_chain_gui_latencia_2026_05_23.md",
+      "queued_sha256": "656d2f100f6c46237ce9662fdb5bc6ff35710c6e7c93f314045daf1c31c3678b",
+      "size_queued": 43866,
+      "exists": true,
+      "disk_sha256": "656d2f100f6c46237ce9662fdb5bc6ff35710c6e7c93f314045daf1c31c3678b",
+      "disk_size": 43866,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 648,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Informe técnico — Baxy (asistente de voz 100% local) — Problemas A, B, C, D"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "0. Aclaración sobre el modelo (confirmado vs. asumido)"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "PROBLEMA A — Router robusto y auto-diagnóstico"
+          },
+          {
+            "line": 39,
+            "level": 3,
+            "text": "A.1 Diagnóstico"
+          },
+          {
+            "line": 47,
+            "level": 3,
+            "text": "A.2 Opciones y comparativa"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "A.3 Veredicto A"
+          },
+          {
+            "line": 75,
+            "level": 1,
+            "text": "semantic_router_health.py"
+          },
+          {
+            "line": 82,
+            "level": 1,
+            "text": "Palabras interrogativas multilingües (es/en/pt/it/fr)"
+          },
+          {
+            "line": 103,
+            "level": 1,
+            "text": "heurística: si tiene wh-word o signos de pregunta, es info"
+          },
+          {
+            "line": 118,
+            "level": 1,
+            "text": "Health-probes en 4 idiomas:"
+          },
+          {
+            "line": 138,
+            "level": 1,
+            "text": "planner.py — uso del gate"
+          },
+          {
+            "line": 143,
+            "level": 1,
+            "text": "Regla 1: pregunta sin acción → forzar info"
+          },
+          {
+            "line": 147,
+            "level": 1,
+            "text": "Regla 2: router degradado → degradación visible"
+          },
+          {
+            "line": 152,
+            "level": 1,
+            "text": "Regla 3: lógica RRF + Tool2Vec actual"
+          },
+          {
+            "line": 160,
+            "level": 2,
+            "text": "PROBLEMA B — Encadenamiento de herramientas"
+          },
+          {
+            "line": 162,
+            "level": 3,
+            "text": "B.1 Diagnóstico"
+          },
+          {
+            "line": 170,
+            "level": 3,
+            "text": "B.2 Opciones y comparativa"
+          },
+          {
+            "line": 190,
+            "level": 3,
+            "text": "B.3 Veredicto B"
+          },
+          {
+            "line": 207,
+            "level": 1,
+            "text": "planner_chain.py"
+          },
+          {
+            "line": 212,
+            "level": 1,
+            "text": "=== Patrones determinísticos ==="
+          },
+          {
+            "line": 221,
+            "level": 1,
+            "text": "Tabla de patrones: (verbo_usuario_regex, tool_origen, tool_destino, mapeo_args)"
+          },
+          {
+            "line": 223,
+            "level": 1,
+            "text": "\"abre el primer .docx en Descargas\""
+          },
+          {
+            "line": 231,
+            "level": 1,
+            "text": "\"pon la última canción que escuché\""
+          }
+        ],
+        "lead": "**Fecha:** 23 de mayo de 2026",
+        "measures": [
+          {
+            "line": 4,
+            "text": "**Stack confirmado:** Gemma 4 E4B-it Q4_K_M (GGUF) + llama.cpp `llama-server` b9090+ + Parakeet-TDT-v3 (STT) en Windows, 6 GB de VRAM, monoslot."
+          },
+          {
+            "line": 31,
+            "text": "- **`-np 1` reduce ~3× el SWA KV cache** en Gemma 4 (aiproductivity.ai, 2026): \"*Adding `-np 1` to your llama.cpp launch command tells the server to allocate cache for exactly one user instead of the default. The result: SWA cache VRAM drop"
+          },
+          {
+            "line": 51,
+            "text": "| **Gate sintáctico lexical (`¿…?`, qué/quién/cuándo/por qué/cuál/dónde/cómo)** ANTES del retrieval | ~0.1 ms (regex puro) | Sin pérdida de recall, +precisión en queries-info | Sí (lista por idioma) | Muy bajo | **ADOPTAR** |"
+          },
+          {
+            "line": 52,
+            "text": "| **Anonimización/enmascaramiento de entidades antes del embedding** (sustituir nombres propios por `<ENT>`) | +5–15 ms (NER spaCy es-multilingual) | +1.8 % accuracy promedio (arXiv 2407.17862, Table 4) | Sí | Medio (NER puede fallar) | **A"
+          },
+          {
+            "line": 54,
+            "text": "| **Tool2Vec + RRF actual** (status quo) | ~10 ms | 0.881 | Sí | Sesgado por nombres propios | Mantener como base |"
+          },
+          {
+            "line": 56,
+            "text": "| **Health-check explícito al cargar** + **circuit breaker** | 0 ms en runtime | — | — | Bajo | **ADOPTAR (crítico)** |"
+          },
+          {
+            "line": 57,
+            "text": "| **NER masking + paraphrasing inferencia** (arXiv 2407.17862) | +30 ms | +2.4 % combinada | Sí | Mayor latencia | Solo si recall actual no basta |"
+          },
+          {
+            "line": 174,
+            "text": "| **ReAct puro** (modelo decide cada paso) | Baja en <10B (cascadas, ~50 % completion rate según Live API-Bench arXiv 2506.11266) | 1 LLM-call por paso | Media | NO confiar |"
+          },
+          {
+            "line": 176,
+            "text": "| **Planner determinista por patrón** (templates `search→open`, `search→play`) | Muy alta para patrones cubiertos (~100 %) | 0 ms LLM | Baja | **ADOPTAR para los 5-10 patrones top** |"
+          },
+          {
+            "line": 178,
+            "text": "| **LLMCompiler (DAG paralelo)** | Alta cuando hay paralelismo (arXiv 2312.04511: 3.7× latency, ~9% accuracy) | Planner extra | Alta | Sobre-ingenieril para este caso |"
+          },
+          {
+            "line": 180,
+            "text": "| **Plan-then-Execute con validación Pydantic en cada borde** | Muy alta | +5–10 ms validación | Media | **ADOPTAR la validación** |"
+          },
+          {
+            "line": 185,
+            "text": "- \"*We observe consistent latency speedup of up to 3.7×, cost savings of up to 6.7×, and accuracy improvement of up to ~9% compared to ReAct*\" (LLMCompiler, arXiv 2312.04511)."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "gemma-4",
+          "functiongemma"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 5070 Ti",
+          "RTX 5070 Ti 16 GB",
+          "RTX 3060"
+        ],
+        "mechanisms": [
+          {
+            "line": 503,
+            "text": "5. **En consumer Ampere (RTX 3060)** el model card del drafter \"ultralight\" (`HackAfterDark/gemma-4-e4b-it-mtp-assistant-ultralight`) advierte: \"*On the RTX 3060, the standard llama.cpp (without MTP) is currently faster due to memory bandwi"
+          }
+        ],
+        "ranges": [
+          "1-648",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/research/router_chain_foco_windows_carter_2026_05_23.md",
+      "queued_sha256": "56a897c008582715dc6be8343c8626f24969d696983cb99f401bf16fbfc2ca73",
+      "size_queued": 54896,
+      "exists": true,
+      "disk_sha256": "56a897c008582715dc6be8343c8626f24969d696983cb99f401bf16fbfc2ca73",
+      "disk_size": 54896,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 988,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Informe técnico CARTER OS / Baxy (antes Gemma 4 Agent, brevemente Carter) — Router robusto, Encadenamiento multi-tool y Foco/Maximize Windows"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR (decisión)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Estado y advertencias generales"
+          },
+          {
+            "line": 18,
+            "level": 1,
+            "text": "PROBLEMA A — Router robusto + auto-diagnóstico (PRIORIDAD 1)"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "A.1 Diagnóstico"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "A.2 Opciones — tabla comparativa"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "A.3 Fuentes oficiales y papers"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "A.4 Veredicto VIABLE para este stack"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "A.5 Código listo para integrar"
+          },
+          {
+            "line": 54,
+            "level": 3,
+            "text": "A.5.1 — `intent_router.py`: gate sintáctico interrogativo multilingüe"
+          },
+          {
+            "line": 57,
+            "level": 1,
+            "text": "intent_router.py — añadir al inicio del módulo"
+          },
+          {
+            "line": 61,
+            "level": 1,
+            "text": "Palabras-pregunta confirmadas (Collins Italian Grammar, Cambridge ES/EN, Adrosverse Romance Languages)."
+          },
+          {
+            "line": 62,
+            "level": 1,
+            "text": "Forma normalizada SIN tildes para matching robusto."
+          },
+          {
+            "line": 64,
+            "level": 1,
+            "text": "ES"
+          },
+          {
+            "line": 68,
+            "level": 1,
+            "text": "EN"
+          },
+          {
+            "line": 70,
+            "level": 1,
+            "text": "PT"
+          },
+          {
+            "line": 74,
+            "level": 1,
+            "text": "IT"
+          },
+          {
+            "line": 80,
+            "level": 1,
+            "text": "Tokens al inicio de la frase o tras puntuación."
+          },
+          {
+            "line": 109,
+            "level": 1,
+            "text": "─── modificación de classify_intent (NO reescribir; añadir el boost) ─────"
+          },
+          {
+            "line": 120,
+            "level": 1,
+            "text": "Boost determinista: refuerza, no anula, el embedding."
+          },
+          {
+            "line": 121,
+            "level": 1,
+            "text": "+0.20 calibrado empíricamente; MEDIR en el dataset propio (A.6)."
+          },
+          {
+            "line": 132,
+            "level": 3,
+            "text": "A.5.2 — `encoder_health.py` (NUEVO): health-check fail-loud al startup"
+          },
+          {
+            "line": 135,
+            "level": 1,
+            "text": "encoder_health.py — nuevo módulo. Llamar UNA vez al arranque."
+          },
+          {
+            "line": 145,
+            "level": 1,
+            "text": "Per HuggingFace model card oficial:"
+          }
+        ],
+        "lead": "- **Problema A — Router**: implementar (1) un **gate sintáctico interrogativo multilingüe (es/en/pt/it) ANTES del retrieval** (coste <1 ms, robusto a nombres propios) y (2) un **health-check del encoder al startup** que verifica que el modelo `paraphrase-multilingual-MiniLM-L12-v2` produce vectores de 384 dimensiones (per la model card oficial de sentence-transformers en HuggingFace: *\"This is a s",
+        "measures": [
+          {
+            "line": 31,
+            "text": "| Enfoque | Coste por turno | Robustez multi-idioma (es/en/pt/it) | Riesgo de degradar recall 0.881 | Integración | Veredicto |"
+          },
+          {
+            "line": 36,
+            "text": "| **Health-check fail-loud al startup** (encode de pares canónicos + verificación de dim + norma + similitudes esperadas) | Una vez al arranque | N/A | Cero (no toca el camino caliente) | Trivial | **ELEGIDA (paralela)** |"
+          },
+          {
+            "line": 178,
+            "text": "\"\"\"Valida que el SentenceTransformer está sano. Fail-loud por defecto."
+          },
+          {
+            "line": 276,
+            "text": "#       sys.exit(2)   # fail-loud: refuse-to-start"
+          },
+          {
+            "line": 282,
+            "text": "- **Latencia del health-check**: una sola vez al startup, debe ser <2 s."
+          },
+          {
+            "line": 578,
+            "text": "- **Cobertura del despachador determinista**: % de los fallos reales que caen en `search→open / play / read`. Si es <40%, ampliar `_KNOWN_CHAINS` con más patrones (p. ej. `web.search→web.fetch`)."
+          },
+          {
+            "line": 580,
+            "text": "- **Latencia con/sin reflexión LLM**: el prompt extra puede añadir 200–500 ms por turno en GGUF Q4. Medir 3 condiciones (sin reflexión / con reflexión / determinista) en el smoke test 12/12."
+          },
+          {
+            "line": 585,
+            "text": "# PROBLEMA C — Foco + Maximize 100% fiable antes de teclear (Windows)"
+          },
+          {
+            "line": 601,
+            "text": "| Técnica | Aplica a Win32 | Aplica a UWP | Reportada 100% fiable | Notas |"
+          },
+          {
+            "line": 621,
+            "text": "- **gist Aetopia 1581b40f00cc0cadc93a0e8ccb65dc8c** (\"Bypassing SetForegroundWindow(HWND hWnd) Restrictions\"): catálogo de métodos; declara el ALT-SendInput como 100% fiable."
+          },
+          {
+            "line": 638,
+            "text": "# Diseñado para Windows 10/11. Sin dependencias de pywinauto."
+          },
+          {
+            "line": 746,
+            "text": "pass"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "qwen3",
+          "functiongemma"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 66,
+            "text": "\"como\", \"porque\", \"por que\", \"para que\", \"cuanto\", \"cuanta\","
+          },
+          {
+            "line": 72,
+            "text": "\"porque\", \"por que\", \"para que\", \"quanto\", \"quanta\","
+          }
+        ],
+        "ranges": [
+          "1-988",
+          "h:1",
+          "m:31"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/04_computer_use/streaming_playback_field_guide_2026.md",
+      "queued_sha256": "b1c1bbbdc420d9af0c5bb0b44e9ce5e63519102649a0d3719a49bbeb6392f6fc",
+      "size_queued": 32123,
+      "exists": true,
+      "disk_sha256": "b1c1bbbdc420d9af0c5bb0b44e9ce5e63519102649a0d3719a49bbeb6392f6fc",
+      "disk_size": 32123,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 247,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Programmatic Title Playback Across Streaming Platforms from a Local Windows Python Agent — 2026 Field Guide"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Platform 1 — Netflix"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Platform 2 — Disney+ (locale es-419, Chile/LATAM)"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Platform 3 — HBO Max (re-rebranded from \"Max\" on 9 July 2025)"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "Platform 4 — Amazon Prime Video"
+          },
+          {
+            "line": 141,
+            "level": 2,
+            "text": "E) Disney+ Regional URL Confirmation (recap)"
+          },
+          {
+            "line": 149,
+            "level": 2,
+            "text": "F) HBO Max Domain Confirmation (recap)"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "G) Native URI / Protocol Handlers (desktop apps)"
+          },
+          {
+            "line": 170,
+            "level": 2,
+            "text": "H) Fallback strategies — minimum-friction \"one manual click\" per platform"
+          },
+          {
+            "line": 182,
+            "level": 2,
+            "text": "I) Spotify (for completeness)"
+          },
+          {
+            "line": 191,
+            "level": 2,
+            "text": "J) General Recommendation — dedicated Chromium with `--remote-debugging-port=9222` vs. controlling the user's default browser"
+          },
+          {
+            "line": 193,
+            "level": 3,
+            "text": "The two architectures"
+          },
+          {
+            "line": 199,
+            "level": 3,
+            "text": "Login persistence"
+          },
+          {
+            "line": 205,
+            "level": 3,
+            "text": "DRM / Widevine viability"
+          },
+          {
+            "line": 211,
+            "level": 3,
+            "text": "Bot/automation detection"
+          },
+          {
+            "line": 216,
+            "level": 3,
+            "text": "Verdict — recommendation"
+          },
+          {
+            "line": 231,
+            "level": 3,
+            "text": "Cross-platform implementation note on autoplay"
+          },
+          {
+            "line": 237,
+            "level": 2,
+            "text": "Summary table"
+          }
+        ],
+        "lead": "This report consolidates verified evidence about deep-linking, DOM selectors, keyboard shortcuts, DRM constraints, and protocol handlers for Netflix, Disney+ (LATAM/es-419), HBO Max (formerly \"Max\"), and Amazon Prime Video, plus a Spotify confirmation and a final architectural recommendation for the dedicated-Chromium-with-remote-debugging-port vs. controlling the user's default browser. Every sel",
+        "measures": [
+          {
+            "line": 11,
+            "text": "- **Login state**: Already logged in if you attach to the user's existing Chrome (port 9222). Playwright-bundled Chromium will fail at play time (no Widevine)."
+          },
+          {
+            "line": 44,
+            "text": "- **Login state**: Same as above — attach to the real Chrome to inherit login; bundled Chromium will fail Widevine."
+          },
+          {
+            "line": 73,
+            "text": "- `https://elcomercio.pe/respuestas/disney-plus-begin-...` and `https://larepublica.pe/datos-lr/respuestas/2021/12/26/disney-plus-begin-...` (concrete `disneyplus.com/es-419/begin/` URLs in production use)"
+          },
+          {
+            "line": 103,
+            "text": "- `https://www.npr.org/2025/05/15/nx-s1-5399115/max-rebrand-hbo`"
+          },
+          {
+            "line": 104,
+            "text": "- `https://deadline.com/2025/07/hbo-max-name-to-return-wednesday-ending-max-era-1236452545/`"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-247",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/05_vision_camara/FASE1_control_camara_ventanas.md",
+      "queued_sha256": "8cbd59cf93043c80917e68b82c8723d8efcab5fbe66ff9b4a57855d5d73e9865",
+      "size_queued": 14109,
+      "exists": true,
+      "disk_sha256": "8cbd59cf93043c80917e68b82c8723d8efcab5fbe66ff9b4a57855d5d73e9865",
+      "disk_size": 14109,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 358,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 1 - Control fijo de ventanas por mirada + gestos"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Principio"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Modo seguro"
+          },
+          {
+            "line": 45,
+            "level": 2,
+            "text": "Ejecutar acciones reales"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "Calibracion precisa multi-monitor (recomendado)"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "Validacion post-calibracion"
+          },
+          {
+            "line": 147,
+            "level": 2,
+            "text": "Gramática fija inicial"
+          },
+          {
+            "line": 171,
+            "level": 2,
+            "text": "Seguridad"
+          },
+          {
+            "line": 179,
+            "level": 2,
+            "text": "Ajustes utiles"
+          },
+          {
+            "line": 350,
+            "level": 2,
+            "text": "Gate sugerido antes de seguir"
+          }
+        ],
+        "lead": "Estado: implementado como POC aislado en `gemma4_agent/vision_input/window_control.py`.",
+        "measures": [
+          {
+            "line": 126,
+            "text": "- acierto de monitor >= 95%"
+          },
+          {
+            "line": 151,
+            "text": "| Mirar una ventana estable ~350 ms | Arma esa ventana como objetivo |"
+          },
+          {
+            "line": 352,
+            "text": "- Overlay identifica la ventana mirada correcta al menos 9/10 intentos."
+          },
+          {
+            "line": 357,
+            "text": "- Point clickea el control cercano correcto al menos 8/10 intentos."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-358",
+          "h:1",
+          "m:126"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/05_vision_camara/HCI_GUIDELINES.md",
+      "queued_sha256": "0ab3bf8c6f7dfb5146745e87e20ab6c850fd23d3e42ce0df5d4a89f42facae18",
+      "size_queued": 4278,
+      "exists": true,
+      "disk_sha256": "0ab3bf8c6f7dfb5146745e87e20ab6c850fd23d3e42ce0df5d4a89f42facae18",
+      "disk_size": 4278,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 36,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "HCI Guidelines for Vision-Based Window Control"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "1. Filtrado Cinemático (Kinematic Filtering)"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "2. Activación por Permanencia (Dwell) vs Gestos Dinámicos"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "3. Clutching y Rearm (Embrague)"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "4. Ley de Fitts y Magnetismo de Objetivos"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "5. Zonas de Exclusión y Pose de Descanso"
+          }
+        ],
+        "lead": "Este documento consolida las decisiones de diseño de Interacción Humano-Computadora (HCI) aplicadas en el módulo `vision_input`. Las decisiones están fundamentadas en investigaciones de **Computación Espacial** y diseños de interfaces de usuario sin contacto.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-36",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/06_vram_estabilidad/INFORME_ARQUITECTURA_6GB.md",
+      "queued_sha256": "1507ba8779040d504e60db38aa17064d9336a1aa3694960d30610bf55c4da4c4",
+      "size_queued": 38480,
+      "exists": true,
+      "disk_sha256": "1507ba8779040d504e60db38aa17064d9336a1aa3694960d30610bf55c4da4c4",
+      "disk_size": 38480,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 582,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Informe — Arquitectura Baxy en 6 GB VRAM (voz + visión + LLM)"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "0. TL;DR ejecutivo"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "1. Estado actual auditado del proyecto"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "1.1 Lo que funciona y está medido"
+          },
+          {
+            "line": 40,
+            "level": 3,
+            "text": "1.2 Lo que NO está soportado por el runtime hoy"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "1.3 Decisiones arquitecturales ya tomadas en el repo (no se rediscuten)"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "2. Restricción crítica: STT ≤2 s para audio de cualquier duración"
+          },
+          {
+            "line": 97,
+            "level": 3,
+            "text": "2.1 Hardware mínimo CPU para que esto cierre"
+          },
+          {
+            "line": 103,
+            "level": 3,
+            "text": "2.2 Por qué NO usar el audio nativo de Gemma"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "3. Modelado de VRAM componente a componente"
+          },
+          {
+            "line": 117,
+            "level": 3,
+            "text": "3.1 Costos fijos no negociables en 6 GB"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "3.2 Componentes en GPU del agente"
+          },
+          {
+            "line": 140,
+            "level": 3,
+            "text": "3.3 Componentes que se pueden mover a CPU (libran VRAM)"
+          },
+          {
+            "line": 152,
+            "level": 3,
+            "text": "3.4 Aritmética de VRAM final (sin Windows / con Windows)"
+          },
+          {
+            "line": 171,
+            "level": 3,
+            "text": "3.5 Riesgo: leak de mmproj"
+          },
+          {
+            "line": 182,
+            "level": 2,
+            "text": "4. Tres arquitecturas candidatas"
+          },
+          {
+            "line": 184,
+            "level": 3,
+            "text": "ARQ-A — \"E4B texto puro\" (máxima calidad LLM, sin multimodal nativo)"
+          },
+          {
+            "line": 231,
+            "level": 3,
+            "text": "ARQ-B — \"E2B multimodal compacto\" (visión + audio nativos en VRAM)"
+          },
+          {
+            "line": 275,
+            "level": 3,
+            "text": "ARQ-C — \"Hot-swap E2B↔E4B\" (mejor de ambos mundos con penalty controlado)"
+          },
+          {
+            "line": 317,
+            "level": 2,
+            "text": "5. Comparación cuantitativa de las tres arquitecturas"
+          },
+          {
+            "line": 336,
+            "level": 2,
+            "text": "6. Componentes transversales (aplican a las 3 arquitecturas)"
+          },
+          {
+            "line": 338,
+            "level": 3,
+            "text": "6.1 STT pipeline (ya cubierto §2)"
+          },
+          {
+            "line": 361,
+            "level": 3,
+            "text": "6.2 LLM streaming SSE (gap actual del proyecto)"
+          },
+          {
+            "line": 367,
+            "level": 1,
+            "text": "parse SSE incrementally:"
+          }
+        ],
+        "lead": "**Sesión:** investigación y auditoría, sin tocar código.",
+        "measures": [
+          {
+            "line": 5,
+            "text": "**Alcance:** 100% local, asistente personal interactivo, latencia tipo Alexa."
+          },
+          {
+            "line": 7,
+            "text": "**Hardware objetivo:** una sola GPU con **6 GB VRAM totales** (RTX 2060 / 3050 / 4050 mobile / 3060 6 GB)."
+          },
+          {
+            "line": 18,
+            "text": "- E4B-Q4_K_M (5.0 GB) + mmproj (0.92 GB) + KV F16 4K (0.35 GB) + Windows (~0.5 GB) = **6.77 GB** → no entra."
+          },
+          {
+            "line": 19,
+            "text": "- Confirmado por investigación externa (Unsloth, llama.cpp issues #21689/#21690): **no existe combinación de E4B + mmproj que entre cómoda en 6 GB**."
+          },
+          {
+            "line": 32,
+            "text": "| 540/540 PASS en bench oficial Carter con `gemma-4-E4B-it-Q6_K` | `harness_carter540/results/full540_v14_Q6_K_FULL.json` (resumen: 539 PASS + 1 FAIL = 99.81% en v14 fresco, 100% reauditado v14) |"
+          },
+          {
+            "line": 33,
+            "text": "| VRAM real 22 cuantizaciones medida en RTX 4060 Ti CUDA | `documentacion/04_vram_y_hardware/README.md` + `results/vram_log.csv` |"
+          },
+          {
+            "line": 34,
+            "text": "| Latencia global LLM solo (Q6_K, 16 GB GPU): **p50 4.4 s · p90 10.2 s · p99 22.5 s · solo 9.4% bajo 2 s** | recomputado del JSON v14 |"
+          },
+          {
+            "line": 37,
+            "text": "| Modos por turno (`fast_action`, `deep_action`, `vision_action`, `audio_mode`, `research`) y router multi-idioma + semantic fallback | `gemma4_agent/modes.py`, `gemma4_agent/semantic_router.py`, 61/61 test_router |"
+          },
+          {
+            "line": 38,
+            "text": "| Audio nativo Gemma 4 medido en español: **2/5 = 40%** | `documentacion/07_audio_y_vision/README.md` (5 wavs de TTS sintético). WER reportado por terceros: Gemma 3n 13.0 vs Whisper-Large 4.4 (medium/ajjay.k) |"
+          },
+          {
+            "line": 44,
+            "text": "| `input_audio` en `/v1/chat/completions` de **llama-server** | **closed not planned** ([#21868](https://github.com/ggml-org/llama.cpp/issues/21868)). Único path: `llama-mtmd-cli` con cold-load ~30–60 s por request. |"
+          },
+          {
+            "line": 45,
+            "text": "| `cache_reuse` (host-memory prompt caching, 93% TTFT reduction) | **roto en Gemma 4** ([#21468](https://github.com/ggml-org/llama.cpp/issues/21468)); PR #22288 abierto, sin merge confirmado en mi b9090. |"
+          },
+          {
+            "line": 47,
+            "text": "| mmproj VRAM leak | [#21690](https://github.com/ggml-org/llama.cpp/issues/21690): ~6.4 MiB/imagen + 46 MiB host/request. Tras ~60–80 imágenes en sesión, OOM en 6 GB. |"
+          }
+        ],
+        "dates": [
+          "2026-05-14"
+        ],
+        "models": [
+          "gemma-4",
+          "e4b",
+          "whisper",
+          "llama.cpp",
+          "gemma 4",
+          "qwen3",
+          "piper",
+          "gemma4"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 2060",
+          "RTX 4060 Ti",
+          "16 GB",
+          "RTX 4060 Ti 16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 93,
+            "text": "- **Comando largo** (30 s): partials de whisper_streaming corren mientras hablás (cada ~1 s); cuando el VAD cierra, la última pasada finalize toma <800 ms porque casi todo el audio ya fue transcrito incrementalmente → **total ≤800 ms**."
+          }
+        ],
+        "ranges": [
+          "1-582",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/06_vram_estabilidad/research/6_estabilidad.md",
+      "queued_sha256": "a2e5d314974c733aee0726ccacd296f9879127317b6cc29ca7bd4f4ad2828425",
+      "size_queued": 50025,
+      "exists": true,
+      "disk_sha256": "a2e5d314974c733aee0726ccacd296f9879127317b6cc29ca7bd4f4ad2828425",
+      "disk_size": 50025,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 920,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Informe de Confiabilidad para el Perfil \"vram4\" — Agente OS Autónomo Local sobre Windows 11"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Hallazgos clave (Key Findings)"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Punto 1 — Gestión de presión de VRAM (PRIORIDAD MÁXIMA)"
+          },
+          {
+            "line": 26,
+            "level": 3,
+            "text": "Diagnóstico"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Tabla de mitigaciones"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "Veredicto vram4: **VIABLE**"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "Código concreto — `vram_watchdog.py`"
+          },
+          {
+            "line": 72,
+            "level": 1,
+            "text": "vram_watchdog.py — Watchdog NVML pre-turno y entre turnos."
+          },
+          {
+            "line": 73,
+            "level": 1,
+            "text": "Decide degradación SIN matar el turno actual."
+          },
+          {
+            "line": 141,
+            "level": 1,
+            "text": "Edge-trigger: solo notificar al subir de nivel."
+          },
+          {
+            "line": 149,
+            "level": 1,
+            "text": "No matamos el thread: NVML puede fallar en suspensión."
+          },
+          {
+            "line": 176,
+            "level": 1,
+            "text": "--- Integración con el router ---"
+          },
+          {
+            "line": 178,
+            "level": 1,
+            "text": "Política: descargar mmproj y reducir ctx en caliente."
+          },
+          {
+            "line": 189,
+            "level": 3,
+            "text": "Fuentes 2025–2026"
+          },
+          {
+            "line": 200,
+            "level": 2,
+            "text": "Punto 2 — Aislamiento de fallas de tools (PRIORIDAD MÁXIMA)"
+          },
+          {
+            "line": 202,
+            "level": 3,
+            "text": "Diagnóstico"
+          },
+          {
+            "line": 212,
+            "level": 3,
+            "text": "Tabla de mitigaciones"
+          },
+          {
+            "line": 224,
+            "level": 3,
+            "text": "Veredicto vram4: **VIABLE**"
+          },
+          {
+            "line": 228,
+            "level": 3,
+            "text": "Código concreto — `tool_sandbox.py`"
+          },
+          {
+            "line": 231,
+            "level": 1,
+            "text": "tool_sandbox.py — Ejecuta tools \"peligrosas\" en proceso aislado con"
+          },
+          {
+            "line": 232,
+            "level": 1,
+            "text": "timeout duro, circuit breaker y kill seguro en Windows."
+          },
+          {
+            "line": 244,
+            "level": 1,
+            "text": "Un breaker GLOBAL por categoría de tool. Vive el tiempo del agente."
+          },
+          {
+            "line": 253,
+            "level": 1,
+            "text": "NoSuchProcess / PermissionError NO cuentan como fallo del breaker:"
+          }
+        ],
+        "lead": "- **vram4 es viable hoy mismo** para Gemma 4 E4B-it Q4_K_M con llama.cpp b9090, monoslot y ctx=16384: con `--no-mmproj-offload`, `--cache-type-k q8_0 --cache-type-v q8_0` y `-fa on`, el consumo medido en el log de llama.cpp issue #21430 queda en ≈3.5–3.8 GiB (pesos GPU 3002 MiB + KV unificado SWA ≈163 MiB + compute buffer ≈500 MiB); con mmproj ofloaded sube a ≈4.8 GiB y solo cabe holgado en GPUs d",
+        "measures": [
+          {
+            "line": 19,
+            "text": "7. **`faulthandler.dump_traceback_later(timeout, repeat=True)` resuelve el 80% del debugging de hangs** sin overhead apreciable. Es C-level, dumpea todos los threads, y la doc de Python 3.14 confirma que está siempre disponible y usa un *wa"
+          },
+          {
+            "line": 38,
+            "text": "| Mitigación | Riesgo que cierra | Δ latencia / Δ VRAM | Complejidad |"
+          },
+          {
+            "line": 40,
+            "text": "| Watchdog NVML pre-turno (pynvml, `nvmlDeviceGetMemoryInfo`, 250 ms) | OOM probabilístico al despachar | +1–2 ms por turno, 0 VRAM | Baja |"
+          },
+          {
+            "line": 41,
+            "text": "| `--cache-type-k q8_0 --cache-type-v q8_0` con `-fa on` | OOM por KV en ctx largo | −50% KV (306→163 MiB), −1–2% calidad | Trivial (flags) |"
+          },
+          {
+            "line": 42,
+            "text": "| `--cache-type-k q4_0 --cache-type-v q4_0` (fallback de emergencia) | OOM extremo | −75% KV (306→86 MiB); en Gemma híbrido la pérdida es ~lossless según issue #21385 | Trivial |"
+          },
+          {
+            "line": 43,
+            "text": "| `--no-mmproj-offload` activado por defecto en vram4 | OOM al recibir primera imagen | +mucha latencia visión (CPU); −1040 MiB VRAM | Baja |"
+          },
+          {
+            "line": 44,
+            "text": "| Carga *lazy* del mmproj (presets vía `models.ini` con dos definiciones, swap por `/v1/models/unload`) | Mismo, sin perder latencia salvo cuando se usa visión | +~1 s al primer turno con imagen; libera 1040 MiB | Media |"
+          },
+          {
+            "line": 47,
+            "text": "| **NO-VIABLE**: `--no-kv-offload` en CUDA | \"Ahorra\" VRAM pero degrada 5–10× la latencia y no es necesario en 16k | Inaceptable para voz | — |"
+          },
+          {
+            "line": 48,
+            "text": "| **NO-VIABLE**: subir a Q8_0 o BF16 del modelo | Mejora calidad pero rompe presupuesto vram4 | +3 GB VRAM, no cabe | — |"
+          },
+          {
+            "line": 56,
+            "text": "--model gemma-4-E4B-it-Q4_K_M.gguf ^"
+          },
+          {
+            "line": 57,
+            "text": "--mmproj mmproj-BF16.gguf --no-mmproj-offload ^"
+          },
+          {
+            "line": 60,
+            "text": "--cache-type-k q8_0 --cache-type-v q8_0 ^"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "gemma-4",
+          "gemma4"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "vram"
+        ],
+        "mechanisms": [
+          {
+            "line": 194,
+            "text": "- llama.cpp issue #21385 (per-head KV quantization): Gemma 4 absorbe la cuantización q4_0 KV mejor que arquitecturas densas porque las capas SWA actúan como corrección de error."
+          },
+          {
+            "line": 351,
+            "text": "- **Dependencias Python sanas**: torchcodec se importa sin segfault contra el torch presente; `__version__` coincide con el manifiesto pinneado. Esto **debe hacerse en un proceso hijo desechable** porque el `import` puede segfaultear (issue"
+          },
+          {
+            "line": 642,
+            "text": "| **NO-VIABLE**: heurística \"es seguro matarlo porque consume poca VRAM\" | Falsos positivos garantizados | — | — |"
+          }
+        ],
+        "ranges": [
+          "1-920",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/07_latencia/README.md",
+      "queued_sha256": "a01edbc4b0e8f479d44fbdd9369cec1fc7c08fdf51f7773767b7243be90a9a53",
+      "size_queued": 1098,
+      "exists": true,
+      "disk_sha256": "a01edbc4b0e8f479d44fbdd9369cec1fc7c08fdf51f7773767b7243be90a9a53",
+      "disk_size": 1098,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 21,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "07 — Latencia"
+          }
+        ],
+        "lead": "Optimización de la latencia por turno de voz (presupuesto tier-Alexa: 4–5 s",
+        "measures": [
+          {
+            "line": 3,
+            "text": "Optimización de la latencia por turno de voz (presupuesto tier-Alexa: 4–5 s"
+          },
+          {
+            "line": 4,
+            "text": "tope; 8 s es UX catastrófica)."
+          },
+          {
+            "line": 7,
+            "text": "- **Palanca principal:** cache-hit del summary/prefill pass (mantener"
+          },
+          {
+            "line": 9,
+            "text": "Acción ~2.2 s tras el fix."
+          },
+          {
+            "line": 15,
+            "text": "llama.cpp (#21133): una imagen no paga la carga on-demand (~2-5 s) y el texto"
+          }
+        ],
+        "dates": [
+          "2026-06-09"
+        ],
+        "models": [
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-21",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/07_latencia/SPRINT_prefill_cache_hit.md",
+      "queued_sha256": "f05c59a3418cc1de28e8833d3e6f6fb1c57f1832e8327524c15811c87e8fa414",
+      "size_queued": 4385,
+      "exists": true,
+      "disk_sha256": "f05c59a3418cc1de28e8833d3e6f6fb1c57f1832e8327524c15811c87e8fa414",
+      "disk_size": 4385,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 71,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint — Cache-hit del summary pass (el lever REAL de latencia de acción)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "El problema (medido)"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Causa raíz (2 divergencias del prefijo, ambas necesarias de arreglar)"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "El fix (en `_execute_turn`, success-gated)"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Validación en vivo (`scripts/_verify_cache_hit.py`)"
+          },
+          {
+            "line": 45,
+            "level": 2,
+            "text": "Config de server (confirmado por research, sin cambios necesarios)"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Descartado por el research (confirmado, no refutado)"
+          },
+          {
+            "line": 67,
+            "level": 2,
+            "text": "Pendiente"
+          }
+        ],
+        "lead": "**Fecha:** 2026-05-29 · **Resultado:** acción turn ~3.3s → ~2.2s (**−~1s**),",
+        "measures": [
+          {
+            "line": 3,
+            "text": "**Fecha:** 2026-05-29 · **Resultado:** acción turn ~3.3s → ~2.2s (**−~1s**),"
+          },
+          {
+            "line": 9,
+            "text": "(~2.3s de ~3.3s). La pass-2 (confirmación) re-prefileaba ~5.3k tokens (~1s) en vez"
+          },
+          {
+            "line": 10,
+            "text": "de reusar el prefijo de la pass-1."
+          },
+          {
+            "line": 13,
+            "text": "1. **El summary DROPEA las tools** (slimming 2026-05-20) → prefijo distinto a pass-1."
+          },
+          {
+            "line": 14,
+            "text": "2. **`enable_thinking` TOGGLEA** (pass-1 True / summary False) → el chat-template"
+          },
+          {
+            "line": 23,
+            "text": "En el summary pass, cuando la última tool SUCCEEDED:"
+          },
+          {
+            "line": 25,
+            "text": "- **matchear el `enable_thinking` de pass-1** (`mode.enable_thinking`) con"
+          },
+          {
+            "line": 29,
+            "text": "→ pass-2 prefill **5229 → 82 tokens** (`cache_n=5708`), pass-2 wall ~1017ms → ~33ms."
+          },
+          {
+            "line": 32,
+            "text": "con una acción FALLIDA → runaway (MEDIDO: brillo WMI-fail 6 calls@budget0, 3@16, vs"
+          },
+          {
+            "line": 38,
+            "text": "- volumen ×6 (éxito): cache hit (pass2=79-82), 2 calls, ~2.2-2.4s, replies correctos."
+          },
+          {
+            "line": 39,
+            "text": "- minimizá (no-window soft-fail, dispatched ok): cache hit 118/172, 2 calls, correcto."
+          },
+          {
+            "line": 40,
+            "text": "- **brillo (hard WMI-fail): KEEP == off EXACTO** (2 calls, 7200 prefill) — sin penalidad."
+          }
+        ],
+        "dates": [
+          "2026-05-29",
+          "2026-05-20",
+          "2026-06-09"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-71",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/07_latencia/research/4_contexto.md",
+      "queued_sha256": "bd5a2015dba95bd630cbd4d8a4bb6657afb62f352572cfe5caaf77621f1404f1",
+      "size_queued": 36812,
+      "exists": true,
+      "disk_sha256": "bd5a2015dba95bd630cbd4d8a4bb6657afb62f352572cfe5caaf77621f1404f1",
+      "disk_size": 36812,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 427,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Gestión de historial multi-turno en Gemma 4 E4B-it Q4_K_M sobre llama.cpp b9090 (ctx 16K): plan técnico para asistente de voz local"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Hallazgos clave"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Detalle por punto"
+          },
+          {
+            "line": 24,
+            "level": 3,
+            "text": "Punto 1 — Qué preservar entre turnos en un asistente de voz por comandos *(prioritario)*"
+          },
+          {
+            "line": 97,
+            "level": 3,
+            "text": "Punto 2 — Compactación/summarization sin romper el prefix-cache *(prioritario)*"
+          },
+          {
+            "line": 161,
+            "level": 1,
+            "text": "extender en lugar de regenerar (Anchored Iterative, Factory)"
+          },
+          {
+            "line": 179,
+            "level": 3,
+            "text": "Punto 3 — Coherencia multi-turno en modelos 4B sin segundo modelo"
+          },
+          {
+            "line": 247,
+            "level": 1,
+            "text": "Fusión deíctica → slot"
+          },
+          {
+            "line": 259,
+            "level": 3,
+            "text": "Punto 4 — Manejo de tool_results en el historial"
+          },
+          {
+            "line": 319,
+            "level": 3,
+            "text": "Punto 5 — Límite de 16K y degradación"
+          },
+          {
+            "line": 392,
+            "level": 2,
+            "text": "Recomendaciones (orden de implementación)"
+          },
+          {
+            "line": 418,
+            "level": 2,
+            "text": "Caveats"
+          }
+        ],
+        "lead": "- **Para asistente de voz, casi todos los turnos son atómicos**: la evidencia (Apple ML Research \"Learning to Rank Intents\", Amazon Alexa skill routing, Laban et al. 2025) muestra que el contexto previo solo importa cuando el turno actual contiene anáfora/deixis (\"súbelo\", \"ese\", \"el otro\"); detectarlos con regex + un clasificador opcional de <30 ms y **enviar contexto sólo cuando es necesario** e",
+        "measures": [
+          {
+            "line": 41,
+            "text": "| **Context-as-router** (recomendado) | ~1 000 en 70–85% turnos; ~3 000 en turnos con referencia | Alta donde importa | Media-baja | Detector deficiente |"
+          },
+          {
+            "line": 46,
+            "text": "- Laban, Hayashi, Zhou, Neville et al. 2025 (Microsoft + Salesforce Research), arXiv:2505.06120: 39% caída promedio; Llama3.1-8B y Phi-4 en 30–40%; *\"when LLMs take a wrong turn in a conversation, they get lost and do not recover\"*."
+          },
+          {
+            "line": 47,
+            "text": "- Eckert & Strube 2000 (clásico, citado en CODI-CRAC 2022): 22.6% anáforas no-nominales en diálogo."
+          },
+          {
+            "line": 91,
+            "text": "- `pct_turnos_modo_none`: objetivo > 60%."
+          },
+          {
+            "line": 92,
+            "text": "- `falsos_negativos_deixis` (etiquetado humano sobre 200 turnos): objetivo < 5%."
+          },
+          {
+            "line": 93,
+            "text": "- `prefill_ms_p50` en modo `none` vs `light`: esperar caída de ~888 ms a < 200 ms."
+          },
+          {
+            "line": 127,
+            "text": "| Observation masking (Lindenbauer 2025, arXiv:2508.21433) | Bajo | 54.8% vs 53.8% LLM-Summary | Mínima (zero-cost) | Pierde detalle si la máscara es ciega |"
+          },
+          {
+            "line": 133,
+            "text": "- Zylos Research, *AI Agent Context Compression Strategies* (feb 2026): trigger compactación al 70% del budget; reportan que *\"context drift kills agents before context limits do\"* con 65% de fallos enterprise atribuibles a drift."
+          },
+          {
+            "line": 143,
+            "text": "5. **Mientras dure el bug #21468**: priorizar la reducción del tail variable. Cada token extra al final cuesta ~0.1 ms en prefill en tu hardware (extrapolado del 888 ms p50 sobre 7875 tok)."
+          },
+          {
+            "line": 175,
+            "text": "- Trade-off concreto: 300 tokens de ancla reprocesados al refrescar (≈ 30 ms en tu hw) vs 1 200–2 000 tokens de tail reprocesados cada turno (≈ 100–200 ms)."
+          },
+          {
+            "line": 254,
+            "text": "- *Task success rate* en multi-turno sintético (script con 20 conversaciones de 5 turnos cada una, anáfora explícita en turnos 2–5). Objetivo: > 80% con state-slots vs ~50–60% sin ellos (en línea con Laban 2025)."
+          },
+          {
+            "line": 279,
+            "text": "| **Observation masking + slot extraction** (recomendado, Lindenbauer 2025) | Bajo | 54.8% vs 53.8% LLM-Summary | Mínima | Slot extractor con falsos negativos |"
+          }
+        ],
+        "dates": [
+          "2026-06-15"
+        ],
+        "models": [
+          "llama.cpp",
+          "gemma 4",
+          "gemma-4",
+          "e4b",
+          "qwen3"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 193,
+            "text": "El orquestador lo extrae con regex y lo re-inyecta como parte del anchor. Mem0 (oct 2025) documenta que esto vence a la summarization plana porque preserva valores exactos (fechas, IDs, paths)."
+          },
+          {
+            "line": 353,
+            "text": "- openai/codex Issue #22220 — *\"After several compactions, session quality can noticeably degrade due to summarization loss and recursive compression effects.\"*"
+          }
+        ],
+        "ranges": [
+          "1-427",
+          "h:1",
+          "m:41"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/07_latencia/research/prefill_latency_llama_server_gemma4.md",
+      "queued_sha256": "4c8da8be8478417c59ee984270adbe3e82b63aed4fa4a22a6c643c51a3ad8e39",
+      "size_queued": 33487,
+      "exists": true,
+      "disk_sha256": "4c8da8be8478417c59ee984270adbe3e82b63aed4fa4a22a6c643c51a3ad8e39",
+      "disk_size": 33487,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 449,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Informe técnico: minimizar latencia de PREFILL en Gemma 4 E4B-it Q4_K_M sobre llama-server (build b9090+)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Hallazgos clave"
+          },
+          {
+            "line": 13,
+            "level": 3,
+            "text": "Mapa del problema (lectura de tus medidas)"
+          },
+          {
+            "line": 26,
+            "level": 3,
+            "text": "Estado actual del soporte SWA / cache para Gemma 4 en llama.cpp (importante)"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "Punto 1 — ESTRATEGIA DE LAYOUT DE PROMPT (máxima prioridad)"
+          },
+          {
+            "line": 42,
+            "level": 3,
+            "text": "Diagnóstico"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "Tres caminos evaluables"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "Aritmética concreta (estimaciones, no medidas — verifícalas con tu hardware)"
+          },
+          {
+            "line": 95,
+            "level": 3,
+            "text": "Verdicto para TU stack"
+          },
+          {
+            "line": 106,
+            "level": 3,
+            "text": "Plantilla Python ready-to-paste"
+          },
+          {
+            "line": 109,
+            "level": 1,
+            "text": "build_prompt.py — Camino C"
+          },
+          {
+            "line": 111,
+            "level": 1,
+            "text": "los 10-15 más usados (sacarlos del log de tu router)"
+          },
+          {
+            "line": 129,
+            "level": 1,
+            "text": "Pre-computar UNA VEZ al arrancar el servicio"
+          },
+          {
+            "line": 155,
+            "level": 1,
+            "text": "tools=[...] = unión core + extras, en ORDEN DETERMINISTA"
+          },
+          {
+            "line": 171,
+            "level": 3,
+            "text": "Cómo medir si efectivamente está funcionando"
+          },
+          {
+            "line": 176,
+            "level": 1,
+            "text": "Ejemplo de campos retornados:"
+          },
+          {
+            "line": 177,
+            "level": 1,
+            "text": "\"timings\": {"
+          },
+          {
+            "line": 178,
+            "level": 1,
+            "text": "\"cache_n\": 236,         # tokens reusados del cache (system + historia)"
+          },
+          {
+            "line": 179,
+            "level": 1,
+            "text": "\"prompt_n\": 1,          # tokens reprocesados (sólo el delta)"
+          },
+          {
+            "line": 180,
+            "level": 1,
+            "text": "\"prompt_ms\": 30.958,"
+          },
+          {
+            "line": 181,
+            "level": 1,
+            "text": "..."
+          },
+          {
+            "line": 182,
+            "level": 1,
+            "text": "}"
+          },
+          {
+            "line": 183,
+            "level": 1,
+            "text": "Cita verbatim de la doc: \"cache_n: number of prompt tokens reused from cache\""
+          }
+        ],
+        "lead": "- **El cuello de botella es la inestabilidad del prefijo del system prompt, no el modelo ni el flag de cache.** En tu medición, el \"tail\" reprocesado mediano (~3906 tokens) coincide casi exactamente con el bloque variable que el router de subset inserta tras un common prefix estable de ~900 tokens. La mayor ganancia (estimada **−700 a −2200 ms p50/p90 de prefill, ≥85% cache-hit**) viene de **mover",
+        "measures": [
+          {
+            "line": 17,
+            "text": "| Total per-turn | 2054 ms | OK p50, pero p90 catastrófico (>10 s) |"
+          },
+          {
+            "line": 18,
+            "text": "| Prefill | 3906 tok @ 4400 tok/s ≈ 888 ms | **bottleneck principal** |"
+          },
+          {
+            "line": 19,
+            "text": "| Generation | 21 tok @ 62 tok/s ≈ 386 ms | OK |"
+          },
+          {
+            "line": 88,
+            "text": "| **Actual** (subset en system) | ~900 | ~3900 + historia | ~22% | **888** (medido) | **2554** (medido) | ~8500 tok (≈16384−7875) |"
+          },
+          {
+            "line": 89,
+            "text": "| **A — stable prefix + ALL schemas** | ~10500 | <100 (hint en user) + delta historia | **≥95%** del system | **~50 ms** (sólo último user+delta) | **~150 ms** | **~5800 tok** — apretado |"
+          },
+          {
+            "line": 90,
+            "text": "| **B — descartar router** | ~10500 | delta historia | ≥95% | ~50 ms | ~150 ms | ~5800 tok |"
+          },
+          {
+            "line": 91,
+            "text": "| **C — core 15 + extras al final** | ~3500-4500 | ~500-1500 + delta historia | **~70-85%** | **~150-300 ms** | **~500-800 ms** | **~10500 tok** — cómodo |"
+          },
+          {
+            "line": 102,
+            "text": "3. Camino C **estabiliza el prefijo en ~4000 tokens** (cubre ~70–85% del prompt típico), preserva espacio para historia (~10500 tok), y mantiene tool-calling acotado (15 tools fijos + ≤6 extras señalados al final)."
+          },
+          {
+            "line": 104,
+            "text": "**Criterio de selección de los 15 tools core**: por log de uso (Pareto). Si tu router ya tiene métricas, ordena por frecuencia de selección por turno (cobertura ≥85% con N≤15 es típica)."
+          },
+          {
+            "line": 215,
+            "text": "| Configuración | Prefill p50 esperado | Cache-hit | VRAM extra (SWA) | Riesgo tool-calling | Notas |"
+          },
+          {
+            "line": 217,
+            "text": "| `--swa-full` (sin cache-reuse) **[recomendado]** | ~50–300 ms (con layout C) | LCP completo | +SWA full (~+250 MB en 16K) | Bajo | Camino limpio post-#22288 |"
+          },
+          {
+            "line": 219,
+            "text": "| sin `--swa-full`, con `--ctx-checkpoints 32 --checkpoint-every-n-tokens 2048` | ~200–800 ms | Sólo cerca del checkpoint | −SWA savings | Bajo | Útil sólo si VRAM es el bottleneck |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "gemma-4",
+          "gemma4"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 3090"
+        ],
+        "mechanisms": [
+          {
+            "line": 259,
+            "text": "- Tendrías que offload el draft a CPU (`--device-draft CPU` o `--n-cpu-moe-draft`), lo que **anula el speedup** porque el draft se vuelve más lento que la verificación."
+          }
+        ],
+        "ranges": [
+          "1-449",
+          "h:1",
+          "m:17"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/07_latencia/research/reducir_latencia_thinking_gemma4.md",
+      "queued_sha256": "88d074dbccd23cc729510ab9733514f7a0fddcc5da506e0184784b6bb7a6fa79",
+      "size_queued": 27825,
+      "exists": true,
+      "disk_sha256": "88d074dbccd23cc729510ab9733514f7a0fddcc5da506e0184784b6bb7a6fa79",
+      "disk_size": 27825,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 344,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Reduciendo Latencia de THINKING en Asistente de Voz Local (Gemma E4B-Q4 + llama.cpp b9090)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Key Findings"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Punto 1 — Reducir tokens de thinking sin perder fiabilidad de tool-call (ALTA PRIORIDAD)"
+          },
+          {
+            "line": 32,
+            "level": 3,
+            "text": "(a) Diagnóstico"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "(b) Opciones"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "(c) Plantilla concreta — Structured Brief CoT para Gemma E4B"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "(d) Veredicto"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Punto 4 — Detección temprana de cuándo NO hace falta thinking (ALTA PRIORIDAD)"
+          },
+          {
+            "line": 73,
+            "level": 3,
+            "text": "(a) Diagnóstico"
+          },
+          {
+            "line": 76,
+            "level": 3,
+            "text": "(b) Opciones de routing"
+          },
+          {
+            "line": 86,
+            "level": 3,
+            "text": "(c) Pipeline propuesto (tres capas, fail-safe)"
+          },
+          {
+            "line": 89,
+            "level": 1,
+            "text": "Router pre-LLM de 3 capas"
+          },
+          {
+            "line": 91,
+            "level": 1,
+            "text": "Capa 0: reglas léxicas — comandos crisp"
+          },
+          {
+            "line": 93,
+            "level": 1,
+            "text": "ej. \"abre steam\", \"pausa spotify\", \"sube volumen 20\""
+          },
+          {
+            "line": 96,
+            "level": 1,
+            "text": "Capa 1: embedding kNN sobre ~200 ejemplos etiquetados"
+          },
+          {
+            "line": 103,
+            "level": 1,
+            "text": "Capa 2: fallback con thinking estructurado"
+          },
+          {
+            "line": 118,
+            "level": 3,
+            "text": "(d) Veredicto"
+          },
+          {
+            "line": 123,
+            "level": 2,
+            "text": "Punto 2 — Speculative / draft decoding"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "(a) Diagnóstico"
+          },
+          {
+            "line": 128,
+            "level": 3,
+            "text": "(b) Opciones"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "(c) Veredicto"
+          },
+          {
+            "line": 155,
+            "level": 2,
+            "text": "Punto 3 — Paralelizar thinking con TTS"
+          },
+          {
+            "line": 157,
+            "level": 3,
+            "text": "(a) Diagnóstico"
+          }
+        ],
+        "lead": "- **El mayor ROI inmediato (días, no semanas) es combinar (1) un router barato de intent que mande los comandos triviales a una ruta \"tool-call directo SIN thinking\" y (2) reemplazar el thinking libre por una plantilla *structured brief CoT* tipo FR-CoT (≤32 tokens, formato `INTENT: / TOOL: / ARGS: / GO`).** Hay evidencia directa publicada en BFCL v3 de que esa plantilla mejora drásticamente la fi",
+        "measures": [
+          {
+            "line": 37,
+            "text": "| Técnica | Tokens thinking esperados | % tool-call correcto (evidencia) | VRAM | Riesgo | Veredicto |"
+          },
+          {
+            "line": 39,
+            "text": "| **Status quo (CoT libre + budget 256/1024/2048)** | mediana 23, p90 268, max 841 | 6/6 medido por usuario | 0 | outliers rompen 4-5 s | baseline |"
+          },
+          {
+            "line": 40,
+            "text": "| **FR-CoT / Structured brief CoT** (template `INTENT: / TOOL: / ARGS: / GO`, ≤32 tok) | 8–32 tok | Qwen2.5-1.5B BFCL: 44.0% → 64.0% (+45% rel); alucinación 3.0% → 0.0% (arXiv 2604.02155, Qi 2026) | 0 | bajo: prompt-only | **VIABLE — primer"
+          },
+          {
+            "line": 42,
+            "text": "| **Sketch-of-Thought** (Aytes et al., arXiv 2503.05179) | −76% tokens en Qwen2.5-7B | −0.74% accuracy en 7B, no medido en tool-calling ni en 4B | 0 | medio: no validado en tu escala/tarea | esperar evidencia |"
+          },
+          {
+            "line": 43,
+            "text": "| **Budget muy agresivo (`thinking_budget_tokens` 64/128)** | corte duro a 64–128 | en HumanEval Qwen3-9B: 94% (full) → 78% (budget mal sintonizado, reportado por mantenedor en commit acb7c79) | 0 | alto: corta a media frase | sólo como red"
+          },
+          {
+            "line": 44,
+            "text": "| **Fine-tune QLoRA en 1-2k ejemplos brief-CoT con tool calls** | ~20–30 tok | esperable +10-20 pts vs prompt-only | 0 inference; ~16 GB train | medio: tiempo de ingeniería | **viable a 2-4 semanas si FR-CoT no basta** |"
+          },
+          {
+            "line": 78,
+            "text": "| Arquitectura | Latencia router | Cobertura \"crisp\" | Riesgo de mis-route | VRAM | Veredicto |"
+          },
+          {
+            "line": 80,
+            "text": "| **Reglas + verbos imperativos** (\"abre/cierra/sube/pausa/reproduce\" + n-grams de apps conocidas) | <0.5 ms | 60-80% del tráfico Alexa-tier | medio: depende del léxico | 0 | **VIABLE como capa 0** |"
+          },
+          {
+            "line": 81,
+            "text": "| **Embeddings + cosine kNN** (Suki AI / Voiceflow pattern, `e5-small` ~80 MB CPU) | ~1-3 ms | >90% con 50-100 ejemplos/intent | bajo si umbral cosine bien calibrado | ~0 VRAM (CPU) | **VIABLE — capa 1** |"
+          },
+          {
+            "line": 82,
+            "text": "| **Adaptive-classifier/llm-router (HuggingFace, Apache 2.0)** | ~5-10 ms | similar AutoThink | bajo | ~0 | viable, más pesado |"
+          },
+          {
+            "line": 83,
+            "text": "| **LLM mini (FunctionGemma 270M)** | ~50-100 ms | alto | bajo | +0.3 GB | poco ROI vs embeddings en tu VRAM |"
+          },
+          {
+            "line": 84,
+            "text": "| **Self-routing por perplejidad** (CAR, Lu et al. 2025; SynapseRoute, Zhang et al. 2025) | 0 extra | medio | requiere fine-tune | 0 | demasiado complejo para 6 GB |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "qwen3",
+          "gemma 4",
+          "llama.cpp",
+          "e4b",
+          "e5-small",
+          "functiongemma",
+          "gemma-4",
+          "livekit"
+        ],
+        "hardware": [
+          "RTX 3090",
+          "6 GB",
+          "VRAM",
+          "RTX 5060 Ti",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 119,
+            "text": "**VIABLE y de muy alto ROI.** Reduce el % de turnos con thinking a probablemente <40% (vs 100% actual) y preserva fiabilidad porque los casos ambiguos siguen con FR-CoT + budget conservador. Implementación: 2-3 días."
+          }
+        ],
+        "ranges": [
+          "1-344",
+          "h:1",
+          "m:37"
+        ]
+      }
+    }
+  ]
+}

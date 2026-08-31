@@ -1,0 +1,37 @@
+batch_id=docs-004-carter
+kind=docs
+file_count=31
+hash_ok=31 drift=0 miss=0
+subsystem=carter_legacy_Cater_v3_tests
+---FILES---
+OK legacy/Cater_v3_tests/Carter_v3_GUIA_OFICIAL_TESTING (1).md	Carter v3 — Guía oficial única de testing
+OK legacy/Cater_v3_tests/Carter_v3_MINIMUM_TESTING_OFICIAL.md	Carter v3 — Minimum Testing Oficial
+OK legacy/etc/ACTION_FAILED_ELIMINATION_AUDIT.md	Action Failed Elimination Audit — Carter v2
+OK legacy/etc/ACTION_FAILED_ELIMINATION_REPORT.md	Action Failed Elimination Report — Carter v2
+OK legacy/etc/CARTER_TEXT_FINAL_CLOSURE_AUDIT.md	Carter Text Final Closure Audit
+OK legacy/etc/CARTER_TEXT_FINAL_CLOSURE_REPORT.md	Carter Text Final Closure Report
+OK legacy/etc/FULL_LIVE_LLM_VALIDATION_REPORT.md	FULL LIVE LLM VALIDATION REPORT — Carter v2 (MISSION OPUS 4.7 — Phase 3)
+OK legacy/etc/PERFORMANCE_AND_HARDCODE_AUDIT.md	Performance & Hardcode Audit — Carter v2
+OK legacy/etc/PERFORMANCE_AND_HARDCODE_REPORT.md	Carter v2 — Performance & Hardcode Final Report
+OK legacy/etc/SKIPPED_LIVE_VALIDATION_AUDIT.md	Skipped Live Validation Audit — Carter v2
+OK legacy/etc/SKIPPED_LIVE_VALIDATION_REPORT.md	Carter v2 — Skipped Live Validation Report
+OK legacy/etc/ULTRA_LATENCY_REPORT.md	Carter v2 — ULTRA LOW LATENCY OPTIMIZATION REPORT
+OK legacy/etc/probe_recheck_stdout.txt	
+OK ContextoCarter.md	Carter: visión central
+OK GEMINI.md	Carter OS AI — Project Instructions for Gemini CLI
+OK Investigaciontoolsparacarter.md	1. Resumen ejecutivo
+OK deep-research-report (1).md	1. Resumen ejecutivo
+OK prueba.txt	
+OK Carter_v1/debug_qwen3_python_version_cycle2.txt	
+OK Carter_v2/FINAL_TEXT_AGENT_STABILIZATION_NOTES.md	Final Text Agent Stabilization Notes
+OK Carter_v2/FINAL_TEXT_AGENT_STABILIZATION_REPORT.md	Final Text Agent Stabilization Report
+OK Carter_v2/MEMORY.md	Carter Memory
+OK Carter_v2/README.md	Carter_v2
+OK Carter_v2/artifacts/live_smoke_acceptance.md	Live Carter LLM Smoke Results
+OK Carter_v2/artifacts/live_smoke_observed.md	Live Carter LLM Smoke Results
+OK Carter_v2/artifacts/live_smoke_synthetic.md	Live Carter LLM Smoke Results
+OK Carter_v2/artifacts/live_smoke_universal.md	Live Carter LLM Smoke Results
+OK Carter_v2/docs/Tareas por hacer.md	Tareas por hacer
+OK Carter_v2/documentacion/Plan de trabajo.md	Plan de trabajo
+OK Carter_v2/documentacion/Prompt Claude Code - Carter_v2.md	Prompt Para Claude Code — Continuación de Carter_v2
+OK Carter_v2/documentacion/investigaciones/base/Diseño Arquitectónico Agente Autónomo Tipo Jarvis.md	

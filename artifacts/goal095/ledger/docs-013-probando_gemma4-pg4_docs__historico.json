@@ -1,0 +1,675 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-013-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:38Z",
+  "closed_utc": "2026-08-31T04:29:39Z",
+  "estimated_tokens": 298309,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 40,
+  "subsystem": "pg4_docs__historico",
+  "files": [
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/shutdown.md",
+      "sha256": "6998f0481dd378fef7abf2c5b6bd164644813f25356299aed97142b82afe0ce0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-118",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/slot_filling.md",
+      "sha256": "ee7f7e96317d05b3267ed5da30c042e670e30b04ef711755fb389f25e63cd0fc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/voice_turn.md",
+      "sha256": "119cb786390831d55580b5f0fe5b783b6500fee06b670feac4a70bfe97f5a496",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-206",
+        "h:1",
+        "m:46"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/wake_activation.md",
+      "sha256": "acd68033397519791fe30d6afc6cdf5dbaedd01973865bacd34fa2ef2c05e2ef",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-91",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/05_data.md",
+      "sha256": "dddd59f9f15db7700616fd8d1e73a5643b482423dc05d3618ed2e2c28bef27b6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-385",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/06_dependencies.md",
+      "sha256": "2111243af7800ce1f115ad773d60a27b31b1306af4b7fba3eb13e74b3053f7c7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-316",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/07_tools.md",
+      "sha256": "64e6cabe3de06ff98c63bffcacbf0ea5ea598d8d2e80696e889da08085c0a620",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-202",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/08_findings.md",
+      "sha256": "a3cd62504da5c53f67eb0af25763b33a65ff0b99eef1224c4948bf223c0adecc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-411",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/_findings_seed.md",
+      "sha256": "97f053d822f84683f980b587e29ee99a61eb0e9c9a4e847b67929a24efa204b3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-231",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/PARA_AGENTE_CARTER_PROMPTS_SEPARADOS.md",
+      "sha256": "c9176e59b97f32cedf516fe8aec89bb8e91ec9e601b6ef48ddec618103c53e0b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-215",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/REPORTE_GEMMA4_PARA_CARTER.md",
+      "sha256": "0caa4d3ab5f72a972486653ab523a9e0efe3b71984da90a674b07960a36d8873",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-752",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/final_shakedown.md",
+      "sha256": "d28f7017d5523987794517ed1a492268889295da66a67f98bf7b92accbf32137",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-89",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/flakiness_hunt.md",
+      "sha256": "112e186b118ac777c7d3adddeaad3d4cf3797cca26fef30a9e2a24bd918268f9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-58",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/latency_baseline.md",
+      "sha256": "803960ada6181c18ad86ed0a7e887a0d877ba4980f7e8dc998f988f3d0dbb0c1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-43",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/latency_microagents_cache.md",
+      "sha256": "ce6b65630a4a6120bc448251583de14865ac40935fd0e99da0489abe12f32e1e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-61",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/latency_sprint_report.md",
+      "sha256": "5533011e327322161a07567b853deaa7658a631bf8a7ee34639c29c2cc435d7e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-226",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/llm_e2e_validation.md",
+      "sha256": "a32c37c6bdbd9e8c6f4854cf2b83c65c3c092e8b1d847c93dd0667b2096901b4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-115",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/overnight_validation.md",
+      "sha256": "c82a7d5f9a3b14a02ea82ac05c1f30b5ee1c221c30cd61174bd15320a4c77c95",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-149",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/tests_540.md",
+      "sha256": "e146757827ce671b8b60512617f9b38ecf5cd134c48102b13c591b8a9133f37e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-771",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/INFORME_NOCTURNO.md",
+      "sha256": "7602198364e53b4f2271f3d140a0ddc9fd23c926a48363a6dc3da9b957eccd65",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-184",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/LOCAL_JARVIS_DESIGN.md",
+      "sha256": "ab5e93e335a7ee762f3f62a4f5eb37cc5a0f9fae06cbd6bb88e916ac2386e8fa",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-65",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/MORNING_REPORT.md",
+      "sha256": "43e9d8600f09049d932f58ab1c0fce0b1d43eb428fb68854e39a6f4de492310d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-59",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/ROADMAP.md",
+      "sha256": "dbf49b0b4e4bcb85973cd3e286b12facadce6cbbe1a195d7bbf22046a986ab7b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-1575",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/UNIVERSAL_AGENT_TOOL_GAPS.md",
+      "sha256": "12b7db7bda2bf6dc8018ca50a59110cd7deea383f4c5491797c33992d29ba14d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-1916",
+        "h:1",
+        "m:338"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/session_continuation_report_2026_05_21.md",
+      "sha256": "5da00a0f317b218f88c316d030bdb46d2a8e65149bb6580ef4840cccbcafaf63",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-97",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/handoffs/session_overnight_report_2026_05_21.md",
+      "sha256": "e2467450d4afcc42d27c65fa11a9db6f4a4732713eefaf7438b58a8c6e2e545f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-135",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_AGENTE_NOCTURNO_ROUTER.md",
+      "sha256": "88c82db9b0f9bb9b587cfdcd6ac9982343701135007a9148ff7e9c19ca7e8225",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-211",
+        "h:1",
+        "m:37"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_FOR_EXTERNAL_AUDIT.md",
+      "sha256": "cd8104eec17849c712c48463309bffde4958e09ae0bd3280014102785acb7bf3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-181",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_1_toolcalling_structured.md",
+      "sha256": "cd507256cb9bae25312459ba62a5057cbac176665bca3d7efbc5301eda87a3be",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-63",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_2_memoria_personalizacion.md",
+      "sha256": "5840aa48bd94897728fb45faaadd37300418183f0552e52b1827957b9d469d3c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-65",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_3_verificacion_recovery.md",
+      "sha256": "f95ca269eeb1d7ef48c73117e35cba8a1081811e6f7e028e66f6ca8bb71ac15d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-65",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_4_contexto_multiturno.md",
+      "sha256": "c813757b1a9dd2bc2c863d3f8a815b6101a089471e002f34c2a3a956b5520075",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-64",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_5_aprendizaje_proactivo.md",
+      "sha256": "3a3d3c7ea300db2f3f9acf1de88d34d8f5c3901967c2134f914068297bf2afa5",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-73",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_6_estabilidad_no_crash.md",
+      "sha256": "1ff26aa7b67f368bcbb3aad68e5b8435e2db336acefa99f6f1bd8aeff8645ae4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-54",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_7_nlu_comandos_ambiguos.md",
+      "sha256": "fe3b7922527254e46f7a4e1de0144ad5c6f096e46f52540fed2739205e0583d6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-53",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_8_automatizacion_gui_desktop.md",
+      "sha256": "f5df2edbdde820abc7013e71efcc9e73dd3b850b24f6417d9407e3b91b6258d9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-58",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_INDEX.md",
+      "sha256": "8b296dd0159a71a5b87eb857447f4fbd13f349496db514f2c6bbf284bd8c8f3a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-37",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_arquitectura_llm.md",
+      "sha256": "8f1e43ae43a6b449422a4d188b0411b5993dc7b3cc02b353b39010cac2449b3e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-111",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_chatgpt_gemini.md",
+      "sha256": "90c0319de1ff5340fe02261a6c88c329948f2d6e44fae0e2ebcc2e6636710d35",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-150",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_computer_use_gui_control.md",
+      "sha256": "5898f6643d4955049b70642d357193a4c91514d261c83b469af29330e6225990",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-182",
+        "h:1",
+        "m:25"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-013-probando_gemma4-pg4_docs__historico-01-documentacion-_historico-baseline_audit",
+      "claim_kind": "documental",
+      "problem": "Fase 5 — Diagrama de datos y estado: graph LR",
+      "outcome": "exito",
+      "solution_or_failure": "graph LR",
+      "causal_mechanism": "| 6 | (5e + 1l) | `verify_core` | verifier registry | | - **`_PRE_VALIDATORS` mapping** (`tools.py:1643`) NO usa decorator pattern como `@verifier`. Inconsistencia.",
+      "measurement": "SP[(models/*.gguf)] | TJ[(traces.jsonl — 1.7 MB append-only)] | EX[(experience.sqlite — 1.8 MB)] | | `experience.sqlite` | `data/experience.sqlite` | 1.8 MB | SQLite + `sqlite-vec` virtual | `experiences`, `experience_vec` (vec0 float[384]) | `experience.ExperienceMemory` | | | `tracing.TraceLogger` | `data/traces.jsonl` | **1.7 MB** | JSON-line por evento de turn | append-only, NUNCA rota | | |…",
+      "provenance": {
+        "path": "documentacion/_historico/baseline_audit/05_data.md",
+        "ranges": [
+          "1-385",
+          "h:1",
+          "m:11"
+        ],
+        "date": "2026-05-12",
+        "hardware": "VRAM",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/baseline_audit: 5 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/baseline_audit/05_data.md",
+        "documentacion/_historico/baseline_audit/06_dependencies.md",
+        "documentacion/_historico/baseline_audit/07_tools.md",
+        "documentacion/_historico/baseline_audit/08_findings.md",
+        "documentacion/_historico/baseline_audit/_findings_seed.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/baseline_audit/06_dependencies.md",
+        "documentacion/_historico/baseline_audit/07_tools.md",
+        "documentacion/_historico/baseline_audit/08_findings.md",
+        "documentacion/_historico/baseline_audit/_findings_seed.md"
+      ]
+    },
+    {
+      "card_id": "docs-013-probando_gemma4-pg4_docs__historico-02-documentacion-_historico-baseline_audit-04_sequenc",
+      "claim_kind": "documental",
+      "problem": "04.06 — Shutdown / cleanup: sequenceDiagram",
+      "outcome": "contexto",
+      "solution_or_failure": "sequenceDiagram",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "4. El **TTL `INHERIT_TTL_SEC=300s`** evita heredar tools peligrosos si el | alt gap > 300s (INHERIT_TTL_SEC) | else gap <= 300s | Duck->>Duck: COM thread baja volumen sistema a 15% | VC->>VC: 200ms grace | NLI->>NLI: BG thread carga mDeBERTa si no está (~14s primera vez) | Note over MO: MissionOutcome.status ∈ {COMPLETED, PARTIAL, FAILED, UNVERIFIED, NEEDS_USER, ...} | GG->>NLI: classify_async (b…",
+      "provenance": {
+        "path": "documentacion/_historico/baseline_audit/04_sequences/shutdown.md",
+        "ranges": [
+          "1-118",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/baseline_audit/04_sequences: 4 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/baseline_audit/04_sequences/shutdown.md",
+        "documentacion/_historico/baseline_audit/04_sequences/slot_filling.md",
+        "documentacion/_historico/baseline_audit/04_sequences/voice_turn.md",
+        "documentacion/_historico/baseline_audit/04_sequences/wake_activation.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/baseline_audit/04_sequences/slot_filling.md",
+        "documentacion/_historico/baseline_audit/04_sequences/voice_turn.md",
+        "documentacion/_historico/baseline_audit/04_sequences/wake_activation.md"
+      ]
+    },
+    {
+      "card_id": "docs-013-probando_gemma4-pg4_docs__historico-03-documentacion-_historico-bench_carter",
+      "claim_kind": "documental",
+      "problem": "Para el agente Carter — Aplicar la separación de prompts que se hizo acá: **Origen:** repo `Probando Gemma 4` (donde Gemma 4 sacó **540/540 = 100%**).",
+      "outcome": "exito",
+      "solution_or_failure": "**Origen:** repo `Probando Gemma 4` (donde Gemma 4 sacó **540/540 = 100%**).",
+      "causal_mechanism": "| `R1 HONESTY` con excepción para \"general knowledge\" | v8 falló C16 \"quién es Spider-Man\" porque el modelo decía \"no lo sé\" (overcorrected sobre R1) | | `gui_deeplink` separado de `gui` porque mezclarlos rompió C09 Steam en mi v1 consolidado (0/30 → 30/30 al separarlos). Evidencia medida, no especulación. | ### Verifier estructural (Valor 4) | Sin verifiers, Carter está vulnerable a fake success…",
+      "measurement": "**Origen:** repo `Probando Gemma 4` (donde Gemma 4 sacó **540/540 = 100%**). | En este repo, el bench Carter 540 sacó **540/540 con Gemma 4 E4B-Q6_K**. NO usé un system prompt genérico — usé uno **diseñado específicamente para Gemma 4** (`harness_carter540/system_prompt.py` v3, 143 líneas, 14 iteraciones). | | **qwen3:4b-instruct-2507-q4_K_M** | T=0.7, top_p=0.8, top_k=20 | `<\\|im_start\\|>` `<\\|i…",
+      "provenance": {
+        "path": "documentacion/_historico/bench_carter/PARA_AGENTE_CARTER_PROMPTS_SEPARADOS.md",
+        "ranges": [
+          "1-215",
+          "h:1",
+          "m:3"
+        ],
+        "date": "2026-05-11",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/bench_carter: 10 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "documentacion/_historico/bench_carter/PARA_AGENTE_CARTER_PROMPTS_SEPARADOS.md",
+        "documentacion/_historico/bench_carter/REPORTE_GEMMA4_PARA_CARTER.md",
+        "documentacion/_historico/bench_carter/final_shakedown.md",
+        "documentacion/_historico/bench_carter/flakiness_hunt.md",
+        "documentacion/_historico/bench_carter/latency_baseline.md",
+        "documentacion/_historico/bench_carter/latency_microagents_cache.md",
+        "documentacion/_historico/bench_carter/latency_sprint_report.md",
+        "documentacion/_historico/bench_carter/llm_e2e_validation.md",
+        "documentacion/_historico/bench_carter/overnight_validation.md",
+        "documentacion/_historico/bench_carter/tests_540.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/bench_carter/REPORTE_GEMMA4_PARA_CARTER.md",
+        "documentacion/_historico/bench_carter/final_shakedown.md",
+        "documentacion/_historico/bench_carter/flakiness_hunt.md",
+        "documentacion/_historico/bench_carter/latency_baseline.md",
+        "documentacion/_historico/bench_carter/latency_microagents_cache.md",
+        "documentacion/_historico/bench_carter/latency_sprint_report.md",
+        "documentacion/_historico/bench_carter/llm_e2e_validation.md",
+        "documentacion/_historico/bench_carter/overnight_validation.md",
+        "documentacion/_historico/bench_carter/tests_540.md"
+      ]
+    },
+    {
+      "card_id": "docs-013-probando_gemma4-pg4_docs__historico-04-documentacion-_historico-handoffs",
+      "claim_kind": "documental",
+      "problem": "Informe nocturno — Integración Gemma 4 (sesión 2): **Fecha inicio:** 2026-05-10 ~21:25",
+      "outcome": "fracaso",
+      "solution_or_failure": "**Fecha inicio:** 2026-05-10 ~21:25",
+      "causal_mechanism": "igualmente pobres (fake success). No tiene sentido gastar ~2h en eso. | c096dcf0 feat(verifier): NEEDS_PERMISSION + BLOCKED_BY_POLICY outcomes | Reemplaza \"office\" en el subset porque \"lee este pdf\" no es crear, | estos triggers porque la rutina probablemente necesita keypress. | Prioridad: P2, porque el modelo ya cubre bastante. | los GPU-dependientes porque la GPU tenía 6.7 GB en uso con el usu…",
+      "measurement": "- **llama-server arrancado y vivo** con `gemma-4-E4B-it-Q6_K` + mmproj-F16 | - **Bench sanity 18 casos (1 por cat):** 17 PASS / 1 PARTIAL / 0 FAIL = | 94.44% — números similares al baseline iterA (95.37%) pero las | evaluador de calidad iba a reportar ~95% como el baseline con replies | ebb5d980 feat(hardware): VRAM-aware Gemma 4 selector + bootstrap PS1 | d5b67dfe test: smoke estructural post-mi…",
+      "provenance": {
+        "path": "documentacion/_historico/handoffs/INFORME_NOCTURNO.md",
+        "ranges": [
+          "1-184",
+          "h:1",
+          "m:12"
+        ],
+        "date": "2026-05-10",
+        "hardware": "VRAM",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/handoffs: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/handoffs/INFORME_NOCTURNO.md",
+        "documentacion/_historico/handoffs/LOCAL_JARVIS_DESIGN.md",
+        "documentacion/_historico/handoffs/MORNING_REPORT.md",
+        "documentacion/_historico/handoffs/ROADMAP.md",
+        "documentacion/_historico/handoffs/UNIVERSAL_AGENT_TOOL_GAPS.md",
+        "documentacion/_historico/handoffs/session_continuation_report_2026_05_21.md",
+        "documentacion/_historico/handoffs/session_overnight_report_2026_05_21.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/handoffs/LOCAL_JARVIS_DESIGN.md",
+        "documentacion/_historico/handoffs/MORNING_REPORT.md",
+        "documentacion/_historico/handoffs/ROADMAP.md",
+        "documentacion/_historico/handoffs/UNIVERSAL_AGENT_TOOL_GAPS.md",
+        "documentacion/_historico/handoffs/session_continuation_report_2026_05_21.md",
+        "documentacion/_historico/handoffs/session_overnight_report_2026_05_21.md"
+      ]
+    },
+    {
+      "card_id": "docs-013-probando_gemma4-pg4_docs__historico-05-documentacion-_historico-prompts_research",
+      "claim_kind": "documental",
+      "problem": "MISIÓN AUTÓNOMA NOCTURNA — LLEVAR EL ROUTER DE GEMMA4 AL MÁXIMO ABSOLUTO: Vas a trabajar **SIN PARAR** hasta lograr el mejor resultado posible del router de",
+      "outcome": "contexto",
+      "solution_or_failure": "Vas a trabajar **SIN PARAR** hasta lograr el mejor resultado posible del router de",
+      "causal_mechanism": "- regex que dependa de **palabras concretas** como mecanismo de decisión | - hardcode / listas de keywords / diccionarios `prompt → tool` | - memorizar las frases del corpus de prueba (eso ES el hardcode prohibido) | porque...\"). No me digas \"deberías X\" sin haber leído mi razón | - _ort_throttle.py para ONNX (2 threads, sin spinning, afinidad). | PERO regresionó media (6/6→3/6) porque Gemma E4B…",
+      "measurement": "Un **80% honesto y universal VALE MÁS que un 95% logrado con hacks/keywords/overfit**. | holdout. Ejemplo: si llegás a 80% y tras 4 enfoques realmente distintos seguís en | ~80%, recién ahí 80% es el techo legítimo. Si llegás a 80% y solo probaste 1 | **curado y verificado a mano por Opus** (100% etiquetado, coherente, 0 tools | - Desarrollá y tuneá **SOLO contra el 80% dev**. El **20% holdout es…",
+      "provenance": {
+        "path": "documentacion/_historico/prompts_research/PROMPT_AGENTE_NOCTURNO_ROUTER.md",
+        "ranges": [
+          "1-211",
+          "h:1",
+          "m:37"
+        ],
+        "date": "2026-08-31",
+        "hardware": "6 GB",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/prompts_research: 14 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "documentacion/_historico/prompts_research/PROMPT_AGENTE_NOCTURNO_ROUTER.md",
+        "documentacion/_historico/prompts_research/PROMPT_FOR_EXTERNAL_AUDIT.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_1_toolcalling_structured.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_2_memoria_personalizacion.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_3_verificacion_recovery.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_4_contexto_multiturno.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_5_aprendizaje_proactivo.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_6_estabilidad_no_crash.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_7_nlu_comandos_ambiguos.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_8_automatizacion_gui_desktop.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_INDEX.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_arquitectura_llm.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_chatgpt_gemini.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_computer_use_gui_control.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/prompts_research/PROMPT_FOR_EXTERNAL_AUDIT.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_1_toolcalling_structured.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_2_memoria_personalizacion.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_3_verificacion_recovery.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_4_contexto_multiturno.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_5_aprendizaje_proactivo.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_6_estabilidad_no_crash.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_7_nlu_comandos_ambiguos.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_8_automatizacion_gui_desktop.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_INDEX.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_arquitectura_llm.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=40 drift=0 miss=0",
+  "next_docs_batch_id": "docs-014-probando_gemma4-pg4_docs__historico",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-013-probando_gemma4-pg4_docs__historico.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

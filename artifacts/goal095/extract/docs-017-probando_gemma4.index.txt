@@ -1,0 +1,29 @@
+batch_id=docs-017-probando_gemma4
+kind=docs
+file_count=23
+hash_ok=23 drift=0 miss=0
+subsystem=pg4_scripts
+---FILES---
+OK scripts/_out_peak_threshold.txt	
+OK scripts/_out_reminder_routing.txt	
+OK scripts/_out_skills_fp.txt	
+OK scripts/_out_skills_quality.txt	
+OK scripts/_out_subset_diag.txt	app
+OK scripts/_out_suite_full.txt	
+OK scripts/_out_threshold_safety.txt	
+OK scripts/_out_tools_report.txt	app (acepta ['app', 'window'])
+OK scripts/app_accessibility_census.md	Censo de apps por tecnología — ¿cuáles llevan el flag de accesibilidad?
+OK gemma4_agent/skills/README.md	Carter Agent skills
+OK gemma4_agent/voice/tests/testaudio_groundtruth_report.md	testaudio ground-truth report
+OK @AutomationLog.txt	
+OK AGENTS.md	AGENTS.md — Cómo trabajar en este repo
+OK CLAUDE.md	CLAUDE.md — Cómo trabajar en este repo
+OK CONTRIBUTING.md	Contribuir a Baxy
+OK ContextoGPT.md	medir throughput: 20 pasos sobre el dataset COMPLETO (con group_by_length)
+OK OVERNIGHT_AUDIT_REPORT.md	Overnight Audit Report
+OK README.md	Baxy Agent
+OK constraints.txt	Constraints de pip — TOPES DUROS que ningún dependiente puede pisar.
+OK log.txt	
+OK requirements-camera.txt	Optional Phase 0 camera-control POC dependencies.
+OK requirements-voice.txt	Voice pipeline dependencies (Sprint VoiceRedesign, 2026-05-19)
+OK requirements.txt	Generated from real top-level imports in gemma4_agent/*.py (Sprint 0.1, 2026-05-

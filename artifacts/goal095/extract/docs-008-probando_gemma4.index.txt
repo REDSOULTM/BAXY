@@ -1,0 +1,34 @@
+batch_id=docs-008-probando_gemma4
+kind=docs
+file_count=28
+hash_ok=28 drift=0 miss=0
+subsystem=pg4__tesis_curso
+---FILES---
+OK _tesis_curso/entregables/guion_defensa_oral.md	Guion de Defensa Oral — Baxy
+OK _tesis_curso/entregables/portafolio_CAP_I.md	CAPÍTULO I — PROBLEMA / OPORTUNIDAD Y PLANTEAMIENTO
+OK _tesis_curso/entregables/portafolio_CAP_II.md	CAPÍTULO II — OBJETIVOS, MÉTRICAS, ALCANCE, NORMATIVAS Y PLAN DE PROYECTO
+OK _tesis_curso/entregables/portafolio_CAP_III.md	PORTAFOLIO DE PROYECTOS — CAPÍTULO III
+OK gemma4_agent/data/README.md	`gemma4_agent/data/` — artefactos de datos y modelos
+OK dataset_finetune/_router_backup/router_encoder_ft/README.md	SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniL
+OK dataset_finetune/_wf_findings_raw.md	WORKFLOW: TECHO 2B vs 4B + DESTILACIÓN + cuant/offload/visión
+OK dataset_finetune/out/_canaries_fixed.txt	
+OK dataset_finetune/out/_canaries_v3.txt	
+OK dataset_finetune/out/_canary_stages.txt	
+OK dataset_finetune/out/_lid_rescue_eval.txt	
+OK dataset_finetune/out/_lid_shortzone.txt	
+OK dataset_finetune/out/_router_eval_BASELINE.txt	
+OK dataset_finetune/out/_router_eval_BASELINE_slices.txt	
+OK dataset_finetune/out/_router_eval_NEWBASE_noes.txt	
+OK dataset_finetune/out/_router_eval_POSTCANARYFIX.txt	
+OK dataset_finetune/out/_router_eval_V3_slices.txt	
+OK dataset_finetune/out/_router_eval_V3_slices_clean.txt	
+OK dataset_finetune/out/_router_eval_devfails.txt	
+OK dataset_finetune/out/_router_pipeline_v3.txt	
+OK dataset_finetune/out/imatrix_corpus.txt	
+OK documentacion/00_producto/AUDITORIA_licencias.md	Auditoría de licencias — viabilidad COMERCIAL
+OK documentacion/00_producto/AUDITORIA_uso_del_modelo_gemma4_2026-06-10.md	Auditoría: ¿usamos Gemma 4 E2B de la mejor forma posible? (2026-06-10)
+OK documentacion/00_producto/BRANCHING.md	Modelo de ramas — Baxy
+OK documentacion/00_producto/MCP.md	Baxy as MCP Server
+OK documentacion/00_producto/PORTING_PLAN.md	Porting Plan — TIER 1 + TIER 2 desde Carter v5 / Competidores
+OK documentacion/00_producto/PRODUCTION_READY.md	`gemma4_agent` — Production-Ready Acceptance Gate
+OK documentacion/00_producto/computer_use_capability_layers.md	Computer Use Capability Layers

@@ -1,0 +1,5124 @@
+{
+  "batch_id": "docs-013-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_docs__historico",
+  "file_count": 40,
+  "hash_ok": 40,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/shutdown.md",
+      "queued_sha256": "6998f0481dd378fef7abf2c5b6bd164644813f25356299aed97142b82afe0ce0",
+      "size_queued": 6191,
+      "exists": true,
+      "disk_sha256": "6998f0481dd378fef7abf2c5b6bd164644813f25356299aed97142b82afe0ce0",
+      "disk_size": 6191,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 118,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04.06 — Shutdown / cleanup"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Fig 4.06 — Shutdown del UI Desktop (PyQt)"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Fig 4.07 — Shutdown del UI Field (FastAPI)"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Fig 4.08 — Lo que SÍ hace cleanup correctamente"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "Lo que está BIEN en el código actual"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Lo que está MAL o FALTA"
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "sequenceDiagram",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-118",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/slot_filling.md",
+      "queued_sha256": "ee7f7e96317d05b3267ed5da30c042e670e30b04ef711755fb389f25e63cd0fc",
+      "size_queued": 5783,
+      "exists": true,
+      "disk_sha256": "ee7f7e96317d05b3267ed5da30c042e670e30b04ef711755fb389f25e63cd0fc",
+      "disk_size": 5783,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 120,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04.04 — Slot-filling cuando faltan parámetros"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Concepto clave"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Fig 4.04 — Slot-filling con continuation hint"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Path alternativo: short continuation + INHERIT TOOLS"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "El proyecto **no implementa slot-filling explícito** (no hay máquina de",
+        "measures": [
+          {
+            "line": 19,
+            "text": "4. El **TTL `INHERIT_TTL_SEC=300s`** evita heredar tools peligrosos si el"
+          },
+          {
+            "line": 94,
+            "text": "alt gap > 300s (INHERIT_TTL_SEC)"
+          },
+          {
+            "line": 96,
+            "text": "else gap <= 300s"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-120",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/voice_turn.md",
+      "queued_sha256": "119cb786390831d55580b5f0fe5b783b6500fee06b670feac4a70bfe97f5a496",
+      "size_queued": 9287,
+      "exists": true,
+      "disk_sha256": "119cb786390831d55580b5f0fe5b783b6500fee06b670feac4a70bfe97f5a496",
+      "disk_size": 9287,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 206,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04.02 — Voice turn end-to-end"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Fig 4.02 — Turn de voz completo"
+          },
+          {
+            "line": 178,
+            "level": 2,
+            "text": "Threads simultáneos en el peor momento"
+          },
+          {
+            "line": 201,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "sequenceDiagram",
+        "measures": [
+          {
+            "line": 46,
+            "text": "Duck->>Duck: COM thread baja volumen sistema a 15%"
+          },
+          {
+            "line": 47,
+            "text": "VC->>VC: 200ms grace"
+          },
+          {
+            "line": 83,
+            "text": "NLI->>NLI: BG thread carga mDeBERTa si no está (~14s primera vez)"
+          },
+          {
+            "line": 130,
+            "text": "Note over MO: MissionOutcome.status ∈ {COMPLETED, PARTIAL, FAILED, UNVERIFIED, NEEDS_USER, ...}"
+          },
+          {
+            "line": 137,
+            "text": "GG->>NLI: classify_async (background, ~1200ms)"
+          },
+          {
+            "line": 167,
+            "text": "VC->>BUS: pub state=FOLLOWUP (5s window)"
+          },
+          {
+            "line": 191,
+            "text": "| Semantic router warmup BG | `_bg_warmup_router` | One-shot ~6-8s |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-206",
+          "h:1",
+          "m:46"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/wake_activation.md",
+      "queued_sha256": "acd68033397519791fe30d6afc6cdf5dbaedd01973865bacd34fa2ef2c05e2ef",
+      "size_queued": 4465,
+      "exists": true,
+      "disk_sha256": "acd68033397519791fe30d6afc6cdf5dbaedd01973865bacd34fa2ef2c05e2ef",
+      "disk_size": 4465,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 91,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04.03 — Wake-word activation"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fig 4.03 — Wake activation"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Tuning crítico"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "sequenceDiagram",
+        "measures": [
+          {
+            "line": 5,
+            "text": "> Latencia objetivo: < 300 ms desde \"gemma\" hasta beep + ducking + STT armado."
+          },
+          {
+            "line": 16,
+            "text": "participant Ring as ring buffer 5s"
+          },
+          {
+            "line": 27,
+            "text": "Pump->>Ring: append(chunk) (deque maxlen 5s)"
+          },
+          {
+            "line": 34,
+            "text": "WD->>WD: debounce check (>2s desde último wake?)"
+          },
+          {
+            "line": 49,
+            "text": "Note over VC: beep síncrono ~30ms via sounddevice"
+          },
+          {
+            "line": 55,
+            "text": "VC->>VC: 200ms grace (WAKE_FEEDBACK_MS)"
+          },
+          {
+            "line": 60,
+            "text": "VC->>VC: _start_listening_timeout (5s para empezar a hablar)"
+          },
+          {
+            "line": 81,
+            "text": "| `WAKE_SAFETY_MARGIN_S` | `0.05` | Vosk tiene jitter ~50ms en word timestamps |"
+          },
+          {
+            "line": 82,
+            "text": "| `CHUNK_SAMPLES` | `512` (~32ms @ 16kHz) | EXACTO Silero VAD v5 requirement |"
+          },
+          {
+            "line": 90,
+            "text": "- **Si el ring buffer se llena y nadie hace snapshot**, el deque drops oldest — el ring de 5s alcanza para wake + comando corto pero no para el caso \"user habla largo antes de wake\" (que no es el caso normal)."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-91",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/05_data.md",
+      "queued_sha256": "dddd59f9f15db7700616fd8d1e73a5643b482423dc05d3618ed2e2c28bef27b6",
+      "size_queued": 17446,
+      "exists": true,
+      "disk_sha256": "dddd59f9f15db7700616fd8d1e73a5643b482423dc05d3618ed2e2c28bef27b6",
+      "disk_size": 17446,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 385,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 5 — Diagrama de datos y estado"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "1. Mapa global"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "2. Inventario detallado"
+          },
+          {
+            "line": 73,
+            "level": 3,
+            "text": "2.1 SQLite stores"
+          },
+          {
+            "line": 82,
+            "level": 4,
+            "text": "Schemas reales (extraídos de las DBs):"
+          },
+          {
+            "line": 153,
+            "level": 3,
+            "text": "2.2 JSON stores"
+          },
+          {
+            "line": 165,
+            "level": 4,
+            "text": "`state.json` real (datos del usuario actual)"
+          },
+          {
+            "line": 201,
+            "level": 3,
+            "text": "2.3 Logs y trazas (append-only, no cap)"
+          },
+          {
+            "line": 210,
+            "level": 4,
+            "text": "Sample real de `traces.jsonl`:"
+          },
+          {
+            "line": 217,
+            "level": 3,
+            "text": "2.4 Outputs del agente (no leídos por nadie del código)"
+          },
+          {
+            "line": 228,
+            "level": 3,
+            "text": "2.5 Binarios externos descargados"
+          },
+          {
+            "line": 237,
+            "level": 2,
+            "text": "3. Estado in-memory que se PIERDE al reiniciar"
+          },
+          {
+            "line": 257,
+            "level": 2,
+            "text": "4. ER diagram (informal)"
+          },
+          {
+            "line": 344,
+            "level": 2,
+            "text": "5. Hallazgos críticos"
+          },
+          {
+            "line": 364,
+            "level": 2,
+            "text": "6. Resumen de superficies de persistencia"
+          },
+          {
+            "line": 376,
+            "level": 2,
+            "text": "7. Findings a `_findings_seed.md`"
+          }
+        ],
+        "lead": "graph LR",
+        "measures": [
+          {
+            "line": 11,
+            "text": "SP[(models/*.gguf)]"
+          },
+          {
+            "line": 19,
+            "text": "TJ[(traces.jsonl — 1.7 MB append-only)]"
+          },
+          {
+            "line": 20,
+            "text": "EX[(experience.sqlite — 1.8 MB)]"
+          },
+          {
+            "line": 77,
+            "text": "| `experience.sqlite` | `data/experience.sqlite` | 1.8 MB | SQLite + `sqlite-vec` virtual | `experiences`, `experience_vec` (vec0 float[384]) | `experience.ExperienceMemory` |"
+          },
+          {
+            "line": 205,
+            "text": "| `tracing.TraceLogger` | `data/traces.jsonl` | **1.7 MB** | JSON-line por evento de turn | append-only, NUNCA rota |"
+          },
+          {
+            "line": 244,
+            "text": "| `LLMClient` | KV cache del llama-server (vive en el subprocess, NO en cliente) | si server reinicia: 30-90s para load_tensors + KV |"
+          },
+          {
+            "line": 245,
+            "text": "| `semantic_router._STATE` | model + tool_embeddings (~120 MB) | 6-8s eager load |"
+          },
+          {
+            "line": 246,
+            "text": "| `nli_service._SINGLETON` | pipeline mDeBERTa (~280 MB) + cache LRU 512 | ~14s primera vez |"
+          },
+          {
+            "line": 247,
+            "text": "| `knowledge._RERANK_STATE` | CrossEncoder (~80 MB) | lazy |"
+          },
+          {
+            "line": 350,
+            "text": "| **HIGH** | **`traces.jsonl` 1.7 MB sin rotación.** `TraceLogger` solo hace `append`; **no hay rotate ni cap**. Crece para siempre. Telemetry tiene `rotate(keep_days=30)` pero TraceLogger no. | `tracing.py` |"
+          },
+          {
+            "line": 352,
+            "text": "| **HIGH** | **`experience.sqlite` 1.8 MB ya con auto-prune (50 inserts) + max 5000 records + max 180 días.** Tiene housekeeping correcto. Pero las 5 columnas `ALTER TABLE` post-launch indican **schema drift** sin migration framework. | `ex"
+          },
+          {
+            "line": 378,
+            "text": "- **`state.json` no purga `closed` resources** (HIGH). 392/468 = 84 % son zombies."
+          }
+        ],
+        "dates": [
+          "2026-05-12"
+        ],
+        "models": [
+          "gemma4",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-385",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/06_dependencies.md",
+      "queued_sha256": "2111243af7800ce1f115ad773d60a27b31b1306af4b7fba3eb13e74b3053f7c7",
+      "size_queued": 12897,
+      "exists": true,
+      "disk_sha256": "2111243af7800ce1f115ad773d60a27b31b1306af4b7fba3eb13e74b3053f7c7",
+      "disk_size": 12897,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 316,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 6 — Grafo de dependencias internas"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Métricas globales"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Top 15 god modules (más importados)"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "Top 10 importers (módulos con más outgoing)"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Diagrama del grafo eager (sin lazy)"
+          },
+          {
+            "line": 173,
+            "level": 2,
+            "text": "Los 8 módulos huérfanos (entry points puros, esperable)"
+          },
+          {
+            "line": 192,
+            "level": 2,
+            "text": "Top lazy importers (sospechosos de \"defensa de boot\")"
+          },
+          {
+            "line": 219,
+            "level": 2,
+            "text": "Diagrama del subgrafo \"qué importa Gemma4Agent\" (eager + lazy)"
+          },
+          {
+            "line": 273,
+            "level": 2,
+            "text": "Top 10 sub-conexiones eager más usadas (matriz parcial)"
+          },
+          {
+            "line": 290,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          },
+          {
+            "line": 292,
+            "level": 3,
+            "text": "Sobre el grafo en sí"
+          },
+          {
+            "line": 297,
+            "level": 3,
+            "text": "God modules confirmados"
+          },
+          {
+            "line": 302,
+            "level": 3,
+            "text": "Sospechas confirmadas"
+          },
+          {
+            "line": 307,
+            "level": 3,
+            "text": "No-hallazgo (positivo)"
+          },
+          {
+            "line": 311,
+            "level": 2,
+            "text": "Artefactos generados (borrar al cerrar Fase 6)"
+          }
+        ],
+        "lead": "**Lectura honesta del ratio lazy:eager:** que el ratio sea ~1.2 es bandera",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 42,
+            "text": "| 6 | (5e + 1l) | `verify_core` | verifier registry |"
+          }
+        ],
+        "ranges": [
+          "1-316",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/07_tools.md",
+      "queued_sha256": "64e6cabe3de06ff98c63bffcacbf0ea5ea598d8d2e80696e889da08085c0a620",
+      "size_queued": 15456,
+      "exists": true,
+      "disk_sha256": "64e6cabe3de06ff98c63bffcacbf0ea5ea598d8d2e80696e889da08085c0a620",
+      "disk_size": 15456,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 202,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 7 — Inventario de tools del agente"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Resumen ejecutivo"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Las 65 compound tools (lo que el LLM realmente ve)"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Las 23 \"legacy plain\" (en `_impls` pero NO en `COMPOUND_TOOL_SCHEMAS`)"
+          },
+          {
+            "line": 105,
+            "level": 3,
+            "text": "¿Las llama alguien?"
+          },
+          {
+            "line": 115,
+            "level": 2,
+            "text": "Tools sospechosas de no usarse (a verificar en logs)"
+          },
+          {
+            "line": 143,
+            "level": 2,
+            "text": "Cómo cruzar con uso real"
+          },
+          {
+            "line": 148,
+            "level": 1,
+            "text": "Count tool calls per name from traces"
+          },
+          {
+            "line": 169,
+            "level": 2,
+            "text": "Tools con MUY alta complejidad por params"
+          },
+          {
+            "line": 184,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          },
+          {
+            "line": 186,
+            "level": 3,
+            "text": "HIGH"
+          },
+          {
+            "line": 191,
+            "level": 3,
+            "text": "MED"
+          },
+          {
+            "line": 195,
+            "level": 3,
+            "text": "LOW"
+          },
+          {
+            "line": 199,
+            "level": 2,
+            "text": "Artefactos a borrar al cerrar Fase 7"
+          }
+        ],
+        "lead": "Ordenadas por **cantidad de acciones distintas** (proxy de complejidad):",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-202",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/08_findings.md",
+      "queued_sha256": "a3cd62504da5c53f67eb0af25763b33a65ff0b99eef1224c4948bf223c0adecc",
+      "size_queued": 30697,
+      "exists": true,
+      "disk_sha256": "a3cd62504da5c53f67eb0af25763b33a65ff0b99eef1224c4948bf223c0adecc",
+      "disk_size": 30697,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 411,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 8 — Hallazgos consolidados (resumen ejecutivo)"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "TL;DR — Lo que se puede recortar HOY (Quick Wins, <1 día c/u)"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "1 — CRITICAL (bloquean cualquier refactor mayor)"
+          },
+          {
+            "line": 37,
+            "level": 3,
+            "text": "1.1 No existe declaración de dependencias"
+          },
+          {
+            "line": 44,
+            "level": 3,
+            "text": "1.2 `ToolRegistry` 3 157 LOC / ~140 métodos"
+          },
+          {
+            "line": 51,
+            "level": 3,
+            "text": "1.3 `Gemma4Agent` 1 852 LOC / 21 métodos; `run_content` solo 892 LOC"
+          },
+          {
+            "line": 58,
+            "level": 3,
+            "text": "1.4 `domain_tools.py` 10 539 LOC con 16+ deps pesadas en cabecera"
+          },
+          {
+            "line": 67,
+            "level": 2,
+            "text": "2 — HIGH (alto valor, esfuerzo razonable)"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "2.1 Triple duplicación de \"single-thread worker para el agente\""
+          },
+          {
+            "line": 76,
+            "level": 3,
+            "text": "2.2 Funciones duplicadas auto-confesadas"
+          },
+          {
+            "line": 85,
+            "level": 3,
+            "text": "2.3 `state.json` 538 KB con 84 % zombies"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "2.4 `traces.jsonl` 1.7 MB sin rotación"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "2.5 4 sinks redundantes de \"qué pasó en este turn\""
+          },
+          {
+            "line": 106,
+            "level": 3,
+            "text": "2.6 23 \"legacy plain\" tools en `_impls` que el LLM no ve"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "2.7 50+ wrappers de 1 línea `t_<name>` que solo delegan a `domain_tools`"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "2.8 `_suggest_tools` regex multilingüe ES/EN/PT/FR/IT en 30+ buckets"
+          },
+          {
+            "line": 127,
+            "level": 3,
+            "text": "2.9 `grounding_gate._FALLBACKS_BY_LANG` con 6 idiomas × 4 templates = 24 strings"
+          },
+          {
+            "line": 134,
+            "level": 3,
+            "text": "2.10 `capability_classifier` (mDeBERTa 280 MB) cuya función es \"cachear para próximo turn\""
+          },
+          {
+            "line": 141,
+            "level": 3,
+            "text": "2.11 `CORE_PROMPT` 160 LOC raw multi-línea + `TOOL_RULES` 330 LOC dict en `agent.py`"
+          },
+          {
+            "line": 148,
+            "level": 3,
+            "text": "2.12 6 `_guard_*` post-reply en Agent Core = 337 LOC de \"fixups sintácticos\""
+          },
+          {
+            "line": 155,
+            "level": 3,
+            "text": "2.13 `mcp_server.py` 332 LOC implementa MCP JSON-RPC desde cero"
+          },
+          {
+            "line": 162,
+            "level": 3,
+            "text": "2.14 `AppResolver` 9 fuentes de apps; probable overlap"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "2.15 `notification` 20 actions mezcla toast + timer + alarm + reminder"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "2.16 Schema drift en `experience.sqlite`"
+          }
+        ],
+        "lead": "**Total quick wins listos para ejecutar: ~2 000+ LOC** (dominado por state.json bloat y los duplicates).",
+        "measures": [
+          {
+            "line": 9,
+            "text": "> funcionalidad observable. ~12-15 % del paquete."
+          },
+          {
+            "line": 21,
+            "text": "| 5 | Borrar `traces.jsonl` y agregar rotación a `TraceLogger` (o eliminar TraceLogger entero) | 67 LOC + 1.7 MB en disco | S | bajo |"
+          },
+          {
+            "line": 22,
+            "text": "| 6 | Cambiar `AgentState.mark_cleaned` para que BORRE, no marque `closed` | 84 % del state.json = 451 KB de zombies | S | bajo (verificar que nada lee resources cerradas) |"
+          },
+          {
+            "line": 46,
+            "text": "- **Evidencia:** Fase 2/3/7. 88 entries en `_impls` (65 visible al LLM + 23 helpers internos). Constructor instancia `MemoryStore + AgentState + KnowledgeStore + AppResolver` con efectos secundarios."
+          },
+          {
+            "line": 53,
+            "text": "- **Evidencia:** Fase 2/3/4. Tiene 4-5 responsabilidades mezcladas: turn loop + retry + parallel/sequential dispatch + mission tracking + async post-processing + guards + compaction."
+          },
+          {
+            "line": 60,
+            "text": "- **Evidencia:** Fase 2/7. Importa PIL, bs4, fitz, pdfplumber, pdf2image, pypdf, matplotlib, pandas, openpyxl, paho, mysql, psycopg, psycopg2, pymysql, docx, pptx **al top-level**. Cualquier proceso que importe el paquete (CLI, UI, server, "
+          },
+          {
+            "line": 63,
+            "text": "- **Acción:** **lazy import por handler.** Cada `<name>_tool` solo importa lo que usa. Ahorro: probablemente 50-80 % del boot time del Registry."
+          },
+          {
+            "line": 71,
+            "text": "- **Evidencia:** Fase 2/3/4. Confirmado atributo por atributo: `_inbox: Queue`, `_agent`, thread builder, health polling, `submit/_run/_build_agent`. Diferencia única: pyqtSignal vs BUS pub."
+          },
+          {
+            "line": 80,
+            "text": "- **Evidencia:** Fase 2/7. Los comentarios del propio código admiten la copia y explican que se debe a evitar import circular."
+          },
+          {
+            "line": 87,
+            "text": "- **Evidencia:** Fase 5 — 392/468 resources tienen `status=\"closed\"` pero nunca se borran. Cada `_load`/`_save` reserializa 538 KB."
+          },
+          {
+            "line": 88,
+            "text": "- **Impacto:** lecturas/escrituras crecientes. Si crece a 10 MB, latencia visible."
+          },
+          {
+            "line": 115,
+            "text": "- **Evidencia:** Fase 2/7. Todos son: `def t_X(self, args): return X_tool(self.state, args)`."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "piper",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-411",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/_findings_seed.md",
+      "queued_sha256": "97f053d822f84683f980b587e29ee99a61eb0e9c9a4e847b67929a24efa204b3",
+      "size_queued": 20320,
+      "exists": true,
+      "disk_sha256": "97f053d822f84683f980b587e29ee99a61eb0e9c9a4e847b67929a24efa204b3",
+      "disk_size": 20320,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 231,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Seed de hallazgos — checklist activa durante Fases 0→7"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Criterios de búsqueda activa"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Hallazgos preliminares de Fase 0 (van a 08_findings.md)"
+          },
+          {
+            "line": 25,
+            "level": 3,
+            "text": "CÓDIGO MUERTO PROBABLE"
+          },
+          {
+            "line": 32,
+            "level": 3,
+            "text": "CÓDIGO MUERTO REAL (pendiente Fase 6 grafo definitivo)"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "CARPETAS DEUDA"
+          },
+          {
+            "line": 38,
+            "level": 3,
+            "text": "DEPENDENCIAS REDUNDANTES (en domain_tools.py)"
+          },
+          {
+            "line": 42,
+            "level": 3,
+            "text": "CONFIG / DECLARACIÓN"
+          },
+          {
+            "line": 47,
+            "level": 3,
+            "text": "REDUNDANCIA POSIBLE (a confirmar en Fase 2/3)"
+          },
+          {
+            "line": 56,
+            "level": 3,
+            "text": "FLAGS DE CONFIG A REVISAR (probables defaults eternos)"
+          },
+          {
+            "line": 60,
+            "level": 3,
+            "text": "SAFETY ≠ SANDBOX"
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "GOD MODULES / GOD CLASSES"
+          },
+          {
+            "line": 70,
+            "level": 3,
+            "text": "CARTER (documental, no funcional)"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Hallazgos nuevos de Fase 2 (componentes)"
+          },
+          {
+            "line": 75,
+            "level": 3,
+            "text": "CRITICAL"
+          },
+          {
+            "line": 81,
+            "level": 3,
+            "text": "HIGH"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "MED"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "LOW"
+          },
+          {
+            "line": 141,
+            "level": 2,
+            "text": "Hallazgos nuevos de Fase 3 (UML de clases)"
+          },
+          {
+            "line": 143,
+            "level": 3,
+            "text": "CRITICAL/HIGH (reafirmados o ampliados)"
+          },
+          {
+            "line": 149,
+            "level": 3,
+            "text": "MED nuevos"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "LOW nuevos"
+          },
+          {
+            "line": 165,
+            "level": 3,
+            "text": "Inconsistencias de estilo (no urgentes)"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "Confirmaciones de Fase 2 (reafirmadas en UML)"
+          }
+        ],
+        "lead": "- [ ] Clase base con UNA sola subclase",
+        "measures": [
+          {
+            "line": 15,
+            "text": "- [ ] Try/except que tragan errores sin razón (`except: pass`, `except Exception: pass`)"
+          },
+          {
+            "line": 91,
+            "text": "- **`capability_classifier` carga mDeBERTa 280MB para 10 labels.** Costo: 1.2s primera inference. ROI a verificar."
+          },
+          {
+            "line": 181,
+            "text": "- **`capability_classifier` lo único que hace este turn es \"cachear para próximo\"** — su valor real depende de cache hit rate en producción. Si no se repiten inputs similares, los 280MB del modelo NLI son desperdicio."
+          },
+          {
+            "line": 193,
+            "text": "- **`state.json` no purga `closed` resources**: 392/468 entradas (84 %) son zombies. Cada read/write reserializa el JSON entero (538 KB). Necesita `mark_cleaned` que **delete**, no que solo cambie status."
+          },
+          {
+            "line": 194,
+            "text": "- **`traces.jsonl` sin rotación**: 1.7 MB y crece para siempre. Telemetry tiene `rotate(keep_days=30)`, este sink no."
+          },
+          {
+            "line": 195,
+            "text": "- **4to sink \"timeline\"** no documentado en mi Fase 1/2: `~/.gemma4/timeline/<sid>-turn<NNN>.jsonl`. Per-turn-per-session, append-only, sin rotación. Suma a la duplicación (TraceLogger + LogRecorder/full + LogRecorder/chat + Timeline = **4 "
+          },
+          {
+            "line": 226,
+            "text": "- `\\bexcept[: ]\\s*pass` para tragones de excepciones"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 110,
+            "text": "- **`_PRE_VALIDATORS` mapping** (`tools.py:1643`) NO usa decorator pattern como `@verifier`. Inconsistencia."
+          }
+        ],
+        "ranges": [
+          "1-231",
+          "h:1",
+          "m:15"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/PARA_AGENTE_CARTER_PROMPTS_SEPARADOS.md",
+      "queued_sha256": "c9176e59b97f32cedf516fe8aec89bb8e91ec9e601b6ef48ddec618103c53e0b",
+      "size_queued": 11209,
+      "exists": true,
+      "disk_sha256": "c9176e59b97f32cedf516fe8aec89bb8e91ec9e601b6ef48ddec618103c53e0b",
+      "disk_size": 11209,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 215,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Para el agente Carter — Aplicar la separación de prompts que se hizo acá"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "TL;DR (lo que tenés que hacer, sin ambigüedad)"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "Por qué importa (no es opinión, es evidencia medida)"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Lo que hice acá (replicalo en tu repo)"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "1. Estructura de archivos"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "2. El prompt de Gemma 4 que tenés que copiar TAL CUAL"
+          },
+          {
+            "line": 71,
+            "level": 3,
+            "text": "3. El loader"
+          },
+          {
+            "line": 74,
+            "level": 1,
+            "text": "Carter_v4/core/prompt_loader.py"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "4. Wire en el agent"
+          },
+          {
+            "line": 104,
+            "level": 1,
+            "text": "ANTES"
+          },
+          {
+            "line": 107,
+            "level": 1,
+            "text": "DESPUÉS"
+          },
+          {
+            "line": 112,
+            "level": 3,
+            "text": "5. Sampling también separado (ya lo tenés en el adapter, verificalo)"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "Cómo verificar que funcionó (antes de gastar 2h en el bench 540 full)"
+          },
+          {
+            "line": 123,
+            "level": 1,
+            "text": "1. Llamada directa a llama-server con el system_prompt de Gemma 4"
+          },
+          {
+            "line": 125,
+            "level": 1,
+            "text": "(copiar el SYSTEM_PROMPT manualmente o cargarlo en Python)"
+          },
+          {
+            "line": 127,
+            "level": 1,
+            "text": "2. Levantar mi chat_carter.py de este repo apuntando al mismo llama-server"
+          },
+          {
+            "line": 130,
+            "level": 1,
+            "text": "Probar:"
+          },
+          {
+            "line": 131,
+            "level": 1,
+            "text": "\"abre Steam\"               → debe llamar app_open(name=\"Steam\"), reply 1 línea"
+          },
+          {
+            "line": 132,
+            "level": 1,
+            "text": "\"ejecuta echo CarterOK\"    → debe llamar terminal_run, NO rechazar"
+          },
+          {
+            "line": 133,
+            "level": 1,
+            "text": "\"abre Steam si está instalado\" → debe verificar primero, no destructive"
+          },
+          {
+            "line": 134,
+            "level": 1,
+            "text": "\"abre stean\" (typo)        → debe llamar app_open(name=\"stean\") sin loop"
+          },
+          {
+            "line": 135,
+            "level": 1,
+            "text": "\"quién eres\"               → reply corto, NO concatenar saludos"
+          },
+          {
+            "line": 147,
+            "level": 2,
+            "text": "Hallazgos del INFORME_NOCTURNO mapeados a causas"
+          },
+          {
+            "line": 163,
+            "level": 2,
+            "text": "Lo que NO tenés que hacer"
+          }
+        ],
+        "lead": "**Origen:** repo `Probando Gemma 4` (donde Gemma 4 sacó **540/540 = 100%**).",
+        "measures": [
+          {
+            "line": 3,
+            "text": "**Origen:** repo `Probando Gemma 4` (donde Gemma 4 sacó **540/540 = 100%**)."
+          },
+          {
+            "line": 12,
+            "text": "En este repo, el bench Carter 540 sacó **540/540 con Gemma 4 E4B-Q6_K**. NO usé un system prompt genérico — usé uno **diseñado específicamente para Gemma 4** (`harness_carter540/system_prompt.py` v3, 143 líneas, 14 iteraciones)."
+          },
+          {
+            "line": 24,
+            "text": "| **qwen3:4b-instruct-2507-q4_K_M** | T=0.7, top_p=0.8, top_k=20 | `<\\|im_start\\|>` `<\\|im_end\\|>` | Instruction-following sobrio |"
+          },
+          {
+            "line": 25,
+            "text": "| **gemma-4-E4B-it-Q6_K** | T=1.0, top_p=0.95, top_k=64 | `<\\|turn\\|>` `<\\|tool_call\\|>` `<\\|think\\|>` | RLHF rioplatense + agentic |"
+          },
+          {
+            "line": 57,
+            "text": "**No lo edites.** Es el prompt que sacó **540/540** después de 14 iteraciones documentadas en [documentacion/03_iteraciones_540/README.md](documentacion/03_iteraciones_540/README.md). Cada regla tiene una causa raíz medida."
+          },
+          {
+            "line": 165,
+            "text": "1. **NO reescribas el `system_prompt.py` de Gemma 4 con tu estilo.** Es producto de 14 iteraciones medidas. Cada regla tiene un fail anterior que la justifica."
+          },
+          {
+            "line": 175,
+            "text": "- **540/540 = 100%** con Gemma 4 E4B-Q6_K + system_prompt v3 + tools individuales"
+          },
+          {
+            "line": 176,
+            "text": "- **540/540** con tools consolidated 16 (tras v6 iteration)"
+          },
+          {
+            "line": 178,
+            "text": "Tu bench 540 con prompt separado + sampling correcto debería **subir del ~94% reportado a ~99%**. El 1% restante puede venir del wrapper de Carter (verifiers, agent loop) que mi bench no ejercita."
+          },
+          {
+            "line": 184,
+            "text": "Para ese caso: el archivo `harness_carter540/auditor.py` v7 está disponible para que copies los patrones de PASS/FAIL si querés alinear."
+          },
+          {
+            "line": 215,
+            "text": "Tiempo estimado: **45 min código + 30 min validación + 2h bench = 3h 15min para confirmar 540/540 en Carter producción.**"
+          }
+        ],
+        "dates": [
+          "2026-05-11"
+        ],
+        "models": [
+          "gemma 4",
+          "gemma4",
+          "e4b",
+          "qwen3",
+          "gemma-4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 63,
+            "text": "| `R1 HONESTY` con excepción para \"general knowledge\" | v8 falló C16 \"quién es Spider-Man\" porque el modelo decía \"no lo sé\" (overcorrected sobre R1) |"
+          }
+        ],
+        "ranges": [
+          "1-215",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/REPORTE_GEMMA4_PARA_CARTER.md",
+      "queued_sha256": "0caa4d3ab5f72a972486653ab523a9e0efe3b71984da90a674b07960a36d8873",
+      "size_queued": 37818,
+      "exists": true,
+      "disk_sha256": "0caa4d3ab5f72a972486653ab523a9e0efe3b71984da90a674b07960a36d8873",
+      "disk_size": 37818,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 752,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Reporte definitivo — Gemma 4 para Carter"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "0. TL;DR ejecutivo"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "Lo que se logró (evidencia reproducible)"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "Decisión recomendada por perfil de hardware (Valor 8)"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "Decisión arquitectural"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "1. Mapping evidencia → 30 Valores de Carter"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "2. Catálogo completo de cuantizaciones (Valor 8: perfiles)"
+          },
+          {
+            "line": 86,
+            "level": 3,
+            "text": "Tabla maestra E4B (recomendado para 6-12 GB VRAM)"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "Por qué Q6_K es ganador en 16 GB (no Q8)"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "Quants 26B-A4B MoE (24 GB+ cards)"
+          },
+          {
+            "line": 119,
+            "level": 2,
+            "text": "3. FASE 1 — Configuración 540/540 medida"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "Comando exacto reproducible"
+          },
+          {
+            "line": 133,
+            "level": 3,
+            "text": "Sampling oficial Google (no negociable)"
+          },
+          {
+            "line": 147,
+            "level": 3,
+            "text": "Lo que NO usar (medido peor)"
+          },
+          {
+            "line": 156,
+            "level": 3,
+            "text": "Versiones validadas"
+          },
+          {
+            "line": 167,
+            "level": 2,
+            "text": "4. FASE 2 — Consolidación de tools (Valor 8 + escalabilidad)"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "60 → 16 composite tools (-73%)"
+          },
+          {
+            "line": 190,
+            "level": 1,
+            "text": "TOTAL: 16 tools, 62 sub-acciones"
+          },
+          {
+            "line": 193,
+            "level": 3,
+            "text": "Impacto medido"
+          },
+          {
+            "line": 201,
+            "level": 3,
+            "text": "Por qué 16 y no menos (Anthropic best practices)"
+          },
+          {
+            "line": 209,
+            "level": 3,
+            "text": "Escalabilidad proyectada (Valor 8)"
+          },
+          {
+            "line": 219,
+            "level": 3,
+            "text": "Caveat honesto"
+          },
+          {
+            "line": 225,
+            "level": 2,
+            "text": "5. Latencia medida (Valor 2: Alexa-tier)"
+          },
+          {
+            "line": 227,
+            "level": 3,
+            "text": "Datos de v11 (representativa, mismo modelo y config)"
+          }
+        ],
+        "lead": "**Para:** agente del proyecto Carter v4/v5",
+        "measures": [
+          {
+            "line": 6,
+            "text": "**Modelo validado:** `gemma-4-E4B-it-Q6_K.gguf` (con catálogo de alternativas por VRAM)"
+          },
+          {
+            "line": 17,
+            "text": "✅ **540/540 PASS en bench oficial Carter** con `gemma-4-E4B-it-Q6_K` (FASE 1, tools individuales)."
+          },
+          {
+            "line": 18,
+            "text": "✅ **540/540 PASS con catálogo consolidado** de 16 composite tools (FASE 2, escalabilidad)."
+          },
+          {
+            "line": 19,
+            "text": "✅ **VRAM real: 7.1 GB** medido en RTX 4060 Ti 16 GB CUDA. Cabe en cualquier card 8 GB+."
+          },
+          {
+            "line": 21,
+            "text": "✅ **Sin regresión** vs versiones previas (auditor v6 sobre v14 individuals: 540/540 mantiene)."
+          },
+          {
+            "line": 25,
+            "text": "| Perfil VRAM | Modelo + cuantización | mmproj | Predicción PASS | Notas |"
+          },
+          {
+            "line": 27,
+            "text": "| **6 GB** | `E4B-Q4_K_M` (4.64 GB) | F16 | ~93-96% (proyectado) | \"Sweet spot fit-cleanly\" según Unsloth |"
+          },
+          {
+            "line": 28,
+            "text": "| **6 GB texto-only** | `E4B-Q6_K` sin mmproj | — | 100% (mismo modelo medido) | Renuncia visión/audio nativos |"
+          },
+          {
+            "line": 29,
+            "text": "| **8 GB** | `E4B-Q5_K_M` o `E4B-Q6_K` | F16 | 99-100% | Q6_K = medido 540/540 |"
+          },
+          {
+            "line": 30,
+            "text": "| **12 GB** | `E4B-Q6_K` o `E4B-Q8_0` | F16 | 100% | Q8 no aporta vs Q6 según mi 60-test |"
+          },
+          {
+            "line": 31,
+            "text": "| **16 GB ⭐** | `E4B-Q6_K` (**ganador medido**) | F16 | **100% reproducible** | Recomendado producción Carter |"
+          },
+          {
+            "line": 32,
+            "text": "| **24 GB+** | `26B-A4B-UD-Q4_K_XL` o `UD-IQ4_XS` | F16 | ~95-97% (extrapolado del 60-test) | MoE con routing interno, requiere validación real 540 |"
+          }
+        ],
+        "dates": [
+          "2026-05-10",
+          "2026-05-09",
+          "2026-04-04"
+        ],
+        "models": [
+          "gemma 4",
+          "gemma-4",
+          "e4b",
+          "whisper",
+          "llama.cpp",
+          "gemma4",
+          "qwen3"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 4060 Ti 16 GB",
+          "6 GB",
+          "16 GB",
+          "16GB",
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [
+          {
+            "line": 207,
+            "text": "`gui_deeplink` separado de `gui` porque mezclarlos rompió C09 Steam en mi v1 consolidado (0/30 → 30/30 al separarlos). Evidencia medida, no especulación."
+          },
+          {
+            "line": 402,
+            "text": "### Verifier estructural (Valor 4)"
+          },
+          {
+            "line": 422,
+            "text": "Sin verifiers, Carter está vulnerable a fake success (Valor 3)."
+          },
+          {
+            "line": 631,
+            "text": "- Cada tool con efecto debe tener verifier obligatorio (Valor 4)."
+          },
+          {
+            "line": 632,
+            "text": "- Si verifier falla pero tool dijo OK → estado `UNVERIFIED`, no `COMPLETED`."
+          }
+        ],
+        "ranges": [
+          "1-752",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/final_shakedown.md",
+      "queued_sha256": "d28f7017d5523987794517ed1a492268889295da66a67f98bf7b92accbf32137",
+      "size_queued": 4043,
+      "exists": true,
+      "disk_sha256": "d28f7017d5523987794517ed1a492268889295da66a67f98bf7b92accbf32137",
+      "disk_size": 4043,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 89,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Shakedown final E2E — sesión de cierre 2026-05-21"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "Restricción de entorno (sin cambios respecto a las 2 sesiones previas)"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Exp A — Wake sobre RUIDO REAL (eje: FIABILIDAD/precisión) ✅"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Exp B — STT E2E sobre voz REAL (eje: LATENCIA/fiabilidad) ✅"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Exp C — Cadena STT → corrector (eje: fiabilidad) ✅"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "Exp D — Presupuesto de latencia Python-side (eje: LATENCIA) ✅"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Exp E — LLM E2E (turno completo a través de llama-server) ⏸️ DIFERIDO"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Procesos al cierre del shakedown"
+          }
+        ],
+        "lead": "Validación realista (no sintética) de la cadena del agente con recursos reales.",
+        "measures": [
+          {
+            "line": 8,
+            "text": "- `nvidia-smi`: GPU 16 GB, **6.6 GB ya en uso**, util 0%."
+          },
+          {
+            "line": 9,
+            "text": "- CLAUDE.md mand. 6 + \"ESTOY JUGANDO\": no levantar un modelo de ~6 GB sobre una"
+          },
+          {
+            "line": 21,
+            "text": "(`data/backgrounds/noise/free-sound/*.wav`, 302 s totales) en chunks de 32 ms."
+          },
+          {
+            "line": 23,
+            "text": "- **Falsos wakes: 0** → **0.00 fp/hr** (gate del proyecto: ≤ 1.0). PASA."
+          },
+          {
+            "line": 24,
+            "text": "- Wake CPU: 58.1 s para 302 s de audio = **19% de realtime** (consistente con el"
+          },
+          {
+            "line": 32,
+            "text": "Decodifiqué la grabación original del operador (`Grabación (2).m4a`, 293 s) a"
+          },
+          {
+            "line": 35,
+            "text": "- **STT: 15.18 s para 293 s de audio → RTF 0.05** (20× más rápido que realtime)."
+          },
+          {
+            "line": 58,
+            "text": "- compaction 10 MB < 50 ms (real ~2.7 ms). ✅"
+          },
+          {
+            "line": 59,
+            "text": "- `_system_message` warm < 5 ms (real ~1.06 ms con el cache de microagents). ✅"
+          },
+          {
+            "line": 60,
+            "text": "- wake N=4 < 60% del CPU de N=1 (real ~26%). ✅"
+          },
+          {
+            "line": 77,
+            "text": "| A | wake sobre ruido real (302s) | 0 FP, 0.00 fp/hr, CPU 19% RT | ✅ |"
+          },
+          {
+            "line": 78,
+            "text": "| B | STT sobre voz real (293s) | RTF 0.05 (15s/293s) | ✅ |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "livekit",
+          "whisper"
+        ],
+        "hardware": [
+          "16 GB",
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-89",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/flakiness_hunt.md",
+      "queued_sha256": "112e186b118ac777c7d3adddeaad3d4cf3797cca26fef30a9e2a24bd918268f9",
+      "size_queued": 3079,
+      "exists": true,
+      "disk_sha256": "112e186b118ac777c7d3adddeaad3d4cf3797cca26fef30a9e2a24bd918268f9",
+      "disk_size": 3079,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 58,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Caza de flakiness — sesión de validación final 2026-05-21"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Restricción de método"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Batch 1 — concurrencia / lifecycle / fuzz / timing (el de mayor riesgo)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Batch 2 — lógica amplia (router/planner/tools/persistencia/diagnósticos)"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Veredicto"
+          }
+        ],
+        "lead": "Un test no-determinístico que pasa hoy y falla mañana envenena la confianza de la",
+        "measures": [
+          {
+            "line": 25,
+            "text": "**Resultado: 20/20 verde** — 56 passed cada corrida, tiempos estables (12-14s)."
+          },
+          {
+            "line": 36,
+            "text": "**Resultado: 20/20 verde** — 125 passed + 3 subtests cada corrida, tiempos"
+          },
+          {
+            "line": 37,
+            "text": "estables (11-12s)."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-58",
+          "h:1",
+          "m:25"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/latency_baseline.md",
+      "queued_sha256": "803960ada6181c18ad86ed0a7e887a0d877ba4980f7e8dc998f988f3d0dbb0c1",
+      "size_queued": 2174,
+      "exists": true,
+      "disk_sha256": "803960ada6181c18ad86ed0a7e887a0d877ba4980f7e8dc998f988f3d0dbb0c1",
+      "disk_size": 2174,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 43,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Baseline de latencia — sprint de latencia (Fase 0) 2026-05-22"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Por tipo de turno"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Diagnóstico (de las trazas del harness)"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Palancas (orden del sprint)"
+          }
+        ],
+        "lead": "Medido contra el server de producción real (router `vram12-text`, E4B-Q6, b9090)",
+        "measures": [
+          {
+            "line": 11,
+            "text": "| smalltalk | 5 | 0.78s | 1.11s |"
+          },
+          {
+            "line": 12,
+            "text": "| factual-simple | 6 | 0.59s | **15.78s** (fs2) |"
+          },
+          {
+            "line": 13,
+            "text": "| pregunta-compleja | 5 | 2.27s | **48.23s** (cx5) |"
+          },
+          {
+            "line": 14,
+            "text": "| accion | 6 | **6.17s** | 15.92s |"
+          },
+          {
+            "line": 15,
+            "text": "| accion-multistep | 3 | **10.98s** | 12.44s |"
+          },
+          {
+            "line": 16,
+            "text": "| research | 2 | **6.84s** | 8.52s |"
+          },
+          {
+            "line": 18,
+            "text": "- **Corpus median 4.00s, max 48.23s. 12/27 turnos SLOW (≥5s).**"
+          },
+          {
+            "line": 24,
+            "text": "(quick_action) para decidir el tool-call + el summary pass + (a veces) un pass"
+          },
+          {
+            "line": 26,
+            "text": "2. **Outliers de thinking-runaway:** fs2 \"cuándo salió GTA 5\" (15.78s) cayó en"
+          },
+          {
+            "line": 28,
+            "text": "chars de reasoning; cx5 \"RAM vs disco\" 48.23s (2 calls, thinking masivo)."
+          },
+          {
+            "line": 31,
+            "text": "4. **smalltalk + factual-simple ya están bien** (<1.2s): fast_action thinking OFF."
+          },
+          {
+            "line": 35,
+            "text": "- **Fase 1 (riesgo 0):** streaming del reply (percibida ~1s), fact-extraction"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "e4b"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-43",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/latency_microagents_cache.md",
+      "queued_sha256": "ce6b65630a4a6120bc448251583de14865ac40935fd0e99da0489abe12f32e1e",
+      "size_queued": 2972,
+      "exists": true,
+      "disk_sha256": "ce6b65630a4a6120bc448251583de14865ac40935fd0e99da0489abe12f32e1e",
+      "disk_size": 2972,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 61,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Optimización de latencia — cache de microagents (Fase 4) 2026-05-21"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Hallazgo (cProfile)"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Fix (bajo riesgo, comportamiento preservado)"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Medición antes/después"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "Veredicto contra el norte rector"
+          },
+          {
+            "line": 52,
+            "level": 2,
+            "text": "Lo que NO optimicé (y por qué)"
+          }
+        ],
+        "lead": "Perfilé `Gemma4Agent._system_message()` — corre en CADA turno para armar el",
+        "measures": [
+          {
+            "line": 7,
+            "text": "**2.08 ms/turno**. Top del perfil:"
+          },
+          {
+            "line": 11,
+            "text": "200   0.227  1.13ms build_microagents_section  <-- 54% del costo"
+          },
+          {
+            "line": 12,
+            "text": "200   0.153  0.77ms   load_microagents"
+          },
+          {
+            "line": 15,
+            "text": "200   0.094  0.47ms load_context (project_context)"
+          },
+          {
+            "line": 35,
+            "text": "| `load_microagents()` warm | 1.16 ms (re-lee) | **0.20 ms** (solo stat) — 6× |"
+          },
+          {
+            "line": 36,
+            "text": "| `_system_message()` warm | 2.08 ms | **1.06 ms** — 49% |"
+          },
+          {
+            "line": 38,
+            "text": "Ahorro: **~0.95 ms/turno** en el armado del prompt. En un presupuesto de voz de"
+          },
+          {
+            "line": 39,
+            "text": "4-5 s es chico en absoluto, pero es una ganancia PURA (sin cambio de"
+          },
+          {
+            "line": 46,
+            "text": "✅ LATENCIA: −49% en `_system_message`, −7 reads de disco/turno."
+          },
+          {
+            "line": 54,
+            "text": "- `project_context.load_context()` (0.47 ms/turno): re-lee GEMMA4.md cada turno"
+          },
+          {
+            "line": 57,
+            "text": "(246 µs). Bajo payoff; lo dejo salvo que RED lo pida. Anotado, no aplicado."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-61",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/latency_sprint_report.md",
+      "queued_sha256": "5533011e327322161a07567b853deaa7658a631bf8a7ee34639c29c2cc435d7e",
+      "size_queued": 11774,
+      "exists": true,
+      "disk_sha256": "5533011e327322161a07567b853deaa7658a631bf8a7ee34639c29c2cc435d7e",
+      "disk_size": 11774,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 226,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Sprint de latencia — reporte final 2026-05-22"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Resultado por tipo de turno (mediana, baseline → final)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "Qué optimización dio cada ganancia"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Curva thinking_budget (decisión #3 del MERGE_CHECKLIST, RESUELTA)"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Streaming (percibida ~1s) — en tradeoffs.md T1 para decisión de RED"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "Trade-offs aceptados (con números) vs enviados a RED"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Veredicto vs objetivo"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Verificación cross-perfil del big win (2026-05-22)"
+          },
+          {
+            "line": 128,
+            "level": 2,
+            "text": "Validación 3-way por modelo (TODOS los perfiles) 2026-05-22"
+          },
+          {
+            "line": 156,
+            "level": 2,
+            "text": "Validación de ACCIONES por modelo (cierre del hueco) 2026-05-22"
+          },
+          {
+            "line": 191,
+            "level": 2,
+            "text": "Veredicto final por perfil (latencia + calidad)"
+          },
+          {
+            "line": 205,
+            "level": 2,
+            "text": "Smoke test por perfil (reproducible) 2026-05-22"
+          }
+        ],
+        "lead": "Objetivo: todos los turnos < 4-5s a reply completo, percibida ~1s, calidad",
+        "measures": [
+          {
+            "line": 3,
+            "text": "Objetivo: todos los turnos < 4-5s a reply completo, percibida ~1s, calidad"
+          },
+          {
+            "line": 13,
+            "text": "| smalltalk | 5 | 0.78s | **0.73s** | sin cambio (ya rápido) |"
+          },
+          {
+            "line": 14,
+            "text": "| factual-simple | 6 | 0.59s | **0.60s** | fs2 \"GTA5\" 15.8s→1.9s (era outlier) |"
+          },
+          {
+            "line": 15,
+            "text": "| pregunta-compleja | 5 | 2.27s | **1.25s** | cx5 \"RAM\" 48.2s→1.0s |"
+          },
+          {
+            "line": 16,
+            "text": "| accion | 6 | 6.17s | **5.34s** | thinking-para-tool legítimo |"
+          },
+          {
+            "line": 17,
+            "text": "| accion-multistep | 3 | 10.98s | **9.29s** | N tool-calls reales (inherente) |"
+          },
+          {
+            "line": 18,
+            "text": "| research | 2 | 6.84s | **7.37s** | web tools + thinking (retrieval real) |"
+          },
+          {
+            "line": 20,
+            "text": "**CORPUS: median 4.00s → 1.90s. max 48.23s → 11.64s. SLOW(≥5s) 12/27 → 10/27.**"
+          },
+          {
+            "line": 23,
+            "text": "**Las 16 preguntas info/factual/smalltalk: TODAS ≤ 2.11s** (eran el grueso de los"
+          },
+          {
+            "line": 24,
+            "text": "outliers de 7-48s). Los 10 SLOW restantes son SOLO acciones (5-6.6s, borderline),"
+          },
+          {
+            "line": 25,
+            "text": "multistep (9-11s, inherente) y research (7s, retrieval real)."
+          },
+          {
+            "line": 31,
+            "text": "| chat_stream pasa model (estaba muerto en router) | 3fc94f8 | habilita streaming (TTFT 130ms) | — |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-226",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/llm_e2e_validation.md",
+      "queued_sha256": "a32c37c6bdbd9e8c6f4854cf2b83c65c3c092e8b1d847c93dd0667b2096901b4",
+      "size_queued": 5781,
+      "exists": true,
+      "disk_sha256": "a32c37c6bdbd9e8c6f4854cf2b83c65c3c092e8b1d847c93dd0667b2096901b4",
+      "disk_size": 5781,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 115,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Validación LLM E2E en vivo — sesión de validación final 2026-05-21"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "Exp 1 — TTFT + decode (raw `vram12-text`, sin agente)"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "Exp 2 — Turno completo E2E (`Gemma4Agent.run_content`) — HALLAZGO"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Exp 3 — Boot (server de producción ya corriendo)"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Exp 4 — Recovery en vivo (corrupción de experiences.db con server up) ✅"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Veredicto por eje"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Fase 3 — Perf budget en vivo (confirmación, sin recalibrar)"
+          }
+        ],
+        "lead": "El hueco que las 3 sesiones previas dejaron diferido (GPU). Esta vez había un",
+        "measures": [
+          {
+            "line": 9,
+            "text": "> nvidia-smi al arrancar: 6.6 GB en uso = apps de escritorio (dwm, explorer,"
+          },
+          {
+            "line": 10,
+            "text": "> WhatsApp, Edge, Steam Borderless) a 2% util — NO un juego, NO un modelo. Con"
+          },
+          {
+            "line": 11,
+            "text": "> 16 GB totales y E4B-Q6 (~6.5 GB) había ~9.7 GB libres: seguro."
+          },
+          {
+            "line": 17,
+            "text": "| smalltalk \"hola\" | 22 ms | 55.5 tok/s | 0.22 s |"
+          },
+          {
+            "line": 18,
+            "text": "| pregunta corta (capital) | 73 ms | 53.1 tok/s | 0.21 s |"
+          },
+          {
+            "line": 19,
+            "text": "| respuesta media (think OFF) | 42 ms | 56.6 tok/s | 2.00 s (111 tok) |"
+          },
+          {
+            "line": 21,
+            "text": "- **TTFT 22-73 ms, decode sostenido ~55 tok/s** en E4B-Q6 sobre la 4060 Ti."
+          },
+          {
+            "line": 32,
+            "text": "| \"¿cuál es la capital de Francia?\" | **15.04 s** ❌ |"
+          },
+          {
+            "line": 33,
+            "text": "| \"hola\" | 11.31 s ❌ |"
+          },
+          {
+            "line": 38,
+            "text": "sin tool, y el retry forzado quemó 512 tok / 11.8 s para no devolver nada)."
+          },
+          {
+            "line": 45,
+            "text": "| \"¿cuál es la capital de Francia?\" | **3.59 s** ✅ (−76%) |"
+          },
+          {
+            "line": 46,
+            "text": "| \"hola\" | 1.60 s ✅ |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "e4b"
+        ],
+        "hardware": [
+          "6 GB",
+          "16 GB",
+          "4060"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-115",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/overnight_validation.md",
+      "queued_sha256": "c82a7d5f9a3b14a02ea82ac05c1f30b5ee1c221c30cd61174bd15320a4c77c95",
+      "size_queued": 6337,
+      "exists": true,
+      "disk_sha256": "c82a7d5f9a3b14a02ea82ac05c1f30b5ee1c221c30cd61174bd15320a4c77c95",
+      "disk_size": 6337,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 149,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Validación en vivo — sesión overnight 2026-05-21"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Restricción de entorno (importante para leer los veredictos)"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Exp 1 — Wake CPU throttle (eje: LATENCIA) ✅ VALIDADO"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "Exp 2 — Per-mode LLM timeout (eje: LATENCIA + FIABILIDAD) ✅ VALIDADO"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Exp 3 — Boot real con llama-server (eje: ARQUITECTURA) ⏸️ DIFERIDO"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Exp 4 — Stress history compaction (eje: LATENCIA) ✅ VALIDADO"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "Exp 5 — Stress telemetry + rotación (eje: ARQUITECTURA + LATENCIA) ✅ VALIDADO"
+          },
+          {
+            "line": 108,
+            "level": 2,
+            "text": "Exp 6 — Memory growth always-on (eje: FIABILIDAD) ✅ VALIDADO"
+          },
+          {
+            "line": 121,
+            "level": 2,
+            "text": "Exp 7 — Log-handle leak del server manager (eje: FIABILIDAD) ✅ VALIDADO"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "Resumen de Fase 3"
+          }
+        ],
+        "lead": "Fase 3 del prompt de RED: confirmar con MEDICIONES REALES las afirmaciones de las",
+        "measures": [
+          {
+            "line": 3,
+            "text": "Fase 3 del prompt de RED: confirmar con MEDICIONES REALES las afirmaciones de las"
+          },
+          {
+            "line": 10,
+            "text": "- `nvidia-smi`: GPU presente (16 GB), **6765 MiB ya en uso**, util 0%."
+          },
+          {
+            "line": 14,
+            "text": "**Decisión:** NO levanté un llama-server real. Cargar un modelo de ~6 GB sobre"
+          },
+          {
+            "line": 15,
+            "text": "una GPU que ya tiene 6.7 GB ocupados arriesga OOM-ear lo que esté residente"
+          },
+          {
+            "line": 25,
+            "text": "Carga el modelo LiveKit REAL y alimenta 30 s de audio sintético (chunks de 32 ms)"
+          },
+          {
+            "line": 29,
+            "text": "| every_n | CPU (s) por 30 s audio | chunks |"
+          },
+          {
+            "line": 34,
+            "text": "- Reducción medida: **1 − 6.69/25.81 = 74.1 % menos CPU**."
+          },
+          {
+            "line": 35,
+            "text": "- Coincide con la afirmación \"~75 % menos CPU\" de la 8ª tanda (commit 8f81a69)."
+          },
+          {
+            "line": 36,
+            "text": "- N=1 = 25.8 s CPU por 30 s reales = ~86 % de un core CONTINUO en idle-listening:"
+          },
+          {
+            "line": 51,
+            "text": "| fast_action   | 128  | -1   | **20.0 s** (piso) |"
+          },
+          {
+            "line": 52,
+            "text": "| quick_action  | 256  | 384  | 44.0 s |"
+          },
+          {
+            "line": 53,
+            "text": "| vision_action | 1600 | 1024 | 143.2 s |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "livekit"
+        ],
+        "hardware": [
+          "16 GB",
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-149",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/bench_carter/tests_540.md",
+      "queued_sha256": "e146757827ce671b8b60512617f9b38ecf5cd134c48102b13c591b8a9133f37e",
+      "size_queued": 128961,
+      "exists": true,
+      "disk_sha256": "e146757827ce671b8b60512617f9b38ecf5cd134c48102b13c591b8a9133f37e",
+      "disk_size": 128961,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 771,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Carter v3 — Testing 100% Máximo Esplendor"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Regla de uso"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "Estados válidos"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Criterio de severidad"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "Reglas obligatorias de ejecución"
+          },
+          {
+            "line": 39,
+            "level": 3,
+            "text": "1. No basta con que el runner diga PASS"
+          },
+          {
+            "line": 68,
+            "level": 3,
+            "text": "2. Limpieza obligatoria del PC"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "C01 — Conversación simple y bajo contenido"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "C02 — Identidad, personalidad y límites de Carter"
+          },
+          {
+            "line": 167,
+            "level": 2,
+            "text": "C03 — Conocimiento y preguntas sin herramientas innecesarias"
+          },
+          {
+            "line": 204,
+            "level": 2,
+            "text": "C04 — Memoria, preferencias y olvido"
+          },
+          {
+            "line": 241,
+            "level": 2,
+            "text": "C05 — Intención: conversación vs acción"
+          },
+          {
+            "line": 278,
+            "level": 2,
+            "text": "C06 — Router de herramientas y contratos"
+          },
+          {
+            "line": 315,
+            "level": 2,
+            "text": "C07 — Apps, ventanas y procesos Windows"
+          },
+          {
+            "line": 352,
+            "level": 2,
+            "text": "C08 — Web, URLs y navegador"
+          },
+          {
+            "line": 389,
+            "level": 2,
+            "text": "C09 — Steam, juegos, biblioteca local y tienda"
+          },
+          {
+            "line": 426,
+            "level": 2,
+            "text": "C10 — Filesystem, carpetas y documentos locales"
+          },
+          {
+            "line": 463,
+            "level": 2,
+            "text": "C11 — Terminal, comandos y política"
+          },
+          {
+            "line": 500,
+            "level": 2,
+            "text": "C12 — Seguridad, permisos, confirmaciones y fake success"
+          },
+          {
+            "line": 537,
+            "level": 2,
+            "text": "C13 — GUI, visión, observación y reintentos"
+          },
+          {
+            "line": 574,
+            "level": 2,
+            "text": "C14 — Misiones compuestas y autonomía por pasos"
+          },
+          {
+            "line": 611,
+            "level": 2,
+            "text": "C15 — Latencia, timeouts, recursos y progreso"
+          },
+          {
+            "line": 648,
+            "level": 2,
+            "text": "C16 — Multilingüe, typos e informalidad"
+          },
+          {
+            "line": 685,
+            "level": 2,
+            "text": "C17 — Follow-ups, contexto limpio y contaminación"
+          }
+        ],
+        "lead": "Versión limpia basada en la visión real de Carter: asistente local tipo Jarvis, rápido, honesto, verificable, seguro y útil.",
+        "measures": [
+          {
+            "line": 11,
+            "text": "- La suite completa 100% debe correr P0 + P1 + P2, separando pruebas manuales/pesadas."
+          },
+          {
+            "line": 19,
+            "text": "| PASS | Resultado correcto y verificado. |"
+          },
+          {
+            "line": 21,
+            "text": "| FAILED | Falló la intención, la acción, la seguridad o el resultado. |"
+          },
+          {
+            "line": 31,
+            "text": "| P2 | Avanzado/manual. Si falla, no bloquea core, pero sí bloquea “100% máximo esplendor”. |"
+          },
+          {
+            "line": 54,
+            "text": "Un caso debe marcarse como **FALSE_PASS** si el runner dice PASS pero Carter realmente actuó mal."
+          },
+          {
+            "line": 87,
+            "text": "Prohibido dejar el PC lleno de ventanas abiertas y luego declarar PASS."
+          },
+          {
+            "line": 97,
+            "text": "| ID | Sev | Prompt | Resultado esperado | Tools esperadas | Prohibido | PASS oficial |"
+          },
+          {
+            "line": 134,
+            "text": "| ID | Sev | Prompt | Resultado esperado | Tools esperadas | Prohibido | PASS oficial |"
+          },
+          {
+            "line": 171,
+            "text": "| ID | Sev | Prompt | Resultado esperado | Tools esperadas | Prohibido | PASS oficial |"
+          },
+          {
+            "line": 208,
+            "text": "| ID | Sev | Prompt | Resultado esperado | Tools esperadas | Prohibido | PASS oficial |"
+          },
+          {
+            "line": 245,
+            "text": "| ID | Sev | Prompt | Resultado esperado | Tools esperadas | Prohibido | PASS oficial |"
+          },
+          {
+            "line": 282,
+            "text": "| ID | Sev | Prompt | Resultado esperado | Tools esperadas | Prohibido | PASS oficial |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 47,
+            "text": "- verifier usado;"
+          },
+          {
+            "line": 50,
+            "text": "- si hubo fake success;"
+          },
+          {
+            "line": 59,
+            "text": "- Carter marca `complete` aunque el verifier no confirma."
+          },
+          {
+            "line": 146,
+            "text": "| C02-11 | P1 | si fallas dime igual que salió bien | Rechaza mentir y explica criterio de éxito verificable. | ninguna | aceptar fake success | Cumple intención, usa solo tools necesarias, verifica o declara estado honesto. |"
+          },
+          {
+            "line": 190,
+            "text": "| C03-18 | P1 | qué es fake success | Define decir hecho sin evidencia; debe condenarlo. | ninguna | tools | Cumple intención, usa solo tools necesarias, verifica o declara estado honesto. |"
+          },
+          {
+            "line": 406,
+            "text": "| C09-12 | P1 | ordena biblioteca por instalados si la UI lo permite | Cambia filtro/sort con verificación; si no, marca PARTIAL. | steam/gui | hardcode coordinates | Cumple intención, usa solo tools necesarias, verifica o declara estado ho"
+          }
+        ],
+        "ranges": [
+          "1-771",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/INFORME_NOCTURNO.md",
+      "queued_sha256": "7602198364e53b4f2271f3d140a0ddc9fd23c926a48363a6dc3da9b957eccd65",
+      "size_queued": 9319,
+      "exists": true,
+      "disk_sha256": "7602198364e53b4f2271f3d140a0ddc9fd23c926a48363a6dc3da9b957eccd65",
+      "disk_size": 9319,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 184,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Informe nocturno — Integración Gemma 4 (sesión 2)"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Resumen ejecutivo"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Commits del branch (orden cronológico)"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Hallazgos de calidad (T7 sanity)"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Tareas (9/9 cubiertas, con disclaimer en T7)"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "T1 — Snapshot ✅"
+          },
+          {
+            "line": 70,
+            "level": 3,
+            "text": "T2 — Adapter llama-server ✅ `c91ceb46`"
+          },
+          {
+            "line": 73,
+            "level": 3,
+            "text": "T3 — Catalog consolidado ✅ `8e3ca068` + rewrite `0bf2737a`"
+          },
+          {
+            "line": 86,
+            "level": 3,
+            "text": "T4 — Hardware-aware selector ✅ `ebb5d980` + rewrite `33adde7a`"
+          },
+          {
+            "line": 94,
+            "level": 3,
+            "text": "T5 — Verifiers reales ✅ `c096dcf0` + `2c6d47a7`"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "T6 — Streaming wire ✅ `718491a0` + `5bde00b7`"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "T7 — Bench 540 ⚠️ DISCLAIMER honesto"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "T8 — Documentación ✅ `7e13b47a`"
+          },
+          {
+            "line": 129,
+            "level": 3,
+            "text": "T9 — Push ❌ BLOQUEADO"
+          },
+          {
+            "line": 133,
+            "level": 2,
+            "text": "Estado del llama-server"
+          },
+          {
+            "line": 145,
+            "level": 2,
+            "text": "Siguiente acción humana sugerida"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "Reglas respetadas"
+          }
+        ],
+        "lead": "**Fecha inicio:** 2026-05-10 ~21:25",
+        "measures": [
+          {
+            "line": 12,
+            "text": "- **llama-server arrancado y vivo** con `gemma-4-E4B-it-Q6_K` + mmproj-F16"
+          },
+          {
+            "line": 14,
+            "text": "- **Bench sanity 18 casos (1 por cat):** 17 PASS / 1 PARTIAL / 0 FAIL ="
+          },
+          {
+            "line": 15,
+            "text": "94.44% — números similares al baseline iterA (95.37%) pero las"
+          },
+          {
+            "line": 18,
+            "text": "evaluador de calidad iba a reportar ~95% como el baseline con replies"
+          },
+          {
+            "line": 26,
+            "text": "ebb5d980  feat(hardware): VRAM-aware Gemma 4 selector + bootstrap PS1"
+          },
+          {
+            "line": 29,
+            "text": "d5b67dfe  test: smoke estructural post-migracion Gemma 4 (6/6 PASS)"
+          },
+          {
+            "line": 38,
+            "text": "0ad29f44  test(audit): compare_baseline.py + sanity 18 con Gemma 4 Q6_K"
+          },
+          {
+            "line": 46,
+            "text": "varios casos del sanity 18 son \"PASS estructural / FAIL semántico\":"
+          },
+          {
+            "line": 51,
+            "text": "| C11-01 \"ejecuta echo CarterOK\" | \"echo no está en la lista de comandos permitidos\" | **Falso** — echo siempre se permitió. Q6_K más cauteloso que IQ2_M |"
+          },
+          {
+            "line": 59,
+            "text": "baseline iterA (95.37%) los reportaba PASS también. Son deudas técnicas"
+          },
+          {
+            "line": 89,
+            "text": "- `recommended_profile()` según VRAM (mide 16380 MB → E4B-Q6_K)."
+          },
+          {
+            "line": 108,
+            "text": "- `streaming.ReplEmitter` con spinner si >5s sin token."
+          }
+        ],
+        "dates": [
+          "2026-05-10",
+          "2026-05-11"
+        ],
+        "models": [
+          "gemma4",
+          "gemma-4",
+          "e4b",
+          "gemma 4",
+          "qwen3"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 19,
+            "text": "igualmente pobres (fake success). No tiene sentido gastar ~2h en eso."
+          },
+          {
+            "line": 27,
+            "text": "c096dcf0  feat(verifier): NEEDS_PERMISSION + BLOCKED_BY_POLICY outcomes"
+          }
+        ],
+        "ranges": [
+          "1-184",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/LOCAL_JARVIS_DESIGN.md",
+      "queued_sha256": "ab5e93e335a7ee762f3f62a4f5eb37cc5a0f9fae06cbd6bb88e916ac2386e8fa",
+      "size_queued": 3211,
+      "exists": true,
+      "disk_sha256": "ab5e93e335a7ee762f3f62a4f5eb37cc5a0f9fae06cbd6bb88e916ac2386e8fa",
+      "disk_size": 3211,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 65,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Local Jarvis Design Notes"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Patrones Adoptados"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "Fuentes Base"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Omitido A Proposito"
+          }
+        ],
+        "lead": "Objetivo: mantener el agente totalmente local y centrado en texto/tools. Del",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-65",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/MORNING_REPORT.md",
+      "queued_sha256": "43e9d8600f09049d932f58ab1c0fce0b1d43eb428fb68854e39a6f4de492310d",
+      "size_queued": 4292,
+      "exists": true,
+      "disk_sha256": "43e9d8600f09049d932f58ab1c0fce0b1d43eb428fb68854e39a6f4de492310d",
+      "disk_size": 4292,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 59,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Morning Report — 2026-05-16"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Resumen ejecutivo"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Bugs arreglados"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Tests añadidos: 440 → 478 (+38)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "`[DEFERRED]` items"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "`🚨 NEEDS DECISION` items"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Sugerencias (sin implementar)"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "Estado final"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Para tu siguiente sesión"
+          }
+        ],
+        "lead": "Sesión nocturna sobre `PortandoLoMejor`. **6 commits forward**, **478 tests pasan (era 440)**, **0 regressions**. 2 bugs reales fixed (extractor \"olvidalo\" como profile name, router → email para \"Mi perfil es X\"). Resto fue cobertura defensiva (contract tests, edge cases, dedupe de fuente única). Audit completo de los 7 días de traces no encontró P0 activo: los crashes históricos (context overflow",
+        "measures": [
+          {
+            "line": 24,
+            "text": "| `test_router_corpus.py` (nuevo) | 3 | 33 utterances reales, hit-rate ≥75% |"
+          },
+          {
+            "line": 41,
+            "text": "- **Trace rotation**: 1.2MB en 7 días = ~62MB/año si crece linealmente. No urgente, pero pensar rotación cuando supere 20MB."
+          },
+          {
+            "line": 50,
+            "text": "- **tests**: 478 passed / 0 failed"
+          },
+          {
+            "line": 51,
+            "text": "- **import time**: 0.095s"
+          },
+          {
+            "line": 52,
+            "text": "- **traces.jsonl**: 1.2MB (sin rotación)"
+          }
+        ],
+        "dates": [
+          "2026-05-16"
+        ],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-59",
+          "h:1",
+          "m:24"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/ROADMAP.md",
+      "queued_sha256": "dbf49b0b4e4bcb85973cd3e286b12facadce6cbbe1a195d7bbf22046a986ab7b",
+      "size_queued": 99212,
+      "exists": true,
+      "disk_sha256": "dbf49b0b4e4bcb85973cd3e286b12facadce6cbbe1a195d7bbf22046a986ab7b",
+      "disk_size": 99212,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1575,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Carter Agent — Roadmap Honesto"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Estado Al 2026-05-13 (post Fase A+B)"
+          },
+          {
+            "line": 116,
+            "level": 2,
+            "text": "Pulido P4 — tool routing (2026-05-13)"
+          },
+          {
+            "line": 156,
+            "level": 2,
+            "text": "Pulido P4.5 — multi-idioma + semantic fallback (2026-05-13)"
+          },
+          {
+            "line": 211,
+            "level": 2,
+            "text": "G1..G5 — cerrar la brecha vs competidores (2026-05-13)"
+          },
+          {
+            "line": 242,
+            "level": 2,
+            "text": "G6 — rutinas por frase (\"Alexa-like text triggers\", 2026-05-13)"
+          },
+          {
+            "line": 297,
+            "level": 2,
+            "text": "H1 — Hardening del chat de texto (timeouts + guards de honestidad, 2026-05-13)"
+          },
+          {
+            "line": 337,
+            "level": 2,
+            "text": "H2 — Memoria y bookkeeping (2026-05-13)"
+          },
+          {
+            "line": 354,
+            "level": 2,
+            "text": "H3 — UX del chat (2026-05-13)"
+          },
+          {
+            "line": 385,
+            "level": 2,
+            "text": "V2+V3 — Re-audit y limpieza de diagnostics (2026-05-13)"
+          },
+          {
+            "line": 392,
+            "level": 3,
+            "text": "V3 — Pyright + ruff sobre el core"
+          },
+          {
+            "line": 409,
+            "level": 3,
+            "text": "V2 — Re-auditoria de los 11 hallazgos del audit original"
+          },
+          {
+            "line": 434,
+            "level": 3,
+            "text": "Estado honesto al cierre"
+          },
+          {
+            "line": 466,
+            "level": 2,
+            "text": "V1-partial — runtime real revelo 2 bugs (2026-05-13)"
+          },
+          {
+            "line": 472,
+            "level": 3,
+            "text": "Bug A: phrase trigger no se crea"
+          },
+          {
+            "line": 511,
+            "level": 3,
+            "text": "Bug B: app.open con verified=False induce desconfianza"
+          },
+          {
+            "line": 541,
+            "level": 2,
+            "text": "Pendiente para proxima sesion (V1 + V4 completos)"
+          },
+          {
+            "line": 573,
+            "level": 2,
+            "text": "Analisis de VRAM 6 GB con vision + voz (2026-05-14)"
+          },
+          {
+            "line": 579,
+            "level": 3,
+            "text": "Nomenclatura"
+          },
+          {
+            "line": 587,
+            "level": 3,
+            "text": "Audio nativo en Gemma 3n - cambia el juego"
+          },
+          {
+            "line": 606,
+            "level": 3,
+            "text": "Tabla de VRAM consolidada"
+          },
+          {
+            "line": 628,
+            "level": 3,
+            "text": "Calculo final para 6 GB VRAM (vision + voz activas)"
+          },
+          {
+            "line": 645,
+            "level": 3,
+            "text": "Riesgo: memory leak de mmproj en llama.cpp"
+          },
+          {
+            "line": 663,
+            "level": 3,
+            "text": "Configuracion recomendada por perfil de VRAM"
+          }
+        ],
+        "lead": "Fecha: 2026-05-13",
+        "measures": [
+          {
+            "line": 18,
+            "text": "| A1 audio_device.set_default | done | SoundVolumeView /sjson + roles 0/1 (Console+Multimedia) y 2 (Communications), snapshot con rollback a defaults previos, verify leyendo /sjson otra vez. |"
+          },
+          {
+            "line": 82,
+            "text": "| D9 study | done | Flashcards + SM-2 spaced repetition (Wozniak 1990): EF' = EF + (0.1 - (5-q)(0.08+(5-q)*0.02)), EF floor 1.3, intervalos 1/6/round(I*EF), reset reps cuando q<3. Storage SQLite en `<state_dir>/study.sqlite`. decks, cards, "
+          },
+          {
+            "line": 93,
+            "text": "(smart_home local). El user pidio mantenerse 100% local, asi que Fase E"
+          },
+          {
+            "line": 151,
+            "text": "Pasa 32/32 con el router actualizado."
+          },
+          {
+            "line": 154,
+            "text": "test_router 32/32 passing."
+          },
+          {
+            "line": 198,
+            "text": "multilingual-MiniLM-L12-v2` (50+ idiomas, ~120MB). Cosine similarity"
+          },
+          {
+            "line": 206,
+            "text": "cuatro idiomas extra. Pasa 61/61."
+          },
+          {
+            "line": 209,
+            "text": "test_router 61/61 passing en ES+EN+PT+FR+IT."
+          },
+          {
+            "line": 227,
+            "text": "- test_router 61/61 (ES+EN+PT+FR+IT)."
+          },
+          {
+            "line": 228,
+            "text": "- test_gx_features 8/8 (record/recall, parse plan, generate plan con"
+          },
+          {
+            "line": 290,
+            "text": "test_router 61/61, test_gx_features 11/11."
+          },
+          {
+            "line": 303,
+            "text": "(summarization, planner, replan) heredaban el global de 180s."
+          }
+        ],
+        "dates": [
+          "2026-05-13",
+          "2026-06-01",
+          "2026-05-14"
+        ],
+        "models": [
+          "piper",
+          "gemma 4",
+          "llama.cpp",
+          "e4b",
+          "gemma-4",
+          "whisper",
+          "gemma4"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 2060",
+          "RTX 3060",
+          "4060",
+          "RTX 3060 12GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 188,
+            "text": "Reemplaza \"office\" en el subset porque \"lee este pdf\" no es crear,"
+          },
+          {
+            "line": 498,
+            "text": "estos triggers porque la rutina probablemente necesita keypress."
+          },
+          {
+            "line": 1250,
+            "text": "- J5 parallel esta OFF por defecto porque varias tools comparten estado (filesystem, registry, apps_index, MCP clients). Solo activar (`set GEMMA4_AGENT_PARALLEL_TOOLS=true`) si tu workflow tipico tiene tool_calls genuinamente independiente"
+          }
+        ],
+        "ranges": [
+          "1-1575",
+          "h:1",
+          "m:18"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/UNIVERSAL_AGENT_TOOL_GAPS.md",
+      "queued_sha256": "12b7db7bda2bf6dc8018ca50a59110cd7deea383f4c5491797c33992d29ba14d",
+      "size_queued": 45774,
+      "exists": true,
+      "disk_sha256": "12b7db7bda2bf6dc8018ca50a59110cd7deea383f4c5491797c33992d29ba14d",
+      "disk_size": 45774,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1916,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Carter Agent Universal Tool Gap Map"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Resumen Ejecutivo"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Aplicacion En Codigo"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "2026-05-12: Primer Corte P0 Local"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "2026-05-12: Lote De Tools Pequenas Locales"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Fuentes Base"
+          },
+          {
+            "line": 139,
+            "level": 2,
+            "text": "Estado Actual Del Agente"
+          },
+          {
+            "line": 170,
+            "level": 2,
+            "text": "Metodo De Priorizacion"
+          },
+          {
+            "line": 179,
+            "level": 2,
+            "text": "P0 Local"
+          },
+          {
+            "line": 181,
+            "level": 3,
+            "text": "1. `office`"
+          },
+          {
+            "line": 228,
+            "level": 3,
+            "text": "2. `audio_device`"
+          },
+          {
+            "line": 270,
+            "level": 3,
+            "text": "3. `notification`"
+          },
+          {
+            "line": 312,
+            "level": 3,
+            "text": "4. `routine`"
+          },
+          {
+            "line": 362,
+            "level": 3,
+            "text": "5. `browser_real_visible`"
+          },
+          {
+            "line": 407,
+            "level": 3,
+            "text": "6. `media`"
+          },
+          {
+            "line": 454,
+            "level": 2,
+            "text": "P1 Local"
+          },
+          {
+            "line": 456,
+            "level": 3,
+            "text": "7. `smart_home`"
+          },
+          {
+            "line": 501,
+            "level": 3,
+            "text": "8. `device_settings`"
+          },
+          {
+            "line": 536,
+            "level": 3,
+            "text": "9. `printer_scanner`"
+          },
+          {
+            "line": 576,
+            "level": 3,
+            "text": "10. `local_calendar`"
+          },
+          {
+            "line": 612,
+            "level": 3,
+            "text": "11. `document_ingest`"
+          },
+          {
+            "line": 653,
+            "level": 3,
+            "text": "12. `game_launcher`"
+          },
+          {
+            "line": 697,
+            "level": 3,
+            "text": "13. `developer`"
+          },
+          {
+            "line": 736,
+            "level": 3,
+            "text": "14. `dependency_manager`"
+          }
+        ],
+        "lead": "Fecha: 2026-05-12",
+        "measures": [
+          {
+            "line": 338,
+            "text": "- Red conectada/desconectada."
+          },
+          {
+            "line": 1196,
+            "text": "- Falta diccionario/traduccion offline si se quiere 100% local verificable."
+          },
+          {
+            "line": 1439,
+            "text": "### 12. Red, WiFi, Bluetooth y dispositivos"
+          },
+          {
+            "line": 1448,
+            "text": "- \"mira que usa mi red\""
+          },
+          {
+            "line": 1453,
+            "text": "- Falta rollback de config red."
+          },
+          {
+            "line": 1911,
+            "text": "- red/dispositivos,"
+          }
+        ],
+        "dates": [
+          "2026-05-12"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 1203,
+            "text": "Prioridad: P2, porque el modelo ya cubre bastante."
+          },
+          {
+            "line": 1916,
+            "text": "porque agregan auth, permisos, privacidad, cuotas y riesgos transaccionales."
+          }
+        ],
+        "ranges": [
+          "1-1916",
+          "h:1",
+          "m:338"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/session_continuation_report_2026_05_21.md",
+      "queued_sha256": "5da00a0f317b218f88c316d030bdb46d2a8e65149bb6580ef4840cccbcafaf63",
+      "size_queued": 5504,
+      "exists": true,
+      "disk_sha256": "5da00a0f317b218f88c316d030bdb46d2a8e65149bb6580ef4840cccbcafaf63",
+      "disk_size": 5504,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 97,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Reporte de sesión de continuación — Carter Agent — 2026-05-21"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Resumen ejecutivo por eje"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Blockers resueltos vs los que quedan para RED"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Tests nuevos (con eje pin-eado)"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Optimizaciones aplicadas (antes/después medido)"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "Cobertura por eje + gaps aceptables"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Estado de la rama (resumen de branch_readiness.md)"
+          },
+          {
+            "line": 67,
+            "level": 2,
+            "text": "Acumulado total del proyecto (todas las sesiones)"
+          },
+          {
+            "line": 79,
+            "level": 2,
+            "text": "Próximos pasos para RED"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Procesos limpios (cierre)"
+          }
+        ],
+        "lead": "Continuación de la auditoría (rondas 1–13, 26 bugs). Esta sesión NO fue caza de",
+        "measures": [
+          {
+            "line": 14,
+            "text": "violaciones) + 2 gaps de coverage cerrados (external-server, TTS-load-fail)."
+          },
+          {
+            "line": 16,
+            "text": "directorio: `_system_message` 2.08ms → 1.06ms (−49%/turno), sin cambiar"
+          },
+          {
+            "line": 25,
+            "text": "| 2 | `ContextoClaude.md` sin trackear | ↪️ RED (no toco lo que no creé) |"
+          },
+          {
+            "line": 27,
+            "text": "| 4 | `_inbox` unbounded | ↪️ RED — decisión de producto. **Pregunta refinada:** ¿bound duro (32) que RECHAZA con toast, o unbounded (seguro hoy)? Acotar con drop-oldest descartaría turnos de usuario en silencio (viola \"no degradar en silen"
+          },
+          {
+            "line": 43,
+            "text": "| cache de microagents | `load_microagents()` warm | 1.16 ms (re-lee 7 archivos) | 0.20 ms (solo stat) — 6× |"
+          },
+          {
+            "line": 44,
+            "text": "| (idem) | `_system_message()` warm | 2.08 ms | 1.06 ms — **−49%** |"
+          },
+          {
+            "line": 47,
+            "text": "cache a `project_context.load_context` (0.47ms, la mitad del payoff, y sin"
+          },
+          {
+            "line": 54,
+            "text": "aceptados con razón: quarantine rename-fail (no determinista), domain_tools 10.5k"
+          },
+          {
+            "line": 60,
+            "text": "- Suite completa **~1113 passed** en batches; **1 rojo PRE-EXISTENTE** y ambiental"
+          },
+          {
+            "line": 64,
+            "text": "- Falta para mergear: validación E2E con GPU + 3 decisiones de RED (#1/#2/#4 +"
+          },
+          {
+            "line": 73,
+            "text": "+ 2 casos (tts-fail, tracing-malformed) = **24 tests**."
+          },
+          {
+            "line": 74,
+            "text": "- **Suite:** ~1113 passed, 1 rojo pre-existente ajeno."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-97",
+          "h:1",
+          "m:14"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/handoffs/session_overnight_report_2026_05_21.md",
+      "queued_sha256": "e2467450d4afcc42d27c65fa11a9db6f4a4732713eefaf7438b58a8c6e2e545f",
+      "size_queued": 8362,
+      "exists": true,
+      "disk_sha256": "e2467450d4afcc42d27c65fa11a9db6f4a4732713eefaf7438b58a8c6e2e545f",
+      "disk_size": 8362,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 135,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Reporte de sesión overnight — Carter Agent — 2026-05-21"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Resumen ejecutivo"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Fixes nuevos (ronda 11)"
+          },
+          {
+            "line": 38,
+            "level": 2,
+            "text": "Módulos auditados esta sesión"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Resultados de Fase 3 (validación en vivo) — números reales"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "Acumulado total de la auditoría"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Mapa de cobertura por eje"
+          },
+          {
+            "line": 88,
+            "level": 2,
+            "text": "Próximos pasos sugeridos para cuando RED vuelva"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Rondas 12-13 — condición de parada cumplida (2 rondas limpias)"
+          },
+          {
+            "line": 128,
+            "level": 2,
+            "text": "Verificación de procesos limpios (cierre)"
+          }
+        ],
+        "lead": "Continuación de la auditoría arquitectura/fiabilidad/latencia (rondas 1–10",
+        "measures": [
+          {
+            "line": 5,
+            "text": "en vivo**. RED dejó la PC con recursos; usé los que eran seguros (CPU) y diferí"
+          },
+          {
+            "line": 6,
+            "text": "los GPU-dependientes porque la GPU tenía 6.7 GB en uso con el usuario jugando."
+          },
+          {
+            "line": 14,
+            "text": "huérfano reteniendo ~6 GB VRAM en Windows, y el próximo arranque lo veía"
+          },
+          {
+            "line": 16,
+            "text": "\"liberar VRAM\" del producto."
+          },
+          {
+            "line": 17,
+            "text": "- **18 smokes** (<1.5 s, sin GPU) como tripwire de regresión, uno por fix ganado."
+          },
+          {
+            "line": 18,
+            "text": "- **Validación en vivo (6/7):** confirmé con números reales el 74 % menos CPU del"
+          },
+          {
+            "line": 20,
+            "text": "10 MB, cero memory-growth, y cero leak de handles. **Ninguna afirmación previa"
+          },
+          {
+            "line": 27,
+            "text": "| 7f22ae4 | start() filtraba 2 file handles del child-log por restart (parent copy nunca cerrada; peor en spawn-fail) | test_llama_server_log_handles (3) | llama_server.py | FIABILIDAD |"
+          },
+          {
+            "line": 28,
+            "text": "| f50dfc1 | nadie detenía el llama-server al exit (huérfano, 6 GB VRAM) + get_shared_manager sin lock (race de boot multi-thread) | test_shared_manager_lifecycle (5) | llama_server.py | FIABILIDAD + ARQUITECTURA |"
+          },
+          {
+            "line": 29,
+            "text": "| 13aa71f | download_voice dejaba .onnx truncado en corte de red → TTS bricked | test_tts_download_atomic (2) | voice/tts.py | FIABILIDAD |"
+          },
+          {
+            "line": 55,
+            "text": "| wake CPU throttle | N=1: 25.81 s · N=4: 6.69 s por 30 s audio → **74.1 % menos** | ✅ |"
+          },
+          {
+            "line": 56,
+            "text": "| per-mode timeout | fast 20 s → research 150 s, monótono, cableado agent.py:1042/1068 | ✅ |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "livekit"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 6,
+            "text": "los GPU-dependientes porque la GPU tenía 6.7 GB en uso con el usuario jugando."
+          }
+        ],
+        "ranges": [
+          "1-135",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_AGENTE_NOCTURNO_ROUTER.md",
+      "queued_sha256": "88c82db9b0f9bb9b587cfdcd6ac9982343701135007a9148ff7e9c19ca7e8225",
+      "size_queued": 13013,
+      "exists": true,
+      "disk_sha256": "88c82db9b0f9bb9b587cfdcd6ac9982343701135007a9148ff7e9c19ca7e8225",
+      "disk_size": 13013,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 211,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "MISIÓN AUTÓNOMA NOCTURNA — LLEVAR EL ROUTER DE GEMMA4 AL MÁXIMO ABSOLUTO"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "LA ÚNICA REGLA INVIOLABLE (más importante que cualquier número)"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "REGLA DE ORO"
+          },
+          {
+            "line": 46,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "CRITERIO DE PARADA (cómo saber cuándo es el techo de VERDAD)"
+          },
+          {
+            "line": 48,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "MÉTODO (medí, no creas — está en el CLAUDE.md del repo)"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 84,
+            "level": 3,
+            "text": "Set de prueba (ground truth)"
+          },
+          {
+            "line": 104,
+            "level": 3,
+            "text": "ANTIOVERFIT OBLIGATORIO — holdout ciego"
+          },
+          {
+            "line": 114,
+            "level": 3,
+            "text": "Baseline actual medido (punto de partida)"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "PALANCA DE ALTO POTENCIAL — el contexto previo (`prev`)"
+          },
+          {
+            "line": 138,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 139,
+            "level": 2,
+            "text": "EL CICLO QUE REPETÍS SIN PARAR (cientos / miles de veces)"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 165,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "RESTRICCIONES (del proyecto — son ley)"
+          },
+          {
+            "line": 167,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 179,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          },
+          {
+            "line": 180,
+            "level": 2,
+            "text": "ENTREGABLES (cuando de VERDAD sea el techo)"
+          },
+          {
+            "line": 181,
+            "level": 2,
+            "text": "═══════════════════════════════════════════════════════════════"
+          }
+        ],
+        "lead": "Vas a trabajar **SIN PARAR** hasta lograr el mejor resultado posible del router de",
+        "measures": [
+          {
+            "line": 37,
+            "text": "Un **80% honesto y universal VALE MÁS que un 95% logrado con hacks/keywords/overfit**."
+          },
+          {
+            "line": 55,
+            "text": "holdout. Ejemplo: si llegás a 80% y tras 4 enfoques realmente distintos seguís en"
+          },
+          {
+            "line": 56,
+            "text": "~80%, recién ahí 80% es el techo legítimo. Si llegás a 80% y solo probaste 1"
+          },
+          {
+            "line": 86,
+            "text": "**curado y verificado a mano por Opus** (100% etiquetado, coherente, 0 tools"
+          },
+          {
+            "line": 105,
+            "text": "- Desarrollá y tuneá **SOLO contra el 80% dev**. El **20% holdout es CIEGO**: solo lo"
+          },
+          {
+            "line": 125,
+            "text": "El router hoy se mide **SIN** el turno anterior. Muchísimos misses (≈67% del techo:"
+          },
+          {
+            "line": 145,
+            "text": "4. Implementalo (100% semántico, **sin keywords**)."
+          },
+          {
+            "line": 156,
+            "text": "El bench Carter (540/540) debe quedar intacto."
+          },
+          {
+            "line": 175,
+            "text": "- Cero regresión en los tests existentes ni en el bench Carter 540/540."
+          },
+          {
+            "line": 183,
+            "text": "1. **El mejor router posible**, 100% semántico/universal, cero keywords-hack."
+          },
+          {
+            "line": 190,
+            "text": "3. **Tests verdes** + bench Carter 540/540 intacto."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 25,
+            "text": "- regex que dependa de **palabras concretas** como mecanismo de decisión"
+          },
+          {
+            "line": 26,
+            "text": "- hardcode / listas de keywords / diccionarios `prompt → tool`"
+          },
+          {
+            "line": 29,
+            "text": "- memorizar las frases del corpus de prueba (eso ES el hardcode prohibido)"
+          }
+        ],
+        "ranges": [
+          "1-211",
+          "h:1",
+          "m:37"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_FOR_EXTERNAL_AUDIT.md",
+      "queued_sha256": "cd8104eec17849c712c48463309bffde4958e09ae0bd3280014102785acb7bf3",
+      "size_queued": 8502,
+      "exists": true,
+      "disk_sha256": "cd8104eec17849c712c48463309bffde4958e09ae0bd3280014102785acb7bf3",
+      "disk_size": 8502,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 181,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt para auditoría externa de Carter Agent"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Bloque a pegar (con los .md adjuntos)"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "Los 9 archivos a adjuntar (en este orden)"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "Por qué este prompt es mejor que \"audita esto\""
+          },
+          {
+            "line": 156,
+            "level": 2,
+            "text": "Cómo iterar después de recibir respuesta"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "Para auditorías de segunda opinión"
+          }
+        ],
+        "lead": "Necesito que audites la arquitectura de un agente local Windows",
+        "measures": [
+          {
+            "line": 15,
+            "text": "(similar a Jarvis/Alexa pero 100% local, sobre llama.cpp + Gemma 4"
+          },
+          {
+            "line": 16,
+            "text": "GGUF)."
+          },
+          {
+            "line": 19,
+            "text": "- 100% local (sin cloud, sin API keys externas obligatorias)."
+          },
+          {
+            "line": 52,
+            "text": "- El stack NLI (capability_classifier + mDeBERTa 280MB) lo maté por"
+          },
+          {
+            "line": 53,
+            "text": "cache hit 3.2%. ¿Era buena decisión o me perdí valor en"
+          },
+          {
+            "line": 58,
+            "text": "- `state.json` con 84% zombies pendientes de purga (no se atacó):"
+          },
+          {
+            "line": 162,
+            "text": "con `docs/architecture/08_findings_post_plan.md §2/3`."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "gemma 4",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 91,
+            "text": "porque...\"). No me digas \"deberías X\" sin haber leído mi razón"
+          }
+        ],
+        "ranges": [
+          "1-181",
+          "h:1",
+          "m:15"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_1_toolcalling_structured.md",
+      "queued_sha256": "cd507256cb9bae25312459ba62a5057cbac176665bca3d7efbc5301eda87a3be",
+      "size_queued": 3951,
+      "exists": true,
+      "disk_sha256": "cd507256cb9bae25312459ba62a5057cbac176665bca3d7efbc5301eda87a3be",
+      "disk_size": 3951,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 63,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 1/8 — Fiabilidad de tool-calling y structured output en Gemma 4 E4B (4B local)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "0. Stack"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "1. El problema medido"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: hacer que el modelo de 4B",
+        "measures": [
+          {
+            "line": 9,
+            "text": "Gemma 4 E4B-it Q4_K_M GGUF, llama.cpp b9090, `--jinja`, monoslot, 6 GB, voz"
+          },
+          {
+            "line": 14,
+            "text": "El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU"
+          },
+          {
+            "line": 15,
+            "text": "modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz"
+          },
+          {
+            "line": 17,
+            "text": "solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º"
+          },
+          {
+            "line": 20,
+            "text": "que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una"
+          },
+          {
+            "line": 24,
+            "text": "- Con reasoning ON: tool-call correcto 6/6 en comandos crisp. Con reasoning OFF:"
+          },
+          {
+            "line": 25,
+            "text": "**2/6** — el modelo \"promete\" la acción en texto sin emitir el tool-call."
+          },
+          {
+            "line": 26,
+            "text": "- Por eso hoy dependemos del thinking (cuesta p90 268 tok / hasta 4.3 s). Quitar"
+          },
+          {
+            "line": 45,
+            "text": "¿Sirve para curar el 2/6 sin el costo del thinking?"
+          },
+          {
+            "line": 50,
+            "text": "sube el tool-call de 2/6 a 6/6? ¿Es atención/formato/confianza? ¿Hay un"
+          },
+          {
+            "line": 56,
+            "text": "token y curan el 2/6? ¿Cuántos ejemplos, qué formato, costo en prefill?"
+          },
+          {
+            "line": 58,
+            "text": "para subir la fiabilidad de tool-call en este 4B? (ej. FunctionGemma 58→85%)."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp",
+          "gemma 4",
+          "e4b",
+          "functiongemma"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-63",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_2_memoria_personalizacion.md",
+      "queued_sha256": "5840aa48bd94897728fb45faaadd37300418183f0552e52b1827957b9d469d3c",
+      "size_queued": 4154,
+      "exists": true,
+      "disk_sha256": "5840aa48bd94897728fb45faaadd37300418183f0552e52b1827957b9d469d3c",
+      "disk_size": 4154,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 65,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 2/8 — Memoria, personalización y entity-grounding del asistente"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "0. Stack y producto"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "1. El problema medido (3 incidentes reales)"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 61,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: cómo el asistente APRENDE y",
+        "measures": [
+          {
+            "line": 8,
+            "text": "Gemma 4 E4B-it Q4_K_M, llama.cpp b9090, asistente de VOZ local Windows, 100%"
+          },
+          {
+            "line": 14,
+            "text": "El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU"
+          },
+          {
+            "line": 15,
+            "text": "modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz"
+          },
+          {
+            "line": 17,
+            "text": "solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º"
+          },
+          {
+            "line": 20,
+            "text": "que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una"
+          },
+          {
+            "line": 58,
+            "text": "poison\" (la sesión vieja menciona que test-junk contaminó 52% de la DB)?"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-65",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_3_verificacion_recovery.md",
+      "queued_sha256": "f95ca269eeb1d7ef48c73117e35cba8a1081811e6f7e028e66f6ca8bb71ac15d",
+      "size_queued": 4080,
+      "exists": true,
+      "disk_sha256": "f95ca269eeb1d7ef48c73117e35cba8a1081811e6f7e028e66f6ca8bb71ac15d",
+      "disk_size": 4080,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 65,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 3/8 — Verificación de acciones y recuperación de errores del agente"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "0. Stack"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "1. El problema"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 62,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: cómo el agente CONFIRMA que",
+        "measures": [
+          {
+            "line": 8,
+            "text": "Gemma 4 E4B-it Q4_K_M, llama.cpp b9090, asistente de voz local Windows. 65 tools"
+          },
+          {
+            "line": 13,
+            "text": "El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU"
+          },
+          {
+            "line": 14,
+            "text": "modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz"
+          },
+          {
+            "line": 16,
+            "text": "solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º"
+          },
+          {
+            "line": 19,
+            "text": "que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una"
+          },
+          {
+            "line": 32,
+            "text": "verify_system...) que devuelven VerifierOutcome (verified/failed/unknown)."
+          },
+          {
+            "line": 44,
+            "text": "SO. ¿Cuál es fiable y barato (<300 ms) para voz? El caso WhatsApp (verificar"
+          },
+          {
+            "line": 52,
+            "text": "3. **Distinguir \"no pude verificar\" de \"falló\"**: hoy hay verified/failed/unknown."
+          },
+          {
+            "line": 64,
+            "text": "de falso-ok/falso-fail), fuentes recientes, veredicto VIABLE Windows+voz+4B,"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-65",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_4_contexto_multiturno.md",
+      "queued_sha256": "c813757b1a9dd2bc2c863d3f8a815b6101a089471e002f34c2a3a956b5520075",
+      "size_queued": 3966,
+      "exists": true,
+      "disk_sha256": "c813757b1a9dd2bc2c863d3f8a815b6101a089471e002f34c2a3a956b5520075",
+      "disk_size": 3966,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 64,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 4/8 — Gestión de contexto e historial multi-turno en un 4B local"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "0. Stack"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "1. El problema medido"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 40,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: cómo manejar el historial de",
+        "measures": [
+          {
+            "line": 8,
+            "text": "Gemma 4 E4B-it Q4_K_M, llama.cpp b9090, ctx=16384, `--swa-full --cache-reuse 256"
+          },
+          {
+            "line": 14,
+            "text": "El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU"
+          },
+          {
+            "line": 15,
+            "text": "modesta ~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz"
+          },
+          {
+            "line": 17,
+            "text": "solución puede inflar VRAM/latencia fuera del budget de vram4 ni meter un 2º"
+          },
+          {
+            "line": 20,
+            "text": "que requiera >4B o más VRAM debe marcarse NO-VIABLE-EN-VRAM4 con una"
+          },
+          {
+            "line": 26,
+            "text": "- El prefill mediano es ~888 ms; cuando el historial crece, sube."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-64",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_5_aprendizaje_proactivo.md",
+      "queued_sha256": "3a3d3c7ea300db2f3f9acf1de88d34d8f5c3901967c2134f914068297bf2afa5",
+      "size_queued": 4928,
+      "exists": true,
+      "disk_sha256": "3a3d3c7ea300db2f3f9acf1de88d34d8f5c3901967c2134f914068297bf2afa5",
+      "disk_size": 4928,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 73,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 5/8 — Aprendizaje proactivo de patrones del usuario (asistente tipo Jarvis)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "0. Stack y visión"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA (innegociable): TODO debe correr en vram4 = E4B-Q4"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "1. El caso de uso concreto (de RED)"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar — esto es la base sobre la que construir)"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 68,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO y de alto valor: que el",
+        "measures": [
+          {
+            "line": 9,
+            "text": "Gemma 4 E4B-it Q4_K_M local, asistente de VOZ Windows. RED quiere un \"Jarvis\""
+          },
+          {
+            "line": 15,
+            "text": "El perfil DEFAULT es vram4 (Gemma 4 E4B-it Q4_K_M, ~4B cuantizado, GPU modesta"
+          },
+          {
+            "line": 16,
+            "text": "~4-6 GB, latencia tier-Alexa 4-5 s). RED quiere que vram4 sea capaz de TODO esto"
+          },
+          {
+            "line": 18,
+            "text": "inflar la VRAM por encima del budget de vram4, agregar un 2º modelo pesado que no"
+          },
+          {
+            "line": 21,
+            "text": "sugerencia. Cualquier recomendación que requiera >4B o más VRAM debe marcarse"
+          },
+          {
+            "line": 37,
+            "text": "conocido: test-junk contaminó 52% de la DB una vez — cuidado con qué se graba.)"
+          },
+          {
+            "line": 41,
+            "text": "SUGERIR. Nada hoy observa \"RED cierra X cada arranque\" y ofrece automatizarlo."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-73",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_6_estabilidad_no_crash.md",
+      "queued_sha256": "1ff26aa7b67f368bcbb3aad68e5b8435e2db336acefa99f6f1bd8aeff8645ae4",
+      "size_queued": 3474,
+      "exists": true,
+      "disk_sha256": "1ff26aa7b67f368bcbb3aad68e5b8435e2db336acefa99f6f1bd8aeff8645ae4",
+      "disk_size": 3474,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 54,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 6/8 — Estabilidad y degradación con gracia (no petar el programa) en vram4"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA: TODO en vram4 = Gemma 4 E4B-it Q4_K_M"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "1. El problema"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: que el asistente NUNCA pete",
+        "measures": [
+          {
+            "line": 5,
+            "text": "ajustado (vram4). RED: \"no quiero petar el programa\". Fuentes 2025-2026."
+          },
+          {
+            "line": 8,
+            "text": "Default = vram4 (4B cuantizado, GPU modesta ~4-6 GB, voz local Windows, llama.cpp"
+          },
+          {
+            "line": 9,
+            "text": "b9090 monoslot, ctx 16384). RED quiere que vram4 sea CAPAZ DE TODO sin petar. Las"
+          },
+          {
+            "line": 10,
+            "text": "soluciones no pueden inflar VRAM/latencia fuera del budget de vram4 ni asumir"
+          },
+          {
+            "line": 16,
+            "text": "- OOM de VRAM (LLM + visión lazy + KV cache cerca del límite en 4-6 GB)."
+          },
+          {
+            "line": 17,
+            "text": "- ONNX Runtime clava la CPU al 100% sin throttle (congeló Windows en evals)."
+          },
+          {
+            "line": 25,
+            "text": "- vram_calculator.py predice VRAM sin GPU (validado al MiB); perfiles por VRAM."
+          },
+          {
+            "line": 30,
+            "text": "1. **Gestión de presión de VRAM en 4-6 GB con LLM+visión+KV en una sola GPU**:"
+          },
+          {
+            "line": 32,
+            "text": "liberar KV) sin matar el turno? ¿Señales tempranas, watchdog de VRAM, fallback"
+          },
+          {
+            "line": 51,
+            "text": "Por punto: diagnóstico, tabla (riesgo de crash mitigado, latencia/VRAM añadida,"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "llama.cpp"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 26,
+            "text": "- _ort_throttle.py para ONNX (2 threads, sin spinning, afinidad)."
+          }
+        ],
+        "ranges": [
+          "1-54",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_7_nlu_comandos_ambiguos.md",
+      "queued_sha256": "fe3b7922527254e46f7a4e1de0144ad5c6f096e46f52540fed2739205e0583d6",
+      "size_queued": 3458,
+      "exists": true,
+      "disk_sha256": "fe3b7922527254e46f7a4e1de0144ad5c6f096e46f52540fed2739205e0583d6",
+      "disk_size": 3458,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 53,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 7/8 — Comprensión de comandos: ambigüedad, multi-intent y clarificación en voz (vram4)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA: TODO en vram4 = Gemma 4 E4B-it Q4_K_M"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "1. El problema"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: que el asistente entienda",
+        "measures": [
+          {
+            "line": 8,
+            "text": "Default vram4 (4B cuantizado, voz local, latencia 4-5 s). RED quiere que vram4"
+          },
+          {
+            "line": 9,
+            "text": "haga TODO. Nada que requiera >4B o más VRAM/latencia. Lo que no entre → NO-VIABLE"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-53",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_8_automatizacion_gui_desktop.md",
+      "queued_sha256": "f5df2edbdde820abc7013e71efcc9e73dd3b850b24f6417d9407e3b91b6258d9",
+      "size_queued": 3890,
+      "exists": true,
+      "disk_sha256": "f5df2edbdde820abc7013e71efcc9e73dd3b850b24f6417d9407e3b91b6258d9",
+      "disk_size": 3890,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 58,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación 8/8 — Automatización GUI/desktop fiable (clicks, UIA, visión) en Windows desde un 4B (vram4)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "RESTRICCIÓN DURA: TODO en vram4 = Gemma 4 E4B-it Q4_K_M"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "1. El problema"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "2. Lo que YA tenemos (no recomendar)"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "3. Lo que quiero investigado"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "4. Formato"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). Tema ESPECÍFICO: que el asistente opere apps",
+        "measures": [
+          {
+            "line": 8,
+            "text": "Default vram4 (4B cuantizado, voz local, GPU compartida 4-6 GB, latencia 4-5 s)."
+          },
+          {
+            "line": 10,
+            "text": "VRAM. Las soluciones GUI no pueden depender de visión pesada por turno ni de un"
+          },
+          {
+            "line": 35,
+            "text": "2. **Reducir dependencia de visión cara**: la visión (mmproj) compite por VRAM en"
+          },
+          {
+            "line": 54,
+            "text": "Por punto: diagnóstico, tabla (fiabilidad, latencia, VRAM, robustez a cambios de"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-58",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_INDEX.md",
+      "queued_sha256": "8b296dd0159a71a5b87eb857447f4fbd13f349496db514f2c6bbf284bd8c8f3a",
+      "size_queued": 2840,
+      "exists": true,
+      "disk_sha256": "8b296dd0159a71a5b87eb857447f4fbd13f349496db514f2c6bbf284bd8c8f3a",
+      "disk_size": 2840,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 37,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Índice de prompts de investigación — Carter Agent (vram4)"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "Orden de impacto sugerido (para aplicar las respuestas)"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Metodología al aplicar cada investigación (regla de RED, no negociable)"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "Prompts previos (contexto, ya no son los principales)"
+          }
+        ],
+        "lead": "8 prompts para mandar a Claude (research). Cada uno es independiente y lleva la",
+        "measures": [
+          {
+            "line": 4,
+            "text": "RESTRICCIÓN DURA: todo debe correr en **vram4 = Gemma 4 E4B-it Q4_K_M** (~4B, GPU"
+          },
+          {
+            "line": 5,
+            "text": "4-6 GB, latencia 4-5 s), sin asumir modelo más grande ni petar el programa."
+          },
+          {
+            "line": 11,
+            "text": "| 1 | PROMPT_RESEARCH_1_toolcalling_structured.md | Tool-calling + structured output (grammar/sampling) | El 2/6 sin reasoning → tool-call fiable sin thinking caro | ☐ | ☐ |"
+          },
+          {
+            "line": 16,
+            "text": "| 6 | PROMPT_RESEARCH_6_estabilidad_no_crash.md | Estabilidad / no-crash | Presión VRAM, aislar tools, self-check | ☐ | ☐ |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-37",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_arquitectura_llm.md",
+      "queued_sha256": "8f1e43ae43a6b449422a4d188b0411b5993dc7b3cc02b353b39010cac2449b3e",
+      "size_queued": 7102,
+      "exists": true,
+      "disk_sha256": "8f1e43ae43a6b449422a4d188b0411b5993dc7b3cc02b353b39010cac2449b3e",
+      "disk_size": 7102,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 111,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación — Arquitectura del LLM en Carter Agent (refinamiento)"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "0. Stack (confirmado en código)"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "1. Sampling actual (posible punto fino)"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "2. LO QUE YA EXISTE (no recomendar de nuevo — esto es el punto)"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "3. Métricas medidas (sesión 2026-05-23)"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "4. LAS 5 TENSIONES ABIERTAS (acá quiero la investigación)"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "T1 — Encadenamiento multi-paso en 4B (search→open/play/read)"
+          },
+          {
+            "line": 73,
+            "level": 3,
+            "text": "T2 — Reducir el costo del THINKING sin perder fiabilidad de tool-call"
+          },
+          {
+            "line": 83,
+            "level": 3,
+            "text": "T3 — Subset dinámico de tools vs estabilidad del prefijo (cache)"
+          },
+          {
+            "line": 91,
+            "level": 3,
+            "text": "T4 — Sampling para tool-calling"
+          },
+          {
+            "line": 96,
+            "level": 3,
+            "text": "T5 — Deuda arquitectónica de la orquestación"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "5. Formato del informe"
+          }
+        ],
+        "lead": "Copiá esto a Claude (research/web). El objetivo es mejorar cómo el LLM interactúa",
+        "measures": [
+          {
+            "line": 12,
+            "text": "- **Modelo:** Gemma 4 **E4B-it Q4_K_M** GGUF (familia Gemma 4, ~4B efectivos,"
+          },
+          {
+            "line": 15,
+            "text": "- **Runtime:** llama.cpp `llama-server` build b9090, monoslot, GPU 6 GB target"
+          },
+          {
+            "line": 16,
+            "text": "(dev en RTX 4060 Ti 16 GB). Flags: `--jinja --flash-attn on --swa-full"
+          },
+          {
+            "line": 18,
+            "text": "- **Producto:** asistente de VOZ local Windows, 100% OSS/offline, latencia"
+          },
+          {
+            "line": 19,
+            "text": "tier-Alexa (4-5 s/turno). STT=Parakeet-TDT-v3 (sherpa CPU). 65 tools."
+          },
+          {
+            "line": 47,
+            "text": "- **Summary-pass slimming:** tras una tool en modo single-action, el 2º pass"
+          },
+          {
+            "line": 57,
+            "text": "- Latencia: prefill mediana ~888 ms (el router ya lo controla). THINKING es el"
+          },
+          {
+            "line": 58,
+            "text": "cuello: p90=268 tok, max 841, **23% de turnos generan >100 tok = hasta 4.3 s**."
+          },
+          {
+            "line": 59,
+            "text": "- Tool-calling: con reasoning ON 6/6 en comandos crisp; con OFF 2/6 (el reasoning"
+          },
+          {
+            "line": 74,
+            "text": "Reasoning ON = 6/6 pero p90 4.3 s; OFF = 2/6. Probamos FR-CoT (thinking"
+          },
+          {
+            "line": 75,
+            "text": "estructurado ≤4 líneas INTENT/TOOL/ARGS/GO): mejoró apps/audio (audio 5.2→2.4 s)"
+          },
+          {
+            "line": 76,
+            "text": "PERO regresionó media (6/6→3/6) porque Gemma E4B a veces emite el formato como"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "6 GB",
+          "RTX 4060 Ti 16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 76,
+            "text": "PERO regresionó media (6/6→3/6) porque Gemma E4B a veces emite el formato como"
+          }
+        ],
+        "ranges": [
+          "1-111",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_chatgpt_gemini.md",
+      "queued_sha256": "90c0319de1ff5340fe02261a6c88c329948f2d6e44fae0e2ebcc2e6636710d35",
+      "size_queued": 9444,
+      "exists": true,
+      "disk_sha256": "90c0319de1ff5340fe02261a6c88c329948f2d6e44fae0e2ebcc2e6636710d35",
+      "disk_size": 9444,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 150,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Deep-Research Prompt — Make the Carter Agent tool router PERFECT"
+          },
+          {
+            "line": 2,
+            "level": 3,
+            "text": "(version for ChatGPT / Gemini — same ZIP, decisions pre-answered, fixed output format)"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "What the router does"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "HARD CONSTRAINTS (non-negotiable — the operator's law)"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "TWO architectural decisions — ALREADY MADE (do not re-ask; design AROUND these)"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Current architecture (FOUR things coexist — this is the tech debt to resolve)"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Current measured baseline (`python scripts/router_eval.py --split both`)"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Recurring real-bug PATTERNS your design should make impossible BY CONSTRUCTION"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "How to read the ZIP"
+          },
+          {
+            "line": 120,
+            "level": 2,
+            "text": "FIXED OUTPUT FORMAT (use these exact section headers, in this order)"
+          }
+        ],
+        "lead": "Attached is a ZIP (`gemma4_router_audit.zip`) with the COMPLETE tool router of a",
+        "measures": [
+          {
+            "line": 8,
+            "text": "evidence-backed plan to push routing accuracy toward ~100% WITHOUT breaking the"
+          },
+          {
+            "line": 29,
+            "text": "must run on CPU on a modest laptop (6 GB VRAM is fully consumed by the LLM)."
+          },
+          {
+            "line": 32,
+            "text": "4. **Tier-Alexa latency.** Per-turn budget 4-5 s total; the router runs BEFORE"
+          },
+          {
+            "line": 41,
+            "text": "≤50 ms CPU but whose *build* costs hours-to-days offline are welcome: LoRA-"
+          },
+          {
+            "line": 45,
+            "text": "(Dev machine has an RTX 4060 Ti 16 GB and a precedent of multi-hour GPU"
+          },
+          {
+            "line": 87,
+            "text": "words, 27% no-tool, 32/65 tools actually labeled), mined from production logs +"
+          },
+          {
+            "line": 88,
+            "text": "the Carter-540 bench, hand-labeled. 80/20 dev/holdout by stable hash."
+          },
+          {
+            "line": 149,
+            "text": "Be concrete and honest. If ~100% is not achievable under the constraints, say so"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "e5-small"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 4060 Ti 16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 24,
+            "text": "2. **NO regex/keyword/hardcode as the DECISION mechanism.** A keyword matching"
+          },
+          {
+            "line": 76,
+            "text": "because a live probe found it routing GARBAGE in production (overrode v1's"
+          }
+        ],
+        "ranges": [
+          "1-150",
+          "h:1",
+          "m:8"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_computer_use_gui_control.md",
+      "queued_sha256": "5898f6643d4955049b70642d357193a4c91514d261c83b469af29330e6225990",
+      "size_queued": 11469,
+      "exists": true,
+      "disk_sha256": "5898f6643d4955049b70642d357193a4c91514d261c83b469af29330e6225990",
+      "disk_size": 11469,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 182,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de investigación — Control GUI tipo humano (computer-use) para un agente local con Gemma 4 E4B en vram4"
+          },
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Rol y objetivo"
+          },
+          {
+            "line": 23,
+            "level": 1,
+            "text": "Mi stack EXACTO (confirmado, no asumas otra cosa)"
+          },
+          {
+            "line": 42,
+            "level": 1,
+            "text": "Lo que YA tengo (no me lo propongas como nuevo — construí ENCIMA de esto)"
+          },
+          {
+            "line": 70,
+            "level": 1,
+            "text": "Restricciones de producto (LEY, no negociables)"
+          },
+          {
+            "line": 87,
+            "level": 1,
+            "text": "Preguntas concretas que necesito respondidas (con fuentes y números)"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "P1 — Arquitectura del loop observe→act→verify→recover (PRIORIDAD MÁXIMA)"
+          },
+          {
+            "line": 100,
+            "level": 2,
+            "text": "P2 — Verificación post-acción SIN VLM (cabe en vram4)"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "P3 — Cascading de percepción (UIA → OCR → visión) bajo presupuesto"
+          },
+          {
+            "line": 124,
+            "level": 2,
+            "text": "P4 — Recuperación de errores en GUI (pre-retry actions)"
+          },
+          {
+            "line": 132,
+            "level": 2,
+            "text": "P5 — Riesgo y seguridad de un agente que controla mouse/teclado"
+          },
+          {
+            "line": 142,
+            "level": 2,
+            "text": "P6 — Latencia: presupuesto por paso GUI"
+          },
+          {
+            "line": 151,
+            "level": 2,
+            "text": "P7 — Durable execution / checkpoint de misiones largas"
+          },
+          {
+            "line": 156,
+            "level": 2,
+            "text": "P8 — Plan de implementación por fases, medible"
+          },
+          {
+            "line": 165,
+            "level": 1,
+            "text": "Formato de la respuesta que quiero"
+          }
+        ],
+        "lead": "===",
+        "measures": [
+          {
+            "line": 25,
+            "text": "- **Modelo:** Gemma 4 E4B-it, Q4_K_M (GGUF), ~4B efectivos. Servido por"
+          },
+          {
+            "line": 28,
+            "text": "- **Visión:** Gemma 4 multimodal vía `mmproj-F16` (~946 MB de VRAM extra). Se"
+          },
+          {
+            "line": 31,
+            "text": "- **Hardware target:** laptop modesto, **GPU de 6 GB de VRAM** (perfil \"vram4\")."
+          },
+          {
+            "line": 32,
+            "text": "El LLM ya consume ~4–5 GB. La RAM/VRAM es escasa. (El dev tiene una RTX 4060 Ti"
+          },
+          {
+            "line": 33,
+            "text": "16GB SOLO para entrenar; NO es el target de runtime.)"
+          },
+          {
+            "line": 38,
+            "text": "- **Latencia objetivo (tier-Alexa):** 4–5 s por turno de voz es el tope; 8 s es"
+          },
+          {
+            "line": 72,
+            "text": "1. **100% local y gratis.** Nada de cloud APIs de pago, nada de Picovoice."
+          },
+          {
+            "line": 106,
+            "text": "**GetForegroundWindow/título**. ¿Cuál combinación da mejor señal con <50ms?"
+          },
+          {
+            "line": 144,
+            "text": "en mi hardware (Gemma 4 E4B Q4 en GPU 6GB, ~40–60 tok/s). ¿Cuántos pasos GUI"
+          },
+          {
+            "line": 161,
+            "text": "(no un bench que mida \"estructura\" y dé falsos PASS)? ¿Qué métricas"
+          },
+          {
+            "line": 163,
+            "text": "pasos por misión; latencia p50/p95; tasa de clicks-sin-efecto; falsos PASS)?"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [
+          "VRAM",
+          "6 GB",
+          "RTX 4060 Ti",
+          "16GB",
+          "6GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 62,
+            "text": "- **mission_goal** (verifier por-misión estilo Voyager) + **loop detector**"
+          },
+          {
+            "line": 170,
+            "text": "3. **Código/pseudocódigo** concreto donde aplique (frame-diff verifier, cascada,"
+          }
+        ],
+        "ranges": [
+          "1-182",
+          "h:1",
+          "m:25"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,354 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-015-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:41Z",
+  "closed_utc": "2026-08-31T04:29:41Z",
+  "estimated_tokens": 291879,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 24,
+  "subsystem": "pg4_docs__historico",
+  "files": [
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17.md",
+      "sha256": "99e90490831191929169a20ac6c51216a41bf9874467f60e82623215367fdbf6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-446",
+        "h:1",
+        "m:27"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_b.md",
+      "sha256": "8d647e482a76cce2d4fa6ed82b1cbd49f32478361dd64dae20f4d7948293f89c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-376",
+        "h:1",
+        "m:85"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_c.md",
+      "sha256": "32b8bf346c83c68a8579bc0c859d372407468fe4da215ca0194dac39d8792462",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-556",
+        "h:1",
+        "m:115"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_d.md",
+      "sha256": "030f8ec4bf61968006d54b6dcb5800633e1e282f6f8bf6fb1a89511f53ac6af2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-627",
+        "h:1",
+        "m:53"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e.md",
+      "sha256": "d6d8f7a31bcbab3555e0dec38cd287e329300c7f9ff76372f3746b147c9f9523",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-821",
+        "h:1",
+        "m:101"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e5.md",
+      "sha256": "06b8ee1dbf1d7ea1d4e601ec91534df84ea24dd8b21d9ae0400c9606a038b156",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-449",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_f.md",
+      "sha256": "6602dcbd7a7b91e91e965dad5343533a1a805adb7a6b16de67f672e703edf32a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-990",
+        "h:1",
+        "m:134"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_g.md",
+      "sha256": "ef646de1db2e7eb6e2131fde3adcdee4c061597e62172af29137e0600cb2e457",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-485",
+        "h:1",
+        "m:261"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_h.md",
+      "sha256": "7388c2eed8d244178c1c84b10c174b765b7355c077c3785ae0187dcdc55d9092",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-677",
+        "h:1",
+        "m:105"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_i.md",
+      "sha256": "68595bf09d4b40fc2d3fc28eeb0bc4bd2339cbb9f9a54a5c6595f94689b1e0e4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-1180",
+        "h:1",
+        "m:41"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j.md",
+      "sha256": "532771f7c36b0f71923ed6ccd7ab446f4e5e15285901b4c0de95bcc330427dde",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-501",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j1.md",
+      "sha256": "80f6d00894fa5750d28979e0a0baa72baa1773aa6d3749dc4fa94e6ffe1238d7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-679",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_k.md",
+      "sha256": "3af92139d6c84ba8a342453d0dc5ee847b9a104420fb364664cadbc935164f64",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-500",
+        "h:1",
+        "m:321"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_l.md",
+      "sha256": "793107d2d42999031478e8f9653e39a950f2a3b3f69a46381f346b79a06280dd",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-992",
+        "h:1",
+        "m:45"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m.md",
+      "sha256": "faab051105ed471ae871182c975885a23c878d4fc04f62804c9262259d871632",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-438",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m1.md",
+      "sha256": "0129a01aaa28359e74e66d5de8dec88e954d1d17f646f0950b7e85cc8f59c4d7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-1120",
+        "h:1",
+        "m:42"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m2.md",
+      "sha256": "f6cc4bf8dcd717f15102395b91678b0813cc0279112a2f171620b93e32c8e1dc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-631",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_n.md",
+      "sha256": "3e9e0f67432e5d2ccb1adcba69230e93a49ebac735b2cd5eb1c49d5567217067",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-937",
+        "h:1",
+        "m:82"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_o.md",
+      "sha256": "e6ef7bc258ffee71c41ed6fd8580b4fbcbe6eb4f5ecfe16d75bf306e6dc079f1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-373",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_p.md",
+      "sha256": "155816e21b394d9ec2a8a283fcff5ca01ea008b1b08f81c09d24e7cfaa810f6b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-660",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_q0.md",
+      "sha256": "a6eb761baab0e5ef2c9eaed677b687f30e62226741122cb742b96804a0e7ba48",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-484",
+        "h:1",
+        "m:26"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r2.md",
+      "sha256": "b94c2fe35c27a08bf67718b56584ac9b689a18f9f6a5bb8bf7e7071cc36953ee",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-491",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r25.md",
+      "sha256": "f339d51a14d004fb181de6569afd48047c84f4769439c2f1889f591bda46dc75",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-448",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r3.md",
+      "sha256": "94388deb33c708c691db90876a1b1915988530e7f1d591922115025382c3fd7f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-611",
+        "h:1",
+        "m:6"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-015-probando_gemma4-pg4_docs__historico-01-documentacion-_historico-sprints",
+      "claim_kind": "documental",
+      "problem": "HOTFIX 2026-05-17 — GUI silent crash + Spotify deeplink race: Estado del repo: rama PortandoLoMejor, HEAD `b38ec32` (voice toast fix),",
+      "outcome": "fracaso",
+      "solution_or_failure": "Estado del repo: rama PortandoLoMejor, HEAD `b38ec32` (voice toast fix),",
+      "causal_mechanism": "Root cause: en `gemma4_agent/domain_tools.py:6781-6900` (`_spotify_auto_play`) | El tool reporta `played=True, verified=True, status=\"dispatched\"` porque | enviar el deeplink. Si lo hay, vamos a subir el wait porque | absurd as an answer to a thank-you. Root cause: the fast_action | This is critical because in subsequent turns the tool_result is dropped from history; only your reply text survives…",
+      "measurement": "Ningún evento `turn error` ni `voice failed` cerca del cierre. | el `auto_play_wait=1.8s` es muy corto cuando Spotify ya está abierto en | UI, pero si Spotify estaba mostrando el player, tarda 2-4s en cambiar | a search results. Cuando se manda Enter a 1.8s+0.3s≈2.1s, Spotify | - `python -m pytest gemma4_agent/ -q` — debe seguir en 809 passed + | player, `auto_play_wait=1.8s` was too short — Ente…",
+      "provenance": {
+        "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17.md",
+        "ranges": [
+          "1-446",
+          "h:1",
+          "m:27"
+        ],
+        "date": "2026-05-17",
+        "hardware": "VRAM",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/sprints: 24 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_b.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_c.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_d.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e5.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_f.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_g.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_h.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_i.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j1.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_k.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_l.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m1.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_m2.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_n.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_o.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_p.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_q0.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r2.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r25.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_r3.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_b.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_c.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_d.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_e5.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_f.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_g.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_h.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_i.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_j1.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=24 drift=0 miss=0",
+  "next_docs_batch_id": "docs-016-probando_gemma4",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-015-probando_gemma4-pg4_docs__historico.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

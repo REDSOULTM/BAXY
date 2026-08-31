@@ -1,0 +1,628 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-014-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:39Z",
+  "closed_utc": "2026-08-31T04:29:40Z",
+  "estimated_tokens": 296488,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 41,
+  "subsystem": "pg4_docs__historico",
+  "files": [
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_latencia_prefill_cache.md",
+      "sha256": "d8b386093e5341f459eaa52021285d27435d0f61f145c6be01ec8e606b2ebf12",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-110",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_encadenamiento_foco.md",
+      "sha256": "a6674a33d1d0c2688376100a1b1882991f9e3829d1087a3b810849a318a5919c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-87",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_y_encadenamiento.md",
+      "sha256": "fcc1a4af80765f800b47fa5024cc3be743856ba6b9dfe5f30d4e59dab9d148f8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-114",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_thinking_latencia.md",
+      "sha256": "60a727b2e97444df3a2ce2c77275e514fae034c40c832a75e09c430ac4daa1a7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-88",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/STT_RESEARCH_PROMPT.md",
+      "sha256": "2da0b38a6387a0bdf6b91120e1f8c10d8a8c86f2721a01bb5662490f6c5e7174",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-188",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/latency_golden_eras.md",
+      "sha256": "2a50d835ac37948e1dc1fc520eaf61d3e9ffb4235433d049739d3d5266a41456",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-325",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/latency_research_prompt.md",
+      "sha256": "6566ef4f6e7722663317ca91e48dc889aef89319fe26982f82102d61b0e0b6ac",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-374",
+        "h:1",
+        "m:34"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/stt_precision_local_analisis.md",
+      "sha256": "7c7da04be2920c64df356a2fd040c2b6b2b6d2f5d627c16e771e332ec6a80339",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-139",
+        "h:1",
+        "m:98"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/voice_pipeline_redesign_research_clarifications.md",
+      "sha256": "4bf5d73b6ffbeefff2977d6cff119dc661558007cfef39acb6f1725a0851a741",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-92",
+        "h:1",
+        "m:40"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/voice_pipeline_redesign_research_prompt.md",
+      "sha256": "80a82bce8fc89bfc2e6546985fab15c976fe0e5f38e411303f6e77a8b3b6e70e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-201",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/prompts_research/wake_custom_training_path.md",
+      "sha256": "97ce9d293103d897aecf27ad1f68c7b4a18482d40e060ec4665a583facac7f3b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-192",
+        "h:1",
+        "m:35"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_arquitectura_retriever_hibrido_rrf.md",
+      "sha256": "8bfa26a9b9ec86848f67ca3775117b0027dba49b981fb67c74486de6471feef5",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-232",
+        "h:1",
+        "m:35"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_audit_arquitectura_y_migracion.md",
+      "sha256": "2b760e7dfd86552a38f2bd023df1c69c06bea4769e5082eda00eac608f2a1cb0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-204",
+        "h:1",
+        "m:38"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_calibracion_tight_cluster_band.md",
+      "sha256": "e8b28437eb8635fdb37f5add8117c4d07ea674a88943bef91a06c0ddf2e5b6ca",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-95",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_night_logbook_2026_05_20.md",
+      "sha256": "33877e991f38f8aeef33c8d368804c826c8aff651bf01b32baf19e95f3c8ba82",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-318",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_plan_migracion_hacia_100.md",
+      "sha256": "09ea560914f8e882e3bb7e7b725d2617538e2c27d9720236c5be7011ab0a46c6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-263",
+        "h:1",
+        "m:56"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_rebuild_2026_05_21.md",
+      "sha256": "ece69a9bc0a3561a9c02087286c6f25440312f8473f66a733900456e96228156",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-114",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/router_unificado_selectivo_investigacion.md",
+      "sha256": "0f53405f7108a93ce11d9d049131fd7ca712ca359f824cef3f0a904f737f2cba",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-194",
+        "h:1",
+        "m:132"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_overnight_log.md",
+      "sha256": "55fbc9d387f6c079538f930d1744b1b3b05044d025bb6e4f648a873728e80c5e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-198",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint2_log.md",
+      "sha256": "073cc21c44ad240aab3b1f94c35a441d3f263efd8ffec1353f34b27bcc6f510f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-191",
+        "h:1",
+        "m:35"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint2_usage_report.md",
+      "sha256": "ca4340b05f16fe45b340f02323213e1794d345c3f4f7d5fd3b5bdb0348536801",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-181",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint3a_log.md",
+      "sha256": "02568dfa65a39d0db11b3f157dee0bb98c3ffd413d3c1c032dd4d89a331c2684",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-223",
+        "h:1",
+        "m:45"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint4_log.md",
+      "sha256": "9fba9614ee0fdcc613dd731cb703ae34950c487e517fa50593a905acbe36e1ca",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-214",
+        "h:1",
+        "m:29"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint5a_log.md",
+      "sha256": "042524c71a6701b39b4ef31d82f903171a2aaa62f8d79f55a459f2a492cd2b90",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-221",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint5b_log.md",
+      "sha256": "0ce71d544901b9a88f780160c5718a3d01225073022d8b0c389e6e222f1267f0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-300",
+        "h:1",
+        "m:13"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint6_log.md",
+      "sha256": "2cca87c7d3719b1dc52308ab01b54024af9751d9584ac6d31a94d44142ee0a72",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-254",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint7_log.md",
+      "sha256": "9d15dc35759c038e3b9b6f11d1bb2ca86080777315215b7aa5d7e1515e4389b4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-214",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint8a_log.md",
+      "sha256": "3dcb94126970b9e8a1e93aa3249a83e0b5e7bb664b79e163cc47dda94ac131e8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-222",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/_sprint8b_log.md",
+      "sha256": "116b593ab28db77eb469a3538b352e1e6af08a021d675c9ddc0a4c35c3e28213",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-238",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint8_wake_maximize_recall.md",
+      "sha256": "eea64c982da5b542a5467b1c17a3c7f73fff276704b044fb14fbf157b91b7154",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-117",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_0_and_1_tonight.md",
+      "sha256": "0e927cab13aaf87482b7410415ef932677dfc6ec659e7f169dbdf9876575c2bd",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-252",
+        "h:1",
+        "m:219"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_2_instrumentation.md",
+      "sha256": "0bc4e2afbccb7c4355173527bc75bd00c444e4b7ea4c83599d0d8b2f3ae867ab",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-235",
+        "h:1",
+        "m:76"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_3a_minimal.md",
+      "sha256": "bcb5de851fc3d9d4639d9b8b9cd474dafae559df74ffe0e0aa5368cac5b05ef2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-379",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_4_structural.md",
+      "sha256": "20e4144dc94b0e246be32a57c64ee0d4130b08dfd29858784cd95ebf43ba8397",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-506",
+        "h:1",
+        "m:285"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_5a_tests_first.md",
+      "sha256": "c75e3f4c7e44287af1a3fc2420a785b15e020cd45af3e985390ffa2433f011c0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-446",
+        "h:1",
+        "m:25"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_5b_splits_with_safety_net.md",
+      "sha256": "c2222a5eca1c74bc4a5533b6eea4b9ff2d3ae56e3095c3c83031d5a9484d970e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-427",
+        "h:1",
+        "m:24"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_6_unblock_and_finish.md",
+      "sha256": "94b356b87c5357f16a10d94223e7c58c9e22f1a31d19aba5b45454fcd1d138de",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-567",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_7_post_external_audit.md",
+      "sha256": "9417bf9f6e62fca6b798f59c021a053ad3e6c649dfe7ad5feb0934d6311fbb8d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-559",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_8a_routing_infra.md",
+      "sha256": "6b8440ffbe7f141f112e6b349d2bdc8324d8d80e3a38fbf4d35cf040a0c07f5c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-622",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_8b_enrich_descriptions.md",
+      "sha256": "bd9630205f53a6390674a36d575b81e599edfe0d055bc3840345c647f56d1224",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-414",
+        "h:1",
+        "m:20"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_8c_blind_test_and_promote.md",
+      "sha256": "e29046cd3e72392fb7ac7bb920bf2888b6de3df83a481b421c5b072c41075d57",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-475",
+        "h:1",
+        "m:239"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-014-probando_gemma4-pg4_docs__historico-01-documentacion-_historico",
+      "claim_kind": "documental",
+      "problem": "Tool-Routing para Gemma 4 local con 65 compound tools — Arquitectura Recomendada: **TL;DR**",
+      "outcome": "fracaso",
+      "solution_or_failure": "**TL;DR**",
+      "causal_mechanism": "The four routers exist because each was built to compensate for the failures of the previous one. After Steps 1–5 succeed, three of them have no reason to live. | - **Model:** mE5-small base + LoRA (rank 16, alpha 32, on all attention and FFN projections). LoRA over full FT here because we'll train *long* and want to easily revert. | **Out of scope, follow-up sprint:** HIGH-band rank-2..5 diverge…",
+      "measurement": "- `bge-m3` — 567M params, dense 1024 + sparse + ColBERT en un solo modelo, ~1.2 GB en Ollama. Más capaz pero ~5× más pesado. | - **Memoria**: trivial (<1 MB). | - **Cons**: RAG-MCP lo midió: accuracy cae a 13.62% (Blank Conditioning baseline) y \"Actual Match\" con tools correctos pre-inyectados llega sólo a 18.20% — la dilución de atención degrada igual aunque el tool correcto esté presente. **Des…",
+      "provenance": {
+        "path": "documentacion/_historico/router_arquitectura_retriever_hibrido_rrf.md",
+        "ranges": [
+          "1-232",
+          "h:1",
+          "m:35"
+        ],
+        "date": "2026-03-13",
+        "hardware": "RTX 4060 Ti 16 GB",
+        "model": "e5-small",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "documentacion/_historico/router_arquitectura_retriever_hibrido_rrf.md",
+        "documentacion/_historico/router_audit_arquitectura_y_migracion.md",
+        "documentacion/_historico/router_calibracion_tight_cluster_band.md",
+        "documentacion/_historico/router_night_logbook_2026_05_20.md",
+        "documentacion/_historico/router_plan_migracion_hacia_100.md",
+        "documentacion/_historico/router_rebuild_2026_05_21.md",
+        "documentacion/_historico/router_unificado_selectivo_investigacion.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/router_audit_arquitectura_y_migracion.md",
+        "documentacion/_historico/router_calibracion_tight_cluster_band.md",
+        "documentacion/_historico/router_night_logbook_2026_05_20.md",
+        "documentacion/_historico/router_plan_migracion_hacia_100.md",
+        "documentacion/_historico/router_rebuild_2026_05_21.md",
+        "documentacion/_historico/router_unificado_selectivo_investigacion.md"
+      ]
+    },
+    {
+      "card_id": "docs-014-probando_gemma4-pg4_docs__historico-02-documentacion-_historico-prompts_research",
+      "claim_kind": "documental",
+      "problem": "Prompt de investigación — Latencia de prefill / prefix-cache en Gemma 4 + llama.cpp: Copiá esto a claude.ai (con research/web). Es un problema ÚNICO y específico:",
+      "outcome": "contexto",
+      "solution_or_failure": "Copiá esto a claude.ai (con research/web). Es un problema ÚNICO y específico:",
+      "causal_mechanism": "Después DIVERGEN** porque las reglas/schemas de tools cambian con el subset. | (\"¿qué es Mortal Kombat?\" creó un documento porque el fallback solo ofrecía | > rápida en parte porque **no tenía thinking**, y eso mismo causaba el bug | El conflicto es (1)↔(2): el May 19 era rápido porque NO pensaba, y por eso fallaba | steam\" de 4.5s a 2.7s — pero **viola la restricción de arriba** porque el texto…",
+      "measurement": "- **Modelo**: Gemma 4 **E4B-it Q4_K_M** (~4.6 GB), GGUF. Familia Gemma 4 (recién | Target: laptop, GPU 6 GB o sin GPU dedicada. | 4-5 s tope por turno, 8 s = catastrófico. 100% local, OSS, sin cloud. | - Ya se bajó de 16-22s → 3-7s antes (Q4_K_M + --swa-full + --cache-reuse + | - Generación: mediana **21 tokens @ 62 tok/s = 386 ms** (está bien). | **~888 ms**; p90 = **11241 tokens (~2.5 s)**; peo…",
+      "provenance": {
+        "path": "documentacion/_historico/prompts_research/PROMPT_RESEARCH_latencia_prefill_cache.md",
+        "ranges": [
+          "1-110",
+          "h:1",
+          "m:14"
+        ],
+        "date": "2026-05-21",
+        "hardware": "6 GB",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/prompts_research: 11 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_latencia_prefill_cache.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_encadenamiento_foco.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_y_encadenamiento.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_thinking_latencia.md",
+        "documentacion/_historico/prompts_research/STT_RESEARCH_PROMPT.md",
+        "documentacion/_historico/prompts_research/latency_golden_eras.md",
+        "documentacion/_historico/prompts_research/latency_research_prompt.md",
+        "documentacion/_historico/prompts_research/stt_precision_local_analisis.md",
+        "documentacion/_historico/prompts_research/voice_pipeline_redesign_research_clarifications.md",
+        "documentacion/_historico/prompts_research/voice_pipeline_redesign_research_prompt.md",
+        "documentacion/_historico/prompts_research/wake_custom_training_path.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_encadenamiento_foco.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_router_y_encadenamiento.md",
+        "documentacion/_historico/prompts_research/PROMPT_RESEARCH_thinking_latencia.md",
+        "documentacion/_historico/prompts_research/STT_RESEARCH_PROMPT.md",
+        "documentacion/_historico/prompts_research/latency_golden_eras.md",
+        "documentacion/_historico/prompts_research/latency_research_prompt.md",
+        "documentacion/_historico/prompts_research/stt_precision_local_analisis.md",
+        "documentacion/_historico/prompts_research/voice_pipeline_redesign_research_clarifications.md",
+        "documentacion/_historico/prompts_research/voice_pipeline_redesign_research_prompt.md",
+        "documentacion/_historico/prompts_research/wake_custom_training_path.md"
+      ]
+    },
+    {
+      "card_id": "docs-014-probando_gemma4-pg4_docs__historico-03-documentacion-_historico-sprints",
+      "claim_kind": "documental",
+      "problem": "Overnight Sprint 0 + 1 — Log: - **Started:** 2026-05-16 (PortandoLoMejor branch)",
+      "outcome": "fracaso",
+      "solution_or_failure": "- **Started:** 2026-05-16 (PortandoLoMejor branch)",
+      "causal_mechanism": "of Sprint 3a (`e68440d`) replaced that plan because the agent's | `_looks_like_uninstaller`) stay in `tools.py` because they are also | `ScannerError: found unknown escape character 'h'` porque YAML | primero porque BM25 le da peso a inicio de doc; queries como | batch. Sin eso, ONNX usa los 24 cores + busy-wait → 100% CPU clavado. | download_tool en ops_tools.py (la clase se usa ahí porque es pa…",
+      "measurement": "- **45/65 compound tools never called** in the window → strong | - **5/6 personas never used.** Only `default` ever runs (602 of 602 | - **Capability classifier cache hit rate: 3.2%.** Below the 20% | keep/kill threshold. The sync path carries ~97% of verdicts. | - **45% of turns hit the empty-subset fallback path** (`subset=[]` → | - **88% of mission_outcomes are UNVERIFIED.** Four of nine statu…",
+      "provenance": {
+        "path": "documentacion/_historico/sprints/_overnight_log.md",
+        "ranges": [
+          "1-198",
+          "h:1"
+        ],
+        "date": "2026-05-16",
+        "hardware": "VRAM",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/sprints: 23 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/sprints/_overnight_log.md",
+        "documentacion/_historico/sprints/_sprint2_log.md",
+        "documentacion/_historico/sprints/_sprint2_usage_report.md",
+        "documentacion/_historico/sprints/_sprint3a_log.md",
+        "documentacion/_historico/sprints/_sprint4_log.md",
+        "documentacion/_historico/sprints/_sprint5a_log.md",
+        "documentacion/_historico/sprints/_sprint5b_log.md",
+        "documentacion/_historico/sprints/_sprint6_log.md",
+        "documentacion/_historico/sprints/_sprint7_log.md",
+        "documentacion/_historico/sprints/_sprint8a_log.md",
+        "documentacion/_historico/sprints/_sprint8b_log.md",
+        "documentacion/_historico/sprints/sprint8_wake_maximize_recall.md",
+        "documentacion/_historico/sprints/sprint_0_and_1_tonight.md",
+        "documentacion/_historico/sprints/sprint_2_instrumentation.md",
+        "documentacion/_historico/sprints/sprint_3a_minimal.md",
+        "documentacion/_historico/sprints/sprint_4_structural.md",
+        "documentacion/_historico/sprints/sprint_5a_tests_first.md",
+        "documentacion/_historico/sprints/sprint_5b_splits_with_safety_net.md",
+        "documentacion/_historico/sprints/sprint_6_unblock_and_finish.md",
+        "documentacion/_historico/sprints/sprint_7_post_external_audit.md",
+        "documentacion/_historico/sprints/sprint_8a_routing_infra.md",
+        "documentacion/_historico/sprints/sprint_8b_enrich_descriptions.md",
+        "documentacion/_historico/sprints/sprint_8c_blind_test_and_promote.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/sprints/_sprint2_log.md",
+        "documentacion/_historico/sprints/_sprint2_usage_report.md",
+        "documentacion/_historico/sprints/_sprint3a_log.md",
+        "documentacion/_historico/sprints/_sprint4_log.md",
+        "documentacion/_historico/sprints/_sprint5a_log.md",
+        "documentacion/_historico/sprints/_sprint5b_log.md",
+        "documentacion/_historico/sprints/_sprint6_log.md",
+        "documentacion/_historico/sprints/_sprint7_log.md",
+        "documentacion/_historico/sprints/_sprint8a_log.md",
+        "documentacion/_historico/sprints/_sprint8b_log.md",
+        "documentacion/_historico/sprints/sprint8_wake_maximize_recall.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=41 drift=0 miss=0",
+  "next_docs_batch_id": "docs-015-probando_gemma4-pg4_docs__historico",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-014-probando_gemma4-pg4_docs__historico.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

@@ -10,6 +10,11 @@
 > **09.5.3 `code_tests` esta terminal** (2026-08-31): `pending=0`, `claimed=0`,
 > 477/477 complete. Cursor en `artifacts/goal095/campaigns/code_tests.json`.
 > No relanzar `09.5.3_AUDITAR_CODIGO_LOTE.md`.
+>
+> **09.5.2 `docs` esta terminal** (2026-08-31): `pending=0`, `claimed=0`,
+> 25/25 complete. Cursor en `artifacts/goal095/campaigns/docs.json`.
+> Conserva `docs-001-carter` por hash. No relanzar
+> `09.5.2_LEER_DOCUMENTACION_LOTE.md`.
 
 Generado por `scripts/build_goal095_queues.py`. Estimador: `bytes_div_2`.
 Tokenizer compatible para el arbol: ninguno (no se vuelca contenido).
@@ -72,12 +77,16 @@ Primer lote docs (subsistema, no alfabeto global):
 - biblioteca: 15 hashes identicos, 57 delta (se leyo el snapshot Carter OS AI)
 - faltantes/solapes globales: 0 / 0 (sin cambio)
 
-Proximo lote docs pendiente:
+Campana `docs` (09.5.2, 2026-08-31):
 
-- `batch_id`: `docs-002-carter`
-- archivos: 86
-- tokens estimados: 299425
-- salida: `artifacts/goal095/ledger/docs-002-carter.json`
+- **25/25 complete**, pending 0, claimed 0
+- Conserva `docs-001-carter`; cola v1 envuelta en `artifacts/goal095/campaigns/docs.json`
+- 943 archivos: terminal `leido` (UTF-16 LE de logs gemma4-audit se decodifico, no se excluyo)
+- `next_prompt` de unidades = `campaign:docs`; el ultimo (`docs-025-baxy`) apunta a 09.5.4
+- Cero ledger remite a `09.5.2_LEER_DOCUMENTACION_LOTE.md`
+- Afirmaciones documentales; ninguna cifra se presenta como vigente de BAXY
+- Cursor: `artifacts/goal095/campaigns/docs.json`
+- `next_human_prompt`: `09.5.4_AUDITAR_EVIDENCIA_LOTE.md`
 
 Primer lote code_tests:
 
@@ -96,9 +105,9 @@ Campana `code_tests` (09.5.3, 2026-08-31):
 - 327 checkpoints eran el mismo SHA-256 repetido (`traces.jsonl.1/.2/.3` y similares): `duplicado_por_hash`
 - Schema Agent (477) se leyo desde blobs git de `Programacion/BAXY` (Tools-Reduce), no del worktree HEAD
 - Cursor: `artifacts/goal095/campaigns/code_tests.json`
-- `next_human_prompt`: `09.5.2_LEER_DOCUMENTACION_LOTE.md` (`docs` sigue con pendientes)
+- `next_human_prompt`: `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` (`docs` ya vacio)
 
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md`
-(docs-002 en adelante). No relanzar 09.5.3 ni 09.5.1. 09.5.4 espera a que `docs` vacie.
+Prompt humano distinto: `documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md`.
+No relanzar 09.5.1, 09.5.2 ni 09.5.3.

@@ -1,0 +1,32 @@
+batch_id=docs-025-baxy
+kind=docs
+file_count=26
+hash_ok=26 drift=0 miss=0
+subsystem=baxy_root_docs
+---FILES---
+OK goal.md	Misión BAXY
+OK requirements-quality-win-x64.lock.txt	Reproducible source-quality toolchain for BAXY's supported Windows x64 host.
+OK requirements-quality.txt	Static-analysis tools used by the source-quality gate.
+OK scripts/data/non_target_language_case_ids.txt	
+OK src/Baxy.FieldUi/ORIGIN.md	BAXY Field UI — origen congelado
+OK src/Baxy.FieldUi/README.md	BAXY FieldUi
+OK src/baxy_mind/README.md	baxy-mind — sidecar de inteligencia (ADR-0005)
+OK src/baxy_mind/requirements-voice.txt	Entradas directas del componente de voz; no es un lock instalable autónomo.
+OK src/baxy_mind/skills/bluetooth-pairing/SKILL.md	Bluetooth pairing
+OK src/baxy_mind/skills/browser-research/SKILL.md	Browser search and navigation
+OK src/baxy_mind/skills/calendar-events/SKILL.md	Calendar events
+OK src/baxy_mind/skills/capture-and-ocr/SKILL.md	Capture, OCR and vision
+OK src/baxy_mind/skills/discord-messaging/SKILL.md	Discord messaging
+OK src/baxy_mind/skills/filesystem-safe-changes/SKILL.md	Safe filesystem changes
+OK src/baxy_mind/skills/notes-knowledge/SKILL.md	Local notes
+OK src/baxy_mind/skills/office-documents/SKILL.md	Office documents
+OK src/baxy_mind/skills/printing-and-scanning/SKILL.md	Printing and scanning
+OK src/baxy_mind/skills/software-packages/SKILL.md	Windows package installation
+OK src/baxy_mind/skills/spotify-playback/SKILL.md	Spotify playback
+OK src/baxy_mind/skills/steam-library-install/SKILL.md	Steam library and installation
+OK src/baxy_mind/skills/steam-purchase-guard/SKILL.md	Steam purchase guard
+OK src/baxy_mind/skills/tasks-reminders-routines/SKILL.md	Tasks, reminders, and routines
+OK src/baxy_mind/skills/whatsapp-messaging/SKILL.md	WhatsApp messaging
+OK src/baxy_mind/skills/windows-device-control/SKILL.md	Windows device control
+OK tests/data/MTOP_DATA_NOTICE.md	MTOP en BAXY: procedencia, licencia y frontera de evaluación
+OK tests/data/TURN_EVIDENCE_DATA_NOTICE.md	Aviso de datos: evidencia semántica de turnos

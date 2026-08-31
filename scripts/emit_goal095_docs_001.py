@@ -644,7 +644,7 @@ def build() -> dict:
             "15/72 identicos a biblioteca/carter. Cero archivos fuera del lote."
         ),
         "next_docs_batch_id": nxt["batch_id"],
-        "next_prompt": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
+        "next_prompt": "campaign:docs",
     }
 
 

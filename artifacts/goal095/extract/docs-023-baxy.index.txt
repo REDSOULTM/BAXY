@@ -1,0 +1,23 @@
+batch_id=docs-023-baxy
+kind=docs
+file_count=17
+hash_ok=17 drift=0 miss=0
+subsystem=baxy_legacy_ContextoFable.md
+---FILES---
+OK legacy/ContextoFable.md	Mapeo de números en palabras (es) -> dígito, para "a las tres", "diez minutos".
+OK legacy/Experimentando/README.md	Experimento Gemma4 unificado para BAXY
+OK legacy/README.md	BAXY
+OK legacy/data/fg9_catalog/SOURCE.txt	
+OK legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/routing-29.txt	
+OK legacy/data/logs/gemma4-audit/live-gates-b9980-20260713-062751/tooling-live.txt	
+OK legacy/data/logs/gemma4-audit/live-gates-final-b9980-20260713-065546/routing-29.txt	
+OK legacy/data/logs/gemma4-audit/real-app-status-closed-20260713-062542/output.txt	
+OK legacy/data/logs/gemma4-audit/real-cli-v2-fixed-20260713-062122/cli-output.txt	
+OK legacy/data/logs/gemma4-audit/thread-leak-diagnostic.txt	
+OK legacy/data/router_encoder_ft9_torch/README.md	SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniL
+OK legacy/data/uploads/docs/1371c4db_nota_prueba_gui.md	
+OK legacy/docs/PROMPT_RETRAIN_FG_BAXY9.md	PROMPT para el agente del repo FunctionGemma — retrain para BAXY-nuevo (9 capaci
+OK legacy/docs/backlog.md	Backlog de BAXY
+OK legacy/docs/browser_v2_security.md	Browser v2: límite de seguridad aislado
+OK legacy/docs/browser_web_v2_gap_audit_2026-07-13.md	Auditoría Browser/Web v2 — 2026-07-13
+OK legacy/docs/competitor_landscape_2026.md	Panorama competitivo de BAXY — corte 2026-07-11

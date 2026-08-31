@@ -1,0 +1,45 @@
+batch_id=docs-009-probando_gemma4
+kind=docs
+file_count=39
+hash_ok=39 drift=0 miss=0
+subsystem=pg4_docs_01_arquitectura
+---FILES---
+OK documentacion/01_arquitectura/00_delta_inventory.md	00 — Delta Inventory (post-plan)
+OK documentacion/01_arquitectura/01_delta_system.md	01 — Delta System (containers post-plan)
+OK documentacion/01_arquitectura/02_delta_components.md	02 — Delta Components (módulos nuevos en detalle)
+OK documentacion/01_arquitectura/03_delta_classes.md	03 — Delta Classes (UML actualizado de god classes)
+OK documentacion/01_arquitectura/05_delta_data.md	05 — Delta Data (persistencia + state.json + 4 sinks → 3)
+OK documentacion/01_arquitectura/06_delta_dependencies.md	06 — Delta Dependencies (grafo post-plan)
+OK documentacion/01_arquitectura/08_findings_post_plan.md	08 — Findings post-plan (deuda restante + Sprint 3b)
+OK documentacion/01_arquitectura/ARCHITECTURE.md	Baxy — Arquitectura (verificada por la auditoría 2026-05-21)
+OK documentacion/01_arquitectura/CONSOLIDACION_2026-06-10.md	Consolidación de arquitectura — 2026-06-10
+OK documentacion/01_arquitectura/MAPA_TESIS.md	Baxy — Mapa de arquitectura (para la documentación de la tesis)
+OK documentacion/01_arquitectura/MAPA_descomposicion_archivos_dios.md	Mapa de descomposición — archivos-dios (2026-06-01, **act. 2026-06-09**)
+OK documentacion/01_arquitectura/PLAN_CERRADO.md	Plan de optimización Baxy — Cerrado
+OK documentacion/01_arquitectura/README.md	`docs/architecture/` — guía rápida
+OK documentacion/01_arquitectura/architecture_audit_2026_05_27.md	Auditoría arquitectural — Baxy (2026-05-27)
+OK documentacion/01_arquitectura/design/barge_in.md	Design — voice barge-in
+OK documentacion/02_router/B2_corpus_multilingue_hallazgos_2026-06-10.md	B2 — Corpus multilingüe de eval: construcción y hallazgos (2026-06-10)
+OK documentacion/02_router/PLAN_MAESTRO_router.md	Plan Maestro — Router de tools al estado máximo (2026-05-29)
+OK documentacion/02_router/README.md	Router de tools de Baxy — documentación completa
+OK documentacion/02_router/research/1_toolcalling.md	Tool-calling fiable y structured output en Gemma 4 E4B-it (Q4_K_M) sobre llama.c
+OK documentacion/02_router/research/7_nlu.md	Multi-intent, Clarification, and Disfluency Handling for vram4 (Gemma 3 4B-it Q4
+OK documentacion/03_voz_stt/_DIAGNOSTICO_logs_sesion_2026-06-10.md	Diagnóstico de los logs de sesión de voz (2026-06-10)
+OK documentacion/03_voz_stt/research/REPORTE_NOCHE_STT_PARAKEET_2026_05_23.md	Reporte de la noche — STT Parakeet-TDT-v3 llevado al máximo (2026-05-23)
+OK documentacion/03_voz_stt/research/asr_local_codeswitching_hardware.md	**Informe de Investigación: Maximización de la Precisión ASR Local en Entornos d
+OK documentacion/03_voz_stt/research/baseline_clean.txt	RED (n=84)
+OK documentacion/03_voz_stt/research/baseline_real_voice.txt	RED (n=84)
+OK documentacion/03_voz_stt/research/biasing_options.md	FASE 0 — Verificación de viabilidad: biasing de nombres propios en STT
+OK documentacion/03_voz_stt/research/cadena_transcripcion_perfeccion_2026-06-11.md	Cadena de transcripción (wake→LLM): auditoría y perfeccionamiento (2026-06-11)
+OK documentacion/03_voz_stt/research/etapa1a_es_metaphone.txt	RED (n=84)
+OK documentacion/03_voz_stt/research/etapa1b_expanded_inv.txt	RED (n=84)
+OK documentacion/03_voz_stt/research/faster_whisper_int8_cpu_optimizacion.md	tratado como silencio: se devuelve vacío
+OK documentacion/03_voz_stt/research/final_validation.txt	RED (n=84)
+OK documentacion/03_voz_stt/research/inv1_toolcalling_medido_2026_05_23.md	Inv 1 (tool-calling) — MEDIDO en vram4 (2026-05-23)
+OK documentacion/03_voz_stt/research/latency_ab_measurements_2026_05_23.md	Mediciones de latencia A/B (hardware real, RTX, 2026-05-23)
+OK documentacion/03_voz_stt/research/parakeet_beam_nombres_propios_decoding.md	Cómo meter el nombre propio inglés en el haz (beam) de Parakeet-TDT-0.6B-v3 (int
+OK documentacion/03_voz_stt/research/parakeet_v3_uso_correcto_2026-06-10.md	Parakeet TDT 0.6B v3 — uso correcto vs nuestra implementación (2026-06-10)
+OK documentacion/03_voz_stt/research/plan_sherpa_parakeet_cpu_optimizacion.md	Plan para maximizar el rendimiento de un asistente de voz local en español sobre
+OK documentacion/03_voz_stt/research/sherpa_parakeet_hotwords_nombres_propios.md	sherpa-onnx 1.13.2 + Parakeet-TDT-0.6B-v3: cómo (y hasta dónde) forzar nombres p
+OK documentacion/03_voz_stt/research/spike_sherpa_parakeet.md	SPIKE — sherpa-onnx + Parakeet-TDT-0.6B-v3 int8 (medido en la máquina, 2026-05-2
+OK documentacion/03_voz_stt/research/stt_biasing_contextual_spanglish_cpu.md	STT local con biasing contextual real para Spanglish en CPU — qué existe y qué n

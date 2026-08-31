@@ -1,0 +1,693 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-017-probando_gemma4",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:42Z",
+  "closed_utc": "2026-08-31T04:29:43Z",
+  "estimated_tokens": 158821,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 23,
+  "subsystem": "pg4_scripts",
+  "files": [
+    {
+      "path": "scripts/_out_peak_threshold.txt",
+      "sha256": "9878743a0a44e70254d68dbc4ad29c9b46ab9838853e7e7ecb836cd4a8784d79",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-10",
+        "m:2"
+      ]
+    },
+    {
+      "path": "scripts/_out_reminder_routing.txt",
+      "sha256": "036630b822d4812fc3b4afbf5de1337c1cad56ddf4a20e97c7bdab402d6f0669",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-9",
+        "m:2"
+      ]
+    },
+    {
+      "path": "scripts/_out_skills_fp.txt",
+      "sha256": "8eeaadf82f43836081ee01d4c17a7db5dad9f9325ba1fdee637caf9656ac2674",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-15",
+        "m:15"
+      ]
+    },
+    {
+      "path": "scripts/_out_skills_quality.txt",
+      "sha256": "740a55932cccfde399ad4566458d99e663416e6b75e8746b932bfeb976994ac6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-28",
+        "m:2"
+      ]
+    },
+    {
+      "path": "scripts/_out_subset_diag.txt",
+      "sha256": "ac282ead69006e066f198d8ccc0069abc0f775221a9c59698682a83847a165ce",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-44",
+        "h:2"
+      ]
+    },
+    {
+      "path": "scripts/_out_suite_full.txt",
+      "sha256": "3cc9dc13851dc84b9e32cc0ea35ec5c5ff3ce0b462c63561569aaf509bbd3aa6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-220",
+        "m:8"
+      ]
+    },
+    {
+      "path": "scripts/_out_threshold_safety.txt",
+      "sha256": "fafb5135e72cc3d419fcf3f21720e0d33f0c90296729c332e17198ddbff290d8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-17"
+      ]
+    },
+    {
+      "path": "scripts/_out_tools_report.txt",
+      "sha256": "ff4f4ff285a4c5c8c50e19e96d97163de42afc0558ed5c035321fb94b7ea7538",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-94",
+        "h:5",
+        "m:2"
+      ]
+    },
+    {
+      "path": "scripts/app_accessibility_census.md",
+      "sha256": "29ec9185e04dc9bc8c570c400ed3be344530a3e7a50ae1934a5703ddf7f59412",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-65",
+        "h:1"
+      ]
+    },
+    {
+      "path": "gemma4_agent/skills/README.md",
+      "sha256": "2cd4746eb695459476f470a231b257f1095238f2b1b4049dc8daa58b8568e38b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-139",
+        "h:1"
+      ]
+    },
+    {
+      "path": "gemma4_agent/voice/tests/testaudio_groundtruth_report.md",
+      "sha256": "769bd2b039157960d1d2eef871b960f94a2edeecdebd0a8b69df7d4433d11fb0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-118",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "@AutomationLog.txt",
+      "sha256": "06d4ba4aa6c2e2a49876178549d998ffebd20a1616598849b98560aa1726292e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-45"
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "14e65d85d06b8c3568630c0f425b366b4aa9f546545e601fa4db3afb9c211ad2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-270",
+        "h:1",
+        "m:56"
+      ]
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "a98525abcaa8ad3be87eb23a226c5dadc0048e3406fe0c92fc100bc027743de8",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-270",
+        "h:1",
+        "m:56"
+      ]
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "8aebd6fb80a7d7b0b23824d84cb1c2182209094a906dcece76bed039dce46acb",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-63",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "ContextoGPT.md",
+      "sha256": "ca8bc8f44ece70863a939a68aa13b5b47e7c7fd38b3adbb6cdb231c127c30569",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-2476",
+        "h:498",
+        "m:131"
+      ]
+    },
+    {
+      "path": "OVERNIGHT_AUDIT_REPORT.md",
+      "sha256": "058a92356947e507a90b02c1f1c9a7070a3b2c0d264b7a13c41d2e5f6de5bada",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-25",
+        "h:1",
+        "m:8"
+      ]
+    },
+    {
+      "path": "README.md",
+      "sha256": "bebcb5cc51632262844e958cc6e2e7d86d93bebbad9a6e8d52b0b947d3ae82ed",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-404",
+        "h:2",
+        "m:4"
+      ]
+    },
+    {
+      "path": "constraints.txt",
+      "sha256": "a7d251d7977053f0ddc718e26d176e399a6ce6c95e25ede800c6e7e1ee7ace4a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-17",
+        "h:1"
+      ]
+    },
+    {
+      "path": "log.txt",
+      "sha256": "94667a6060a92661849a791026f4750a340942390ee1526473d243df45386b4a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-24"
+      ]
+    },
+    {
+      "path": "requirements-camera.txt",
+      "sha256": "81581eadd02ef80c329a6532a0bda283579eb267827ba5c8c9e2948f82526ac4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-15",
+        "h:1"
+      ]
+    },
+    {
+      "path": "requirements-voice.txt",
+      "sha256": "de3743fe25ab22bd715274e9d13a39a94ca39efe0a3edf0c3f6622e39a5b1c20",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-50",
+        "h:1",
+        "m:46"
+      ]
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "b7654606b4574cb87946c9ba1595f3f3170f4dee060f7850cc783dea59914aff",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-146",
+        "h:2",
+        "m:121"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-017-probando_gemma4-01-@AutomationLog.txt",
+      "claim_kind": "documental",
+      "problem": "@AutomationLog.txt: [WinError -2147221008] No se ha llamado a CoInitialize",
+      "outcome": "contexto",
+      "solution_or_failure": "[WinError -2147221008] No se ha llamado a CoInitialize",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "@AutomationLog.txt",
+        "ranges": [
+          "1-45"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo @AutomationLog.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "@AutomationLog.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-02-AGENTS.md",
+      "claim_kind": "documental",
+      "problem": "AGENTS.md — Cómo trabajar en este repo: Instrucciones operativas para cualquier agente Codex que trabaje en",
+      "outcome": "contexto",
+      "solution_or_failure": "Instrucciones operativas para cualquier agente Codex que trabaje en",
+      "causal_mechanism": "> proyecto. Acá se repiten como reglas de trabajo porque Codex debe | no la intuición. Un error de padding o de orden de bytes da scores ~0 | permitió encontrar el bug de padding que desbloqueó Sprint 7. | - \"la PC se congela\" → no era falta de threads bajos, era el busy-wait",
+      "measurement": "`recall ≥ 0.60 ∧ fp/hr ≤ 1.0` sobre un held-out universal. | - Reportá resultados crudos aunque sean malos. \"recall 0.022, FAIL\" es | - \"recall 0.02\" → no era el modelo, era pad al final vs al inicio. | - **CPU para STT.** El target tiene 6 GB de VRAM consumidos por el LLM. | 4–5 s tope; 8 s es UX catastrófica. No infles el input del LLM. | - **Hardware modesto.** Asumí laptop típico, GPU 6 GB o…",
+      "provenance": {
+        "path": "AGENTS.md",
+        "ranges": [
+          "1-270",
+          "h:1",
+          "m:56"
+        ],
+        "date": "2026-05-27",
+        "hardware": "6 GB",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo AGENTS.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "AGENTS.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-03-CLAUDE.md",
+      "claim_kind": "documental",
+      "problem": "CLAUDE.md — Cómo trabajar en este repo: Instrucciones operativas para cualquier agente Claude que trabaje en",
+      "outcome": "contexto",
+      "solution_or_failure": "Instrucciones operativas para cualquier agente Claude que trabaje en",
+      "causal_mechanism": "> proyecto. Acá se repiten como reglas de trabajo porque Claude debe | no la intuición. Un error de padding o de orden de bytes da scores ~0 | permitió encontrar el bug de padding que desbloqueó Sprint 7. | - \"la PC se congela\" → no era falta de threads bajos, era el busy-wait",
+      "measurement": "`recall ≥ 0.60 ∧ fp/hr ≤ 1.0` sobre un held-out universal. | - Reportá resultados crudos aunque sean malos. \"recall 0.022, FAIL\" es | - \"recall 0.02\" → no era el modelo, era pad al final vs al inicio. | - **CPU para STT.** El target tiene 6 GB de VRAM consumidos por el LLM. | 4–5 s tope; 8 s es UX catastrófica. No infles el input del LLM. | - **Hardware modesto.** Asumí laptop típico, GPU 6 GB o…",
+      "provenance": {
+        "path": "CLAUDE.md",
+        "ranges": [
+          "1-270",
+          "h:1",
+          "m:56"
+        ],
+        "date": "2026-05-27",
+        "hardware": "6 GB",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo CLAUDE.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "CLAUDE.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-04-CONTRIBUTING.md",
+      "claim_kind": "documental",
+      "problem": "Contribuir a Baxy: ¡Gracias por tu interés! Este proyecto es un asistente de voz local con un fuerte",
+      "outcome": "contexto",
+      "solution_or_failure": "¡Gracias por tu interés! Este proyecto es un asistente de voz local con un fuerte",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Mirá el [README](README.md) para los pasos completos (modelo GGUF, llama.cpp, etc.).",
+      "provenance": {
+        "path": "CONTRIBUTING.md",
+        "ranges": [
+          "1-63",
+          "h:1",
+          "m:21"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo CONTRIBUTING.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "CONTRIBUTING.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-05-ContextoGPT.md",
+      "claim_kind": "documental",
+      "problem": "medir throughput: 20 pasos sobre el dataset COMPLETO (con group_by_length): Lote 042 + 048–054 completos (8 × 300). Quedan 055–084 (30 lotes). Sigo — ola (055–062):",
+      "outcome": "contexto",
+      "solution_or_failure": "Lote 042 + 048–054 completos (8 × 300). Quedan 055–084 (30 lotes). Sigo — ola (055–062):",
+      "causal_mechanism": "Smoke funcionó (entrenó, loss 1.07, merge OK) — pero muy lento: ~24s/paso → el full tardaría ~24h. Inaceptable. La causa: el upcast fp32 de attention de Unsloth + padding a 3072 en cada batch. | Lo optimizo: group_by_length (agrupa ejemplos de largo similar → mata el padding desperdiciado, el gran acelerador), batch 4 y checkpointing. Agrego un --maxsteps para medir throughput real antes del full…",
+      "measurement": "ARCHIVOS hc: 85/85 | FALTANTES: [] | 85/85 lotes, 23.384 ejemplos hand-crafted, CERO errores (JSON, tools, args, duplicados, corruptos). Rebuildeo el dataset completo y mido cobertura final por tool: | tools cubiertos: 524/524 | 524/524 tools cubiertos (eran 221). 510 con ≥50, y los 524 con ≥40. Cero en 0. | [DRYRUN] tokens: media=1461 max=3048 | ejemplos con respuesta supervisada: 28753/28753 |…",
+      "provenance": {
+        "path": "ContextoGPT.md",
+        "ranges": [
+          "1-2476",
+          "h:498",
+          "m:131"
+        ],
+        "date": "2026-06-14",
+        "hardware": "16GB",
+        "model": "functiongemma",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo ContextoGPT.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "ContextoGPT.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-06-OVERNIGHT_AUDIT_REPORT.md",
+      "claim_kind": "documental",
+      "problem": "Overnight Audit Report: Generated: 2026-06-26T09:59:09",
+      "outcome": "contexto",
+      "solution_or_failure": "Generated: 2026-06-26T09:59:09",
+      "causal_mechanism": "| ID | Module | Status | ms | Verifier | Evidence |",
+      "measurement": "Passed: 0 | Failed: 1 | Hardness: live-all. No expected policy gate is counted as PASS; missing apps, accounts, local APIs, or OS capabilities are reported as FAIL with evidence.",
+      "provenance": {
+        "path": "OVERNIGHT_AUDIT_REPORT.md",
+        "ranges": [
+          "1-25",
+          "h:1",
+          "m:8"
+        ],
+        "date": "2026-06-26",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo OVERNIGHT_AUDIT_REPORT.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "OVERNIGHT_AUDIT_REPORT.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-07-README.md",
+      "claim_kind": "documental",
+      "problem": "Baxy Agent: IMPORTANTE LOS MODELOS LLMS SE HAN ELIMINADO DEL REPO PORQUE ESTE PESABA MAS DE 100GB , esto no afecta la evidencia de lo que fue este intento de baxy, se ha dejado un screenshot para que se pueda analizar todos los modelos eliminados y wakeword entrenadas tambien el…",
+      "outcome": "contexto",
+      "solution_or_failure": "IMPORTANTE LOS MODELOS LLMS SE HAN ELIMINADO DEL REPO PORQUE ESTE PESABA MAS DE 100GB , esto no afecta la evidencia de lo que fue este intento de baxy, se ha dejado un screenshot para que se pueda analizar todos los modelos eliminados y wakeword entrenadas tambien eliminadas, en caso de necesitarse algun modelo, pedirlo al dueño (Que es el mismo que mando este goal y este te lo proporcionara), el",
+      "causal_mechanism": "El router (`routing/`) decide **qué subconjunto de tools ofrecer** al LLM en cada turno. Es una **cascada semántica**, no un árbol de if/else, y su norte es la **precisión** (ofrecer solo lo necesario), porque el recall ya está saturado (ho",
+      "measurement": "**Asistente de voz local para Windows — privado, OSS y corriendo en 4 GB de VRAM.** | *A local-first voice assistant for Windows, powered by Gemma 4 — 100% offline, no paid APIs.* | [![License](https://img.shields.io/badge/License-MIT-green.svg)](#-licencia) | [![LLM](https://img.shields.io/badge/LLM-Gemma%204%20E2B-orange.svg)](https://ai.google.dev/gemma) | - **Modos de accesibilidad** respalda…",
+      "provenance": {
+        "path": "README.md",
+        "ranges": [
+          "1-404",
+          "h:2",
+          "m:4"
+        ],
+        "date": "2026-08-30",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo README.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-08-constraints.txt",
+      "claim_kind": "documental",
+      "problem": "Constraints de pip — TOPES DUROS que ningún dependiente puede pisar.: #",
+      "outcome": "contexto",
+      "solution_or_failure": "#",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "constraints.txt",
+        "ranges": [
+          "1-17",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo constraints.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "constraints.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-09-gemma4_agent-skills",
+      "claim_kind": "documental",
+      "problem": "Carter Agent skills: Skills son **recetas markdown** que el LLM carga **lazy** via la tool",
+      "outcome": "contexto",
+      "solution_or_failure": "Skills son **recetas markdown** que el LLM carga **lazy** via la tool",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "gemma4_agent/skills/README.md",
+        "ranges": [
+          "1-139",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo gemma4_agent/skills: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "gemma4_agent/skills/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-10-gemma4_agent-voice-tests",
+      "claim_kind": "documental",
+      "problem": "testaudio ground-truth report: - Source: `Grabación (2).m4a`",
+      "outcome": "contexto",
+      "solution_or_failure": "- Source: `Grabación (2).m4a`",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "- Duration: 292.84s (4.88 min) | | 0.00s | 20.24s | Hey Gemma, abre Chrome. Gemma, abre Steam. Hey Gemma, abre Chrome. Gemma, abre Steam. Hey Gemma, cierra WhatsApp. Gemma, cierra WhatsApp. Hey Gemma, minimiza la ventana. Gemma, minimiza la ventana. | 0.4319 | -0.1255 | | | 47.24s | 49.72s | Hey Gemma, pon música clásica. | 0.0071 | -0.0896 | | | 50.24s | 64.24s | Hey Gemma, ponme música tranquil…",
+      "provenance": {
+        "path": "gemma4_agent/voice/tests/testaudio_groundtruth_report.md",
+        "ranges": [
+          "1-118",
+          "h:1",
+          "m:6"
+        ],
+        "date": "2026-05-18",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo gemma4_agent/voice/tests: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "gemma4_agent/voice/tests/testaudio_groundtruth_report.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-11-log.txt",
+      "claim_kind": "documental",
+      "problem": "log.txt: \"\"\"Deterministic gesture-to-window control state machines.\"\"\"",
+      "outcome": "contexto",
+      "solution_or_failure": "\"\"\"Deterministic gesture-to-window control state machines.\"\"\"",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "log.txt",
+        "ranges": [
+          "1-24"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo log.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "log.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-12-requirements-camera.txt",
+      "claim_kind": "documental",
+      "problem": "Optional Phase 0 camera-control POC dependencies.: #",
+      "outcome": "contexto",
+      "solution_or_failure": "#",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "requirements-camera.txt",
+        "ranges": [
+          "1-15",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo requirements-camera.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "requirements-camera.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-13-requirements-voice.txt",
+      "claim_kind": "documental",
+      "problem": "Voice pipeline dependencies (Sprint VoiceRedesign, 2026-05-19): #",
+      "outcome": "inconcluso",
+      "solution_or_failure": "#",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "# which is ~2 GB). Used only for VAD inference (silero ships ONNX but",
+      "provenance": {
+        "path": "requirements-voice.txt",
+        "ranges": [
+          "1-50",
+          "h:1",
+          "m:46"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo requirements-voice.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "requirements-voice.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-14-requirements.txt",
+      "claim_kind": "documental",
+      "problem": "Generated from real top-level imports in gemma4_agent/*.py (Sprint 0.1, 2026-05-16).: ﻿# gemma4_agent runtime requirements",
+      "outcome": "contexto",
+      "solution_or_failure": "﻿# gemma4_agent runtime requirements",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "# py3langid: clasificador estadÃ­stico de idioma pura-Python (~2MB, sin deps | # windows-toasts: notificaciones toast de Windows 10/11 con botones (SÃ­/No) para",
+      "provenance": {
+        "path": "requirements.txt",
+        "ranges": [
+          "1-146",
+          "h:2",
+          "m:121"
+        ],
+        "date": "2026-06-03",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "livekit",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo requirements.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "requirements.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-017-probando_gemma4-15-scripts",
+      "claim_kind": "documental",
+      "problem": "app: ============================================================",
+      "outcome": "contexto",
+      "solution_or_failure": "============================================================",
+      "causal_mechanism": "[MISS] 'recordame comprar pan a las 5' -> ['session'] | 'No pude registrar esa nota porque la herramienta s' | [MISS] 'recordame comprar pan a las 5' -> ['session'] | 'No pude registrar la nota porque la herramienta session solo'",
+      "measurement": "PEAK-KEEP 0.50 LIVE: 5/7 OK (27s) | [MISS] (net) 'cuál es mi ip en esta red' -> ['web'] | 'La dirección IP de tu red local no es algo que' | REMINDER ROUTING: 3/6 OK (47s) | falsos positivos: 0/10 | SKILLS QUALITY LIVE (41s) — 9 skills | gemma4_agent\\tests\\test_a11y_continue_meta_guard.py ... [ 0%] | gemma4_agent\\tests\\test_abstain_head.py ... [ 0%] | gemma4_agent\\tests\\test_accessibility.py ....…",
+      "provenance": {
+        "path": "scripts/_out_peak_threshold.txt",
+        "ranges": [
+          "1-10",
+          "m:2"
+        ],
+        "date": "2026-05-24",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo scripts: 9 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_out_peak_threshold.txt",
+        "scripts/_out_reminder_routing.txt",
+        "scripts/_out_skills_fp.txt",
+        "scripts/_out_skills_quality.txt",
+        "scripts/_out_subset_diag.txt",
+        "scripts/_out_suite_full.txt",
+        "scripts/_out_threshold_safety.txt",
+        "scripts/_out_tools_report.txt",
+        "scripts/app_accessibility_census.md"
+      ],
+      "repeats": [
+        "scripts/_out_reminder_routing.txt",
+        "scripts/_out_skills_fp.txt",
+        "scripts/_out_skills_quality.txt",
+        "scripts/_out_subset_diag.txt",
+        "scripts/_out_suite_full.txt",
+        "scripts/_out_threshold_safety.txt",
+        "scripts/_out_tools_report.txt",
+        "scripts/app_accessibility_census.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=23 drift=0 miss=0",
+  "next_docs_batch_id": "docs-018-functiongemma",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-017-probando_gemma4.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

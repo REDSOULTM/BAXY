@@ -1,0 +1,9 @@
+batch_id=docs-006-carter-carter_v2
+kind=docs
+file_count=3
+hash_ok=3 drift=0 miss=0
+subsystem=carter_v2
+---FILES---
+OK Carter_v2/probe_run8_stdout.txt	
+OK Carter_v2/probe_run9_stdout.txt	
+OK Carter_v2/probe_run_stdout.txt	

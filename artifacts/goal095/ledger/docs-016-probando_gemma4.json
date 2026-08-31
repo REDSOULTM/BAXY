@@ -1,0 +1,594 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-016-probando_gemma4",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:41Z",
+  "closed_utc": "2026-08-31T04:29:42Z",
+  "estimated_tokens": 299944,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 33,
+  "subsystem": "pg4_docs__historico",
+  "files": [
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_s.md",
+      "sha256": "deba73e9eff72b96b8262c1465128cac186ef22eaefcc47979bef598f3dbbd90",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-983",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_t.md",
+      "sha256": "ae488f4ef2564522e8469531690b75e8dde6470f754d040669fb30450a184d77",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-388",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "hf_publish/README.md",
+      "sha256": "3106dfd0d9c8c959cfa489cc58a1970701493acac623acb6c00f5a92432e8410",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-113",
+        "h:27",
+        "m:5"
+      ]
+    },
+    {
+      "path": "gemma4_agent/microagents/README.md",
+      "sha256": "f356d7007478650623135b2076b336ec4dc6c9f8b159bfc2ca1f3fe166f36e2e",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-57",
+        "h:1"
+      ]
+    },
+    {
+      "path": "gemma4_agent/microagents/glossary.md",
+      "sha256": "0093a6569bc0552a025460a0bf599df72d9f0e7d6749e4e833d70c80d69c2424",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-50",
+        "h:7",
+        "m:3"
+      ]
+    },
+    {
+      "path": "gemma4_agent/microagents/tools_cheat_sheet.md",
+      "sha256": "8889e3ba53823051464682b0210e745f48249b7a1bbfc1ecf3deb8c0476977dd",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-98",
+        "h:7"
+      ]
+    },
+    {
+      "path": "scripts/INDEX.md",
+      "sha256": "5710cc670e21cb3d80ff8fb311a525c1b599cb9024e2d7874f65ede5eaaa27ea",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-315",
+        "h:1",
+        "m:29"
+      ]
+    },
+    {
+      "path": "scripts/README_accessibility.md",
+      "sha256": "fab6e27234108b3ea4a240d6164ea8c38cacb18bfd4521745ea0681ce389df46",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-58",
+        "h:1",
+        "m:40"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_NOTAS_caceria_t2.md",
+      "sha256": "58b0db31b5b664a09a70624f1f696f9f7589edf78ac035fe97363a8732067a74",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-220",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_audit_synthesis.txt",
+      "sha256": "3027a0169e392dd4484aabd09cf164047afb10e470445dc528c518d21ec056fd",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "h:9",
+        "m:87"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_batch1_view.txt",
+      "sha256": "23e389d812e1c3b123305c4bba0b3d892bdb0e48fa7f7acc13c35fcd168d59f4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-70",
+        "m:14"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_all_judge_clusters.txt",
+      "sha256": "069f80073fef206757adb75d97e17216aaa2df8f75064bb77a2852ae5e0454fe",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-854",
+        "h:11",
+        "m:33"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_already_used.txt",
+      "sha256": "e9fb6ca586abb285eac4750c12cc229e9f90b7f28a0d59b7adfdf4bac34d9fd3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-42"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_coverage_report.txt",
+      "sha256": "21386c44a5a62e499fb8b876d415968888cdca2e6972e7bf1e8fdc88a476682f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-123",
+        "h:5",
+        "m:114"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_ftfail/_plan_maestro.txt",
+      "sha256": "4f9fb66d1f2efc1c1dcaed97bbf5d310f2bc717f859616b7d04db9a0ff098c70",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-143",
+        "h:5",
+        "m:14"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_judge_clusters_1000.txt",
+      "sha256": "5468ab8b8f67d69073e76cb99b1ac33d81839bc06ab3a7cdaa945bd33174547b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-172",
+        "h:11",
+        "m:33"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_judge_clusters_2000.txt",
+      "sha256": "a8de6c350e184cc3eb7ea5c3fbba01a20d41e18a719a643fe9c6a84d327de8de",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-251",
+        "h:5",
+        "m:18"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_judge_clusters_3000.txt",
+      "sha256": "71464da2d0c97b3e1146d7a1a50bc33adf2dd47a123cde140d020cee73566d1c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-243",
+        "m:93"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_judge_clusters_4000.txt",
+      "sha256": "5d4242b95c3cd92f90ed4842e9c6bbea1946053791840b32e06101f153be5fa2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-191",
+        "h:7",
+        "m:44"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_judge_rerun_synth.txt",
+      "sha256": "94ba381f75d93435baac8741020ecca148f7e45d2b88149e76e155a49d102b89",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-67",
+        "h:7",
+        "m:17"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_judge_tanda1_clusters.txt",
+      "sha256": "2226276087b507868d01304a47149b9486b7b911050a9fac422b5709499563da",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-182",
+        "h:5",
+        "m:23"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_media_fires_readable.txt",
+      "sha256": "cb1973c3b371d43d8b737fabfab20122ab31f342a9ecb936d9d6554e81daf426",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-296",
+        "m:146"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_media_full.txt",
+      "sha256": "6a541fa817a14fa72247dd9d86a40a2dc8bef397f853115669d105e039ec4638",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-442",
+        "m:29"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_media_nofire_full.txt",
+      "sha256": "c837e62d706e3de609098551bcdffdbfce6ecf5786eb0db389a5a8782195c960",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-205",
+        "m:58"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_out_chain_verification.txt",
+      "sha256": "fe48843745ee1bfb239060660ba77422362c6bbecac37dda29dc321e37e86632",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-55",
+        "h:7",
+        "m:47"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_out_rebrand_inventory.txt",
+      "sha256": "c2e7a4b746b333733af5d92eda4b892efc0cf15e139c852c49ee20c2ae35e196",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-82",
+        "h:7"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_out_run2_cluster_verifs.txt",
+      "sha256": "7df77525f25c74f1bb85ed5ec84e670dc2ed5ab11deb7a350430862126d3b8e2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-218",
+        "h:2",
+        "m:170"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_out_tesis_verify.txt",
+      "sha256": "02779941c2d3c83fc0f29bae7cae3bc089ca92775c98cfa68bb46bc68014b119",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-13"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_out_workflow_diagnoses.txt",
+      "sha256": "685cb38995010f92c95014bc015d7ba06a7586095b9be16fd5edf4de76daf03d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-706",
+        "h:2",
+        "m:43"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_out_workflow_verifications.txt",
+      "sha256": "14333d79e14c0c5457959407ba2b45e5d4f541e2d7bf05e9aa8f23ac4dfa4a51",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-538",
+        "h:2",
+        "m:14"
+      ]
+    },
+    {
+      "path": "scripts/_diag/_tests_fires_view.txt",
+      "sha256": "4eddac8bf737c12ecf14e232f5436554008b3f6072b675b9fd6f89c8e31a4e36",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-76",
+        "m:70"
+      ]
+    },
+    {
+      "path": "scripts/_out_filesystem_routing.txt",
+      "sha256": "ee01d4c78c80a03637d5d33f24a8c7cdb9eeb6726bfdd8324454c8a24f280003",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-9",
+        "m:2"
+      ]
+    },
+    {
+      "path": "scripts/_out_flips_default.txt",
+      "sha256": "b29ba9b2a9b0c18b13468926d57c5b349edffcad662ec7599f15a9be851ec758",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-11",
+        "m:2"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-016-probando_gemma4-01-documentacion-_historico-sprints",
+      "claim_kind": "documental",
+      "problem": "HOTFIX 2026-05-17 (S) — Acceptance gate + bench harness: El informe del investigador post-Sprint P fue explícito:",
+      "outcome": "contexto",
+      "solution_or_failure": "El informe del investigador post-Sprint P fue explícito:",
+      "causal_mechanism": "> hay forma de probar lo contrario porque \"production-ready\" | > porque no definiste qué 'listo' significa.\" | - Cobertura de tools (65/65 con verifier) NO es threshold — | contrario porque no había criterio.",
+      "measurement": "del 25% al 70% y nadie va a poder confirmar la mejora con un | | 1 | **Wake recall** | ≥70% en `testaudio_v2.wav` (nativo WAV, no m4a) | `bench.py` cuenta wakes detectados vs wakes esperados (anotados en `testaudio_v2_expected.json`) | ❌ 25% en `Grabación (2).m4a`, sin medición en v2 | | | 4 | **STT latency p95** | ≤1.2s para clips ≤3s, GPU disponible | `bench.py` mide `_transcribe_buffer` sobre…",
+      "provenance": {
+        "path": "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_s.md",
+        "ranges": [
+          "1-983",
+          "h:1",
+          "m:28"
+        ],
+        "date": "2026-05-18",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/_historico/sprints: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_s.md",
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_t.md"
+      ],
+      "repeats": [
+        "documentacion/_historico/sprints/sprint_hotfix_2026_05_17_t.md"
+      ]
+    },
+    {
+      "card_id": "docs-016-probando_gemma4-02-gemma4_agent-microagents",
+      "claim_kind": "documental",
+      "problem": "Carter Agent microagents: Markdown files con frontmatter YAML que se inyectan condicionalmente al",
+      "outcome": "contexto",
+      "solution_or_failure": "Markdown files con frontmatter YAML que se inyectan condicionalmente al",
+      "causal_mechanism": "- **COMPLETED**: tool ejecutada Y verifier confirmó el efecto. | - **UNVERIFIED**: tool dijo ok pero el verifier no pudo medir. | - **FAILED**: tool retornó error o verifier midió divergencia.",
+      "measurement": "triggers: [\"HKCR\", \"HKLM\", \"HKCU\", \"mmproj\", \"deeplink\", \"winget\", \"psutil\", \"pycaw\", \"WDDM\", \"GGUF\", \"llama.cpp\", \"llama-server\", \"embeddings\", \"quantization\", \"Q4_K_M\", \"Q5_K_M\", \"Q6_K\", \"VRAM\", \"GGML\", \"prewarm\"] | - **GGUF**: formato de archivo de modelos cuantizados para llama.cpp (binario, `.gguf`). Reemplaza GGML. | - **llama.cpp**: motor de inferencia C++ que corre GGUF (CUDA/Metal/CPU).…",
+      "provenance": {
+        "path": "gemma4_agent/microagents/README.md",
+        "ranges": [
+          "1-57",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo gemma4_agent/microagents: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "gemma4_agent/microagents/README.md",
+        "gemma4_agent/microagents/glossary.md",
+        "gemma4_agent/microagents/tools_cheat_sheet.md"
+      ],
+      "repeats": [
+        "gemma4_agent/microagents/glossary.md",
+        "gemma4_agent/microagents/tools_cheat_sheet.md"
+      ]
+    },
+    {
+      "card_id": "docs-016-probando_gemma4-03-hf_publish",
+      "claim_kind": "documental",
+      "problem": "Baxy — Gemma 4 E2B (GGUF, fine-tuned): license: gemma",
+      "outcome": "contexto",
+      "solution_or_failure": "license: gemma",
+      "causal_mechanism": "> tool-calling gate because there are no tools in the prompt.",
+      "measurement": "library_name: gguf | - gguf | - q4_k_m | > quantized to GGUF for local inference with [llama.cpp](https://github.com/ggml-org/llama.cpp). | > It powers **[Baxy](https://github.com/REDSOULTM/Baxy)**, a 100%-local Windows | This repo contains the **GGUF artifacts that run in Baxy's production profile**: | | `gemma-4-E2B-it-Q4_K_M.gguf` | ~3.4 GB | The fine-tuned LLM (Q4_K_M, imatrix). Text + tool-c…",
+      "provenance": {
+        "path": "hf_publish/README.md",
+        "ranges": [
+          "1-113",
+          "h:27",
+          "m:5"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "gemma-4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo hf_publish: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "hf_publish/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-016-probando_gemma4-04-scripts",
+      "claim_kind": "documental",
+      "problem": "scripts/ — INDEX: Inventario de scripts del repo, categorizados por rol. Sprint R8",
+      "outcome": "contexto",
+      "solution_or_failure": "Inventario de scripts del repo, categorizados por rol. Sprint R8",
+      "causal_mechanism": "| `router_tool2vec_from_llm_dataset.py` | Alimenta el corpus del encoder con el dataset del LLM (train.jsonl, sin holdout): aprende text→tool por embeddings (sin hardcode). |",
+      "measurement": "| `_diag/_diag_wake_recall_probe.py` | Eval rápido del gate (recall por idioma, onnxruntime puro + throttle, 500 clips en ~12s). NO el eval oficial que cuelga. | | | `wake_universal_eval_livekit.py` | Gate wake universal (recall ≥ 0.60, fp/hr ≤ 1.0 sobre held-out). | | | `eval_profile_actions.py` | Eval acciones por VRAM-profile. | | | `validate_profiles.py` | Sanity check de los perfiles VRAM. |…",
+      "provenance": {
+        "path": "scripts/INDEX.md",
+        "ranges": [
+          "1-315",
+          "h:1",
+          "m:29"
+        ],
+        "date": "2026-05-28",
+        "hardware": "VRAM",
+        "model": "livekit",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo scripts: 4 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/INDEX.md",
+        "scripts/README_accessibility.md",
+        "scripts/_out_filesystem_routing.txt",
+        "scripts/_out_flips_default.txt"
+      ],
+      "repeats": [
+        "scripts/README_accessibility.md",
+        "scripts/_out_filesystem_routing.txt",
+        "scripts/_out_flips_default.txt"
+      ]
+    },
+    {
+      "card_id": "docs-016-probando_gemma4-05-scripts-_diag",
+      "claim_kind": "documental",
+      "problem": "Notas cacería tanda 2 — análisis pre-fix (2026-06-05): Verifiqué `terminal_run` (tools.py:5405): **SÍ tiene `_hard_gate(risk=\"high\")`** para toda",
+      "outcome": "fracaso",
+      "solution_or_failure": "Verifiqué `terminal_run` (tools.py:5405): **SÍ tiene `_hard_gate(risk=\"high\")`** para toda",
+      "causal_mechanism": "- No reintroduce FP: los casos legítimos \"pon música\" → Spotify quedan cubiertos porque la plataforma viene del **user-intent** (i=120 user dijo \"Spotify\", i=559 user dijo \"youtube\") o de `app`/`audio_device` reales (punto B). | Esto elimina i=781 (y de paso el nofire i=1372 \"desactivá el bluetooth\" no reabre nada) **sin reabrir ningún FN**: desactivar Defender/firewall sigue cayendo porque ahí s…",
+      "measurement": "- maintenance.firewall_status (1947/1948 disable firewall->status) = ROUTING: rutea a una | comando (\"text\":\"enviá un mensaje a Pedro\") + claim \"le envié\" (1522/1523). En prod | - t2: 11 loops. t3 (post-fix): solo 4 loops, TODOS multi-pass (passes 5-7), NO | - Los 4 de t3 (2358/2391/2523/2692) son re-try genuino del 4B across passes; el | circuit-breaker global los corta honestamente (~30 tools)…",
+      "provenance": {
+        "path": "scripts/_diag/_NOTAS_caceria_t2.md",
+        "ranges": [
+          "1-220",
+          "h:1",
+          "m:18"
+        ],
+        "date": "2026-06-04",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo scripts/_diag: 19 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_NOTAS_caceria_t2.md",
+        "scripts/_diag/_audit_synthesis.txt",
+        "scripts/_diag/_batch1_view.txt",
+        "scripts/_diag/_judge_clusters_1000.txt",
+        "scripts/_diag/_judge_clusters_2000.txt",
+        "scripts/_diag/_judge_clusters_3000.txt",
+        "scripts/_diag/_judge_clusters_4000.txt",
+        "scripts/_diag/_judge_rerun_synth.txt",
+        "scripts/_diag/_judge_tanda1_clusters.txt",
+        "scripts/_diag/_media_fires_readable.txt",
+        "scripts/_diag/_media_full.txt",
+        "scripts/_diag/_media_nofire_full.txt",
+        "scripts/_diag/_out_chain_verification.txt",
+        "scripts/_diag/_out_rebrand_inventory.txt",
+        "scripts/_diag/_out_run2_cluster_verifs.txt",
+        "scripts/_diag/_out_tesis_verify.txt",
+        "scripts/_diag/_out_workflow_diagnoses.txt",
+        "scripts/_diag/_out_workflow_verifications.txt",
+        "scripts/_diag/_tests_fires_view.txt"
+      ],
+      "repeats": [
+        "scripts/_diag/_audit_synthesis.txt",
+        "scripts/_diag/_batch1_view.txt",
+        "scripts/_diag/_judge_clusters_1000.txt",
+        "scripts/_diag/_judge_clusters_2000.txt",
+        "scripts/_diag/_judge_clusters_3000.txt",
+        "scripts/_diag/_judge_clusters_4000.txt",
+        "scripts/_diag/_judge_rerun_synth.txt",
+        "scripts/_diag/_judge_tanda1_clusters.txt",
+        "scripts/_diag/_media_fires_readable.txt",
+        "scripts/_diag/_media_full.txt",
+        "scripts/_diag/_media_nofire_full.txt"
+      ]
+    },
+    {
+      "card_id": "docs-016-probando_gemma4-06-scripts-_diag-_ftfail",
+      "claim_kind": "documental",
+      "problem": "Análisis de 414 casos BUG/DUDOSO agrupados por causa raíz: This is the critical confirmation. The mock returns `{\"ok\": True, \"status\": \"ok\", \"verified\": True}` for EVERY tool — it never returns real data. This means:",
+      "outcome": "fracaso",
+      "solution_or_failure": "This is the critical confirmation. The mock returns `{\"ok\": True, \"status\": \"ok\", \"verified\": True}` for EVERY tool — it never returns real data. This means:",
+      "causal_mechanism": "**Todos estos son DUDOSO marcados como \"verificar en vivo\": el valor concreto viene del mock vacío, NO es bug de prod.** El routing es correcto; solo el dato es fabricado porque `_mock_execute` devuelve `verified:True` sin payload. | **D2. Reply escueto/deferido porque el mock no devuelve datos** | - causa raíz: \"te muestro los resultados\" / \"te describo\" / \"Listo.\" sin contenido porque web.searc…",
+      "measurement": "- **¿Mock o real?:** **BUG REAL** (over-claim de acción, no depende del valor del mock). Subconjunto relacionado: 1522/1523/1524 = envío sin contenido afirmado como exitoso (debió pedir el cuerpo). | - **Causa raíz:** \"abrí la calculadora y el resultado fue 42/25/10/4\" implicando lectura de pantalla, con solo `gui.type`/`app.open` (ninguna tool devolvió la cifra). | - **Qué arreglar:** 1418 ya ca…",
+      "provenance": {
+        "path": "scripts/_diag/_ftfail/_all_judge_clusters.txt",
+        "ranges": [
+          "1-854",
+          "h:11",
+          "m:33"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo scripts/_diag/_ftfail: 4 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "scripts/_diag/_ftfail/_all_judge_clusters.txt",
+        "scripts/_diag/_ftfail/_already_used.txt",
+        "scripts/_diag/_ftfail/_coverage_report.txt",
+        "scripts/_diag/_ftfail/_plan_maestro.txt"
+      ],
+      "repeats": [
+        "scripts/_diag/_ftfail/_already_used.txt",
+        "scripts/_diag/_ftfail/_coverage_report.txt",
+        "scripts/_diag/_ftfail/_plan_maestro.txt"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=33 drift=0 miss=0",
+  "next_docs_batch_id": "docs-017-probando_gemma4",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-016-probando_gemma4.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

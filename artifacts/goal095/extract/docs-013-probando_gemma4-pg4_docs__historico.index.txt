@@ -1,0 +1,46 @@
+batch_id=docs-013-probando_gemma4-pg4_docs__historico
+kind=docs
+file_count=40
+hash_ok=40 drift=0 miss=0
+subsystem=pg4_docs__historico
+---FILES---
+OK documentacion/_historico/baseline_audit/04_sequences/shutdown.md	04.06 — Shutdown / cleanup
+OK documentacion/_historico/baseline_audit/04_sequences/slot_filling.md	04.04 — Slot-filling cuando faltan parámetros
+OK documentacion/_historico/baseline_audit/04_sequences/voice_turn.md	04.02 — Voice turn end-to-end
+OK documentacion/_historico/baseline_audit/04_sequences/wake_activation.md	04.03 — Wake-word activation
+OK documentacion/_historico/baseline_audit/05_data.md	Fase 5 — Diagrama de datos y estado
+OK documentacion/_historico/baseline_audit/06_dependencies.md	Fase 6 — Grafo de dependencias internas
+OK documentacion/_historico/baseline_audit/07_tools.md	Fase 7 — Inventario de tools del agente
+OK documentacion/_historico/baseline_audit/08_findings.md	Fase 8 — Hallazgos consolidados (resumen ejecutivo)
+OK documentacion/_historico/baseline_audit/_findings_seed.md	Seed de hallazgos — checklist activa durante Fases 0→7
+OK documentacion/_historico/bench_carter/PARA_AGENTE_CARTER_PROMPTS_SEPARADOS.md	Para el agente Carter — Aplicar la separación de prompts que se hizo acá
+OK documentacion/_historico/bench_carter/REPORTE_GEMMA4_PARA_CARTER.md	Reporte definitivo — Gemma 4 para Carter
+OK documentacion/_historico/bench_carter/final_shakedown.md	Shakedown final E2E — sesión de cierre 2026-05-21
+OK documentacion/_historico/bench_carter/flakiness_hunt.md	Caza de flakiness — sesión de validación final 2026-05-21
+OK documentacion/_historico/bench_carter/latency_baseline.md	Baseline de latencia — sprint de latencia (Fase 0) 2026-05-22
+OK documentacion/_historico/bench_carter/latency_microagents_cache.md	Optimización de latencia — cache de microagents (Fase 4) 2026-05-21
+OK documentacion/_historico/bench_carter/latency_sprint_report.md	Sprint de latencia — reporte final 2026-05-22
+OK documentacion/_historico/bench_carter/llm_e2e_validation.md	Validación LLM E2E en vivo — sesión de validación final 2026-05-21
+OK documentacion/_historico/bench_carter/overnight_validation.md	Validación en vivo — sesión overnight 2026-05-21
+OK documentacion/_historico/bench_carter/tests_540.md	Carter v3 — Testing 100% Máximo Esplendor
+OK documentacion/_historico/handoffs/INFORME_NOCTURNO.md	Informe nocturno — Integración Gemma 4 (sesión 2)
+OK documentacion/_historico/handoffs/LOCAL_JARVIS_DESIGN.md	Local Jarvis Design Notes
+OK documentacion/_historico/handoffs/MORNING_REPORT.md	Morning Report — 2026-05-16
+OK documentacion/_historico/handoffs/ROADMAP.md	Carter Agent — Roadmap Honesto
+OK documentacion/_historico/handoffs/UNIVERSAL_AGENT_TOOL_GAPS.md	Carter Agent Universal Tool Gap Map
+OK documentacion/_historico/handoffs/session_continuation_report_2026_05_21.md	Reporte de sesión de continuación — Carter Agent — 2026-05-21
+OK documentacion/_historico/handoffs/session_overnight_report_2026_05_21.md	Reporte de sesión overnight — Carter Agent — 2026-05-21
+OK documentacion/_historico/prompts_research/PROMPT_AGENTE_NOCTURNO_ROUTER.md	MISIÓN AUTÓNOMA NOCTURNA — LLEVAR EL ROUTER DE GEMMA4 AL MÁXIMO ABSOLUTO
+OK documentacion/_historico/prompts_research/PROMPT_FOR_EXTERNAL_AUDIT.md	Prompt para auditoría externa de Carter Agent
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_1_toolcalling_structured.md	Prompt de investigación 1/8 — Fiabilidad de tool-calling y structured output en 
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_2_memoria_personalizacion.md	Prompt de investigación 2/8 — Memoria, personalización y entity-grounding del as
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_3_verificacion_recovery.md	Prompt de investigación 3/8 — Verificación de acciones y recuperación de errores
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_4_contexto_multiturno.md	Prompt de investigación 4/8 — Gestión de contexto e historial multi-turno en un 
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_5_aprendizaje_proactivo.md	Prompt de investigación 5/8 — Aprendizaje proactivo de patrones del usuario (asi
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_6_estabilidad_no_crash.md	Prompt de investigación 6/8 — Estabilidad y degradación con gracia (no petar el 
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_7_nlu_comandos_ambiguos.md	Prompt de investigación 7/8 — Comprensión de comandos: ambigüedad, multi-intent 
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_8_automatizacion_gui_desktop.md	Prompt de investigación 8/8 — Automatización GUI/desktop fiable (clicks, UIA, vi
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_INDEX.md	Índice de prompts de investigación — Carter Agent (vram4)
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_arquitectura_llm.md	Prompt de investigación — Arquitectura del LLM en Carter Agent (refinamiento)
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_chatgpt_gemini.md	Deep-Research Prompt — Make the Carter Agent tool router PERFECT
+OK documentacion/_historico/prompts_research/PROMPT_RESEARCH_computer_use_gui_control.md	Prompt de investigación — Control GUI tipo humano (computer-use) para un agente 

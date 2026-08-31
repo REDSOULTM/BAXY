@@ -1,0 +1,565 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-010-probando_gemma4",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:35Z",
+  "closed_utc": "2026-08-31T04:29:36Z",
+  "estimated_tokens": 288278,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 25,
+  "subsystem": "pg4_docs_03_voz_stt",
+  "files": [
+    {
+      "path": "documentacion/03_voz_stt/research/wake_ruido_fondo_2026-06-11.md",
+      "sha256": "6aade1caed535f76e79e481805794d79c4093aea01d660c6063dcc669ced458d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-188",
+        "h:1",
+        "m:22"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/wake_v5_diseno_entrenamiento_2026-06-11.md",
+      "sha256": "67d7e5530861352253784d594f41fe3dd1739cc7ceafe8ad6c9f505437f4eef0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-153",
+        "h:1",
+        "m:22"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/whisper_small_cpu_spanglish_accuracy.md",
+      "sha256": "c900109fd8dfede5d5684dd2cbc87ab9f95ea6aa236facc71bf7174cd82dff72",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-151",
+        "h:1",
+        "m:43"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/PLAN_mission_planner_executor.md",
+      "sha256": "a557a0f3ebe63a7d11893cc9e93650d547d1d8c68c17eea1a63c6f67c4d19084",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-78",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/PLAN_vram4_unico_y_modos_accesibilidad.md",
+      "sha256": "5f591f459e98edb1f1dae750229b0cfbb1332e176f79b6617c0ce22d8a4af2cb",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-95",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/README.md",
+      "sha256": "ae612128e763d8ccf6bf393aebe1d752a50279dee08f8cde2a2fb73fa7e5a27c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-32",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/11_plan_computer_use_windows_4b.md",
+      "sha256": "2927e7bd9388afbec2466008884fc745beadaeb77a0d17a89b16f07377f06362",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-462",
+        "h:1",
+        "m:22"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/3_verificacion.md",
+      "sha256": "e4f63886e604b960d1b1431749f943dc795e4a2a916598e0267b58bd89882897",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-829",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/8_gui.md",
+      "sha256": "1040fdca681811f6d1169af27c3ac5e98e647c5c4121d228a2d515beb2262dc7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-458",
+        "h:1",
+        "m:39"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/computer_use_investigacion_propia_2026_05_24.md",
+      "sha256": "bda69623205805f4e781eb17500651ec60ec5fd0cb0bfd5724235ba16476786d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-197",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/computer_use_mejoras_claude_ai_2026_05_25.md",
+      "sha256": "dfb2638d3d187680959129155a3e28f06522d0adf51880f758ee87c5841c9ab9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-87",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/computer_use_sintesis_decisional_2026_05_24.md",
+      "sha256": "7daf07c7a054809e0e85d1ac2267a45d02e08d961e38672fa0b534b8da4e0140",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-193",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/gui_eval_informe_por_tier_2026_05_24.md",
+      "sha256": "be4eba37b5a2c1cc5be89ad0d9d7ab35fba5136aa707dc26cd48666f450c19ec",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-343",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/informe_abcd_router_chain_gui_latencia_2026_05_23.md",
+      "sha256": "656d2f100f6c46237ce9662fdb5bc6ff35710c6e7c93f314045daf1c31c3678b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-648",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/research/router_chain_foco_windows_carter_2026_05_23.md",
+      "sha256": "56a897c008582715dc6be8343c8626f24969d696983cb99f401bf16fbfc2ca73",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-988",
+        "h:1",
+        "m:31"
+      ]
+    },
+    {
+      "path": "documentacion/04_computer_use/streaming_playback_field_guide_2026.md",
+      "sha256": "b1c1bbbdc420d9af0c5bb0b44e9ce5e63519102649a0d3719a49bbeb6392f6fc",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-247",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/05_vision_camara/FASE1_control_camara_ventanas.md",
+      "sha256": "8cbd59cf93043c80917e68b82c8723d8efcab5fbe66ff9b4a57855d5d73e9865",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-358",
+        "h:1",
+        "m:126"
+      ]
+    },
+    {
+      "path": "documentacion/05_vision_camara/HCI_GUIDELINES.md",
+      "sha256": "0ab3bf8c6f7dfb5146745e87e20ab6c850fd23d3e42ce0df5d4a89f42facae18",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-36",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/06_vram_estabilidad/INFORME_ARQUITECTURA_6GB.md",
+      "sha256": "1507ba8779040d504e60db38aa17064d9336a1aa3694960d30610bf55c4da4c4",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-582",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "documentacion/06_vram_estabilidad/research/6_estabilidad.md",
+      "sha256": "a2e5d314974c733aee0726ccacd296f9879127317b6cc29ca7bd4f4ad2828425",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-920",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "documentacion/07_latencia/README.md",
+      "sha256": "a01edbc4b0e8f479d44fbdd9369cec1fc7c08fdf51f7773767b7243be90a9a53",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-21",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/07_latencia/SPRINT_prefill_cache_hit.md",
+      "sha256": "f05c59a3418cc1de28e8833d3e6f6fb1c57f1832e8327524c15811c87e8fa414",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-71",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/07_latencia/research/4_contexto.md",
+      "sha256": "bd5a2015dba95bd630cbd4d8a4bb6657afb62f352572cfe5caaf77621f1404f1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-427",
+        "h:1",
+        "m:41"
+      ]
+    },
+    {
+      "path": "documentacion/07_latencia/research/prefill_latency_llama_server_gemma4.md",
+      "sha256": "4c8da8be8478417c59ee984270adbe3e82b63aed4fa4a22a6c643c51a3ad8e39",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-449",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "documentacion/07_latencia/research/reducir_latencia_thinking_gemma4.md",
+      "sha256": "88d074dbccd23cc729510ab9733514f7a0fddcc5da506e0184784b6bb7a6fa79",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-344",
+        "h:1",
+        "m:37"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-010-probando_gemma4-01-documentacion-03_voz_stt-research",
+      "claim_kind": "documental",
+      "problem": "Wake-word con audio de fondo: diagnóstico, plan y fuentes (2026-06-11): Con una película/serie sonando u otras voces de fondo, el wake (\"Baxy\") NO",
+      "outcome": "contexto",
+      "solution_or_failure": "Con una película/serie sonando u otras voces de fondo, el wake (\"Baxy\") NO",
+      "causal_mechanism": "arreglar un bug del pipeline (padding, backgrounds vacíos, atajo",
+      "measurement": "0.2s ≥ 1.6×piso, y el piso EMA converge al nivel del ambiente en ~1-2 s | (α=0.05/chunk de 32 ms). Con una peli sonando, una voz a SNR 0 dB da una | deslizante hop 0.5 s como el harness oficial, threshold de prod 0.25: | threshold. FP solo-ruido: 0/300. Reproducido también EN VIVO por el pipeline | FAIL, limpio PASS, FP-en-silencio rechazado PASS, solo-ruido PASS). | Idiomas ya débiles en limpio…",
+      "provenance": {
+        "path": "documentacion/03_voz_stt/research/wake_ruido_fondo_2026-06-11.md",
+        "ranges": [
+          "1-188",
+          "h:1",
+          "m:22"
+        ],
+        "date": "2026-06-11",
+        "hardware": "4060",
+        "model": "livekit",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/03_voz_stt/research: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "documentacion/03_voz_stt/research/wake_ruido_fondo_2026-06-11.md",
+        "documentacion/03_voz_stt/research/wake_v5_diseno_entrenamiento_2026-06-11.md",
+        "documentacion/03_voz_stt/research/whisper_small_cpu_spanglish_accuracy.md"
+      ],
+      "repeats": [
+        "documentacion/03_voz_stt/research/wake_v5_diseno_entrenamiento_2026-06-11.md",
+        "documentacion/03_voz_stt/research/whisper_small_cpu_spanglish_accuracy.md"
+      ]
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-02-documentacion-04_computer_use",
+      "claim_kind": "documental",
+      "problem": "Plan: Mission Planner-Executor — que el 4B complete tareas largas SIN subir de modelo: **Fecha:** 2026-05-27",
+      "outcome": "exito",
+      "solution_or_failure": "**Fecha:** 2026-05-27",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "movilidad/no_vidente: control 100% por voz, el agente hace TODO), con E2B-Q4 en | ≤4GB. Sin cambiar de modelo. | - **Planificación**: el 4B descompone objetivos en sub-pasos **~70-90% bien** | (7/10 en `_measure_4b_plan_results.json`; 2 de los 3 \"fallos\" son ruido del | (no por planificación) suben a ≥80% completadas o fallo-honesto. Falso-PASS 0%. | - **vram4 único, sin selector.** Borrar vram3/…",
+      "provenance": {
+        "path": "documentacion/04_computer_use/PLAN_mission_planner_executor.md",
+        "ranges": [
+          "1-78",
+          "h:1",
+          "m:5"
+        ],
+        "date": "2026-05-27",
+        "hardware": "VRAM",
+        "model": "e4b",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/04_computer_use: 4 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "documentacion/04_computer_use/PLAN_mission_planner_executor.md",
+        "documentacion/04_computer_use/PLAN_vram4_unico_y_modos_accesibilidad.md",
+        "documentacion/04_computer_use/README.md",
+        "documentacion/04_computer_use/streaming_playback_field_guide_2026.md"
+      ],
+      "repeats": [
+        "documentacion/04_computer_use/PLAN_vram4_unico_y_modos_accesibilidad.md",
+        "documentacion/04_computer_use/README.md",
+        "documentacion/04_computer_use/streaming_playback_field_guide_2026.md"
+      ]
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-03-documentacion-04_computer_use-research",
+      "claim_kind": "documental",
+      "problem": "Plan técnico para un agente de voz local que controla Windows con un LLM 4B (Gemma 4 E4B): **TL;DR**",
+      "outcome": "fracaso",
+      "solution_or_failure": "**TL;DR**",
+      "causal_mechanism": "[mission_goal verifier] ← estructural por SO (pycaw, Path.stat, EnumWindows) | **El verifier es lo más importante del sistema.** Tabla comparativa por señal: | goal: dict # mission_goal verifier spec | | **2. Macros parametrizadas** | `click_button(label)`, `fill_field(label, value)`, `select_menu(path)`, `toggle(label)`, `wait_for(label)`. Cada una con observe→act→verify→recover | Task SR por ve…",
+      "measurement": "| Opción | Latencia/paso | Confiabilidad | VRAM | Aplicable a 4B local | Veredicto | | | (a) LLM emite primitivos sueltos (click_xy, type_text) | 1–2 s LLM + 0 verify | Baja: deriva tras 3 pasos | ~5 GB | Sí pero falla | Status quo, **DESCARTAR** | | | (b) Macros deterministas `click_button(label)` con observe→act→verify | 50–300 ms (sin LLM en pasos triviales) | Alta para UIA rico | ~5 GB | **Sí…",
+      "provenance": {
+        "path": "documentacion/04_computer_use/research/11_plan_computer_use_windows_4b.md",
+        "ranges": [
+          "1-462",
+          "h:1",
+          "m:22"
+        ],
+        "date": "2026-05-24",
+        "hardware": "6 GB",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/04_computer_use/research: 9 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/04_computer_use/research/11_plan_computer_use_windows_4b.md",
+        "documentacion/04_computer_use/research/3_verificacion.md",
+        "documentacion/04_computer_use/research/8_gui.md",
+        "documentacion/04_computer_use/research/computer_use_investigacion_propia_2026_05_24.md",
+        "documentacion/04_computer_use/research/computer_use_mejoras_claude_ai_2026_05_25.md",
+        "documentacion/04_computer_use/research/computer_use_sintesis_decisional_2026_05_24.md",
+        "documentacion/04_computer_use/research/gui_eval_informe_por_tier_2026_05_24.md",
+        "documentacion/04_computer_use/research/informe_abcd_router_chain_gui_latencia_2026_05_23.md",
+        "documentacion/04_computer_use/research/router_chain_foco_windows_carter_2026_05_23.md"
+      ],
+      "repeats": [
+        "documentacion/04_computer_use/research/3_verificacion.md",
+        "documentacion/04_computer_use/research/8_gui.md",
+        "documentacion/04_computer_use/research/computer_use_investigacion_propia_2026_05_24.md",
+        "documentacion/04_computer_use/research/computer_use_mejoras_claude_ai_2026_05_25.md",
+        "documentacion/04_computer_use/research/computer_use_sintesis_decisional_2026_05_24.md",
+        "documentacion/04_computer_use/research/gui_eval_informe_por_tier_2026_05_24.md",
+        "documentacion/04_computer_use/research/informe_abcd_router_chain_gui_latencia_2026_05_23.md",
+        "documentacion/04_computer_use/research/router_chain_foco_windows_carter_2026_05_23.md"
+      ]
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-04-documentacion-05_vision_camara",
+      "claim_kind": "documental",
+      "problem": "Fase 1 - Control fijo de ventanas por mirada + gestos: Estado: implementado como POC aislado en `gemma4_agent/vision_input/window_control.py`.",
+      "outcome": "contexto",
+      "solution_or_failure": "Estado: implementado como POC aislado en `gemma4_agent/vision_input/window_control.py`.",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "- acierto de monitor >= 95% | | Mirar una ventana estable ~350 ms | Arma esa ventana como objetivo | | - Overlay identifica la ventana mirada correcta al menos 9/10 intentos. | - Point clickea el control cercano correcto al menos 8/10 intentos.",
+      "provenance": {
+        "path": "documentacion/05_vision_camara/FASE1_control_camara_ventanas.md",
+        "ranges": [
+          "1-358",
+          "h:1",
+          "m:126"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/05_vision_camara: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/05_vision_camara/FASE1_control_camara_ventanas.md",
+        "documentacion/05_vision_camara/HCI_GUIDELINES.md"
+      ],
+      "repeats": [
+        "documentacion/05_vision_camara/HCI_GUIDELINES.md"
+      ]
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-05-documentacion-06_vram_estabilidad",
+      "claim_kind": "documental",
+      "problem": "Informe — Arquitectura Baxy en 6 GB VRAM (voz + visión + LLM): **Sesión:** investigación y auditoría, sin tocar código.",
+      "outcome": "contexto",
+      "solution_or_failure": "**Sesión:** investigación y auditoría, sin tocar código.",
+      "causal_mechanism": "- **Comando largo** (30 s): partials de whisper_streaming corren mientras hablás (cada ~1 s); cuando el VAD cierra, la última pasada finalize toma <800 ms porque casi todo el audio ya fue transcrito incrementalmente → **total ≤800 ms**.",
+      "measurement": "**Alcance:** 100% local, asistente personal interactivo, latencia tipo Alexa. | **Hardware objetivo:** una sola GPU con **6 GB VRAM totales** (RTX 2060 / 3050 / 4050 mobile / 3060 6 GB). | - E4B-Q4_K_M (5.0 GB) + mmproj (0.92 GB) + KV F16 4K (0.35 GB) + Windows (~0.5 GB) = **6.77 GB** → no entra. | - Confirmado por investigación externa (Unsloth, llama.cpp issues #21689/#21690): **no existe combi…",
+      "provenance": {
+        "path": "documentacion/06_vram_estabilidad/INFORME_ARQUITECTURA_6GB.md",
+        "ranges": [
+          "1-582",
+          "h:1",
+          "m:5"
+        ],
+        "date": "2026-05-14",
+        "hardware": "6 GB",
+        "model": "gemma-4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/06_vram_estabilidad: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/06_vram_estabilidad/INFORME_ARQUITECTURA_6GB.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-06-documentacion-06_vram_estabilidad-research",
+      "claim_kind": "documental",
+      "problem": "Informe de Confiabilidad para el Perfil \"vram4\" — Agente OS Autónomo Local sobre Windows 11: - **vram4 es viable hoy mismo** para Gemma 4 E4B-it Q4_K_M con llama.cpp b9090, monoslot y ctx=16384: con `--no-mmproj-offload`, `--cache-type-k q8_0 --cache-type-v q8_0` y `-fa on`, el…",
+      "outcome": "contexto",
+      "solution_or_failure": "- **vram4 es viable hoy mismo** para Gemma 4 E4B-it Q4_K_M con llama.cpp b9090, monoslot y ctx=16384: con `--no-mmproj-offload`, `--cache-type-k q8_0 --cache-type-v q8_0` y `-fa on`, el consumo medido en el log de llama.cpp issue #21430 queda en ≈3.5–3.8 GiB (pesos GPU 3002 MiB + KV unificado SWA ≈163 MiB + compute buffer ≈500 MiB); con mmproj ofloaded sube a ≈4.8 GiB y solo cabe holgado en GPUs d",
+      "causal_mechanism": "- llama.cpp issue #21385 (per-head KV quantization): Gemma 4 absorbe la cuantización q4_0 KV mejor que arquitecturas densas porque las capas SWA actúan como corrección de error. | - **Dependencias Python sanas**: torchcodec se importa sin segfault contra el torch presente; `__version__` coincide con el manifiesto pinneado. Esto **debe hacerse en un proceso hijo desechable** porque el `import` pue…",
+      "measurement": "7. **`faulthandler.dump_traceback_later(timeout, repeat=True)` resuelve el 80% del debugging de hangs** sin overhead apreciable. Es C-level, dumpea todos los threads, y la doc de Python 3.14 confirma que está siempre disponible y usa un *wa | | Mitigación | Riesgo que cierra | Δ latencia / Δ VRAM | Complejidad | | | Watchdog NVML pre-turno (pynvml, `nvmlDeviceGetMemoryInfo`, 250 ms) | OOM probabi…",
+      "provenance": {
+        "path": "documentacion/06_vram_estabilidad/research/6_estabilidad.md",
+        "ranges": [
+          "1-920",
+          "h:1",
+          "m:19"
+        ],
+        "date": "2026-08-31",
+        "hardware": "6 GB",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/06_vram_estabilidad/research: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/06_vram_estabilidad/research/6_estabilidad.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-07-documentacion-07_latencia",
+      "claim_kind": "documental",
+      "problem": "07 — Latencia: Optimización de la latencia por turno de voz (presupuesto tier-Alexa: 4–5 s",
+      "outcome": "exito",
+      "solution_or_failure": "Optimización de la latencia por turno de voz (presupuesto tier-Alexa: 4–5 s",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Optimización de la latencia por turno de voz (presupuesto tier-Alexa: 4–5 s | tope; 8 s es UX catastrófica). | - **Palanca principal:** cache-hit del summary/prefill pass (mantener | Acción ~2.2 s tras el fix. | llama.cpp (#21133): una imagen no paga la carga on-demand (~2-5 s) y el texto | **Fecha:** 2026-05-29 · **Resultado:** acción turn ~3.3s → ~2.2s (**−~1s**), | (~2.3s de ~3.3s). La pass-2…",
+      "provenance": {
+        "path": "documentacion/07_latencia/README.md",
+        "ranges": [
+          "1-21",
+          "h:1",
+          "m:3"
+        ],
+        "date": "2026-06-09",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/07_latencia: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/07_latencia/README.md",
+        "documentacion/07_latencia/SPRINT_prefill_cache_hit.md"
+      ],
+      "repeats": [
+        "documentacion/07_latencia/SPRINT_prefill_cache_hit.md"
+      ]
+    },
+    {
+      "card_id": "docs-010-probando_gemma4-08-documentacion-07_latencia-research",
+      "claim_kind": "documental",
+      "problem": "Gestión de historial multi-turno en Gemma 4 E4B-it Q4_K_M sobre llama.cpp b9090 (ctx 16K): plan técnico para asistente de voz local: - **Para asistente de voz, casi todos los turnos son atómicos**: la evidencia (Apple ML Research \"Learning to Rank Intents\", Amazon Alexa skill ro…",
+      "outcome": "fracaso",
+      "solution_or_failure": "- **Para asistente de voz, casi todos los turnos son atómicos**: la evidencia (Apple ML Research \"Learning to Rank Intents\", Amazon Alexa skill routing, Laban et al. 2025) muestra que el contexto previo solo importa cuando el turno actual contiene anáfora/deixis (\"súbelo\", \"ese\", \"el otro\"); detectarlos con regex + un clasificador opcional de <30 ms y **enviar contexto sólo cuando es necesario** e",
+      "causal_mechanism": "El orquestador lo extrae con regex y lo re-inyecta como parte del anchor. Mem0 (oct 2025) documenta que esto vence a la summarization plana porque preserva valores exactos (fechas, IDs, paths). | - openai/codex Issue #22220 — *\"After several compactions, session quality can noticeably degrade due to summarization loss and recursive compression effects.\"* | - Tendrías que offload el draft a CPU (`…",
+      "measurement": "| **Context-as-router** (recomendado) | ~1 000 en 70–85% turnos; ~3 000 en turnos con referencia | Alta donde importa | Media-baja | Detector deficiente | | - Laban, Hayashi, Zhou, Neville et al. 2025 (Microsoft + Salesforce Research), arXiv:2505.06120: 39% caída promedio; Llama3.1-8B y Phi-4 en 30–40%; *\"when LLMs take a wrong turn in a conversation, they get lost and do not recover\"*. | - Ecker…",
+      "provenance": {
+        "path": "documentacion/07_latencia/research/4_contexto.md",
+        "ranges": [
+          "1-427",
+          "h:1",
+          "m:41"
+        ],
+        "date": "2026-06-15",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/07_latencia/research: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/07_latencia/research/4_contexto.md",
+        "documentacion/07_latencia/research/prefill_latency_llama_server_gemma4.md",
+        "documentacion/07_latencia/research/reducir_latencia_thinking_gemma4.md"
+      ],
+      "repeats": [
+        "documentacion/07_latencia/research/prefill_latency_llama_server_gemma4.md",
+        "documentacion/07_latencia/research/reducir_latencia_thinking_gemma4.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=25 drift=0 miss=0",
+  "next_docs_batch_id": "docs-011-probando_gemma4",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-010-probando_gemma4.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

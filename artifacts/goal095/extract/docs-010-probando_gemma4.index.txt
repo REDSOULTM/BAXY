@@ -1,0 +1,31 @@
+batch_id=docs-010-probando_gemma4
+kind=docs
+file_count=25
+hash_ok=25 drift=0 miss=0
+subsystem=pg4_docs_03_voz_stt
+---FILES---
+OK documentacion/03_voz_stt/research/wake_ruido_fondo_2026-06-11.md	Wake-word con audio de fondo: diagnóstico, plan y fuentes (2026-06-11)
+OK documentacion/03_voz_stt/research/wake_v5_diseno_entrenamiento_2026-06-11.md	Diseño del entrenamiento v5 del wake word — arqueología + estado del arte (2026-
+OK documentacion/03_voz_stt/research/whisper_small_cpu_spanglish_accuracy.md	Maximizing Whisper-small CPU Accuracy for a Local Spanglish Voice Assistant
+OK documentacion/04_computer_use/PLAN_mission_planner_executor.md	Plan: Mission Planner-Executor — que el 4B complete tareas largas SIN subir de m
+OK documentacion/04_computer_use/PLAN_vram4_unico_y_modos_accesibilidad.md	Plan: vram4 único + Modos de accesibilidad
+OK documentacion/04_computer_use/README.md	04 — Computer Use
+OK documentacion/04_computer_use/research/11_plan_computer_use_windows_4b.md	Plan técnico para un agente de voz local que controla Windows con un LLM 4B (Gem
+OK documentacion/04_computer_use/research/3_verificacion.md	Verificación de efecto y recuperación robusta para un agente de voz local con Ge
+OK documentacion/04_computer_use/research/8_gui.md	CARTER OS — Investigación 8/8: Automatización GUI confiable en Windows para un L
+OK documentacion/04_computer_use/research/computer_use_investigacion_propia_2026_05_24.md	Investigación propia — Control GUI tipo humano (computer-use) para vram4
+OK documentacion/04_computer_use/research/computer_use_mejoras_claude_ai_2026_05_25.md	Computer-use GUI — investigación de mejoras (claude.ai, 2026-05-25)
+OK documentacion/04_computer_use/research/computer_use_sintesis_decisional_2026_05_24.md	Síntesis decisional — Computer-use GUI (triangulación de 3 fuentes)
+OK documentacion/04_computer_use/research/gui_eval_informe_por_tier_2026_05_24.md	Computer-use GUI — informe por tier (2026-05-24)
+OK documentacion/04_computer_use/research/informe_abcd_router_chain_gui_latencia_2026_05_23.md	Informe técnico — Baxy (asistente de voz 100% local) — Problemas A, B, C, D
+OK documentacion/04_computer_use/research/router_chain_foco_windows_carter_2026_05_23.md	Informe técnico CARTER OS / Baxy (antes Gemma 4 Agent, brevemente Carter) — Rout
+OK documentacion/04_computer_use/streaming_playback_field_guide_2026.md	Programmatic Title Playback Across Streaming Platforms from a Local Windows Pyth
+OK documentacion/05_vision_camara/FASE1_control_camara_ventanas.md	Fase 1 - Control fijo de ventanas por mirada + gestos
+OK documentacion/05_vision_camara/HCI_GUIDELINES.md	HCI Guidelines for Vision-Based Window Control
+OK documentacion/06_vram_estabilidad/INFORME_ARQUITECTURA_6GB.md	Informe — Arquitectura Baxy en 6 GB VRAM (voz + visión + LLM)
+OK documentacion/06_vram_estabilidad/research/6_estabilidad.md	Informe de Confiabilidad para el Perfil "vram4" — Agente OS Autónomo Local sobre
+OK documentacion/07_latencia/README.md	07 — Latencia
+OK documentacion/07_latencia/SPRINT_prefill_cache_hit.md	Sprint — Cache-hit del summary pass (el lever REAL de latencia de acción)
+OK documentacion/07_latencia/research/4_contexto.md	Gestión de historial multi-turno en Gemma 4 E4B-it Q4_K_M sobre llama.cpp b9090 
+OK documentacion/07_latencia/research/prefill_latency_llama_server_gemma4.md	Informe técnico: minimizar latencia de PREFILL en Gemma 4 E4B-it Q4_K_M sobre ll
+OK documentacion/07_latencia/research/reducir_latencia_thinking_gemma4.md	Reduciendo Latencia de THINKING en Asistente de Voz Local (Gemma E4B-Q4 + llama.

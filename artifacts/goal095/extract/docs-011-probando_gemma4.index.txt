@@ -1,0 +1,50 @@
+batch_id=docs-011-probando_gemma4
+kind=docs
+file_count=44
+hash_ok=44 drift=0 miss=0
+subsystem=pg4_docs_08_memoria_jarvis
+---FILES---
+OK documentacion/08_memoria_jarvis/research/2_memoria.md	Arquitectura de memoria y grounding de entidades para un asistente de voz local 
+OK documentacion/08_memoria_jarvis/research/5_jarvis.md	CARTER OS — Loop proactivo de aprendizaje de patrones en vram4 (Gemma 4 E4B-it Q
+OK documentacion/10_auditorias/AUDITORIA_flags.md	Auditoría de flags GEMMA4_* (scripts/_diag/_flag_audit.py)
+OK documentacion/10_auditorias/carter_os/01_lo_que_valida.md	01 — Lo que Carter VALIDA de nuestras decisiones
+OK documentacion/10_auditorias/carter_os/02_antipatrones_a_revisar.md	02 — Anti-patrones que Carter pagó caro (verificar que NO los tenemos)
+OK documentacion/10_auditorias/carter_os/03_features_candidatas.md	03 — Features que Carter v5 tiene y nosotros NO (candidatos priorizados)
+OK documentacion/10_auditorias/carter_os/04_de_las_investigaciones.md	04 — De las carpetas de investigaciones (ambas)
+OK documentacion/10_auditorias/carter_os/05_analisis_profundo_codigo.md	05 — Análisis profundo del código de Carter (lectura módulo por módulo)
+OK documentacion/10_auditorias/carter_os/06_matriz_gaps_verificada.md	06 — Matriz de gaps VERIFICADA contra nuestro código
+OK documentacion/10_auditorias/carter_os/README.md	Auditoría profunda — Carter OS AI vs Baxy (este proyecto, antes Gemma 4 Agent, b
+OK documentacion/11_research_recibido/investigaciones_recibidas/0_arquitectura_general.md	Refinamiento del Bucle Agentic con Gemma 4 E4B-it sobre llama.cpp — Veredictos p
+OK documentacion/11_research_recibido/investigaciones_recibidas/10_auditoria_360.md	Auditoría 360° — 3 informes recibidos de claude.ai (2026-05-24)
+OK documentacion/11_research_recibido/investigaciones_recibidas/9_computer_use_gui.md	Investigación recibida (claude.ai) — Computer-use GUI con Gemma 4 E4B en vram4
+OK documentacion/11_research_recibido/investigaciones_recibidas/README.md	Investigaciones recibidas — dejá acá las respuestas de Claude
+OK documentacion/11_research_recibido/investigaciones_recibidas/_ESTADO_SESION.md	Estado de la sesión — resumen para retomar (2026-05-23)
+OK documentacion/11_research_recibido/investigaciones_recibidas/_PLAN_APLICACION.md	Plan de aplicación de las 8 investigaciones — estado y siguiente paso
+OK documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe1_diagnostico_v2_mtp.md	Diagnóstico técnico v2 — Agente de voz local Windows sobre Gemma 4 E4B-it Q4_K_M
+OK documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe2_briefing_gemma4_llamacpp.md	Briefing técnico: Gemma 4 E4B-it Q4_K_M en llama.cpp (build b9090, ~6 GB VRAM)
+OK documentacion/11_research_recibido/investigaciones_recibidas/auditoria360_informe3_diagnostico_seccion7.md	Diagnóstico §7 — Voice-agent Windows / Gemma 4 E4B-it Q4_K_M / vram4
+OK documentacion/DATASET_V3_finetune_grounded_2026-06-11.md	Dataset v3 — fine-tuning con tool-results y replies grounded (2026-06-11)
+OK documentacion/DISENO_jarvis_proactivo_2026-06-07.md	Diseño: Jarvis PROACTIVO (sugerencia sin turno del usuario)
+OK documentacion/GEMMA4_modelo_finetune_idioma_2026-06-06.md	Gemma 4 E2B — Fine-tuning, comportamiento e idioma (investigación + mediciones)
+OK documentacion/README.md	Documentación — Baxy (antes Gemma 4 Agent, brevemente Carter)
+OK documentacion/_AUDITORIA_FT_V3_2026-06-11.md	Auditoría del pipeline FT v3 contra fuentes — 2026-06-11 (pre-entrenamiento)
+OK documentacion/_BASELINE_encoder_retrain_2026-06-09.md	Baseline encoder ANTES del reentreno (J Balvin) — 2026-06-09
+OK documentacion/_FT_V3_GATES_ROUND1_2026-06-11.md	FT v3 — Gates de aceptación (2026-06-11)
+OK documentacion/_FUNCTIONGEMMA_INTEGRACION_2026-06-17.md	Integración de FunctionGemma run9 como router de tool-calling — 2026-06-17
+OK documentacion/_HANDOFF_CACERIA_TANDA1_2026-06-04.md	HANDOFF — Cacería profunda de bugs (tanda 1) — 2026-06-04
+OK documentacion/_HANDOFF_CACERIA_TANDAS2-6_2026-06-05.md	HANDOFF — Cacería de bugs, tandas 2-6 (2026-06-05)
+OK documentacion/_HANDOFF_sesion_2026-06-10.md	HANDOFF — sesión 2026-06-10 (para el siguiente agente)
+OK documentacion/_JARVIS_auditoria_2026-06-07.md	Auditoría capa Jarvis — 2026-06-07
+OK documentacion/_MISSION_EVAL_CIERRE.md	Cierre de misión — Mission-eval en vivo de Baxy (2026-06-09 / 2026-06-10)
+OK documentacion/_MISSION_HANDOFF.md	Misión: dejar a Baxy perfecto — HANDOFF para la sesión de las 04:35
+OK documentacion/_ROUTER_RETRAIN_V3CORPUS_2026-06-11.md	Router: reentreno del encoder con el corpus v3 (2026-06-11)
+OK documentacion/_backlog/BACKLOG_MAESTRO.md	BACKLOG MAESTRO — Baxy
+OK documentacion/_historico/INFORME_AUDIO_PARA_CARTER.md	Informe técnico: estado de audio multimodal Gemma 4 (para Carter v4)
+OK documentacion/_historico/PROMPT_FOR_ROUTING_RESEARCH.md	Prompt para investigación: estrategia de routing universal sin regex
+OK documentacion/_historico/auditorias_baseline/6gb_followup_log.md	Followup — Soporte 6 GB VRAM + Voice por perfil
+OK documentacion/_historico/auditorias_baseline/AUDITORIA_2026_05_14.md	Auditoría Carter Agent — 2026-05-14
+OK documentacion/_historico/auditorias_baseline/AUDIT_REPORT_2026-05-16.md	Auditoría Carter Agent — 2026-05-16
+OK documentacion/_historico/auditorias_baseline/MERGE_CHECKLIST.md	MERGE CHECKLIST — `PortandoLoMejor` → review/merge
+OK documentacion/_historico/auditorias_baseline/NIGHT_AUDIT_2026_05_16.md	NIGHT AUDIT — 2026-05-16 (sesión nocturna 9h)
+OK documentacion/_historico/auditorias_baseline/PROJECT_CONSOLIDATION_FINAL.md	Carter Agent — Consolidación final de la auditoría
+OK documentacion/_historico/auditorias_baseline/UPSTREAM_CHECK_CRON.md	Cron upstream check — setup

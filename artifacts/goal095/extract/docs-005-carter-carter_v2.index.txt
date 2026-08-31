@@ -1,0 +1,30 @@
+batch_id=docs-005-carter-carter_v2
+kind=docs
+file_count=24
+hash_ok=24 drift=0 miss=0
+subsystem=carter_v2
+---FILES---
+OK Carter_v2/documentacion/investigaciones/base/Informe de Arquitectura Avanzada.md	
+OK Carter_v2/documentacion/investigaciones/base/Stack Agente Autónomo Windows 16GB.md	
+OK Carter_v2/documentacion/investigaciones/comparadas/Claude-Building a real Jarvis the definitive desktop agent architecture guide.md	Building a real Jarvis: the definitive desktop agent architecture guide
+OK Carter_v2/live_smoke_results.md	Live Carter LLM Smoke Results
+OK Carter_v2/probe_assets/sample.txt	
+OK Carter_v2/probe_assets_runtime/git_sandbox/pull_work/README.md	
+OK Carter_v2/probe_assets_runtime/git_sandbox/push_work/local_push.txt	
+OK Carter_v2/probe_assets_runtime/git_sandbox/push_work/remote_update.txt	
+OK Carter_v2/probe_assets_runtime/log.txt	
+OK Carter_v2/probe_assets_runtime/note.txt	
+OK Carter_v2/probe_baseline_stderr.txt	
+OK Carter_v2/probe_baseline_stdout.txt	
+OK Carter_v2/probe_err.txt	
+OK Carter_v2/probe_fixed_stderr.txt	
+OK Carter_v2/probe_fixed_stdout.txt	
+OK Carter_v2/probe_live_err.txt	
+OK Carter_v2/probe_live_out.txt	
+OK Carter_v2/probe_out.txt	
+OK Carter_v2/probe_run10_stdout.txt	
+OK Carter_v2/probe_run11_stdout.txt	
+OK Carter_v2/probe_run12_stdout.txt	
+OK Carter_v2/probe_run5_stdout.txt	
+OK Carter_v2/probe_run6_stdout.txt	
+OK Carter_v2/probe_run7_stdout.txt	

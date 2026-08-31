@@ -18,7 +18,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-002-carter.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:22Z",
+      "closed_utc": "2026-08-31T04:29:26Z"
     },
     {
       "batch_id": "docs-003-carter",
@@ -27,7 +29,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-003-carter.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:26Z",
+      "closed_utc": "2026-08-31T04:29:29Z"
     },
     {
       "batch_id": "docs-004-carter",
@@ -36,7 +40,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-004-carter.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:29Z",
+      "closed_utc": "2026-08-31T04:29:31Z"
     },
     {
       "batch_id": "docs-005-carter-carter_v2",
@@ -45,7 +51,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-005-carter-carter_v2.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:31Z",
+      "closed_utc": "2026-08-31T04:29:32Z"
     },
     {
       "batch_id": "docs-006-carter-carter_v2",
@@ -54,7 +62,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-006-carter-carter_v2.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:32Z",
+      "closed_utc": "2026-08-31T04:29:33Z"
     },
     {
       "batch_id": "docs-007-probando_gemma4",
@@ -63,7 +73,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-007-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:33Z",
+      "closed_utc": "2026-08-31T04:29:33Z"
     },
     {
       "batch_id": "docs-008-probando_gemma4",
@@ -72,7 +84,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-008-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:33Z",
+      "closed_utc": "2026-08-31T04:29:34Z"
     },
     {
       "batch_id": "docs-009-probando_gemma4",
@@ -81,7 +95,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-009-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:34Z",
+      "closed_utc": "2026-08-31T04:29:35Z"
     },
     {
       "batch_id": "docs-010-probando_gemma4",
@@ -90,7 +106,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-010-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:35Z",
+      "closed_utc": "2026-08-31T04:29:36Z"
     },
     {
       "batch_id": "docs-011-probando_gemma4",
@@ -99,7 +117,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-011-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:36Z",
+      "closed_utc": "2026-08-31T04:29:37Z"
     },
     {
       "batch_id": "docs-012-probando_gemma4-pg4_docs__historico",
@@ -108,7 +128,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-012-probando_gemma4-pg4_docs__historico.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:37Z",
+      "closed_utc": "2026-08-31T04:29:38Z"
     },
     {
       "batch_id": "docs-013-probando_gemma4-pg4_docs__historico",
@@ -117,7 +139,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-013-probando_gemma4-pg4_docs__historico.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:38Z",
+      "closed_utc": "2026-08-31T04:29:39Z"
     },
     {
       "batch_id": "docs-014-probando_gemma4-pg4_docs__historico",
@@ -126,7 +150,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-014-probando_gemma4-pg4_docs__historico.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:39Z",
+      "closed_utc": "2026-08-31T04:29:40Z"
     },
     {
       "batch_id": "docs-015-probando_gemma4-pg4_docs__historico",
@@ -135,7 +161,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-015-probando_gemma4-pg4_docs__historico.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:41Z",
+      "closed_utc": "2026-08-31T04:29:41Z"
     },
     {
       "batch_id": "docs-016-probando_gemma4",
@@ -144,7 +172,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-016-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:41Z",
+      "closed_utc": "2026-08-31T04:29:42Z"
     },
     {
       "batch_id": "docs-017-probando_gemma4",
@@ -153,7 +183,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-017-probando_gemma4.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:42Z",
+      "closed_utc": "2026-08-31T04:29:43Z"
     },
     {
       "batch_id": "docs-018-functiongemma",
@@ -162,7 +194,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-018-functiongemma.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:43Z",
+      "closed_utc": "2026-08-31T04:29:43Z"
     },
     {
       "batch_id": "docs-019-baxy",
@@ -171,7 +205,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-019-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:43Z",
+      "closed_utc": "2026-08-31T04:29:48Z"
     },
     {
       "batch_id": "docs-020-baxy",
@@ -180,7 +216,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-020-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:48Z",
+      "closed_utc": "2026-08-31T04:29:50Z"
     },
     {
       "batch_id": "docs-021-baxy",
@@ -189,7 +227,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-021-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:50Z",
+      "closed_utc": "2026-08-31T04:29:50Z"
     },
     {
       "batch_id": "docs-022-baxy",
@@ -198,7 +238,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-022-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:50Z",
+      "closed_utc": "2026-08-31T04:29:54Z"
     },
     {
       "batch_id": "docs-023-baxy",
@@ -207,7 +249,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-023-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:30:52Z",
+      "closed_utc": "2026-08-31T04:30:53Z"
     },
     {
       "batch_id": "docs-024-baxy",
@@ -216,7 +260,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-024-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:29:56Z",
+      "closed_utc": "2026-08-31T04:30:02Z"
     },
     {
       "batch_id": "docs-025-baxy",
@@ -225,7 +271,9 @@
       "kind": "docs",
       "output": "artifacts/goal095/ledger/docs-025-baxy.json",
       "owner": "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T04:30:02Z",
+      "closed_utc": "2026-08-31T04:30:03Z"
     },
     {
       "batch_id": "code_tests-001-carter",
@@ -6663,7 +6711,7 @@
       "status": "pending"
     }
   ],
-  "first_docs_batch_id": "docs-002-carter",
+  "first_docs_batch_id": null,
   "goal": "09.5.1",
   "status": "queues_ready",
   "first_code_tests_batch_id": null

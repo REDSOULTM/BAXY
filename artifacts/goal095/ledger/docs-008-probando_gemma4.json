@@ -1,0 +1,527 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-008-probando_gemma4",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:33Z",
+  "closed_utc": "2026-08-31T04:29:34Z",
+  "estimated_tokens": 298147,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 28,
+  "subsystem": "pg4__tesis_curso",
+  "files": [
+    {
+      "path": "_tesis_curso/entregables/guion_defensa_oral.md",
+      "sha256": "005fc8cdcc35e23b0d00bddaba6953312c80ccfd25998f884855355619d7e30d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-595",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "_tesis_curso/entregables/portafolio_CAP_I.md",
+      "sha256": "d351acdcbc33c700140c6ee445474f861efca837fbd228f471065f515658e1fa",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-606",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "_tesis_curso/entregables/portafolio_CAP_II.md",
+      "sha256": "59e3c0e0ede03bc7b6f39613ce1ad138ec6b65ad52efb2da9c435254ea85eea7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-550",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "_tesis_curso/entregables/portafolio_CAP_III.md",
+      "sha256": "13c0ccd1d0e1ac6410f0ef5c391cab04515664492326470506f0c1f428bd1db2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-453",
+        "h:1",
+        "m:5"
+      ]
+    },
+    {
+      "path": "gemma4_agent/data/README.md",
+      "sha256": "ce027b08abac0771acd95fe226bfc69c42d3ef54b97b541e7672e0d33f443510",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-91",
+        "h:1",
+        "m:68"
+      ]
+    },
+    {
+      "path": "dataset_finetune/_router_backup/router_encoder_ft/README.md",
+      "sha256": "0e13e8e29708f557e56d3c745f1e9686e8613216d3cf0ef086e772f6965b5a03",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-355",
+        "h:49"
+      ]
+    },
+    {
+      "path": "dataset_finetune/_wf_findings_raw.md",
+      "sha256": "7ed79008488adbad5dc74d97ee8e77522bc194601073769a06208b0bd7d874ce",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-362",
+        "h:3",
+        "m:13"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_canaries_fixed.txt",
+      "sha256": "082f13b6ef35d4a8cab65fb7a8a3c23771fb975baa4316b23cb69bbb7bbb43a3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-3",
+        "m:3"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_canaries_v3.txt",
+      "sha256": "763dbbdcc3b511a730ed64a7999de43867f2a0c56107a867ef3642a0379411f1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-36",
+        "m:2"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_canary_stages.txt",
+      "sha256": "9be6567078758a1583b665f42c9b651f6a6c5713c75927303fe0f03e806950ef",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-97"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_lid_rescue_eval.txt",
+      "sha256": "1640edd66862522b5b1285deeb2222a33b59415a98ad0e2bcce63bf4a8de0be3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-11",
+        "m:3"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_lid_shortzone.txt",
+      "sha256": "48960921251ade56e3a9de66020002bc53dca4d1a1ccd86c77f43e3add7140c6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-4",
+        "m:1"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_BASELINE.txt",
+      "sha256": "5113a2a80652637aa9c8c7ff97d044b94a1e0b1906a95f251955acd010dd3e1c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-16",
+        "m:12"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_BASELINE_slices.txt",
+      "sha256": "c696c8a5266aafd6649c498c314314204d4ab2c507685e325add04fd2db43637",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-37",
+        "m:4"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_NEWBASE_noes.txt",
+      "sha256": "52b590c39ad10c28cb86156add334bfaf1b47d8a70999d945afd15012aa50596",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-21",
+        "m:4"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_POSTCANARYFIX.txt",
+      "sha256": "b08e056be2c308753f09dce1bb5e92d3312749ab9933a23b061d6ace5de373d7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-21",
+        "m:4"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_V3_slices.txt",
+      "sha256": "06756b648bfc0c9db5e97881d64ae6222c919aee446a1d3e3e52a3146520dfc1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-37",
+        "m:4"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_V3_slices_clean.txt",
+      "sha256": "1e038decaf11e431712d059bf93d7fc6b345ec161741e7def30899f8b8938660",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-37",
+        "m:4"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_devfails.txt",
+      "sha256": "df73e27ae83d22d87cc148d7707e651d056af1f7f98dec9e744a581d7f5fd741",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-52",
+        "m:4"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/_router_pipeline_v3.txt",
+      "sha256": "b0b72fe54d6ab2db02e73806e83a3747550842ad1cb996b40e7df912db735b98",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-123",
+        "m:66"
+      ]
+    },
+    {
+      "path": "dataset_finetune/out/imatrix_corpus.txt",
+      "sha256": "c7e5b4b7b85e925b9cd1ed162052c92886a0d8485038a49b9015fe85c107f322",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-6103",
+        "m:23"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/AUDITORIA_licencias.md",
+      "sha256": "88387923222c2fc080b18886783244cc0da89d55d4a56d1f31e04a42e0a0435c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-195",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/AUDITORIA_uso_del_modelo_gemma4_2026-06-10.md",
+      "sha256": "e504fe57b4289bbd0298a0b0a5b47c8fc4665247c4dc82879e75a597cc513cb7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-112",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/BRANCHING.md",
+      "sha256": "be7928fce2cde0704325909ada864d91c6ac633b307af3c025fe5bc400b76d03",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-104",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/MCP.md",
+      "sha256": "78bf1daa2dff459b5f940a66f6623c521a4fe85870c467544aee98ab2999fd5b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-123",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/PORTING_PLAN.md",
+      "sha256": "a60a85af85cab17c7fa5e95b785be9310729afbb5bc30475f35d09ec7cf936eb",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-1009",
+        "h:1",
+        "m:276"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/PRODUCTION_READY.md",
+      "sha256": "5f0926819ef17be0de47e99345589de993f7044c6408416cf253d285a9d1d2ac",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-89",
+        "h:1",
+        "m:15"
+      ]
+    },
+    {
+      "path": "documentacion/00_producto/computer_use_capability_layers.md",
+      "sha256": "fcdcc487b845fa8cace52afcaee5ed372183a1ef49a167ed8fc53aa6816a733f",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-66",
+        "h:1",
+        "m:37"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-008-probando_gemma4-01-_tesis_curso-entregables",
+      "claim_kind": "documental",
+      "problem": "Guion de Defensa Oral — Baxy: - **Tono:** seguro, sereno y técnico, pero accesible. Defensa de tesis, no venta. La",
+      "outcome": "contexto",
+      "solution_or_failure": "- **Tono:** seguro, sereno y técnico, pero accesible. Defensa de tesis, no venta. La",
+      "causal_mechanism": "> porque el modelo es **no-determinista** y elige caminos que un test no anticipa. Esa | > porque todo es código abierto y reutiliza hardware que el usuario ya tiene. Audité **511 | > **'medir, no celebrar'** me hizo encontrar causas raíz contraintuitivas —el *padding* del | > *wake-word*, el *busy-wait* de ONNX, un dataset corrupto— que un parche al síntoma habría | porque el producto se diseñó…",
+      "measurement": "- **Honestidad:** mencionar de forma proactiva el techo del *tool-calling* (estimado ≈75 %) y | **[Texto hablado, ~30 s]** | **[Texto hablado, ~50 s]** | > dependencia de internet, latencia de red y costo recurrente. Y hay una demanda | **[Texto hablado, ~45 s]** | > tecnología, por ejemplo, la confirmé midiendo la VRAM de cada modelo, no asumiéndola.\" | > VRAM, local, en Windows, con un Gemma 4…",
+      "provenance": {
+        "path": "_tesis_curso/entregables/guion_defensa_oral.md",
+        "ranges": [
+          "1-595",
+          "h:1",
+          "m:28"
+        ],
+        "date": "2026-06-02",
+        "hardware": "VRAM",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo _tesis_curso/entregables: 4 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "_tesis_curso/entregables/guion_defensa_oral.md",
+        "_tesis_curso/entregables/portafolio_CAP_I.md",
+        "_tesis_curso/entregables/portafolio_CAP_II.md",
+        "_tesis_curso/entregables/portafolio_CAP_III.md"
+      ],
+      "repeats": [
+        "_tesis_curso/entregables/portafolio_CAP_I.md",
+        "_tesis_curso/entregables/portafolio_CAP_II.md",
+        "_tesis_curso/entregables/portafolio_CAP_III.md"
+      ]
+    },
+    {
+      "card_id": "docs-008-probando_gemma4-02-dataset_finetune",
+      "claim_kind": "documental",
+      "problem": "WORKFLOW: TECHO 2B vs 4B + DESTILACIÓN + cuant/offload/visión: ======================================================================",
+      "outcome": "contexto",
+      "solution_or_failure": "======================================================================",
+      "causal_mechanism": "- El merge+cuantización del LLM no afecta al mmproj porque en llama.cpp visión/audio viajan en un **GGUF mmproj separado** que el FT ni mira. Prod ya separa `gemma-4-E2B-it-Q4_K_M.gguf` + `mmproj-F16.gguf` (`config.py:24-25`). | **Verdict: holds = false** — not because the recommendation is wrong (its direction is sound and overwhelmingly well-supported), but because it contains one load-bearing…",
+      "measurement": "- xLAM 1B vs 7B, same APIGen data: 78.9% vs 88.2% on BFCL — only ~9.3 pts residual at 7x scale. | He refutado adversarialmente el veredicto del analista. No se sostiene para el target real de 4 GB (holds=false). | 3. **Dato optimista — el mmproj no pesa 851 MB.** `models/E2B/mmproj-F16.gguf` = 985,654,080 bytes = 940 MiB (coincide con el comentario de `profiles.py:156`). Son ~90 MiB de más. | Lo…",
+      "provenance": {
+        "path": "dataset_finetune/_wf_findings_raw.md",
+        "ranges": [
+          "1-362",
+          "h:3",
+          "m:13"
+        ],
+        "date": "2026-06-02",
+        "hardware": "16 GB",
+        "model": "e4b",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo dataset_finetune: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "dataset_finetune/_wf_findings_raw.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-008-probando_gemma4-03-dataset_finetune-_router_backup-router_encoder_ft",
+      "claim_kind": "documental",
+      "problem": "SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2: tags:",
+      "outcome": "contexto",
+      "solution_or_failure": "tags:",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "dataset_finetune/_router_backup/router_encoder_ft/README.md",
+        "ranges": [
+          "1-355",
+          "h:49"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo dataset_finetune/_router_backup/router_encoder_ft: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "dataset_finetune/_router_backup/router_encoder_ft/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-008-probando_gemma4-04-dataset_finetune-out",
+      "claim_kind": "documental",
+      "problem": "dataset_finetune/out: ﻿ (warmup: router hot)",
+      "outcome": "contexto",
+      "solution_or_failure": "﻿ (warmup: router hot)",
+      "causal_mechanism": "Ainda nao comparei nada porque preciso saber o baseline. Qual e o arquivo ou a execucao de referencia? | reinicia o Steam porque ele travou | Llueve porque el vapor de agua de la atmósfera se condensa en gotas dentro de las nubes y, al volverse muy pesadas, caen por gravedad. | reinicia Steam porque está pegado",
+      "measurement": "CANARY PASS: 63/63 = 100.0% | CANARY PASS: 47/63 = 74.6% | == A) comandos RED: 84 clips == | TRIGGER [2.5s] exp='reproduce The Last of Us en HBO Max' | A) disparos: 1/84 | mejorados: 0/1 | A) latencia extra rescate p50=1457ms | B) fleurs: falsos disparos 0/120 | B) chileno: falsos disparos 0/60 | ﻿clips truncados a 1.2s: 60 | outputs con pinta EN (bug LID): 0/60 | (warmup: semantic router hot in…",
+      "provenance": {
+        "path": "dataset_finetune/out/_canaries_fixed.txt",
+        "ranges": [
+          "1-3",
+          "m:3"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo dataset_finetune/out: 14 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "dataset_finetune/out/_canaries_fixed.txt",
+        "dataset_finetune/out/_canaries_v3.txt",
+        "dataset_finetune/out/_canary_stages.txt",
+        "dataset_finetune/out/_lid_rescue_eval.txt",
+        "dataset_finetune/out/_lid_shortzone.txt",
+        "dataset_finetune/out/_router_eval_BASELINE.txt",
+        "dataset_finetune/out/_router_eval_BASELINE_slices.txt",
+        "dataset_finetune/out/_router_eval_NEWBASE_noes.txt",
+        "dataset_finetune/out/_router_eval_POSTCANARYFIX.txt",
+        "dataset_finetune/out/_router_eval_V3_slices.txt",
+        "dataset_finetune/out/_router_eval_V3_slices_clean.txt",
+        "dataset_finetune/out/_router_eval_devfails.txt",
+        "dataset_finetune/out/_router_pipeline_v3.txt",
+        "dataset_finetune/out/imatrix_corpus.txt"
+      ],
+      "repeats": [
+        "dataset_finetune/out/_canaries_v3.txt",
+        "dataset_finetune/out/_canary_stages.txt",
+        "dataset_finetune/out/_lid_rescue_eval.txt",
+        "dataset_finetune/out/_lid_shortzone.txt",
+        "dataset_finetune/out/_router_eval_BASELINE.txt",
+        "dataset_finetune/out/_router_eval_BASELINE_slices.txt",
+        "dataset_finetune/out/_router_eval_NEWBASE_noes.txt",
+        "dataset_finetune/out/_router_eval_POSTCANARYFIX.txt",
+        "dataset_finetune/out/_router_eval_V3_slices.txt",
+        "dataset_finetune/out/_router_eval_V3_slices_clean.txt",
+        "dataset_finetune/out/_router_eval_devfails.txt"
+      ]
+    },
+    {
+      "card_id": "docs-008-probando_gemma4-05-documentacion-00_producto",
+      "claim_kind": "documental",
+      "problem": "Auditoría de licencias — viabilidad COMERCIAL: Total: **511 paquetes**. Generado por scripts/_diag/_license_audit.py.",
+      "outcome": "exito",
+      "solution_or_failure": "Total: **511 paquetes**. Generado por scripts/_diag/_license_audit.py.",
+      "causal_mechanism": "| **`thinking_budget_tokens` por modo** | ✅ quick=32, deep/research mayores; en el body | **OK** (red de seguridad, no mecanismo principal — correcto) | | | 2 | Verifier por-tool (12 tools) | ✅ DONE | `08e05cc` | | | 5 | Mission Goal verifier (Voyager pattern) | ✅ DONE | `370840a` | | **capacidad real, no tweaks de latencia**. Son portables porque: | - Cobertura de tools (65/65 con verifier) NO e…",
+      "measurement": "- Modelo en prod: **`gemma-4-E2B-it-Q4_K_M`** (Gemma 4 oficial, NO Gemma 3n — el | - Servido con `--jinja` (template embebido del GGUF) + `chat_template_kwargs: | (suficiente para voz; 128K no cabe en 4GB ni hace falta). | | **Thinking gateado por complejidad** (Ares −52% tokens; Punto 4) | ✅ `modes.py`: fast_action/fast_info `enable_thinking=False`; quick/deep/vision condicional con `thinking_bu…",
+      "provenance": {
+        "path": "documentacion/00_producto/AUDITORIA_licencias.md",
+        "ranges": [
+          "1-195",
+          "h:1"
+        ],
+        "date": "2026-06-10",
+        "hardware": "VRAM",
+        "model": "piper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/00_producto: 7 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "documentacion/00_producto/AUDITORIA_licencias.md",
+        "documentacion/00_producto/AUDITORIA_uso_del_modelo_gemma4_2026-06-10.md",
+        "documentacion/00_producto/BRANCHING.md",
+        "documentacion/00_producto/MCP.md",
+        "documentacion/00_producto/PORTING_PLAN.md",
+        "documentacion/00_producto/PRODUCTION_READY.md",
+        "documentacion/00_producto/computer_use_capability_layers.md"
+      ],
+      "repeats": [
+        "documentacion/00_producto/AUDITORIA_uso_del_modelo_gemma4_2026-06-10.md",
+        "documentacion/00_producto/BRANCHING.md",
+        "documentacion/00_producto/MCP.md",
+        "documentacion/00_producto/PORTING_PLAN.md",
+        "documentacion/00_producto/PRODUCTION_READY.md",
+        "documentacion/00_producto/computer_use_capability_layers.md"
+      ]
+    },
+    {
+      "card_id": "docs-008-probando_gemma4-06-gemma4_agent-data",
+      "claim_kind": "documental",
+      "problem": "`gemma4_agent/data/` — artefactos de datos y modelos: Este directorio aloja datasets, modelos pre-computados y configuraciones",
+      "outcome": "contexto",
+      "solution_or_failure": "Este directorio aloja datasets, modelos pre-computados y configuraciones",
+      "causal_mechanism": "versionan porque son chicos — pero están embebidos con el encoder FT, así que en",
+      "measurement": "3. Si el archivo es grande (>10 MB), considerar `.gitignore` + script de | arriba: >10 MB). El runtime cae al base model | GEMMA4_TRAIN_SEED=42 .venv_router_train/Scripts/python.exe scripts/train_router_encoder.py --epochs 3 | ejemplos a `tool2vec_queries.jsonl`, holdout 0.9800 mantenido, 4 huecos 25/25.",
+      "provenance": {
+        "path": "gemma4_agent/data/README.md",
+        "ranges": [
+          "1-91",
+          "h:1",
+          "m:68"
+        ],
+        "date": "2026-06-10",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo gemma4_agent/data: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "gemma4_agent/data/README.md"
+      ],
+      "repeats": []
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=28 drift=0 miss=0",
+  "next_docs_batch_id": "docs-009-probando_gemma4",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-008-probando_gemma4.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

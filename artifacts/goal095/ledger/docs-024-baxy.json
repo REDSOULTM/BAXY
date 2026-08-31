@@ -1,0 +1,1827 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-024-baxy",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:56Z",
+  "closed_utc": "2026-08-31T04:30:02Z",
+  "estimated_tokens": 299980,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "baxy",
+  "source_head": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f",
+  "source_root": "Programacion/BAXY",
+  "file_count": 100,
+  "subsystem": "baxy_legacy_docs",
+  "files": [
+    {
+      "path": "legacy/docs/decision_log.md",
+      "sha256": "baadf1002d0acbbee785414847b9a0b445a0a93b862713c1f96883bf9a7fbf7d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-2274",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "legacy/docs/dependency_map.md",
+      "sha256": "b678751dad60d22390738859780e78101662a838645169b4d5aecd974dad2d99",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-313",
+        "h:1",
+        "m:27"
+      ]
+    },
+    {
+      "path": "legacy/docs/discord_message_v2_security.md",
+      "sha256": "d4d7ba489c62828bdec9d0acae3f5dcd50c00a612580c5a332d1f3d567c91e00",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-170",
+        "h:1",
+        "m:152"
+      ]
+    },
+    {
+      "path": "legacy/docs/filesystem_write_transaction_blocker.md",
+      "sha256": "37f21ac1022bce086ff448a5aec6db30c67321ddb30ad705c4876312ed5a8458",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-103",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/docs/gemma4_validation.md",
+      "sha256": "1055665837123e455aebe6e95d88be12584b74ae60a008f86707869cd2e2f434",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-598",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "legacy/docs/gui_reminders_v2_security.md",
+      "sha256": "21aec51548a32e29efa89f2bf170bd4ad71cacc7e51bdb5f5b8291dd84a9723e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-286",
+        "h:1",
+        "m:188"
+      ]
+    },
+    {
+      "path": "legacy/docs/inventory.md",
+      "sha256": "895ff8b751749969c34dbeb28a6faebf306812da6c4cdd57c3789049e04f29f8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "h:1",
+        "m:30"
+      ]
+    },
+    {
+      "path": "legacy/docs/local_calendar_v2_security.md",
+      "sha256": "16c19fca3581b8b3f8a3b2580adfaaecf86b4bace7cd64950eee3e07f57cf819",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-143",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "legacy/docs/migration_plan.md",
+      "sha256": "441dc265e88f605d386e61d739db59eec06474bdf6377150a0da65efe7876385",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-51",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "legacy/docs/mission_ledger_v1_integration.md",
+      "sha256": "13ded29944c600c62659a8fc275da9a299a77aaa64986f8651522c79dd2944c3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-99",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "legacy/docs/office_document_v2_security.md",
+      "sha256": "1091b09cb35e06392d0c9bb89d54872efe73e58f8583f015754cb3ad2bdc52fd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-172",
+        "h:1",
+        "m:140"
+      ]
+    },
+    {
+      "path": "legacy/docs/pending_modules.md",
+      "sha256": "4d64cf0ee17e8cf85260bca394e1261acb544defd5964cee41172afd470b6a2c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-95",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "legacy/docs/productivity_v2_security.md",
+      "sha256": "937391aab75801a4094eacf45219aaa9d9b22ffb340d93308392c97f005d7b15",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-90",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/docs/routines_v2_security.md",
+      "sha256": "21d5404162a880967ea1bc3ae3ddfc024ccfd08dcfb558b65e0b460f71f6c5b5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-141",
+        "h:1",
+        "m:37"
+      ]
+    },
+    {
+      "path": "legacy/docs/skills_authoring.md",
+      "sha256": "aa6e45bfe00f1ac89f251c326d81fc537eac1b38b2b96c871b3e15dccf0515fc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-84",
+        "h:1",
+        "m:32"
+      ]
+    },
+    {
+      "path": "legacy/docs/steam_spotify_compound_security.md",
+      "sha256": "0115fa87b8d052d9e185419c2bad9e3a447049e92ef3c04270fe8066d6e93567",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-330",
+        "h:1",
+        "m:18"
+      ]
+    },
+    {
+      "path": "legacy/docs/tasks_v2_security.md",
+      "sha256": "d1b66ca426b9c388cf8929aaf8513bed89549a703306e1cff7dcbcb2f35c9925",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-129",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/docs/tool_ecosystem_v2.md",
+      "sha256": "9aee0eb57b58a88605cea6ce7beeb4b4de9fa548012a9594e40da9586a3bb3c5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-787",
+        "h:1",
+        "m:11"
+      ]
+    },
+    {
+      "path": "legacy/docs/tool_ecosystem_v2_coverage.md",
+      "sha256": "c0be5e9e49c8fd37f96163dea001d7cf189c9fb1fa641280745a1aad9e9a6a29",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-685",
+        "h:1",
+        "m:31"
+      ]
+    },
+    {
+      "path": "legacy/docs/tts_landscape_2026.md",
+      "sha256": "535e1c994f59a6b90dc2da1b77c9e2c82d70f8e13dd78f07182fbc8a49010677",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-128",
+        "h:1",
+        "m:6"
+      ]
+    },
+    {
+      "path": "legacy/docs/vision_attachment_v2_security.md",
+      "sha256": "9cc0ec925e72f11f48de45d0172e5ac2aca86d9a85a776492eec7f64ed4c228a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:60"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/README.md",
+      "sha256": "9c8448a2b3b6d504ad18c5e346703b926d2cd42f57df0e33aacdb2918aaee2e6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-33",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/core.md",
+      "sha256": "ad52c9ff5ec70cd36709597777bd3c6a8937f9563b2b30310bd8b86eb05a640f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-209",
+        "m:27"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/core_lean.md",
+      "sha256": "651953307087dab55baebb9b76ba755092a5554e5052fe857c735a4c287be5e6",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-73",
+        "m:48"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/accessibility.md",
+      "sha256": "6f49380d067ff01e96a3a8962ec3f4130fcc8558619128c15922ee8a577baa94",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/app.lean.md",
+      "sha256": "39ee141ea3b335a9078591eaa183417bb16f4fc242396bdcd3177f04fc9daf87",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9",
+        "m:5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/app.md",
+      "sha256": "ba1552c8e954f83e059d961b14f9240f62d829932bd7d107bf7c9a14d14ac42e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/audio.md",
+      "sha256": "1858bc0be5387465410d3dfd838a8972d5e620f29627c31efc33ae819f92fb9f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/audio_device.md",
+      "sha256": "49477d6a41afaecdb8c8e5a3b0fd637d9065ef5fb83f5028c06e398c4bf29761",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/backup_sync.md",
+      "sha256": "ad7e5038740312086033865e46911de12767e0434e07b30f991304f3a13cbfd8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/browser.md",
+      "sha256": "52219053e69d3c964808b7fa55f993441cf26c277a1c719dd9687983d6ca3f9d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-35",
+        "m:17"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/browser_real.md",
+      "sha256": "74601dca35e1465d3300e2e49e3a026a73c4a369c5310f4e83b8736c69f49708",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/clipboard.md",
+      "sha256": "2dde9f6faab326a13456960644019f55b6ffe947f4796b5e04b213745dca610e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/container.md",
+      "sha256": "1a39c539d1df772dd2c5877fc20a9287c3522da388f41374e3abea7de6a0615f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/creative_local.md",
+      "sha256": "1977fb83bc4db365c58c8f031062c9c0cbaed7db5b7ffd37bd4649a3d99a716f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/data_analysis.md",
+      "sha256": "4124589848f64bdbd685cef6b7d98056d5fa194dd785834a389c6f6f6f9b29b5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/database.md",
+      "sha256": "afe94afe37b832aec032bc533c5e8dfc9479f9f555a6e1555630d92c6ebceb70",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/dependency.md",
+      "sha256": "6069dc49cd616e80fddc3ef92ef8e63fa3904857a811c6f0bf4f0e5b37f12a16",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/desktop_layout.md",
+      "sha256": "50dd3ed8d0974b99036ebc99b6da9c7b0fc3ed68e1464f7aa1ea87b8a858ab97",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5",
+        "m:3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/device_settings.md",
+      "sha256": "245f008e2806b29a7596e64430fe0db37a35e2bf1b59316146222d48251b908b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5",
+        "m:3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/download.md",
+      "sha256": "9cf6dac5c19c9f32cb0fb0b90838bf888ab5c1307d2ec4fc507e8ee8227d04ee",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/env.md",
+      "sha256": "162e7d21d064769902d9fcb24076341a88ac0b2ef379e5f5282e965fdf589a48",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/filesystem.md",
+      "sha256": "0488daca51166f208da212b4a831d29d1070005ba60b3c97d67877a790d39d6c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/gui.md",
+      "sha256": "466a4d984ea041a5240ed9bd3149b78117351416eef9ac6d058c5d8e76b09bec",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/habit_tracker.md",
+      "sha256": "a9f4f401989b5cb15af8762c8f12a7518ba45721b6517838a30e2615e68cb17b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/input.md",
+      "sha256": "412a78ec417af36cda7f7439474c8700bff4af308dc841262b5d804e7c60a234",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/job_manager.md",
+      "sha256": "089ee60954defa974617377545faecb64bd084faaf09bfc78c761fd06da32eb5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/local_calendar.md",
+      "sha256": "2211c6bf3134d4fc8d15a6111eada88e7f41cfcf0cdb0ea1d3d13eeb15a79f20",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/local_search.md",
+      "sha256": "189a0170a5c9969cf689cb9f34792a111c1fbf0c6bec3dcebdbbf59a3224ad70",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/media.lean.md",
+      "sha256": "67770875783ee18ad2ca6d8805e5db4e5a98a647def03a8c49424f3328b410df",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-34"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/media.md",
+      "sha256": "251953f0a4144aa25ffef30b05f3a39ba5f5d7fc0f90346873d17d6140e305a8",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-59",
+        "m:20"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/media_edit.md",
+      "sha256": "b1774b3e51c7e66c1f7b31b9160e493a26f7e5a7f57662b42e06f769951fa5f5",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/memory.md",
+      "sha256": "db9138ae0d573e5852cd115fa5eb8180ea4e0626e9c47f405d6b641ae5800d64",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/notes_tasks.md",
+      "sha256": "1a008b874acfb747a78ab7f7b23fe8d788c746871ee9cb41cbac737ef9279bc2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/office.md",
+      "sha256": "14810bbff00bfa1bf58fbb8076a97143463fab2c04dac70ab7ac0910ec4f0731",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-10"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/package.md",
+      "sha256": "b9342cef13718034ccfd40a18a551bd99e3d0e5b2b2d54389f28cc8e0f7f447d",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/peripheral.md",
+      "sha256": "e72ce9057fe706312dc24c2e8104be903f52353b90982b987cbfa62410ccfb28",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/photo_library.md",
+      "sha256": "30ebf79cb5a052b86732a89aa5fb49133759b17b6928bd52b8401a9e03a0383f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/printer_scanner.md",
+      "sha256": "e88e58702ddf9658c95c562e2df0457ebcfcbfdae21ee6657565dbd0261dfbfb",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/registry.md",
+      "sha256": "9ebc17e0e8fed00fe379f0da9eec563b96cee83a11232bab4342b866d79dba93",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/routine.md",
+      "sha256": "48820603d426a4157080adbfabb7dc83e2b6bb919990a7071cb1e73788491259",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-42",
+        "m:21"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/safety.md",
+      "sha256": "9f9145651be057575feac2382e21be83f1eb557753d139986d6224e4f4d65440",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/session.md",
+      "sha256": "2b48a2b865d519cc3b70097a58ac7f8b584929e3d2514d72601ce7c1e8d6b79a",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/skill_load.md",
+      "sha256": "d1601b2772f9f4f0e6f44b3533a62ba525ebc8c08109de46a52f2dbea7eb348b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/source_manager.md",
+      "sha256": "8690fc82cb00d23d65883d15416768ad50d11c6bbce3b255fc1574d35eb37d73",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/state.md",
+      "sha256": "696b7a07df72a9532b6e3333eda29e2b2cb601415d656f885eb06d0dd30d37bd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/system.md",
+      "sha256": "f33142f6b9ca7a260c79fce92bf8dd6de77222ad1b430deb2fabb87e2fb2d585",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/terminal.md",
+      "sha256": "062f464b1dbb7ab53aa49405d7cd4e45088d9cd43de25833e4308b7b19d8edc3",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7",
+        "m:3"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/uia.md",
+      "sha256": "a3f1bfa2ab42949af8a6cf82b09a0a9c84d32ab67aca83297fd90d062e760a6c",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/verify.md",
+      "sha256": "43793eefa5f9aa4d3f1a774afd51c23f671e1134be9254e393e3f15057cee7d1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/vision.md",
+      "sha256": "6a1220da0678846574ecf3edd595de470b8bb8d052dc7fe2e7452b4317045b60",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/whatsapp.md",
+      "sha256": "36c490947f223f4f9858c8cd07013e99fd1fa0e59c6b9cd7ef26fa4b62a1d423",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-7",
+        "m:5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/window.lean.md",
+      "sha256": "76b93aa10b98679036048dcd9a450dbbda962fdb17d02ac151c194091085ba83",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-5"
+      ]
+    },
+    {
+      "path": "legacy/legacy_export/prompts/tool_rules/window.md",
+      "sha256": "e2dcefa59eb41cc9a08b1b52fcc6a9d0432b53b15b2bd4a582bd45ad40f9c502",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-9"
+      ]
+    },
+    {
+      "path": "legacy/microagents/README.md",
+      "sha256": "d596b661ce141bcaaa9fb6d51c598b1ed55b7398e93b792b30546b6ee3aa8dfe",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-52",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "legacy/microagents/glossary_libs.md",
+      "sha256": "e17c85a936fc9ae92996bda3fb2dcad323798ef743dbcf456ab936162983f332",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-16",
+        "h:7",
+        "m:9"
+      ]
+    },
+    {
+      "path": "legacy/microagents/glossary_modelos.md",
+      "sha256": "61652b5f08a4edb0902b1296772cd69f797e38293880ab8a5b2bdab7fc70923b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-16",
+        "h:7",
+        "m:3"
+      ]
+    },
+    {
+      "path": "legacy/microagents/glossary_windows.md",
+      "sha256": "01f69f4c9d1c40af9a497b9f356317f38077d46ae1428732a4ac989b1a7d6ade",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-14",
+        "h:7",
+        "m:13"
+      ]
+    },
+    {
+      "path": "legacy/microagents/windows_commands.md",
+      "sha256": "b40c69f876608609f35e1a611c4323bdbd220bf0deaf8f1009ad3f67ae277833",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-41",
+        "h:7"
+      ]
+    },
+    {
+      "path": "legacy/requirements.txt",
+      "sha256": "7a9aaaf6dce92baa507d24a9dae86b929e79c5d0d011dc3f8da925db1f77ee86",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-48",
+        "h:1"
+      ]
+    },
+    {
+      "path": "legacy/skills/README.md",
+      "sha256": "c39363ebb55fff50f1b8543b7f102f087c9151b8c1fcafa7ce4338a7726660ad",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-37",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "legacy/skills/backup-then-clean/SKILL.md",
+      "sha256": "0723bdc7722003874bb416a82b53c9dbd34e0e3927d7b955ecd7bcb99c4bc394",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-50",
+        "h:14"
+      ]
+    },
+    {
+      "path": "legacy/skills/capabilities-overview/SKILL.md",
+      "sha256": "e668bcd4e48a72d2dba36931d0d92113bde51aba57985cdf0438fb5e05da08f1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-54",
+        "h:26"
+      ]
+    },
+    {
+      "path": "legacy/skills/debug-app-crash/SKILL.md",
+      "sha256": "b412e6fd38ac283e67bbb3765f5c40761edbf30c0d45a6382b5edc2843d6d6fc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-44",
+        "h:17",
+        "m:29"
+      ]
+    },
+    {
+      "path": "legacy/skills/download-file/SKILL.md",
+      "sha256": "16ad293fb9e4e6d3a30bce319553ca357a1ca794526109aa216a96e07ddf00da",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-52",
+        "h:27"
+      ]
+    },
+    {
+      "path": "legacy/skills/install-steam-game/SKILL.md",
+      "sha256": "313a61cfbee7d19c267a8dae8e9743192dc1ac5a159adc207df55125bf52cd7b",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-59",
+        "h:19"
+      ]
+    },
+    {
+      "path": "legacy/skills/new-development-project/SKILL.md",
+      "sha256": "f05f0beca962eff773d1da84db6f266b33cf8c06684ceb575b0870d4bd71f635",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-47",
+        "h:18"
+      ]
+    },
+    {
+      "path": "legacy/skills/purchase-guard/SKILL.md",
+      "sha256": "53c752484cbe6b1db8d099bd39b0c163ed4e9c4db141e7a7ff2108d87f10e9b2",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-55",
+        "h:27"
+      ]
+    },
+    {
+      "path": "legacy/skills/research-and-summarize/SKILL.md",
+      "sha256": "16d86eb5bf6304e87b3f4029bad1bd5e2e54bddc263c7247a143df1eaea9edb1",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-53",
+        "h:25"
+      ]
+    },
+    {
+      "path": "legacy/skills/safe-file-cleanup/SKILL.md",
+      "sha256": "628c0c101239e04088be495b340c62e8a960abc6b89551f702ebba2fbffc1955",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-70",
+        "h:26"
+      ]
+    },
+    {
+      "path": "legacy/skills/schedule-recurring-task/SKILL.md",
+      "sha256": "844db240010adc44d60b4bbd667566e9e0b2b76eb39f23e99451105ad6529873",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-48",
+        "h:21"
+      ]
+    },
+    {
+      "path": "legacy/skills/screenshot-and-analyze/SKILL.md",
+      "sha256": "b4428700885160513f9f458708d207277c62e07f554a9e4ced293e90dd5397fc",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-46",
+        "h:24"
+      ]
+    },
+    {
+      "path": "legacy/skills/voice-record-transcribe/SKILL.md",
+      "sha256": "c79bda09bce09f144a55b289406d7df4951776ae5069e31295ab51aca895eeec",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-49",
+        "h:25"
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "e2d4dfb5bb126fa37f1bf2800a5f22e63fb623086f9403f513f756bd9147144e",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-110",
+        "h:1"
+      ]
+    },
+    {
+      "path": "AGENT_HANDOFF.md",
+      "sha256": "3dbab7a22a61833de018b9f406fb190a5969131ce35cb1621777c46646011c69",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-144",
+        "h:1",
+        "m:38"
+      ]
+    },
+    {
+      "path": "BAXY_GPT56_ULTRA_PROMPT.md",
+      "sha256": "c5c98f8b2c4e5173fa55ab99ad9c00771c3cc72140bb3af515161e8ee1e30cc9",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-974",
+        "h:1",
+        "m:171"
+      ]
+    },
+    {
+      "path": "R209_CROSS_ENCODER_HANDOFF.md",
+      "sha256": "9923e4ad5ebee5265782dd92bfd9741bead652b8f1a2227263c601ae9725bc87",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-161",
+        "h:1",
+        "m:31"
+      ]
+    },
+    {
+      "path": "README.md",
+      "sha256": "e11d307aa119fc83e58d77aa283e1e41127db0959656d66e980f1b49bfaea8dd",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-131",
+        "h:1",
+        "m:17"
+      ]
+    },
+    {
+      "path": "constraints-runtime-win-x64.txt",
+      "sha256": "15bd88f3ed744bfb6dff6e37c460d4a6514d47ad5e2287c2e161314df967c434",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-63",
+        "h:1"
+      ]
+    },
+    {
+      "path": "constraints-test-win-x64.txt",
+      "sha256": "dc49423d00f8f7fcd8521c60cef36bd9d96a277e56f45953a4c55b8d41a91d1f",
+      "source_id": "baxy",
+      "terminal": "leido",
+      "ranges": [
+        "1-10",
+        "h:1"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-024-baxy-01-AGENTS.md",
+      "claim_kind": "documental",
+      "problem": "BAXY: guía obligatoria para agentes: El checkout que contiene este archivo es el repositorio activo y la única",
+      "outcome": "contexto",
+      "solution_or_failure": "El checkout que contiene este archivo es el repositorio activo y la única",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "AGENTS.md",
+        "ranges": [
+          "1-110",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "llama.cpp",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo AGENTS.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "AGENTS.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-02-AGENT_HANDOFF.md",
+      "claim_kind": "documental",
+      "problem": "BAXY private asset handoff: Use branch `codex/baxy-rebuild-v3`. The default branch has unrelated history.",
+      "outcome": "contexto",
+      "solution_or_failure": "Use branch `codex/baxy-rebuild-v3`. The default branch has unrelated history.",
+      "causal_mechanism": "because its 25,156 rows combine 17,784 licensed public train rows with 7,372",
+      "measurement": "If `FunctionGemma` must live elsewhere, pass its root explicitly: | if ($LASTEXITCODE -ne 0) { throw 'Turn-evidence rebuild failed' } | one-sided evaluation reports precision 0.994083, recall 0.42 and 0/400 false | Its gate selected only 12/2,300 `supported_effect` utterances",
+      "provenance": {
+        "path": "AGENT_HANDOFF.md",
+        "ranges": [
+          "1-144",
+          "h:1",
+          "m:38"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "functiongemma",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo AGENT_HANDOFF.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "AGENT_HANDOFF.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-03-BAXY_GPT56_ULTRA_PROMPT.md",
+      "claim_kind": "documental",
+      "problem": "Prompt maestro — reconstrucción definitiva de BAXY: Copia desde la siguiente línea hasta el final en una sesión nueva de GPT-5.6",
+      "outcome": "contexto",
+      "solution_or_failure": "Copia desde la siguiente línea hasta el final en una sesión nueva de GPT-5.6",
+      "causal_mechanism": "manifest_private.json e informes_finales.jsonl. Está ignorada por Git porque | - arquitectura fragmentada solo porque ya existe; | No existe la categoría “lo omitimos porque había demasiados mensajes”. Un caso | porque ya exista, porque aparezca en documentacion\\04 o porque resulte cómodo.",
+      "measurement": "perfil experimental de Spotify declaraba 95/92/3/39. Esos números sirven | epochs, counts y attestation eran incompatibles a propósito. Conserva el | - inventariar siete procesos de Spotify podía superar un timeout de 8 s en | 10. Otro intento de promover Gemma 4 unificado terminó con 0/11 activaciones, | - evidencias de VRAM, latencia y estabilidad; | efectos verificados, seguridad proporcional…",
+      "provenance": {
+        "path": "BAXY_GPT56_ULTRA_PROMPT.md",
+        "ranges": [
+          "1-974",
+          "h:1",
+          "m:171"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "functiongemma",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo BAXY_GPT56_ULTRA_PROMPT.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "BAXY_GPT56_ULTRA_PROMPT.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-04-R209_CROSS_ENCODER_HANDOFF.md",
+      "claim_kind": "documental",
+      "problem": "Handoff — cross-encoder BAXY R207–R209: Rama transferible: `codex/baxy-cross-encoder-r209-handoff`.",
+      "outcome": "contexto",
+      "solution_or_failure": "Rama transferible: `codex/baxy-cross-encoder-r209-handoff`.",
+      "causal_mechanism": "porque reduzca su pérdida: debe cumplir exactitud y abstención fuera de | - R208 está prerregistrado antes de la GPU. El mecanismo es un cross-encoder | `D:\\BAXYRuntime\\experiments\\mtop-operation-compatibility-verifier-v16`. | las descripciones para seleccionar volvería a ser un mecanismo textual y no",
+      "measurement": "al menos 74/77 de R146 model-owned y 9/9 controles OOS con cero candidatos. | 16/77 exactos (mínimo 74), 5/9 OOS con cero candidatos (requeridos 9/9) y | p95 0,370289 s. La pérdida bajó 0,238768 → 0,148729 → 0,128127, pero no es | 97/169 (57,3964 %). Puede validar una llamada ya conocida, pero no groundear un | catálogo, rechazado porque aumentó el sobre-veto del corte B de 224/560 a | 385/560. P…",
+      "provenance": {
+        "path": "R209_CROSS_ENCODER_HANDOFF.md",
+        "ranges": [
+          "1-161",
+          "h:1",
+          "m:31"
+        ],
+        "date": "2026-08-14",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "qwen3",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo R209_CROSS_ENCODER_HANDOFF.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "R209_CROSS_ENCODER_HANDOFF.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-05-README.md",
+      "claim_kind": "documental",
+      "problem": "BAXY — reconstrucción v3: El manual operativo para agentes de IA empieza en",
+      "outcome": "contexto",
+      "solution_or_failure": "El manual operativo para agentes de IA empieza en",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "completa de las 169 operaciones, latencias GPU/CPU, picos de VRAM/RAM y la lista",
+      "provenance": {
+        "path": "README.md",
+        "ranges": [
+          "1-131",
+          "h:1",
+          "m:17"
+        ],
+        "date": "2026-08-11",
+        "hardware": "VRAM",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo README.md: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-06-constraints-runtime-win-x64.txt",
+      "claim_kind": "documental",
+      "problem": "Grafo exacto medido y aprobado para CPython 3.12 / Windows x64.: annotated-doc==0.0.4",
+      "outcome": "contexto",
+      "solution_or_failure": "annotated-doc==0.0.4",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "constraints-runtime-win-x64.txt",
+        "ranges": [
+          "1-63",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "livekit",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo constraints-runtime-win-x64.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "constraints-runtime-win-x64.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-07-constraints-test-win-x64.txt",
+      "claim_kind": "documental",
+      "problem": "Clausura exacta de pytest para CPython 3.12 / Windows x64.: colorama==0.4.6",
+      "outcome": "contexto",
+      "solution_or_failure": "colorama==0.4.6",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "constraints-test-win-x64.txt",
+        "ranges": [
+          "1-10",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo constraints-test-win-x64.txt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "constraints-test-win-x64.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-08-legacy",
+      "claim_kind": "documental",
+      "problem": "BAXY — dependencias por capa. El CORE corre solo con la stdlib.: psutil==7.2.0 # pc_status, apps verify, metrics de la GUI",
+      "outcome": "contexto",
+      "solution_or_failure": "psutil==7.2.0 # pc_status, apps verify, metrics de la GUI",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/requirements.txt",
+        "ranges": [
+          "1-48",
+          "h:1"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "piper",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "legacy/requirements.txt"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-09-legacy-docs",
+      "claim_kind": "documental",
+      "problem": "Registro de decisiones técnicas: Cada decisión importante, con su porqué y su fuente (documentación local",
+      "outcome": "fracaso",
+      "solution_or_failure": "Cada decisión importante, con su porqué y su fuente (documentación local",
+      "causal_mechanism": "**Decisión:** portar el mecanismo completo del viejo (task \\Baxy\\ + | window.focus porque el motor manda \"query\". | vacíos (commits 0234768 + 3b3cbaa del viejo), con few-shot porque el | autocontenidos porque BAXY no tiene agente que lea archivos. | `media.pause`, porque esa operación global puede apuntar a otra sesión; el | message. A plain SHA-256 of the message is also intentionally absent bec…",
+      "measurement": "−379MB RAM medidos), FunctionGemma-270M para tools (opcional), Gemma 4 | capacidades (~1.8GB VRAM vs 2.9 del perfil clásico). | `infra/profiles.py` (números de VRAM por perfil, medidos con nvidia-smi). | para el LLM 4B — con 9 capacidades el coseno directo rutea 9/9 los | **Decisión:** GGUFs (2-3GB), encoder (118MB), wake models quedan en el | **Por qué:** duplicar ~9GB no agrega capacidad; si se…",
+      "provenance": {
+        "path": "legacy/docs/decision_log.md",
+        "ranges": [
+          "1-2274",
+          "h:1",
+          "m:9"
+        ],
+        "date": "2026-06-17",
+        "hardware": "VRAM",
+        "model": "functiongemma",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/docs: 21 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/docs/decision_log.md",
+        "legacy/docs/dependency_map.md",
+        "legacy/docs/discord_message_v2_security.md",
+        "legacy/docs/filesystem_write_transaction_blocker.md",
+        "legacy/docs/gemma4_validation.md",
+        "legacy/docs/gui_reminders_v2_security.md",
+        "legacy/docs/inventory.md",
+        "legacy/docs/local_calendar_v2_security.md",
+        "legacy/docs/migration_plan.md",
+        "legacy/docs/mission_ledger_v1_integration.md",
+        "legacy/docs/office_document_v2_security.md",
+        "legacy/docs/pending_modules.md",
+        "legacy/docs/productivity_v2_security.md",
+        "legacy/docs/routines_v2_security.md",
+        "legacy/docs/skills_authoring.md",
+        "legacy/docs/steam_spotify_compound_security.md",
+        "legacy/docs/tasks_v2_security.md",
+        "legacy/docs/tool_ecosystem_v2.md",
+        "legacy/docs/tool_ecosystem_v2_coverage.md",
+        "legacy/docs/tts_landscape_2026.md",
+        "legacy/docs/vision_attachment_v2_security.md"
+      ],
+      "repeats": [
+        "legacy/docs/dependency_map.md",
+        "legacy/docs/discord_message_v2_security.md",
+        "legacy/docs/filesystem_write_transaction_blocker.md",
+        "legacy/docs/gemma4_validation.md",
+        "legacy/docs/gui_reminders_v2_security.md",
+        "legacy/docs/inventory.md",
+        "legacy/docs/local_calendar_v2_security.md",
+        "legacy/docs/migration_plan.md",
+        "legacy/docs/mission_ledger_v1_integration.md",
+        "legacy/docs/office_document_v2_security.md",
+        "legacy/docs/pending_modules.md"
+      ]
+    },
+    {
+      "card_id": "docs-024-baxy-10-legacy-legacy_export",
+      "claim_kind": "documental",
+      "problem": "legacy_export — código real del BAXY anterior, conservado: Copias **curadas y revisadas** del proyecto anterior",
+      "outcome": "contexto",
+      "solution_or_failure": "Copias **curadas y revisadas** del proyecto anterior",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/legacy_export/README.md",
+        "ranges": [
+          "1-33",
+          "h:1"
+        ],
+        "date": "2026-06-26",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/legacy_export: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/legacy_export/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-11-legacy-legacy_export-prompts",
+      "claim_kind": "documental",
+      "problem": "legacy/legacy_export/prompts: You are Baxy, a local Windows agent powered by the Gemma 4 model. Your NAME is",
+      "outcome": "contexto",
+      "solution_or_failure": "You are Baxy, a local Windows agent powered by the Gemma 4 model. Your NAME is",
+      "causal_mechanism": "because they promise something instead of executing/answering it: | 6. NEVER respond with \"no entendí\" purely because of poor diction. Only | - The post-tool verifier checks that your reply mentions the action",
+      "measurement": "do NOT fall back to a value from training. \"Te quedan ~350 GB libres | tool ran\", not automatically \"the user goal is complete\". If status is failed, | 5. For misheard proper names (artist/movie/game titles), pass YOUR | or status=\"failed\". | \"the tool ran\", not \"the goal is done\"; if status is failed/attempted/ | YouTube, \"estim\"=Steam. Pass your best-guess query to the tool (search fixes minor",
+      "provenance": {
+        "path": "legacy/legacy_export/prompts/core.md",
+        "ranges": [
+          "1-209",
+          "m:27"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/legacy_export/prompts: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "legacy/legacy_export/prompts/core.md",
+        "legacy/legacy_export/prompts/core_lean.md"
+      ],
+      "repeats": [
+        "legacy/legacy_export/prompts/core_lean.md"
+      ]
+    },
+    {
+      "card_id": "docs-024-baxy-12-legacy-legacy_export-prompts-tool_rules",
+      "claim_kind": "documental",
+      "problem": "legacy/legacy_export/prompts/tool_rules: Accessibility rule: accessibility(...) for Windows Ease of Access features. Actions: status, magnifier_start, magnifier_stop, narrator_start, narrator_stop, dictation_status, settings_panel.",
+      "outcome": "inconcluso",
+      "solution_or_failure": "Accessibility rule: accessibility(...) for Windows Ease of Access features. Actions: status, magnifier_start, magnifier_stop, narrator_start, narrator_stop, dictation_status, settings_panel.",
+      "causal_mechanism": "This is critical because in subsequent turns the tool_result is dropped from history; only your reply text survives. If you don't cite the path, the user (and your future self) will lose track of where the file is. | Each per-tool verifier registered in verifiers.py also runs automatically post-call; verify(...) is the on-demand surface when the agent needs to assert a fact independently of the t…",
+      "measurement": "NOT for \"what's open NOW\": app.search finds an installed app BY NAME to open it. \"¿qué juego estoy jugando?\" / \"what app is open\" = window(action='active'), NOT app.search. The question's verb ('jugando'/'playing') is NOT an app name — neve | Gaming, Epic, GOG, or any brand whose EXACT domain/TLD you are not 100% | are not 100% certain of its exact domain, do this instead: | For the user's typed…",
+      "provenance": {
+        "path": "legacy/legacy_export/prompts/tool_rules/accessibility.md",
+        "ranges": [
+          "1-5"
+        ],
+        "date": "2026-05-17",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma-4",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/legacy_export/prompts/tool_rules: 50 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "legacy/legacy_export/prompts/tool_rules/accessibility.md",
+        "legacy/legacy_export/prompts/tool_rules/app.lean.md",
+        "legacy/legacy_export/prompts/tool_rules/app.md",
+        "legacy/legacy_export/prompts/tool_rules/audio.md",
+        "legacy/legacy_export/prompts/tool_rules/audio_device.md",
+        "legacy/legacy_export/prompts/tool_rules/backup_sync.md",
+        "legacy/legacy_export/prompts/tool_rules/browser.md",
+        "legacy/legacy_export/prompts/tool_rules/browser_real.md",
+        "legacy/legacy_export/prompts/tool_rules/clipboard.md",
+        "legacy/legacy_export/prompts/tool_rules/container.md",
+        "legacy/legacy_export/prompts/tool_rules/creative_local.md",
+        "legacy/legacy_export/prompts/tool_rules/data_analysis.md",
+        "legacy/legacy_export/prompts/tool_rules/database.md",
+        "legacy/legacy_export/prompts/tool_rules/dependency.md",
+        "legacy/legacy_export/prompts/tool_rules/desktop_layout.md",
+        "legacy/legacy_export/prompts/tool_rules/device_settings.md",
+        "legacy/legacy_export/prompts/tool_rules/download.md",
+        "legacy/legacy_export/prompts/tool_rules/env.md",
+        "legacy/legacy_export/prompts/tool_rules/filesystem.md",
+        "legacy/legacy_export/prompts/tool_rules/gui.md",
+        "legacy/legacy_export/prompts/tool_rules/habit_tracker.md",
+        "legacy/legacy_export/prompts/tool_rules/input.md",
+        "legacy/legacy_export/prompts/tool_rules/job_manager.md",
+        "legacy/legacy_export/prompts/tool_rules/local_calendar.md",
+        "legacy/legacy_export/prompts/tool_rules/local_search.md",
+        "legacy/legacy_export/prompts/tool_rules/media.lean.md",
+        "legacy/legacy_export/prompts/tool_rules/media.md",
+        "legacy/legacy_export/prompts/tool_rules/media_edit.md",
+        "legacy/legacy_export/prompts/tool_rules/memory.md",
+        "legacy/legacy_export/prompts/tool_rules/notes_tasks.md",
+        "legacy/legacy_export/prompts/tool_rules/office.md",
+        "legacy/legacy_export/prompts/tool_rules/package.md",
+        "legacy/legacy_export/prompts/tool_rules/peripheral.md",
+        "legacy/legacy_export/prompts/tool_rules/photo_library.md",
+        "legacy/legacy_export/prompts/tool_rules/printer_scanner.md",
+        "legacy/legacy_export/prompts/tool_rules/registry.md",
+        "legacy/legacy_export/prompts/tool_rules/routine.md",
+        "legacy/legacy_export/prompts/tool_rules/safety.md",
+        "legacy/legacy_export/prompts/tool_rules/session.md",
+        "legacy/legacy_export/prompts/tool_rules/skill_load.md",
+        "legacy/legacy_export/prompts/tool_rules/source_manager.md",
+        "legacy/legacy_export/prompts/tool_rules/state.md",
+        "legacy/legacy_export/prompts/tool_rules/system.md",
+        "legacy/legacy_export/prompts/tool_rules/terminal.md",
+        "legacy/legacy_export/prompts/tool_rules/uia.md",
+        "legacy/legacy_export/prompts/tool_rules/verify.md",
+        "legacy/legacy_export/prompts/tool_rules/vision.md",
+        "legacy/legacy_export/prompts/tool_rules/whatsapp.md",
+        "legacy/legacy_export/prompts/tool_rules/window.lean.md",
+        "legacy/legacy_export/prompts/tool_rules/window.md"
+      ],
+      "repeats": [
+        "legacy/legacy_export/prompts/tool_rules/app.lean.md",
+        "legacy/legacy_export/prompts/tool_rules/app.md",
+        "legacy/legacy_export/prompts/tool_rules/audio.md",
+        "legacy/legacy_export/prompts/tool_rules/audio_device.md",
+        "legacy/legacy_export/prompts/tool_rules/backup_sync.md",
+        "legacy/legacy_export/prompts/tool_rules/browser.md",
+        "legacy/legacy_export/prompts/tool_rules/browser_real.md",
+        "legacy/legacy_export/prompts/tool_rules/clipboard.md",
+        "legacy/legacy_export/prompts/tool_rules/container.md",
+        "legacy/legacy_export/prompts/tool_rules/creative_local.md",
+        "legacy/legacy_export/prompts/tool_rules/data_analysis.md"
+      ]
+    },
+    {
+      "card_id": "docs-024-baxy-13-legacy-microagents",
+      "claim_kind": "documental",
+      "problem": "BAXY microagents: Markdown con frontmatter que se inyecta al system prompt del QAT (turnos",
+      "outcome": "contexto",
+      "solution_or_failure": "Markdown con frontmatter que se inyecta al system prompt del QAT (turnos",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "triggers: [\"GGUF\", \"HKLM\"] | | `glossary_modelos.md` | GGUF, llama.cpp, mmproj, QAT, quantization, VRAM… | | - **psutil**: lib Python de procesos/CPU/RAM sin spawn de PowerShell (~30ms vs ~5s de tasklist). | - **win32gui** (pywin32): APIs nativas de ventanas (EnumWindows ~10ms). | triggers: [\"GGUF\", \"GGML\", \"llama.cpp\", \"llama-server\", \"mmproj\", \"KV cache\", \"prewarm\", \"quantization\", \"cuantizacio…",
+      "provenance": {
+        "path": "legacy/microagents/README.md",
+        "ranges": [
+          "1-52",
+          "h:1",
+          "m:12"
+        ],
+        "date": "2026-08-31",
+        "hardware": "VRAM",
+        "model": "llama.cpp",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/microagents: 5 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "documentacion/herencia/ (mapa Goal 01) + owner por pieza en 09.5.9",
+      "source_files": [
+        "legacy/microagents/README.md",
+        "legacy/microagents/glossary_libs.md",
+        "legacy/microagents/glossary_modelos.md",
+        "legacy/microagents/glossary_windows.md",
+        "legacy/microagents/windows_commands.md"
+      ],
+      "repeats": [
+        "legacy/microagents/glossary_libs.md",
+        "legacy/microagents/glossary_modelos.md",
+        "legacy/microagents/glossary_windows.md",
+        "legacy/microagents/windows_commands.md"
+      ]
+    },
+    {
+      "card_id": "docs-024-baxy-14-legacy-skills",
+      "claim_kind": "documental",
+      "problem": "BAXY skills: Workflows y conocimiento en markdown que el motor de skills (D37/D43,",
+      "outcome": "contexto",
+      "solution_or_failure": "Workflows y conocimiento en markdown que el motor de skills (D37/D43,",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "| microagent (`microagents/*.md`) | léxica — término técnico exacto, word-boundary | QUÉ SIGNIFICA un término (GGUF, HKLM…) |",
+      "provenance": {
+        "path": "legacy/skills/README.md",
+        "ranges": [
+          "1-37",
+          "h:1",
+          "m:19"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/README.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-15-legacy-skills-backup-then-clean",
+      "claim_kind": "documental",
+      "problem": "Backup antes de limpiar: name: backup-then-clean",
+      "outcome": "contexto",
+      "solution_or_failure": "name: backup-then-clean",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/backup-then-clean/SKILL.md",
+        "ranges": [
+          "1-50",
+          "h:14"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/backup-then-clean: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/backup-then-clean/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-16-legacy-skills-capabilities-overview",
+      "claim_kind": "documental",
+      "problem": "Qué puede hacer BAXY (hoy, honesto): name: capabilities-overview",
+      "outcome": "contexto",
+      "solution_or_failure": "name: capabilities-overview",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/capabilities-overview/SKILL.md",
+        "ranges": [
+          "1-54",
+          "h:26"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/capabilities-overview: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/capabilities-overview/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-17-legacy-skills-debug-app-crash",
+      "claim_kind": "documental",
+      "problem": "Diagnosticar una app que se colgó o crasheó: name: debug-app-crash",
+      "outcome": "contexto",
+      "solution_or_failure": "name: debug-app-crash",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "2. **¿Colgada (no responde)?** Opciones honestas en orden: esperar 30-60s | 3. **Recursos**: «cuánta CPU hay» / «cuánta RAM libre tengo» — si CPU>95% | o RAM>95%, eso ES un hallazgo medible; reportá los números reales.",
+      "provenance": {
+        "path": "legacy/skills/debug-app-crash/SKILL.md",
+        "ranges": [
+          "1-44",
+          "h:17",
+          "m:29"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/debug-app-crash: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/debug-app-crash/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-18-legacy-skills-download-file",
+      "claim_kind": "documental",
+      "problem": "Descargar un archivo de internet: name: download-file",
+      "outcome": "contexto",
+      "solution_or_failure": "name: download-file",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/download-file/SKILL.md",
+        "ranges": [
+          "1-52",
+          "h:27"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/download-file: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/download-file/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-19-legacy-skills-install-steam-game",
+      "claim_kind": "documental",
+      "problem": "Instalar o abrir un juego de Steam: name: install-steam-game",
+      "outcome": "contexto",
+      "solution_or_failure": "name: install-steam-game",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/install-steam-game/SKILL.md",
+        "ranges": [
+          "1-59",
+          "h:19"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/install-steam-game: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/install-steam-game/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-20-legacy-skills-new-development-project",
+      "claim_kind": "documental",
+      "problem": "Proyecto de desarrollo nuevo: name: new-development-project",
+      "outcome": "contexto",
+      "solution_or_failure": "name: new-development-project",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/new-development-project/SKILL.md",
+        "ranges": [
+          "1-47",
+          "h:18"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/new-development-project: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/new-development-project/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-21-legacy-skills-purchase-guard",
+      "claim_kind": "documental",
+      "problem": "Purchase guard (regla dura universal): name: purchase-guard",
+      "outcome": "contexto",
+      "solution_or_failure": "name: purchase-guard",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/purchase-guard/SKILL.md",
+        "ranges": [
+          "1-55",
+          "h:27"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/purchase-guard: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/purchase-guard/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-22-legacy-skills-research-and-summarize",
+      "claim_kind": "documental",
+      "problem": "Investigar y resumir: name: research-and-summarize",
+      "outcome": "contexto",
+      "solution_or_failure": "name: research-and-summarize",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/research-and-summarize/SKILL.md",
+        "ranges": [
+          "1-53",
+          "h:25"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/research-and-summarize: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/research-and-summarize/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-23-legacy-skills-safe-file-cleanup",
+      "claim_kind": "documental",
+      "problem": "Limpieza segura de archivos: name: safe-file-cleanup",
+      "outcome": "contexto",
+      "solution_or_failure": "name: safe-file-cleanup",
+      "causal_mechanism": "4. Informar «en cuarentena reversible» sólo si el verifier confirmó el cambio;",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/safe-file-cleanup/SKILL.md",
+        "ranges": [
+          "1-70",
+          "h:26"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/safe-file-cleanup: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/safe-file-cleanup/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-24-legacy-skills-schedule-recurring-task",
+      "claim_kind": "documental",
+      "problem": "Programar tareas recurrentes: name: schedule-recurring-task",
+      "outcome": "contexto",
+      "solution_or_failure": "name: schedule-recurring-task",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/schedule-recurring-task/SKILL.md",
+        "ranges": [
+          "1-48",
+          "h:21"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/schedule-recurring-task: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/schedule-recurring-task/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-25-legacy-skills-screenshot-and-analyze",
+      "claim_kind": "documental",
+      "problem": "Capturar y analizar la pantalla: name: screenshot-and-analyze",
+      "outcome": "contexto",
+      "solution_or_failure": "name: screenshot-and-analyze",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/screenshot-and-analyze/SKILL.md",
+        "ranges": [
+          "1-46",
+          "h:24"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/screenshot-and-analyze: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/Baxy.Kernel/ + Goal 09.5.7",
+      "source_files": [
+        "legacy/skills/screenshot-and-analyze/SKILL.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-024-baxy-26-legacy-skills-voice-record-transcribe",
+      "claim_kind": "documental",
+      "problem": "Grabar voz y transcribir: name: voice-record-transcribe",
+      "outcome": "contexto",
+      "solution_or_failure": "name: voice-record-transcribe",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "Sin cifra extraible en titulos/fragmentos; afirmacion documental, no reproducida.",
+      "provenance": {
+        "path": "legacy/skills/voice-record-transcribe/SKILL.md",
+        "ranges": [
+          "1-49",
+          "h:25"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "n/a (auditoria documental)",
+        "commit": "203c34a968ee7890e3c1f4505b7a5d12a3d4d45f"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo legacy/skills/voice-record-transcribe: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "historica",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "legacy/skills/voice-record-transcribe/SKILL.md"
+      ],
+      "repeats": []
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=100 drift=0 miss=0",
+  "next_docs_batch_id": "docs-025-baxy",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-024-baxy.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

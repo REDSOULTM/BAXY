@@ -1,0 +1,63 @@
+batch_id=docs-022-baxy
+kind=docs
+file_count=57
+hash_ok=57 drift=0 miss=0
+subsystem=baxy_docs_03_HALLAZGOS_AGENTES.md
+---FILES---
+OK documentacion/03_HALLAZGOS_AGENTES.md	Hallazgos recuperados de agentes y auditorías
+OK documentacion/04_ARQUITECTURA_TECNOLOGICA.md	Arquitectura tecnológica — base aprobada y mapa de candidatos
+OK documentacion/05_FALLOS_Y_REGRESIONES.md	Fallos históricos convertidos en regresiones
+OK documentacion/06_MAPA_FUENTES_HISTORICAS.md	Mapa reproducible de fuentes históricas
+OK documentacion/07_LEDGER_REQUISITOS_HISTORICOS.md	Ledger de requisitos históricos
+OK documentacion/08_EVOLUCION_CARTER_A_BAXY.md	Evolución causal de Carter a BAXY 1.0
+OK documentacion/09_LEDGER_EVIDENCIA_AGENTES.md	Ledger de evidencia recuperada de agentes
+OK documentacion/10_TORNEO_TECNOLOGICO.md	Torneo tecnológico reproducible
+OK documentacion/11_PRIMER_CORTE_PRODUCTIVO.md	Primer corte productivo de BAXY
+OK documentacion/12_SEGUNDO_CORTE_APP_OPEN.md	Segundo corte productivo: `app.open` acotado
+OK documentacion/13_TERCER_CORTE_NOTAS_NATURALES.md	Tercer corte productivo: notas naturales ES/EN/spanglish
+OK documentacion/14_CUARTO_CORTE_DESAMBIGUACION_NOTAS.md	Cuarto corte productivo: desambiguación durable de notas
+OK documentacion/15_QUINTO_CORTE_ESTADO_LOCAL_PC.md	Quinto corte productivo: estado local del PC
+OK documentacion/16_SEXTO_CORTE_AUDIO_GLOBAL.md	Sexto corte productivo: control global de audio
+OK documentacion/17_SEPTIMO_CORTE_MEMORIA_PRIVADA.md	Séptimo corte productivo: memoria privada local
+OK documentacion/18_OCTAVO_CORTE_GPU_LOCAL.md	Octavo corte productivo: estado local de GPU
+OK documentacion/19_NOVENO_CORTE_DISTRIBUCION_REPRODUCIBLE.md	Noveno corte — distribución reproducible
+OK documentacion/20_DECIMO_CORTE_SETUP_REPRODUCIBLE.md	Décimo corte — Setup embebido y reproducible
+OK documentacion/21_UNDECIMO_CORTE_DATA_SCHEMA_CONGELADO.md	Undécimo corte: `data_schema=1` congelado
+OK documentacion/22_INVENTARIO_ARQUEOLOGICO_CARTER_BAXY.md	Inventario arqueológico Carter → BAXY
+OK documentacion/23_CENSO_FUNCIONAL_TOOLS_CONGELADO.md	Censo funcional de tools (congelado)
+OK documentacion/24_ARQUEOLOGIA_PLANNER_CARTER_BAXY.md	Arqueología del planner: Carter → BAXY Python → BAXY .NET
+OK documentacion/25_INTEGRACION_GENERACIONAL_CARTER_SCHEMA_BAXY.md	Integración generacional Carter → Schema Agent → BAXY
+OK documentacion/26_ESTRUCTURA_Y_RUTAS_DE_MAQUINA.md	Estructura y rutas de máquina
+OK documentacion/agentes/INDICE.md	Índice recuperado de subagentes Codex
+OK documentacion/agentes/README.md	Recuperación de subagentes Codex
+OK documentacion/sprints/00_INDICE.md	BAXY por sprints — once prompts para GPT-5.6 Sol
+OK documentacion/sprints/01_HERENCIA.md	Sprint 01 — Herencia
+OK documentacion/sprints/02_BASE.md	Sprint 02 — Base reproducible
+OK documentacion/sprints/03_COMPRENSION.md	Sprint 03 — Comprensión
+OK documentacion/sprints/04_HONESTIDAD.md	Sprint 04 — Honestidad
+OK documentacion/sprints/05_EJECUCION.md	Sprint 05 — Ejecución verificada
+OK documentacion/sprints/06_VOZ_DEL_PRODUCTO.md	Sprint 06 — La voz del producto
+OK documentacion/sprints/07_MISIONES.md	Sprint 07 — Misiones compuestas
+OK documentacion/sprints/08_PRIMERA_SENAL.md	Sprint 08 — La primera señal
+OK documentacion/sprints/09_VOZ_Y_OIDO.md	Sprint 09 — Voz y oído
+OK documentacion/sprints/10_USO_DIARIO.md	Sprint 10 — Uso diario
+OK documentacion/sprints/11_VALIDACION.md	Sprint 11 — Validación y cierre
+OK experiments/functiongemma_selector/README.md	FunctionGemma como selector de hoja de BAXY
+OK experiments/functiongemma_selector/requirements-lock.txt	Install torch from the official PyTorch CUDA 12.8 index first:
+OK experiments/mind_llm_tournament/convo_transcripts.txt	
+OK experiments/mind_llm_tournament/results/convo_judged_review.md	Revisión juzgada — tarea B (conversación) de los finalistas LLM
+OK experiments/mind_router_spike/VEREDICTO.md	Veredicto del spike — router de intención por embeddings
+OK experiments/stt_quality/wordfreq_semantic_fusion_requirements.txt	
+OK experiments/technology_tournament/README.md	Cortes verticales del torneo tecnológico
+OK experiments/technology_tournament/python_core/README.md	Python core contender
+OK experiments/technology_tournament/python_core/packaging-requirements.txt	Exact environment used only to compare Python distribution formats.
+OK experiments/technology_tournament/round_b/dotnet_webview/README.md	.NET + WebView2 integrated finalist
+OK experiments/technology_tournament/round_b/tauri_rust/README.md	Tauri + Rust integrated finalist
+OK experiments/voice_latency/assets/baxy_open_vocab_keywords_v1.txt	
+OK experiments/voice_latency/baxy_kws_keywords.v1.txt	
+OK experiments/voice_latency/baxy_kws_keywords_development_v2.txt	
+OK experiments/voice_latency/baxy_kws_keywords_raw.v1.txt	
+OK experiments/voice_latency/baxy_kws_keywords_tokens.v1.txt	
+OK experiments/voice_latency/keywords_baxy_raw.txt	
+OK experiments/voice_latency/keywords_baxy_sherpa.txt	
+OK legacy/Codex.md	

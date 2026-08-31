@@ -1,0 +1,685 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-009-probando_gemma4",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:34Z",
+  "closed_utc": "2026-08-31T04:29:35Z",
+  "estimated_tokens": 294987,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "probando_gemma4",
+  "source_head": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71",
+  "source_root": "Programacion/Probando Gemma 4",
+  "file_count": 39,
+  "subsystem": "pg4_docs_01_arquitectura",
+  "files": [
+    {
+      "path": "documentacion/01_arquitectura/00_delta_inventory.md",
+      "sha256": "17bf040c3e8ef2d473c5eb9638ad6bb969580d6db10b804e9efa69c6f913a421",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-190",
+        "h:1",
+        "m:89"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/01_delta_system.md",
+      "sha256": "ed40c7e014367126c5956b1cf1a0fab606ce6cc8086cfbabdf0fe5679567b828",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-341",
+        "h:1",
+        "m:12"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/02_delta_components.md",
+      "sha256": "c1895a9dc9a01eb7b801cca97414e0a073778bf36f94e531f61f793d2cd0f08d",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-273",
+        "h:1",
+        "m:40"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/03_delta_classes.md",
+      "sha256": "2a7c6b30406a27b1d4ff872ad71306f8ca5a7fe786a87ae3adaaf80cc0ef1de9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-329",
+        "h:1",
+        "m:182"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/05_delta_data.md",
+      "sha256": "16cf82894e1c69c0d72c8e491fae959365832aab175b37703f8f8cde1562f4c9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-221",
+        "h:1",
+        "m:44"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/06_delta_dependencies.md",
+      "sha256": "5392711928ae055a96fea48c574b6306cb56459bb134c91e59f6f1628977ecd9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-153",
+        "h:1",
+        "m:148"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/08_findings_post_plan.md",
+      "sha256": "09f73fba28e34887e82396d11d7316b23fd2ecb66c4563b614d9d4c453e0d587",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-390",
+        "h:1",
+        "m:38"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/ARCHITECTURE.md",
+      "sha256": "f69d9a558c849269bbc886da7d169007a95c02c6e1eb85db99f4c6c76d9c1921",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-259",
+        "h:1",
+        "m:80"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/CONSOLIDACION_2026-06-10.md",
+      "sha256": "d2293e6f9e3b32a8194d0ff21f5ac5647c5deebe6da8533e18147d0e66307b04",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-117",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/MAPA_TESIS.md",
+      "sha256": "d0e1c5da6ab45f598d9c0648492e8a31f107cb452b9eab39f9f5c4b6fb67c4bb",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-132",
+        "h:1",
+        "m:117"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/MAPA_descomposicion_archivos_dios.md",
+      "sha256": "592c95be67ec6eaed65d273bcff4e97713651ac195e6642f5b98b5ab776b1483",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-86",
+        "h:1"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/PLAN_CERRADO.md",
+      "sha256": "4f19832e83dc6306af0f8d343d9372c82a153d7397d8e0d9597aac69f41ec5d7",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-200",
+        "h:1",
+        "m:16"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/README.md",
+      "sha256": "1148f3b7026dd8ce985754ff89e8dcc7a280c5dd34e753a2ea6593fabae66818",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-80",
+        "h:1",
+        "m:74"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/architecture_audit_2026_05_27.md",
+      "sha256": "23110bf8c48a16d9ca00020ad6aaa17dc7e5e22c0960816ef1fc928615925495",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-736",
+        "h:1",
+        "m:20"
+      ]
+    },
+    {
+      "path": "documentacion/01_arquitectura/design/barge_in.md",
+      "sha256": "2d318644435c6f760fc4c870259a663f5a41e73babeb6cd90ffd05e8f990d2d3",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-258",
+        "h:1",
+        "m:20"
+      ]
+    },
+    {
+      "path": "documentacion/02_router/B2_corpus_multilingue_hallazgos_2026-06-10.md",
+      "sha256": "ee3244c3d139ad1807fda0360c9bdac652d9704716b4bd09bf4c1103ff9da7b2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-158",
+        "h:1",
+        "m:10"
+      ]
+    },
+    {
+      "path": "documentacion/02_router/PLAN_MAESTRO_router.md",
+      "sha256": "4eaedc4a5aa3dd3137ff1fee3f7144f0882de45f3296e1750bac32962746b182",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-294",
+        "h:1",
+        "m:23"
+      ]
+    },
+    {
+      "path": "documentacion/02_router/README.md",
+      "sha256": "60f810c7a5bd4b46f44f09c4a7bc77416c90132276d9f53cb98358f1ae5a0485",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-140",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "documentacion/02_router/research/1_toolcalling.md",
+      "sha256": "1affdf94892cd0e8d284de2f52dced808d1bd462bc0a38b8e6b2a94fbbb2f597",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-362",
+        "h:1",
+        "m:78"
+      ]
+    },
+    {
+      "path": "documentacion/02_router/research/7_nlu.md",
+      "sha256": "e6543c8a35abe3bdf36d9b16bc5c591f6e5129a0b8e2b9709778d64cb5e7b5d1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-330",
+        "h:1",
+        "m:21"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/_DIAGNOSTICO_logs_sesion_2026-06-10.md",
+      "sha256": "826056eb7e6c1a1d6c65794571bbd55732111df49f4e9d9c094ff430fdd74c16",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-115",
+        "h:1",
+        "m:35"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/REPORTE_NOCHE_STT_PARAKEET_2026_05_23.md",
+      "sha256": "88f019b2d612abf3101a918f478afa4676f2a635162d40adcd310e2ffa2ee758",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-107",
+        "h:1",
+        "m:3"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/asr_local_codeswitching_hardware.md",
+      "sha256": "b273f233d45f3eb2e5fa8d6aff06a1de12380d17ac8d7e9e773dc49f501a1324",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-228",
+        "h:1",
+        "m:19"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/baseline_clean.txt",
+      "sha256": "f8ec1e2da416568202d52bbc9eee9fbfc6536978b1c570d95a305119f0fae0c0",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-70",
+        "h:18",
+        "m:2"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/baseline_real_voice.txt",
+      "sha256": "261e0822af6101da8abc3687f0af51a63066745903684431875de1b07b9bfc9a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-101",
+        "h:25",
+        "m:1"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/biasing_options.md",
+      "sha256": "d21cf72f23892255c38ed8a15852988a977cf79c2bdd20b1f6b14537742153f9",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-336",
+        "h:1",
+        "m:14"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/cadena_transcripcion_perfeccion_2026-06-11.md",
+      "sha256": "3803c896fa34eefad71f543423a03d6843c4e92310550f3387fef2f6f6f9a7db",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-106",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/etapa1a_es_metaphone.txt",
+      "sha256": "c0dcdffc2c7dda494117deb4ee21293753f0aa8302255df63016330f5ffb7f1c",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-75",
+        "h:23",
+        "m:1"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/etapa1b_expanded_inv.txt",
+      "sha256": "de08fab58de2dc65ed62800f5d8d9f0bb854f1a22f54a552523daaa066b92733",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-92",
+        "h:25",
+        "m:1"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/faster_whisper_int8_cpu_optimizacion.md",
+      "sha256": "ab176710b609f5dfdab73874fe8169d4430ed35e33249cdc855615770d82b370",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-1022",
+        "h:64",
+        "m:22"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/final_validation.txt",
+      "sha256": "890a6d33ad567d3e5653d094700407d16ff2852dcd32a0528c42681c7bc7514b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-67",
+        "h:23",
+        "m:1"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/inv1_toolcalling_medido_2026_05_23.md",
+      "sha256": "565d91df6d1f40a8625377ee5abf079fbd15db9af43aa7f9ffdb93a0a2398112",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-31",
+        "h:1",
+        "m:7"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/latency_ab_measurements_2026_05_23.md",
+      "sha256": "9e917a3a875a79747a4c6ed9d37a40f958a5b478fe4a36b6002e5d0967ba93c2",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-71",
+        "h:1",
+        "m:4"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/parakeet_beam_nombres_propios_decoding.md",
+      "sha256": "c01cc6c6def49a86e5f6b1d09262f374402549fe8febf7b786c99d2e40c9f9f1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-172",
+        "h:1",
+        "m:28"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/parakeet_v3_uso_correcto_2026-06-10.md",
+      "sha256": "db937f52be850a2dc8612f4500d76636918a31b4d504c86b3e542d83d150f8a1",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-153",
+        "h:1",
+        "m:40"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/plan_sherpa_parakeet_cpu_optimizacion.md",
+      "sha256": "ff18ea482ef1eab7f3dcd4f1a08f45b07e7db5f36cae694689762924b0e9d51b",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-169",
+        "h:1",
+        "m:49"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/sherpa_parakeet_hotwords_nombres_propios.md",
+      "sha256": "c6e040bb9219a5afc8a1239c567f2e3b9e8b5bf0f1a84de4d6f7cfd6adbdda91",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-188",
+        "h:1",
+        "m:54"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/spike_sherpa_parakeet.md",
+      "sha256": "348e2bf0ac56c707485c53f0c3269806e0d55b9cf64e5ddb19cad0c3eb58497a",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-265",
+        "h:1",
+        "m:9"
+      ]
+    },
+    {
+      "path": "documentacion/03_voz_stt/research/stt_biasing_contextual_spanglish_cpu.md",
+      "sha256": "915fe8111bd1b36d3ab196cf0d5a4b3e0379edf7a4d79ade884a1eca9e54fae6",
+      "source_id": "probando_gemma4",
+      "terminal": "leido",
+      "ranges": [
+        "1-126",
+        "h:1",
+        "m:47"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "docs-009-probando_gemma4-01-documentacion-01_arquitectura",
+      "claim_kind": "documental",
+      "problem": "00 — Delta Inventory (post-plan): `gemma4_agent/scripts/`:",
+      "outcome": "contexto",
+      "solution_or_failure": "`gemma4_agent/scripts/`:",
+      "causal_mechanism": "- `intent_validator.py` y `grounding_gate.py` adelgazado — restaurados desde stash (Sprint 1 recovery), no eliminados en Sprint 3a porque `intent_validator` es regex-only (no NLI) y `grounding_gate` mantiene parte inline sin NLI. | `_summarize_history_block` siguen en `Gemma4Agent` porque manejan | - LOC: similares (la clase no se redujo internamente porque 5b.1c | colapsaron porque divergen genu…",
+      "measurement": "| `agent.py` | 2 968 | **1 930** | **−1 038 (−35 %)** | 5b.2.c + 6.2 + 6.3 + 6.4 | | | `tools.py` | 4 825 | 4 282 | −543 (−11 %) | 5b.1.a + 5b.1.b + 5b.1.d | | ├── agent.py (1 930 LOC, era 2 968) [REDUCIDO −35%] | ├── tools.py (4 282 LOC, era 4 825) [REDUCIDO −11%] | - **`agent.py` perdió −1 038 LOC (−35 %)** distribuidos en 4 módulos | - **`tools.py` perdió −543 LOC (−11 %)** distribuidos en 3 m…",
+      "provenance": {
+        "path": "documentacion/01_arquitectura/00_delta_inventory.md",
+        "ranges": [
+          "1-190",
+          "h:1",
+          "m:89"
+        ],
+        "date": "2026-05-17",
+        "hardware": "VRAM",
+        "model": "gemma4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/01_arquitectura: 14 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/01_arquitectura/00_delta_inventory.md",
+        "documentacion/01_arquitectura/01_delta_system.md",
+        "documentacion/01_arquitectura/02_delta_components.md",
+        "documentacion/01_arquitectura/03_delta_classes.md",
+        "documentacion/01_arquitectura/05_delta_data.md",
+        "documentacion/01_arquitectura/06_delta_dependencies.md",
+        "documentacion/01_arquitectura/08_findings_post_plan.md",
+        "documentacion/01_arquitectura/ARCHITECTURE.md",
+        "documentacion/01_arquitectura/CONSOLIDACION_2026-06-10.md",
+        "documentacion/01_arquitectura/MAPA_TESIS.md",
+        "documentacion/01_arquitectura/MAPA_descomposicion_archivos_dios.md",
+        "documentacion/01_arquitectura/PLAN_CERRADO.md",
+        "documentacion/01_arquitectura/README.md",
+        "documentacion/01_arquitectura/architecture_audit_2026_05_27.md"
+      ],
+      "repeats": [
+        "documentacion/01_arquitectura/01_delta_system.md",
+        "documentacion/01_arquitectura/02_delta_components.md",
+        "documentacion/01_arquitectura/03_delta_classes.md",
+        "documentacion/01_arquitectura/05_delta_data.md",
+        "documentacion/01_arquitectura/06_delta_dependencies.md",
+        "documentacion/01_arquitectura/08_findings_post_plan.md",
+        "documentacion/01_arquitectura/ARCHITECTURE.md",
+        "documentacion/01_arquitectura/CONSOLIDACION_2026-06-10.md",
+        "documentacion/01_arquitectura/MAPA_TESIS.md",
+        "documentacion/01_arquitectura/MAPA_descomposicion_archivos_dios.md",
+        "documentacion/01_arquitectura/PLAN_CERRADO.md"
+      ]
+    },
+    {
+      "card_id": "docs-009-probando_gemma4-02-documentacion-01_arquitectura-design",
+      "claim_kind": "documental",
+      "problem": "Design — voice barge-in: The external post-plan audit flagged that the voice controller drops",
+      "outcome": "inconcluso",
+      "solution_or_failure": "The external post-plan audit flagged that the voice controller drops",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "> `# En THINKING / SPEAKING / IDLE_DISABLED / FAILED ignoramos audio.` | synchronously inside the audio callback (~5 ms / 30 ms chunk). | through the mic would always pass the threshold. We need *sustained* | self._barge_threshold_chunks = 17 # ~500 ms at 30 ms chunks | 500 ms is a deliberate compromise between false-positive resilience | implies <800 ms). The threshold should be tunable via env…",
+      "provenance": {
+        "path": "documentacion/01_arquitectura/design/barge_in.md",
+        "ranges": [
+          "1-258",
+          "h:1",
+          "m:20"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/01_arquitectura/design: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/Baxy.FieldUi/ + Goal 09.5.8",
+      "source_files": [
+        "documentacion/01_arquitectura/design/barge_in.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-009-probando_gemma4-03-documentacion-02_router",
+      "claim_kind": "documental",
+      "problem": "B2 — Corpus multilingüe de eval: construcción y hallazgos (2026-06-10): El corpus de eval del router (`router_eval_corpus.curated.jsonl`) estaba sesgado",
+      "outcome": "contexto",
+      "solution_or_failure": "El corpus de eval del router (`router_eval_corpus.curated.jsonl`) estaba sesgado",
+      "causal_mechanism": "eran invisibles porque no había ejemplos EN/IT/DE que los ejercitaran. B2 los | contaminado): aprende `text→tool` del dataset del LLM, sin hardcode — p.ej.",
+      "measurement": "| es | 1471 | 79% | | | pt | 207 | 11% | | | fr | 150 | 8% | | | en | 27 | 1% | | | it | 4 | 0% | | | de | 2 | 0% | | Cobertura de las 15 tools top-ES en los idiomas huérfanos: **EN 6/15, IT 3/15, | DE 0/15**. Validar cualquier mejora multilingüe contra esto era ciego en EN/IT/DE. | EN 89%, IT 85%, DE 78%. Los mismatches NO son ruido — son **huecos reales** que | EN/IT/DE** que antes no se medían…",
+      "provenance": {
+        "path": "documentacion/02_router/B2_corpus_multilingue_hallazgos_2026-06-10.md",
+        "ranges": [
+          "1-158",
+          "h:1",
+          "m:10"
+        ],
+        "date": "2026-06-10",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "gemma 4",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/02_router: 3 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "documentacion/02_router/B2_corpus_multilingue_hallazgos_2026-06-10.md",
+        "documentacion/02_router/PLAN_MAESTRO_router.md",
+        "documentacion/02_router/README.md"
+      ],
+      "repeats": [
+        "documentacion/02_router/PLAN_MAESTRO_router.md",
+        "documentacion/02_router/README.md"
+      ]
+    },
+    {
+      "card_id": "docs-009-probando_gemma4-04-documentacion-02_router-research",
+      "claim_kind": "documental",
+      "problem": "Tool-calling fiable y structured output en Gemma 4 E4B-it (Q4_K_M) sobre llama.cpp sin reasoning: - **Sí es viable desacoplar tool-calling de thinking** en este stack, pero la palanca dominante NO es la gramática (llama.cpp `--jinja` ya la activa por debajo en modo **lazy**, lo…",
+      "outcome": "exito",
+      "solution_or_failure": "- **Sí es viable desacoplar tool-calling de thinking** en este stack, pero la palanca dominante NO es la gramática (llama.cpp `--jinja` ya la activa por debajo en modo **lazy**, lo que NO cura el 2/6), sino dos cambios baratos: **(a) bajar drásticamente el sampling** en modo \"acción\" (`temperature=0.0` greedy o `temp≈0.2, top_k=1–5, top_p=1.0`) y **(b) sesgar el inicio de la respuesta** hacia el t",
+      "causal_mechanism": "Thinking funciona porque hace **(1) + (2)** implícitamente a costa de 268 tokens. Replicarlo explícitamente cuesta ~0–8 tokens (prefill + sampling). **Esto es el resultado clave.** | **Reasoning NO es estrictamente necesario** — es un mecanismo costoso para hacer lo que sampling + prefill hacen barato. **VIABLE quitarlo si combinas ≥2 palancas baratas**.",
+      "measurement": "| Gramática lazy (`tool_choice=auto`) | ~0 ms | Despreciable hasta que aparece el trigger; luego sub-ms por token de masking | | | Gramática non-lazy (`tool_choice=required`) | +5–20 ms (compilación si schema nuevo) | sub-ms por token aplicado desde token 0 | | | `response_format=json_schema` con schemas grandes | +20–80 ms | Igual que non-lazy una vez compilado | | -m gemma-4-E4B-it-Q4_K_M.gguf…",
+      "provenance": {
+        "path": "documentacion/02_router/research/1_toolcalling.md",
+        "ranges": [
+          "1-362",
+          "h:1",
+          "m:78"
+        ],
+        "date": "2026-05-18",
+        "hardware": "RTX 4090",
+        "model": "llama.cpp",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/02_router/research: 2 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "mecanismo_reutilizable",
+      "current_piece": "src/baxy_mind/ + Goal 09.5.5",
+      "source_files": [
+        "documentacion/02_router/research/1_toolcalling.md",
+        "documentacion/02_router/research/7_nlu.md"
+      ],
+      "repeats": [
+        "documentacion/02_router/research/7_nlu.md"
+      ]
+    },
+    {
+      "card_id": "docs-009-probando_gemma4-05-documentacion-03_voz_stt",
+      "claim_kind": "documental",
+      "problem": "Diagnóstico de los logs de sesión de voz (2026-06-10): Análisis de la activity de la UI (5 capturas). Dos problemas distintos.",
+      "outcome": "contexto",
+      "solution_or_failure": "Análisis de la activity de la UI (5 capturas). Dos problemas distintos.",
+      "causal_mechanism": "Afirmacion documental del snapshot 09.5.0. No se reejecuto. Repeticion entre agentes del mismo directorio no es evidencia independiente.",
+      "measurement": "lento (1570ms vs 71ms p50) pero respeta el idioma fijo. Quizá solo cuando el | failed** → reply \"te muestro la hora\" (?!) → más browser fallido → cancel_turn. | - intento B: `steam(store_page, appid:\"1234567890\")` → **steam failed** (appid | apareció un outlier: \"qué hora es\" tardaba **12-22s** la PRIMERA vez (vs 0.9-2s | - Descartado capa por capa: el LLM puro ~0.7s (warm), el tool `system.time`…",
+      "provenance": {
+        "path": "documentacion/03_voz_stt/_DIAGNOSTICO_logs_sesion_2026-06-10.md",
+        "ranges": [
+          "1-115",
+          "h:1",
+          "m:35"
+        ],
+        "date": "2026-08-31",
+        "hardware": "Windows · snapshot 09.5.0 (fuente hermana, solo lectura)",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/03_voz_stt: 1 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "documentacion/03_voz_stt/_DIAGNOSTICO_logs_sesion_2026-06-10.md"
+      ],
+      "repeats": []
+    },
+    {
+      "card_id": "docs-009-probando_gemma4-06-documentacion-03_voz_stt-research",
+      "claim_kind": "documental",
+      "problem": "Reporte de la noche — STT Parakeet-TDT-v3 llevado al máximo (2026-05-23): RED: trabajé toda la noche siguiendo `plan_sherpa_parakeet_cpu_optimizacion.md`.",
+      "outcome": "fracaso",
+      "solution_or_failure": "RED: trabajé toda la noche siguiendo `plan_sherpa_parakeet_cpu_optimizacion.md`.",
+      "causal_mechanism": "beneficio no está probado para nombres propios — no lo toqué porque el corrector | Para subsanar esta deficiencia arquitectónica, CTranslate2 y sus implementaciones derivadas (como faster-whisper) integran un mecanismo alternativo documentado como Sesgo Contextual Superficial (*Shallow Contextual Biasing*), expuesto a tra | 14. Question about padding mask, and using model's encoder features · ope…",
+      "measurement": "RED: trabajé toda la noche siguiendo `plan_sherpa_parakeet_cpu_optimizacion.md`. | | **Entity-Recall** (¿sobrevive el nombre propio?) | 70% | **81%** [70–89] | | | **Latencia p50** | 1593 ms | **74 ms** (21× más rápido) | | warm-up de 0.5 s al cargar. | inventario grande, el corrector corrompía 20/180 frases de terceros | + top artistas mundiales. Esto subió tu Entity-Recall de 64% → **81%**. | -…",
+      "provenance": {
+        "path": "documentacion/03_voz_stt/research/REPORTE_NOCHE_STT_PARAKEET_2026_05_23.md",
+        "ranges": [
+          "1-107",
+          "h:1",
+          "m:3"
+        ],
+        "date": "2026-05-23",
+        "hardware": "VRAM",
+        "model": "whisper",
+        "commit": "72f9e5fc6597be5169c99e282d33749d6f7537813fb824809beb85e1b13c7e71"
+      },
+      "limitations": "Lectura de snapshot hermana; no es prueba contemporanea de BAXY. Grupo documentacion/03_voz_stt/research: 18 archivos. Cuerpos no se pegan al ledger.",
+      "validity": "requiere_remeidir",
+      "current_piece": "src/baxy_mind/ (voz; Goal 09.5.6) + 09.5.9",
+      "source_files": [
+        "documentacion/03_voz_stt/research/REPORTE_NOCHE_STT_PARAKEET_2026_05_23.md",
+        "documentacion/03_voz_stt/research/asr_local_codeswitching_hardware.md",
+        "documentacion/03_voz_stt/research/baseline_clean.txt",
+        "documentacion/03_voz_stt/research/baseline_real_voice.txt",
+        "documentacion/03_voz_stt/research/biasing_options.md",
+        "documentacion/03_voz_stt/research/cadena_transcripcion_perfeccion_2026-06-11.md",
+        "documentacion/03_voz_stt/research/etapa1a_es_metaphone.txt",
+        "documentacion/03_voz_stt/research/etapa1b_expanded_inv.txt",
+        "documentacion/03_voz_stt/research/faster_whisper_int8_cpu_optimizacion.md",
+        "documentacion/03_voz_stt/research/final_validation.txt",
+        "documentacion/03_voz_stt/research/inv1_toolcalling_medido_2026_05_23.md",
+        "documentacion/03_voz_stt/research/latency_ab_measurements_2026_05_23.md",
+        "documentacion/03_voz_stt/research/parakeet_beam_nombres_propios_decoding.md",
+        "documentacion/03_voz_stt/research/parakeet_v3_uso_correcto_2026-06-10.md",
+        "documentacion/03_voz_stt/research/plan_sherpa_parakeet_cpu_optimizacion.md",
+        "documentacion/03_voz_stt/research/sherpa_parakeet_hotwords_nombres_propios.md",
+        "documentacion/03_voz_stt/research/spike_sherpa_parakeet.md",
+        "documentacion/03_voz_stt/research/stt_biasing_contextual_spanglish_cpu.md"
+      ],
+      "repeats": [
+        "documentacion/03_voz_stt/research/asr_local_codeswitching_hardware.md",
+        "documentacion/03_voz_stt/research/baseline_clean.txt",
+        "documentacion/03_voz_stt/research/baseline_real_voice.txt",
+        "documentacion/03_voz_stt/research/biasing_options.md",
+        "documentacion/03_voz_stt/research/cadena_transcripcion_perfeccion_2026-06-11.md",
+        "documentacion/03_voz_stt/research/etapa1a_es_metaphone.txt",
+        "documentacion/03_voz_stt/research/etapa1b_expanded_inv.txt",
+        "documentacion/03_voz_stt/research/faster_whisper_int8_cpu_optimizacion.md",
+        "documentacion/03_voz_stt/research/final_validation.txt",
+        "documentacion/03_voz_stt/research/inv1_toolcalling_medido_2026_05_23.md",
+        "documentacion/03_voz_stt/research/latency_ab_measurements_2026_05_23.md"
+      ]
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "inspect hash_ok=39 drift=0 miss=0",
+  "next_docs_batch_id": "docs-010-probando_gemma4",
+  "next_prompt": "campaign:docs",
+  "inspect": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\goal095\\extract\\docs-009-probando_gemma4.inspect.json",
+  "notes": "Afirmaciones son documentales salvo que claim_kind=reproducido. Ninguna cifra se presenta como vigente de BAXY actual."
+}

@@ -1,0 +1,1134 @@
+{
+  "batch_id": "docs-025-baxy",
+  "kind": "docs",
+  "source_id": "baxy",
+  "subsystem": "baxy_root_docs",
+  "file_count": 26,
+  "hash_ok": 26,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "goal.md",
+      "queued_sha256": "230165fcd935284cf0bd20fd171bb2052c04f5d1cf90a018dacf57030c886a7a",
+      "size_queued": 10128,
+      "exists": true,
+      "disk_sha256": "230165fcd935284cf0bd20fd171bb2052c04f5d1cf90a018dacf57030c886a7a",
+      "disk_size": 10128,
+      "hash_match": true,
+      "head_sha256": "230165fcd935284cf0bd20fd171bb2052c04f5d1cf90a018dacf57030c886a7a",
+      "extract": {
+        "binary": false,
+        "lines": 118,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Misión BAXY"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "1. Re-deriva la tecnología. No la heredes."
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "2. Lo que nunca se re-deriva"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "3. La barra"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "4. Lo entregable no tiene bugs"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "5. Disciplina de medición"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "6. Por dónde empezar"
+          },
+          {
+            "line": 108,
+            "level": 2,
+            "text": "7. Cómo trabajas"
+          }
+        ],
+        "lead": "Eres el agente responsable de BAXY. Tu objetivo es entregar **BAXY perfecto**: un asistente local para Windows que se sienta como Jarvis de uso diario en un PC normal.",
+        "measures": [
+          {
+            "line": 37,
+            "text": "3. **Estados terminales honestos.** `pending` es sólo reintentable. Un efecto ambiguo no reintentable es `failed` con `effectMayHaveOccurred`, y no se replanea ni se repite a ciegas."
+          },
+          {
+            "line": 50,
+            "text": "| A | Catálogo autenticado, formulaciones vistas | **> 95 %** |"
+          },
+          {
+            "line": 51,
+            "text": "| B | Paráfrasis **no vistas**, es / en / spanglish | **> 90 %** |"
+          },
+          {
+            "line": 52,
+            "text": "| C | Misiones compuestas y dependientes | **> 90 %** planes completos y verificados |"
+          },
+          {
+            "line": 53,
+            "text": "| D | Población abierta real | 100 % duro (ver abajo) |"
+          },
+          {
+            "line": 57,
+            "text": "El margen de A existe para no fingir un 100 %, **no para tolerar una familia rota**. Con A en 95 % sobre 169 operaciones caben hasta ocho fallos sin que el corte los detecte: un fallo sistemático de una familia entera se trata como defecto "
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "VRAM",
+          "16 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 26,
+            "text": "4. **Publica también lo rechazado y por qué.** Un candidato descartado con mecanismo entendido vale tanto como uno promovido."
+          }
+        ],
+        "ranges": [
+          "1-118",
+          "h:1",
+          "m:37"
+        ]
+      }
+    },
+    {
+      "path": "requirements-quality-win-x64.lock.txt",
+      "queued_sha256": "d6f56dee9f8da927608d866d58a19067248196ac0977f8fa97ca6276d02222c7",
+      "size_queued": 288,
+      "exists": true,
+      "disk_sha256": "d6f56dee9f8da927608d866d58a19067248196ac0977f8fa97ca6276d02222c7",
+      "disk_size": 288,
+      "hash_match": true,
+      "head_sha256": "3458b6e241c42ee3aebfeecf83911823f56984e8d2027f0819cdf8c40deeec86",
+      "extract": {
+        "binary": false,
+        "lines": 7,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Reproducible source-quality toolchain for BAXY's supported Windows x64 host."
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "Regenerate deliberately when requirements-quality.txt changes."
+          }
+        ],
+        "lead": "--only-binary=:all:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-7",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "requirements-quality.txt",
+      "queued_sha256": "0a8cda8768aa0488854e0ae31766652181a0f30669ffc678489baadde7be4be6",
+      "size_queued": 73,
+      "exists": true,
+      "disk_sha256": "0a8cda8768aa0488854e0ae31766652181a0f30669ffc678489baadde7be4be6",
+      "disk_size": 73,
+      "hash_match": true,
+      "head_sha256": "81c3515066ac5cfbf65995f1c1ff7a179cb32f01512d2eecca6c40a3a37e32dd",
+      "extract": {
+        "binary": false,
+        "lines": 2,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Static-analysis tools used by the source-quality gate."
+          }
+        ],
+        "lead": "ruff==0.15.22",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-2",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "scripts/data/non_target_language_case_ids.txt",
+      "queued_sha256": "25808376cce5e6a6e249a9ecf03f4960f8467493b90f6d00522f98163c12fe09",
+      "size_queued": 95340,
+      "exists": true,
+      "disk_sha256": "25808376cce5e6a6e249a9ecf03f4960f8467493b90f6d00522f98163c12fe09",
+      "disk_size": 95340,
+      "hash_match": true,
+      "head_sha256": "25808376cce5e6a6e249a9ecf03f4960f8467493b90f6d00522f98163c12fe09",
+      "extract": {
+        "binary": false,
+        "lines": 3178,
+        "headings": [],
+        "lead": "case_00071c9e96c34074f252101d",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3178"
+        ]
+      }
+    },
+    {
+      "path": "src/Baxy.FieldUi/ORIGIN.md",
+      "queued_sha256": "16cced4ecdf76e4605fd240a27c10e6d49bcbf8a985df0705cdea56b5e694403",
+      "size_queued": 1690,
+      "exists": true,
+      "disk_sha256": "16cced4ecdf76e4605fd240a27c10e6d49bcbf8a985df0705cdea56b5e694403",
+      "disk_size": 1690,
+      "hash_match": true,
+      "head_sha256": "16cced4ecdf76e4605fd240a27c10e6d49bcbf8a985df0705cdea56b5e694403",
+      "extract": {
+        "binary": false,
+        "lines": 32,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY Field UI — origen congelado"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Reapertura visual de 2026-08-11"
+          }
+        ],
+        "lead": "Esta carpeta es una exportación literal de la GUI histórica mostrada por el",
+        "measures": [
+          {
+            "line": 23,
+            "text": "navegación, las autoridades ni el acceso de red."
+          }
+        ],
+        "dates": [
+          "2026-07-02"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 13,
+            "text": "commit `63843e4bd09bb121bcd37a575ceee565df754a1a`, porque el primer commit ya los"
+          }
+        ],
+        "ranges": [
+          "1-32",
+          "h:1",
+          "m:23"
+        ]
+      }
+    },
+    {
+      "path": "src/Baxy.FieldUi/README.md",
+      "queued_sha256": "54044adbf91c6df477382b0163636d699d9a60a683e0d6259fcd0b33cda6a1bd",
+      "size_queued": 5512,
+      "exists": true,
+      "disk_sha256": "54044adbf91c6df477382b0163636d699d9a60a683e0d6259fcd0b33cda6a1bd",
+      "disk_size": 5512,
+      "hash_match": true,
+      "head_sha256": "54044adbf91c6df477382b0163636d699d9a60a683e0d6259fcd0b33cda6a1bd",
+      "extract": {
+        "binary": false,
+        "lines": 168,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "BAXY FieldUi"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Estado de procedencia"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "Runtime"
+          },
+          {
+            "line": 50,
+            "level": 2,
+            "text": "Estructura"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "Contrato del bridge"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "Preparar dependencias"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "Validar sin regenerar"
+          },
+          {
+            "line": 123,
+            "level": 2,
+            "text": "Build deliberado"
+          },
+          {
+            "line": 145,
+            "level": 2,
+            "text": "Extensión preferida"
+          },
+          {
+            "line": 159,
+            "level": 2,
+            "text": "Pruebas relacionadas"
+          }
+        ],
+        "lead": "FieldUi es la presentación React/TypeScript que `Baxy.App` muestra dentro de",
+        "measures": [
+          {
+            "line": 43,
+            "text": "- requests de red arbitrarios;"
+          },
+          {
+            "line": 140,
+            "text": "- confirmar que no hubo red externa."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-168",
+          "h:1",
+          "m:43"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/README.md",
+      "queued_sha256": "2afcabb8c746e55e2b3495bb7d73670109423b0600a1451dad5b52dcb582550b",
+      "size_queued": 17075,
+      "exists": true,
+      "disk_sha256": "2afcabb8c746e55e2b3495bb7d73670109423b0600a1451dad5b52dcb582550b",
+      "disk_size": 17075,
+      "hash_match": true,
+      "head_sha256": "c7fba1868699c224ecf005c66c9252d2ac3ebe05ac0a1690546a8457e0863585",
+      "extract": {
+        "binary": false,
+        "lines": 236,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "baxy-mind — sidecar de inteligencia (ADR-0005)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Activación"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "Protocolo (baxy.mind.v1)"
+          },
+          {
+            "line": 154,
+            "level": 2,
+            "text": "Evidencia semántica de turnos"
+          },
+          {
+            "line": 203,
+            "level": 2,
+            "text": "Invariantes"
+          }
+        ],
+        "lead": "Segundo proceso local de BAXY 1.0: router de intención por embeddings, LLM de",
+        "measures": [
+          {
+            "line": 38,
+            "text": "| `BAXY_MIND_LLM_GGUF` | ruta del GGUF ganador (Qwen3-4B Q4_K_M) | LLM; sin ella siguen encoder, evidencia, voz y control plane, pero no hay generación LLM para turno/planner |"
+          },
+          {
+            "line": 61,
+            "text": "Modelos: `intfloat/multilingual-e5-small` (caché HF), GGUF del LLM, bundle"
+          },
+          {
+            "line": 94,
+            "text": "de decisión y el informe por SHA-256; exige FRR ≤5 % y un límite unilateral"
+          },
+          {
+            "line": 95,
+            "text": "Poisson de FAR al 95 % ≤0,1 activaciones/hora. Con cero falsos positivos, eso"
+          },
+          {
+            "line": 104,
+            "text": "Si existe GGUF, Mind crea el LLM e inicia `start_warmup()` antes de emitir"
+          },
+          {
+            "line": 181,
+            "text": "etiquetas. El resultado vigente aprobó 9/9 controles: precisión conversacional"
+          },
+          {
+            "line": 182,
+            "text": "0,994083 (Wilson inferior 0,973916), recall 0,42 (Wilson inferior 0,380079),"
+          },
+          {
+            "line": 184,
+            "text": "0,006718 sobre 0/400 casos. El recall bruto de familia diagnóstico a k=7 fue"
+          },
+          {
+            "line": 191,
+            "text": "autoridad de ejecución. Quedó rechazado: seleccionó 12/2.300 turnos"
+          },
+          {
+            "line": 198,
+            "text": "El gate shell end-to-end posterior a retirar atajos por frase aprobó 4/4"
+          },
+          {
+            "line": 199,
+            "text": "recorridos read-only en 142,772 s, sin efectos externos ni timeouts y con"
+          },
+          {
+            "line": 205,
+            "text": "- Fail-closed: si no hay LLM/planner, no se degrada a una acción decidida por"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "qwen3",
+          "nemotron",
+          "e5-small",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 31,
+            "text": "se mantiene separado del ZIP de producto porque sus assets locales superan 5"
+          },
+          {
+            "line": 40,
+            "text": "| `BAXY_MIND_NGL` | `99` (GPU) / `0` (CPU puro) | con `0`, llama-server añade `-dev none --no-kv-offload --no-op-offload --no-mmproj-offload`; Flash Attention queda activo porque la caché V Q8 lo exige |"
+          },
+          {
+            "line": 219,
+            "text": "modelo no controla riesgo, confirmación, retry, verifier ni éxito."
+          }
+        ],
+        "ranges": [
+          "1-236",
+          "h:1",
+          "m:38"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/requirements-voice.txt",
+      "queued_sha256": "4f215b40e85a5f417c71c3272dca310e2a651752a6dffcb3f13f21f4b5e8e4ac",
+      "size_queued": 297,
+      "exists": true,
+      "disk_sha256": "4f215b40e85a5f417c71c3272dca310e2a651752a6dffcb3f13f21f4b5e8e4ac",
+      "disk_size": 297,
+      "hash_match": true,
+      "head_sha256": "2a24d40b5af7c78497c0c01b2d00c471ab891d068aa1c4fc200a5ee7634a91a3",
+      "extract": {
+        "binary": false,
+        "lines": 9,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Entradas directas del componente de voz; no es un lock instalable autónomo."
+          },
+          {
+            "line": 2,
+            "level": 1,
+            "text": "El grafo completo, wheels y hashes viven en pylock.runtime-win-x64.toml."
+          }
+        ],
+        "lead": "sherpa-onnx==1.13.4",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "livekit"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-9",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/bluetooth-pairing/SKILL.md",
+      "queued_sha256": "f9b648fc78d279eb5651d5696b4c5c8a16b79f1c04f8f3d74b6097c264531d6a",
+      "size_queued": 603,
+      "exists": true,
+      "disk_sha256": "f9b648fc78d279eb5651d5696b4c5c8a16b79f1c04f8f3d74b6097c264531d6a",
+      "disk_size": 603,
+      "hash_match": true,
+      "head_sha256": "f9b648fc78d279eb5651d5696b4c5c8a16b79f1c04f8f3d74b6097c264531d6a",
+      "extract": {
+        "binary": false,
+        "lines": 15,
+        "headings": [
+          {
+            "line": 9,
+            "level": 1,
+            "text": "Bluetooth pairing"
+          }
+        ],
+        "lead": "name: bluetooth-pairing",
+        "measures": [
+          {
+            "line": 12,
+            "text": "observed stable device ID; never pass a friendly name as an invented ID. Pairing"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-15",
+          "h:9",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/browser-research/SKILL.md",
+      "queued_sha256": "388ca1bb831ca863adf6219d7f57727fe6ba01e9d2b0c3860774964fccfbbf21",
+      "size_queued": 1032,
+      "exists": true,
+      "disk_sha256": "388ca1bb831ca863adf6219d7f57727fe6ba01e9d2b0c3860774964fccfbbf21",
+      "disk_size": 1032,
+      "hash_match": true,
+      "head_sha256": "388ca1bb831ca863adf6219d7f57727fe6ba01e9d2b0c3860774964fccfbbf21",
+      "extract": {
+        "binary": false,
+        "lines": 25,
+        "headings": [
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Browser search and navigation"
+          }
+        ],
+        "lead": "name: browser-research",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-25",
+          "h:10"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/calendar-events/SKILL.md",
+      "queued_sha256": "5cc00c08e9e43e161b51685d0a9166d79f2ae30b4859b9a6a1b7102263e461df",
+      "size_queued": 632,
+      "exists": true,
+      "disk_sha256": "5cc00c08e9e43e161b51685d0a9166d79f2ae30b4859b9a6a1b7102263e461df",
+      "disk_size": 632,
+      "hash_match": true,
+      "head_sha256": "5cc00c08e9e43e161b51685d0a9166d79f2ae30b4859b9a6a1b7102263e461df",
+      "extract": {
+        "binary": false,
+        "lines": 17,
+        "headings": [
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Calendar events"
+          }
+        ],
+        "lead": "name: calendar-events",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-17",
+          "h:10"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/capture-and-ocr/SKILL.md",
+      "queued_sha256": "69d54e1afe9bf6a0a60eb5a375230454598764d5a37a0f4ffc1cc7b4ea25171b",
+      "size_queued": 842,
+      "exists": true,
+      "disk_sha256": "69d54e1afe9bf6a0a60eb5a375230454598764d5a37a0f4ffc1cc7b4ea25171b",
+      "disk_size": 842,
+      "hash_match": true,
+      "head_sha256": "69d54e1afe9bf6a0a60eb5a375230454598764d5a37a0f4ffc1cc7b4ea25171b",
+      "extract": {
+        "binary": false,
+        "lines": 19,
+        "headings": [
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Capture, OCR and vision"
+          }
+        ],
+        "lead": "name: capture-and-ocr",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-19",
+          "h:10"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/discord-messaging/SKILL.md",
+      "queued_sha256": "82891f4c90f0e955f9046a701624d77ca524fb4423b60ed0963d4e4c0549dc8d",
+      "size_queued": 784,
+      "exists": true,
+      "disk_sha256": "82891f4c90f0e955f9046a701624d77ca524fb4423b60ed0963d4e4c0549dc8d",
+      "disk_size": 784,
+      "hash_match": true,
+      "head_sha256": "82891f4c90f0e955f9046a701624d77ca524fb4423b60ed0963d4e4c0549dc8d",
+      "extract": {
+        "binary": false,
+        "lines": 17,
+        "headings": [
+          {
+            "line": 9,
+            "level": 1,
+            "text": "Discord messaging"
+          }
+        ],
+        "lead": "name: discord-messaging",
+        "measures": [
+          {
+            "line": 13,
+            "text": "`recipientId`. Pass that observed ID to `message.send`; never invent it and never"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-17",
+          "h:9",
+          "m:13"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/filesystem-safe-changes/SKILL.md",
+      "queued_sha256": "6fbfa5258305f3eb3c54f3b671834abdd3bc1fae4a834e934d5d9dd2f71630b6",
+      "size_queued": 1013,
+      "exists": true,
+      "disk_sha256": "6fbfa5258305f3eb3c54f3b671834abdd3bc1fae4a834e934d5d9dd2f71630b6",
+      "disk_size": 1013,
+      "hash_match": true,
+      "head_sha256": "6fbfa5258305f3eb3c54f3b671834abdd3bc1fae4a834e934d5d9dd2f71630b6",
+      "extract": {
+        "binary": false,
+        "lines": 28,
+        "headings": [
+          {
+            "line": 21,
+            "level": 1,
+            "text": "Safe filesystem changes"
+          }
+        ],
+        "lead": "name: filesystem-safe-changes",
+        "measures": [
+          {
+            "line": 23,
+            "text": "Observe before mutating. Use `filesystem.hash` before replacing content and pass"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-28",
+          "h:21",
+          "m:23"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/notes-knowledge/SKILL.md",
+      "queued_sha256": "20fc8fed9143b6b30711dc7efa91bc69d0e603c47089934bcf3afa3426487217",
+      "size_queued": 702,
+      "exists": true,
+      "disk_sha256": "20fc8fed9143b6b30711dc7efa91bc69d0e603c47089934bcf3afa3426487217",
+      "disk_size": 702,
+      "hash_match": true,
+      "head_sha256": "20fc8fed9143b6b30711dc7efa91bc69d0e603c47089934bcf3afa3426487217",
+      "extract": {
+        "binary": false,
+        "lines": 20,
+        "headings": [
+          {
+            "line": 14,
+            "level": 1,
+            "text": "Local notes"
+          }
+        ],
+        "lead": "name: notes-knowledge",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 20,
+            "text": "requests out of this workflow because notes and memory have different authority."
+          }
+        ],
+        "ranges": [
+          "1-20",
+          "h:14"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/office-documents/SKILL.md",
+      "queued_sha256": "4e63d151f4e526a8615351b1442ff69335e2faf16470fe974720a047b89fc80a",
+      "size_queued": 791,
+      "exists": true,
+      "disk_sha256": "4e63d151f4e526a8615351b1442ff69335e2faf16470fe974720a047b89fc80a",
+      "disk_size": 791,
+      "hash_match": true,
+      "head_sha256": "a70fc7b2c317e5de6d6d924426bef0a580e3d70904411907df8613e6a858178e",
+      "extract": {
+        "binary": false,
+        "lines": 18,
+        "headings": [
+          {
+            "line": 9,
+            "level": 1,
+            "text": "Office documents"
+          }
+        ],
+        "lead": "name: office-documents",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-18",
+          "h:9"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/printing-and-scanning/SKILL.md",
+      "queued_sha256": "ea81fa8cb95bdeca31655f74167a0268f33742ff6f5c6fa2b435c7db9308f878",
+      "size_queued": 793,
+      "exists": true,
+      "disk_sha256": "ea81fa8cb95bdeca31655f74167a0268f33742ff6f5c6fa2b435c7db9308f878",
+      "disk_size": 793,
+      "hash_match": true,
+      "head_sha256": "ea81fa8cb95bdeca31655f74167a0268f33742ff6f5c6fa2b435c7db9308f878",
+      "extract": {
+        "binary": false,
+        "lines": 19,
+        "headings": [
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Printing and scanning"
+          }
+        ],
+        "lead": "name: printing-and-scanning",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-19",
+          "h:10"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/software-packages/SKILL.md",
+      "queued_sha256": "8c2b450ec3dfda9c95b22cb897baf44d361073a930e8f90000af09df54654b3f",
+      "size_queued": 708,
+      "exists": true,
+      "disk_sha256": "8c2b450ec3dfda9c95b22cb897baf44d361073a930e8f90000af09df54654b3f",
+      "disk_size": 708,
+      "hash_match": true,
+      "head_sha256": "8c2b450ec3dfda9c95b22cb897baf44d361073a930e8f90000af09df54654b3f",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [
+          {
+            "line": 9,
+            "level": 1,
+            "text": "Windows package installation"
+          }
+        ],
+        "lead": "name: software-packages",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-16",
+          "h:9"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/spotify-playback/SKILL.md",
+      "queued_sha256": "cb1cd0f10f3db1f75281457c3af61a2d9ef1b2f380e8383144e6921c4a030880",
+      "size_queued": 1179,
+      "exists": true,
+      "disk_sha256": "cb1cd0f10f3db1f75281457c3af61a2d9ef1b2f380e8383144e6921c4a030880",
+      "disk_size": 1179,
+      "hash_match": true,
+      "head_sha256": "cb1cd0f10f3db1f75281457c3af61a2d9ef1b2f380e8383144e6921c4a030880",
+      "extract": {
+        "binary": false,
+        "lines": 26,
+        "headings": [
+          {
+            "line": 10,
+            "level": 1,
+            "text": "Spotify playback"
+          }
+        ],
+        "lead": "name: spotify-playback",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-26",
+          "h:10"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/steam-library-install/SKILL.md",
+      "queued_sha256": "2dac1aa0b52e69d97e069b78b7e6c32fe2ce909751e948d5ad213a1e8dae42b7",
+      "size_queued": 1092,
+      "exists": true,
+      "disk_sha256": "2dac1aa0b52e69d97e069b78b7e6c32fe2ce909751e948d5ad213a1e8dae42b7",
+      "disk_size": 1092,
+      "hash_match": true,
+      "head_sha256": "2dac1aa0b52e69d97e069b78b7e6c32fe2ce909751e948d5ad213a1e8dae42b7",
+      "extract": {
+        "binary": false,
+        "lines": 26,
+        "headings": [
+          {
+            "line": 13,
+            "level": 1,
+            "text": "Steam library and installation"
+          }
+        ],
+        "lead": "name: steam-library-install",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-26",
+          "h:13"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/steam-purchase-guard/SKILL.md",
+      "queued_sha256": "dcf40b89925566ff69796e0b556fb186faade420ad0361cf1953bad5833a2702",
+      "size_queued": 726,
+      "exists": true,
+      "disk_sha256": "dcf40b89925566ff69796e0b556fb186faade420ad0361cf1953bad5833a2702",
+      "disk_size": 726,
+      "hash_match": true,
+      "head_sha256": "dcf40b89925566ff69796e0b556fb186faade420ad0361cf1953bad5833a2702",
+      "extract": {
+        "binary": false,
+        "lines": 17,
+        "headings": [
+          {
+            "line": 9,
+            "level": 1,
+            "text": "Steam purchase guard"
+          }
+        ],
+        "lead": "name: steam-purchase-guard",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-17",
+          "h:9"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/tasks-reminders-routines/SKILL.md",
+      "queued_sha256": "ff38fbbfe4ad2ce37fdc3e3e103837ea6aac330b388814d6fb293dd0a3889cd3",
+      "size_queued": 1060,
+      "exists": true,
+      "disk_sha256": "ff38fbbfe4ad2ce37fdc3e3e103837ea6aac330b388814d6fb293dd0a3889cd3",
+      "disk_size": 1060,
+      "hash_match": true,
+      "head_sha256": "ff38fbbfe4ad2ce37fdc3e3e103837ea6aac330b388814d6fb293dd0a3889cd3",
+      "extract": {
+        "binary": false,
+        "lines": 34,
+        "headings": [
+          {
+            "line": 27,
+            "level": 1,
+            "text": "Tasks, reminders, and routines"
+          }
+        ],
+        "lead": "name: tasks-reminders-routines",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-34",
+          "h:27"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/whatsapp-messaging/SKILL.md",
+      "queued_sha256": "e800260abcdc6083c85466b2bc52673487ff309e15fa9eb8555be44f3a43777b",
+      "size_queued": 690,
+      "exists": true,
+      "disk_sha256": "e800260abcdc6083c85466b2bc52673487ff309e15fa9eb8555be44f3a43777b",
+      "disk_size": 690,
+      "hash_match": true,
+      "head_sha256": "e800260abcdc6083c85466b2bc52673487ff309e15fa9eb8555be44f3a43777b",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [
+          {
+            "line": 9,
+            "level": 1,
+            "text": "WhatsApp messaging"
+          }
+        ],
+        "lead": "name: whatsapp-messaging",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-16",
+          "h:9"
+        ]
+      }
+    },
+    {
+      "path": "src/baxy_mind/skills/windows-device-control/SKILL.md",
+      "queued_sha256": "0685e74c40d5c00c923fa77ffb52efe94b8e3901380db0ea211a04e5c24d0a43",
+      "size_queued": 1688,
+      "exists": true,
+      "disk_sha256": "0685e74c40d5c00c923fa77ffb52efe94b8e3901380db0ea211a04e5c24d0a43",
+      "disk_size": 1688,
+      "hash_match": true,
+      "head_sha256": "0685e74c40d5c00c923fa77ffb52efe94b8e3901380db0ea211a04e5c24d0a43",
+      "extract": {
+        "binary": false,
+        "lines": 45,
+        "headings": [
+          {
+            "line": 31,
+            "level": 1,
+            "text": "Windows device control"
+          }
+        ],
+        "lead": "name: windows-device-control",
+        "measures": [
+          {
+            "line": 39,
+            "text": "`wifi.profile.list` before connecting and pass only its observed profile ID;"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-45",
+          "h:31",
+          "m:39"
+        ]
+      }
+    },
+    {
+      "path": "tests/data/MTOP_DATA_NOTICE.md",
+      "queued_sha256": "843e30460c99dd71f3a037eb0c96ed63a57a536347d1e4dbdee016d7e726b395",
+      "size_queued": 7282,
+      "exists": true,
+      "disk_sha256": "843e30460c99dd71f3a037eb0c96ed63a57a536347d1e4dbdee016d7e726b395",
+      "disk_size": 7282,
+      "hash_match": true,
+      "head_sha256": "61a9cdd44fdeae4eddde572ad128baf2ca374bbc731ccfd292d712cb0d8b24ea",
+      "extract": {
+        "binary": false,
+        "lines": 141,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "MTOP en BAXY: procedencia, licencia y frontera de evaluación"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Fuente y atribución"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "Particiones y hashes de desarrollo"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Cero expansión de capacidades"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "Sello y no-fuga de `test`"
+          },
+          {
+            "line": 120,
+            "level": 2,
+            "text": "Reproducción"
+          }
+        ],
+        "lead": "La ampliación `baxy-mtop-v1` deriva de la distribución oficial de **MTOP:",
+        "measures": [
+          {
+            "line": 111,
+            "text": "- deja el claim y un recibo `completed` o `failed` incluso si el evaluador"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-141",
+          "h:1",
+          "m:111"
+        ]
+      }
+    },
+    {
+      "path": "tests/data/TURN_EVIDENCE_DATA_NOTICE.md",
+      "queued_sha256": "8c745c864fa0556850744a85447b5aae27dee3f2e2d7b924195a6a3c96582ff6",
+      "size_queued": 2708,
+      "exists": true,
+      "disk_sha256": "8c745c864fa0556850744a85447b5aae27dee3f2e2d7b924195a6a3c96582ff6",
+      "disk_size": 2708,
+      "hash_match": true,
+      "head_sha256": "8c745c864fa0556850744a85447b5aae27dee3f2e2d7b924195a6a3c96582ff6",
+      "extract": {
+        "binary": false,
+        "lines": 52,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Aviso de datos: evidencia semántica de turnos"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "PRESTO v1"
+          },
+          {
+            "line": 25,
+            "level": 2,
+            "text": "MASSIVE v1.1"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "Evidencia histórica privada"
+          }
+        ],
+        "lead": "Los archivos públicos de evidencia de turnos se generan de forma reproducible",
+        "measures": [
+          {
+            "line": 38,
+            "text": "EMNLP 2020, <https://doi.org/10.18653/v1/2020.emnlp-main.588>."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-52",
+          "h:1",
+          "m:38"
+        ]
+      }
+    }
+  ]
+}

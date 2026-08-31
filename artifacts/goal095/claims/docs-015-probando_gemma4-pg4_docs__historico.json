@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.goal095.docs-ledger.v1",
+  "batch_id": "docs-015-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T04:29:41Z",
+  "estimated_tokens": 291879,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 24,
+  "source_id": "probando_gemma4",
+  "source_root": null,
+  "source_head": null,
+  "output": "artifacts/goal095/ledger/docs-015-probando_gemma4-pg4_docs__historico.json"
+}

@@ -1,0 +1,5453 @@
+{
+  "batch_id": "docs-012-probando_gemma4-pg4_docs__historico",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4_docs__historico",
+  "file_count": 49,
+  "hash_ok": 49,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "documentacion/_historico/auditorias_baseline/audit_report.md",
+      "queued_sha256": "99cc3ed0d8448380652e1f74768a75ac03ddcd50261f2c6fabd7653a805bff97",
+      "size_queued": 35381,
+      "exists": true,
+      "disk_sha256": "99cc3ed0d8448380652e1f74768a75ac03ddcd50261f2c6fabd7653a805bff97",
+      "disk_size": 35381,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 576,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Carter Agent — Auditoría Integral de Tools"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Criterio de inclusión"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Resumen ejecutivo"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Dashboard"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Hallazgos por tool"
+          },
+          {
+            "line": 87,
+            "level": 3,
+            "text": "system  [TIER: T1]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 92,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 104,
+            "level": 3,
+            "text": "filesystem  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 109,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "terminal  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 129,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "gui  [TIER: T3]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 155,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 174,
+            "level": 3,
+            "text": "uia  [TIER: T3]  [STATUS: NEEDS_FIXES (perf)]"
+          },
+          {
+            "line": 178,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 185,
+            "level": 3,
+            "text": "web  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 189,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 197,
+            "level": 3,
+            "text": "registry  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 201,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 208,
+            "level": 3,
+            "text": "download  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 212,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 224,
+            "level": 3,
+            "text": "database  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          },
+          {
+            "line": 228,
+            "level": 4,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 255,
+            "level": 3,
+            "text": "backup_sync  [TIER: T2]  [STATUS: NEEDS_FIXES]"
+          }
+        ],
+        "lead": "- **Proyecto**: gemma4-agent",
+        "measures": [
+          {
+            "line": 18,
+            "text": "- **Por status**: 35 PASS, 22 NEEDS_FIXES, 0 BROKEN."
+          },
+          {
+            "line": 48,
+            "text": "| audio_device | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 49,
+            "text": "| office | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 50,
+            "text": "| photo_library | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 51,
+            "text": "| container | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 52,
+            "text": "| device_settings | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 53,
+            "text": "| media (now_playing/local/vlc) | T3 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 54,
+            "text": "| game_launcher | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 55,
+            "text": "| watcher | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 56,
+            "text": "| printer_scanner | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 57,
+            "text": "| desktop_layout | T2 | PASS | 0 | 0 | 0 | 0 |"
+          },
+          {
+            "line": 58,
+            "text": "| document | T2 | PASS | 0 | 0 | 0 | 0 |"
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 521,
+            "text": "Varios call sites usan `json.loads(proc.stdout)` directo en lugar de los helpers existentes `_powershell_json` y `_json_or_text`. Cuando PowerShell imprime un warning antes del JSON, el agente surface un genérico `JSONDecodeError:` que no a"
+          },
+          {
+            "line": 564,
+            "text": "5. **_hass_alive always-true bug** (`T3-smart_home-alive-always-true-031`) — smart_home reporta HA vivo aun caído, downstream calls confunden al verifier."
+          }
+        ],
+        "ranges": [
+          "1-576",
+          "h:1",
+          "m:18"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/branch_readiness.md",
+      "queued_sha256": "bf8f6f96ae917655faf170e35b8406b69f4f68e50b4cad2da56a6a981df07a7b",
+      "size_queued": 4948,
+      "exists": true,
+      "disk_sha256": "bf8f6f96ae917655faf170e35b8406b69f4f68e50b4cad2da56a6a981df07a7b",
+      "disk_size": 4948,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 99,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Estado de la rama `PortandoLoMejor` — listo para review de RED"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Suite completa: VERDE (1 rojo pre-existente no relacionado)"
+          },
+          {
+            "line": 30,
+            "level": 2,
+            "text": "Commits de la auditoría (atómicos, un fix = un commit)"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "Cobertura por eje (cualitativa — sin coverage tool, BLOCKED_NEW_DEP)"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Qué FALTA para mergear"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Qué NO necesita decisión (listo)"
+          },
+          {
+            "line": 94,
+            "level": 2,
+            "text": "Veredicto"
+          }
+        ],
+        "lead": "Fecha: 2026-05-21. Resumen del estado de la rama tras la auditoría completa",
+        "measures": [
+          {
+            "line": 12,
+            "text": "| batch | passed |"
+          },
+          {
+            "line": 21,
+            "text": "| **TOTAL** | **~1113 passed** |"
+          },
+          {
+            "line": 36,
+            "text": "265a73c perf(latency): cache de microagents (-49% _system_message)"
+          },
+          {
+            "line": 67,
+            "text": "diagnósticos fail-safe (tracing, loop-detector). Fuzz en los primitivos. **Alto.**"
+          },
+          {
+            "line": 68,
+            "text": "- **LATENCIA:** per-mode timeout (validado), wake throttle (74% medido),"
+          },
+          {
+            "line": 69,
+            "text": "compaction (validado), microagent cache (-49% _system_message medido). **Alto**"
+          },
+          {
+            "line": 78,
+            "text": "2. **Decisión de RED sobre `_inbox` bound** (questions #4): cambio de"
+          },
+          {
+            "line": 80,
+            "text": "3. **Decisión de RED sobre `ContextoClaude.md`** (questions #2): archivo sin"
+          },
+          {
+            "line": 84,
+            "text": "entorno con Chrome. Decisión de RED (no lo toco: no es de la auditoría)."
+          },
+          {
+            "line": 98,
+            "text": "libre y (b) 3 decisiones de producto/entorno de RED — ninguna bloquea el review"
+          }
+        ],
+        "dates": [
+          "2026-05-21"
+        ],
+        "models": [
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-99",
+          "h:1",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/computer_use_exhaustive_validation_2026_05_25.md",
+      "queued_sha256": "8dc880e27a7614b3f1eb4997daa02b57ee767df9b6a3048dec9304e2166d7037",
+      "size_queued": 12363,
+      "exists": true,
+      "disk_sha256": "8dc880e27a7614b3f1eb4997daa02b57ee767df9b6a3048dec9304e2166d7037",
+      "disk_size": 12363,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 189,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Validación exhaustiva de computer-use — 2026-05-25"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Resultados medidos"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Causas raíz encontradas y corregidas"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "1. BUG DE PRODUCCIÓN — la guarda de actividad-del-usuario se auto-bloqueaba"
+          },
+          {
+            "line": 37,
+            "level": 3,
+            "text": "2. Cascada `click_button` ahora es foreground-safe"
+          },
+          {
+            "line": 47,
+            "level": 3,
+            "text": "3. Determinante REAL del árbol UIA de Discord = **temperatura del árbol**"
+          },
+          {
+            "line": 56,
+            "level": 3,
+            "text": "4. Regla de prompt — limpiar la entrada de una app es TECLADO, no filesystem"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "Límites honestos (no se fuerzan)"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Incidente y su resolución (transparencia con RED)"
+          },
+          {
+            "line": 88,
+            "level": 2,
+            "text": "Harnesses (reproducibles)"
+          },
+          {
+            "line": 97,
+            "level": 2,
+            "text": "ADDENDUM — navegación-en-app + envío-de-mensaje en Discord (continuación, mismo día)"
+          },
+          {
+            "line": 103,
+            "level": 3,
+            "text": "5. \"Ve a discord y pon el chat de X\" iba a WhatsApp y cancelaba el turno"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "6. BUG RAÍZ — el macro de navegación-en-app NUNCA corría por run_content"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "7. Árbol UIA \"intermitente\" de Discord = ventana MINIMIZADA"
+          },
+          {
+            "line": 127,
+            "level": 3,
+            "text": "8. Chats NO visibles: quick-switcher (Ctrl+K) + verify por TÍTULO"
+          },
+          {
+            "line": 136,
+            "level": 3,
+            "text": "9. ENVÍO de mensajes — \"escribe a X en discord y dile que ...\""
+          },
+          {
+            "line": 152,
+            "level": 2,
+            "text": "ADDENDUM 2 — REDISEÑO UNIVERSAL (RED: \"está mal diseñado, una función por cada cosa\")"
+          }
+        ],
+        "lead": "Sesión de validación pedida por RED: \"haz por lo menos 10 casos de prueba por",
+        "measures": [
+          {
+            "line": 3,
+            "text": "Sesión de validación pedida por RED: \"haz por lo menos 10 casos de prueba por"
+          },
+          {
+            "line": 15,
+            "text": "| `type_into` (Calculadora) | **10/10** | display `CalculatorResults` por UIA en subproceso |"
+          },
+          {
+            "line": 16,
+            "text": "| `click_button` (Calculadora, 40 clicks en 10 secuencias) | **10/10** | clicks por NOMBRE de botón (Dos/Más/Es igual a…) → display |"
+          },
+          {
+            "line": 17,
+            "text": "| `click_button` (Discord, árbol **caliente**) | **10/10**, 0 robos de foco | ok + element name + foreground sin cambiar |"
+          },
+          {
+            "line": 18,
+            "text": "| `click_button` (Discord, árbol **frío**, usuario en otra app) | **5/5**, roba foco | el provider de Discord exige foreground (ver abajo) |"
+          },
+          {
+            "line": 19,
+            "text": "| LLM e2e computer-use (Calculadora, 1 sesión multi-turno) | **9/9** operaciones | `run_text(\"escribí X y apretá igual\")` → display |"
+          },
+          {
+            "line": 34,
+            "text": "Tras el fix: notepad 6/6, calc 10/10. Esto explica parte del histórico"
+          },
+          {
+            "line": 40,
+            "text": "(708 controles, 10/10 clicks) aunque Discord NO tenga el foreground, **si el"
+          },
+          {
+            "line": 41,
+            "text": "árbol está caliente**. El 6/10 viejo no era COMError ni árbol colapsado: era el"
+          },
+          {
+            "line": 54,
+            "text": "(robo de foco inevitable, autorizado por RED). La cascada maneja ambos."
+          },
+          {
+            "line": 67,
+            "text": "- **El verify del agente sub-reporta**: en las 9/9 operaciones LLM, el display"
+          },
+          {
+            "line": 78,
+            "text": "prueba type_into 10/10. Se descartó como fixture."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-189",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/computer_use_marathon_2026_05_25.md",
+      "queued_sha256": "8a752dd735c2dfe893b09a8302112e082de9c11c0154e0b3ae88092f1b57fc2d",
+      "size_queued": 4300,
+      "exists": true,
+      "disk_sha256": "8a752dd735c2dfe893b09a8302112e082de9c11c0154e0b3ae88092f1b57fc2d",
+      "disk_size": 4300,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 70,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Maratón de tests computer-use — 2026-05-25"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Total: ~1175 tests"
+          },
+          {
+            "line": 16,
+            "level": 2,
+            "text": "Fase 1 — LLM-direct (planner universal): 99%"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "Fase 2 — computer-use e2e REAL (operando apps): 96%"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "Bug REAL encontrado y arreglado (lo valioso de la maratón)"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Artefactos de fixture (NO bugs del agente, documentados)"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "Conclusión"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Nota: corrida contaminada (NO usar como medición)"
+          }
+        ],
+        "lead": "RED pidió: ≥1000 tests directos al LLM y de computer-use, en todas las apps posibles,",
+        "measures": [
+          {
+            "line": 3,
+            "text": "RED pidió: ≥1000 tests directos al LLM y de computer-use, en todas las apps posibles,"
+          },
+          {
+            "line": 11,
+            "text": "| 1 | LLM-direct (emisión de plan de primitivas) | 567 | **564/567 = 99% correct**, 567/567 parseable |"
+          },
+          {
+            "line": 12,
+            "text": "| 2 v1 | computer-use e2e real (diagnóstica) | 288 | 199/288 = 69% → diagnosticado (ver abajo) |"
+          },
+          {
+            "line": 13,
+            "text": "| 2 v2 | computer-use e2e real (corregida) | 240 | **231/240 = 96%**, estable en 8 rondas |"
+          },
+          {
+            "line": 14,
+            "text": "| previos | optionA 16/16, e2e 9/9, wired 7/7, plan 10/10, etc. | ~80 | ~100% |"
+          },
+          {
+            "line": 18,
+            "text": "primitivas; se mide parseable + secuencia núcleo correcta. **567/567 parseable,"
+          },
+          {
+            "line": 19,
+            "text": "564/567 correct.** Los 3 \"fallos\": 2 artefactos de gate (send==Enter; comando absurdo"
+          },
+          {
+            "line": 23,
+            "text": "Por tipo: open_chat 126/126, message 60/60, open_url 168/168, type ~165/168,"
+          },
+          {
+            "line": 24,
+            "text": "focus_app 44/45. Por idioma: ES, EN, PT ~100%."
+          },
+          {
+            "line": 28,
+            "text": "- **calc_type: 100%** (80/80) — type+keypress, display."
+          },
+          {
+            "line": 29,
+            "text": "- **chat_open (Discord): 100%** (48/48) — open_chat por quick-switcher, título."
+          },
+          {
+            "line": 30,
+            "text": "- **browser_url: 98%** (79/80) — open_url, título normalizado."
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 48,
+            "text": "- **Notepad Win11**: la v1 daba 43% porque las ventanas se ACUMULAN y el título queda"
+          }
+        ],
+        "ranges": [
+          "1-70",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/coverage_gaps.md",
+      "queued_sha256": "72263b91787d7c6ae83d602133b8d4e1efb264e754512e0c64c2d56e9ec577e2",
+      "size_queued": 3853,
+      "exists": true,
+      "disk_sha256": "72263b91787d7c6ae83d602133b8d4e1efb264e754512e0c64c2d56e9ec577e2",
+      "disk_size": 3853,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 64,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Análisis de cobertura — sesión de continuación 2026-05-21"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Gaps cerrados esta sesión"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "Ramas YA cubiertas (verificado, no necesitan test nuevo)"
+          },
+          {
+            "line": 31,
+            "level": 2,
+            "text": "Gaps ACEPTADOS (sin test, con razón)"
+          },
+          {
+            "line": 57,
+            "level": 2,
+            "text": "Veredicto"
+          }
+        ],
+        "lead": "`pytest-cov` / `coverage` NO están instalados (BLOCKED_NEW_DEP). Este análisis es",
+        "measures": [
+          {
+            "line": 22,
+            "text": "test_experience_corruption_recovery) + schema-drift fail-loud RuntimeError"
+          },
+          {
+            "line": 38,
+            "text": "frágil y de bajo valor (el comportamiento fail-loud es correcto). Eje:"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-64",
+          "h:1",
+          "m:22"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_decisions.md",
+      "queued_sha256": "77e8052ff60dd6850a2c45fac9467a2c05e7a069ea0df68690f6857ac8392550",
+      "size_queued": 817,
+      "exists": true,
+      "disk_sha256": "77e8052ff60dd6850a2c45fac9467a2c05e7a069ea0df68690f6857ac8392550",
+      "disk_size": 817,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 12,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fix Decisions — Carter Agent"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Drivers SQL detectados (CC-018)"
+          }
+        ],
+        "lead": "Decisiones tomadas autónomamente durante la sesión (regla conservadora: menos código, sin nuevas deps, sin cambio de firmas públicas).",
+        "measures": [
+          {
+            "line": 9,
+            "text": "- elegido: aplicar `PRAGMA query_only=1/0` para SQLite, `SET TRANSACTION READ ONLY` para Postgres, `SET SESSION TRANSACTION READ ONLY/WRITE` para MySQL — todos en try/finally"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-12",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_log.md",
+      "queued_sha256": "0c32cc22908517463a69baf3c5873ea4c993d7708d25510268b4f16d4131cc35",
+      "size_queued": 18516,
+      "exists": true,
+      "disk_sha256": "0c32cc22908517463a69baf3c5873ea4c993d7708d25510268b4f16d4131cc35",
+      "disk_size": 18516,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 328,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fix Log — Carter Agent"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Fase 1 — Cross-cutting"
+          },
+          {
+            "line": 10,
+            "level": 3,
+            "text": "CC-ps-fstring-injection-pattern-100"
+          },
+          {
+            "line": 21,
+            "level": 3,
+            "text": "CC-confirmation-gating-default-off-101"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "CC-private-state-api-102"
+          },
+          {
+            "line": 47,
+            "level": 2,
+            "text": "Fase 3 — High individuales"
+          },
+          {
+            "line": 49,
+            "level": 3,
+            "text": "T1-system-shutdown-no-confirmation-002"
+          },
+          {
+            "line": 52,
+            "level": 3,
+            "text": "T2-filesystem-copy-overwrite-semantics-003"
+          },
+          {
+            "line": 59,
+            "level": 3,
+            "text": "T2-terminal-no-cwd-validation-007"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "T3-gui-keypress-sendkeys-injection-009"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "T2-download-signature-trust-016"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "T2-database-execute-no-rollback-019"
+          },
+          {
+            "line": 75,
+            "level": 3,
+            "text": "T2-maintenance-defender-scan-timeout-026"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "T3-routine-state-private-api-029"
+          },
+          {
+            "line": 85,
+            "level": 3,
+            "text": "T2-data_analysis-pandas-query-eval-035"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "T3-developer-stop-no-pid-alive-check-036"
+          },
+          {
+            "line": 95,
+            "level": 3,
+            "text": "T3-browser_real-evaluate-arbitrary-js-038"
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "T2-package-install-no-confirm-043"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "Fase 5 — Low"
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "T3-uia-no-thread-affinity-013"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "T3-gui-click-text-coord-translation-012"
+          },
+          {
+            "line": 114,
+            "level": 3,
+            "text": "T3-browser_real-wait-for-download-cdp-041"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "T2-media_edit-concat-list-injection-045"
+          },
+          {
+            "line": 126,
+            "level": 2,
+            "text": "Fase 4 — Medium"
+          }
+        ],
+        "lead": "- Sesión: 2026-05-15 (autónoma nocturna)",
+        "measures": [
+          {
+            "line": 135,
+            "text": "- changes: `filesystem_diff` rechaza con `needs_user` si `left.size + right.size > max_bytes` (default 50 MB; configurable)."
+          },
+          {
+            "line": 141,
+            "text": "- changes: `filesystem_archive` cuenta entries y bytes en `src.rglob(\"*\")` antes de comprimir; rechaza si excede `max_files` (50_000) o `max_bytes` (5 GB)."
+          },
+          {
+            "line": 248,
+            "text": "- changes: containment check `dst.resolve() in candidate.parents` o equal antes de extraer cada entry; reporta `blocked` y devuelve `failed` si hay zip-slip."
+          },
+          {
+            "line": 274,
+            "text": "- changes: `_hass_alive` ahora distingue `HTTPError` (200/401/403/404 = alive) de `URLError`/`TimeoutError`/`OSError` (= dead). Quité el `import urllib.error  # noqa: F401` no-op."
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 293,
+            "text": "- notes: schema description para `vision`/`gui locate_text` mejorable; lo dejé pendiente como observación porque no fue listado en findings individuales."
+          }
+        ],
+        "ranges": [
+          "1-328",
+          "h:1",
+          "m:135"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_notes.md",
+      "queued_sha256": "9e0fe6fc831b60e9aa4dcd5549355af3e42b9a183a477b7f3d65544cf6ff5b78",
+      "size_queued": 1591,
+      "exists": true,
+      "disk_sha256": "9e0fe6fc831b60e9aa4dcd5549355af3e42b9a183a477b7f3d65544cf6ff5b78",
+      "disk_size": 1591,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 13,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fix Notes — Carter Agent"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Pendientes para próxima auditoría"
+          }
+        ],
+        "lead": "Observaciones fuera de scope (no se arreglan; quedan para próxima auditoría).",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-13",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/fix_summary.md",
+      "queued_sha256": "a31b002df1da3e15fb3e24f96aee502a13ddb700392d94b0eaa592c2c9f95a6b",
+      "size_queued": 10437,
+      "exists": true,
+      "disk_sha256": "a31b002df1da3e15fb3e24f96aee502a13ddb700392d94b0eaa592c2c9f95a6b",
+      "disk_size": 10437,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 123,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fix Summary — Carter Agent (sesión autónoma 2026-05-15)"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Conteo por severidad"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Lista de BLOCKED y PARTIAL"
+          },
+          {
+            "line": 25,
+            "level": 3,
+            "text": "PARTIAL"
+          },
+          {
+            "line": 29,
+            "level": 3,
+            "text": "SKIPPED_OUT_OF_SCOPE"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Tests rotos"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "`test_g6_active_phrase_triggers_returns_enabled` (test_gx_features.py:202)"
+          },
+          {
+            "line": 41,
+            "level": 2,
+            "text": "Comportamiento UX que cambió"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "Tools con gating duro (independiente de `safety_enabled`)"
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "Routines automatizadas existentes"
+          },
+          {
+            "line": 58,
+            "level": 3,
+            "text": "Default de `safety_enabled` cambió a True"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "terminal_run default cambió a `shell=False`"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "`_internal_safe` flag (interno, NO visible al LLM)"
+          },
+          {
+            "line": 69,
+            "level": 3,
+            "text": "download.verified ya no incluye Authenticode-only"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "Notificaciones (toast/alarm/reminder)"
+          },
+          {
+            "line": 75,
+            "level": 3,
+            "text": "`gui.locate_text` / `gui.click_text` matches"
+          },
+          {
+            "line": 78,
+            "level": 3,
+            "text": "`gui.screenshot` acepta `monitor=primary|all|<index>`"
+          },
+          {
+            "line": 81,
+            "level": 3,
+            "text": "Defender Quick Scan no bloquea"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Para retomar mañana"
+          },
+          {
+            "line": 97,
+            "level": 2,
+            "text": "Sugerencias para segunda auditoría post-fixes"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Resumen ejecutivo"
+          }
+        ],
+        "lead": "Cross-cutting:",
+        "measures": [
+          {
+            "line": 112,
+            "text": "| Cross-cutting cerrados | 8 / 8 |"
+          },
+          {
+            "line": 113,
+            "text": "| Críticos cerrados | 11 / 11 (1 directo + 10 cubiertos por CCs) |"
+          },
+          {
+            "line": 114,
+            "text": "| High cerrados | 14 / 14 (5 directos + 9 por CCs) |"
+          },
+          {
+            "line": 115,
+            "text": "| Medium cerrados | 17 / 22 (1 PARTIAL, 1 SKIPPED, resto FIXED o RESOLVED_BY_CC) |"
+          },
+          {
+            "line": 116,
+            "text": "| Low cerrados | 3 / 5 (1 SKIPPED perf, 1 RESOLVED) |"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-123",
+          "h:1",
+          "m:112"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/followup_log.md",
+      "queued_sha256": "4902339be99f8bb0d78ee0b5771add74f25aec7d2033f43fd12743273cf0cb36",
+      "size_queued": 5364,
+      "exists": true,
+      "disk_sha256": "4902339be99f8bb0d78ee0b5771add74f25aec7d2033f43fd12743273cf0cb36",
+      "disk_size": 5364,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 100,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Followup Log — Carter Agent"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Fix #1 — Schema sync (CC-106 / T2-004 / T2-005 / T2-008)"
+          },
+          {
+            "line": 15,
+            "level": 3,
+            "text": "Cambios"
+          },
+          {
+            "line": 30,
+            "level": 3,
+            "text": "Resultado"
+          },
+          {
+            "line": 37,
+            "level": 2,
+            "text": "Fix #2 — Pre-validation hook (UX classifier vs gate duro)"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "Diseño"
+          },
+          {
+            "line": 50,
+            "level": 3,
+            "text": "Pre-validators implementados"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "Resultado"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "Verificación final"
+          },
+          {
+            "line": 79,
+            "level": 3,
+            "text": "Anti-bypass confirmado (no degradado)"
+          },
+          {
+            "line": 87,
+            "level": 2,
+            "text": "Pendientes (no urgentes)"
+          }
+        ],
+        "lead": "- Sesión: 2026-05-15 (autónoma nocturna, continuación)",
+        "measures": [
+          {
+            "line": 3,
+            "text": "- Disparador: hallazgos del smoke test 50/50 (`audit/smoke_summary.md`)"
+          },
+          {
+            "line": 32,
+            "text": "- Modo A: **137/141 pass** (de 135/141), los 2 fails de `gui` pasan."
+          },
+          {
+            "line": 54,
+            "text": "- Si `seconds`/`minutes` están: pass-through."
+          },
+          {
+            "line": 55,
+            "text": "- Si `time`/`due` matchea `HH:MM` o `datetime.fromisoformat`: pass-through."
+          },
+          {
+            "line": 60,
+            "text": "- Si encuentra zip-slip: retorna `failed` ANTES del classifier. El usuario no necesita confirmar un zip envenenado; necesita saber que el zip está mal."
+          },
+          {
+            "line": 64,
+            "text": "- Modo A: **143/143 pass** (smoke tests actualizados; 2 nuevos casos para confirmed=True)."
+          },
+          {
+            "line": 67,
+            "text": "- `backup_sync.restore` con `../../escape.txt` → `failed` SIN confirmation."
+          },
+          {
+            "line": 69,
+            "text": "- Tests del repo: **71/71 pass** (incluso `test_g6_active_phrase_triggers_returns_enabled` que ya había sido arreglado en sesión anterior con `safety_enabled=False`)."
+          },
+          {
+            "line": 76,
+            "text": "- `python audit/smoke_mode_a.py` → 143/143 PASS, 6/6 anti-bypass PASS, 0 fail."
+          },
+          {
+            "line": 77,
+            "text": "- `python -m pytest gemma4_agent/test_*.py` → 71 passed."
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [
+          "gemma-4",
+          "e4b",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-100",
+          "h:1",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/informe_optimizacion_auditoria_externa.md",
+      "queued_sha256": "4d60b52fd0ee7fdce2e251d008875d3d2aa4a87e98126254e8fb9053537e39da",
+      "size_queued": 94720,
+      "exists": true,
+      "disk_sha256": "4d60b52fd0ee7fdce2e251d008875d3d2aa4a87e98126254e8fb9053537e39da",
+      "disk_size": 94720,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 847,
+        "headings": [
+          {
+            "line": 1,
+            "level": 2,
+            "text": "Carter Agent — Informe de Optimización (auditoría externa)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "TL;DR ejecutivo"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "0. Mapa de incertidumbre"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "1. Bloque A — Cuantizaciones (A1–A4)"
+          },
+          {
+            "line": 61,
+            "level": 3,
+            "text": "A1. Mejor combo modelo+cuantización por nivel de VRAM"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "A2. Unsloth Dynamic (UD) vs K_M tradicionales"
+          },
+          {
+            "line": 92,
+            "level": 3,
+            "text": "A3. MXFP4_MOE para 26B-A4B"
+          },
+          {
+            "line": 100,
+            "level": 3,
+            "text": "A4. IQ4_XS vs Q4_K_M en E4B y 26B-A4B"
+          },
+          {
+            "line": 116,
+            "level": 2,
+            "text": "2. Bloque B — Flags llama-server (B1–B3)"
+          },
+          {
+            "line": 118,
+            "level": 3,
+            "text": "B1. Tabla exhaustiva de flags llama-server con valor por familia"
+          },
+          {
+            "line": 169,
+            "level": 3,
+            "text": "B2. Combinación que reduce VRAM sin degradar > 2% en Carter"
+          },
+          {
+            "line": 180,
+            "level": 3,
+            "text": "B3. Build oficial CUDA vs compilar desde fuente"
+          },
+          {
+            "line": 193,
+            "level": 2,
+            "text": "3. Bloque C — Tool calling (C1–C4)"
+          },
+          {
+            "line": 195,
+            "level": 3,
+            "text": "C1. Estabilidad del template Jinja oficial de Gemma 4"
+          },
+          {
+            "line": 204,
+            "level": 3,
+            "text": "C2. Bugs conocidos del parser de tool calls en llama-server para Gemma 4"
+          },
+          {
+            "line": 221,
+            "level": 3,
+            "text": "C3. `parallel_tool_calls` en Gemma 4"
+          },
+          {
+            "line": 229,
+            "level": 3,
+            "text": "C4. Mejorar tool selection accuracy sin fine-tuning"
+          },
+          {
+            "line": 245,
+            "level": 2,
+            "text": "4. Bloque D — Latencia y streaming (D1–D4)"
+          },
+          {
+            "line": 247,
+            "level": 3,
+            "text": "D1. `--cache-reuse` reparado para Gemma 4"
+          },
+          {
+            "line": 261,
+            "level": 3,
+            "text": "D2. MTP drafters Gemma 4 en llama.cpp"
+          },
+          {
+            "line": 275,
+            "level": 3,
+            "text": "D3. Speculative decoding E2B-draft → E4B/26B-A4B-target"
+          },
+          {
+            "line": 290,
+            "level": 3,
+            "text": "D4. Streaming SSE de tool calls completo en b9090+"
+          },
+          {
+            "line": 302,
+            "level": 2,
+            "text": "5. Bloque E — Visión y audio nativo (E1–E6)"
+          },
+          {
+            "line": 304,
+            "level": 3,
+            "text": "E1. Leak de mmproj (#21690) cerrado"
+          }
+        ],
+        "lead": "**Auditor:** Investigador senior, sistemas de IA local.",
+        "measures": [
+          {
+            "line": 6,
+            "text": "**Objeto de la auditoría:** ruta a 100% de PASS en Carter 540 sobre hardware de 6 GB de VRAM, sin sacrificar privacidad ni cambiar de runtime."
+          },
+          {
+            "line": 29,
+            "text": "> (a) sampling oficial Google sin tocar `repeat_penalty`; (b) `--jinja` + parser nativo llama-server en lugar de OpenAI-shim sobre Ollama; (c) profile-switching consciente del límite de 6 GB (recommend_profile(vram_mb)) en lugar de \"usa el "
+          },
+          {
+            "line": 43,
+            "text": "| U4 | Latencia real de speculative decoding E2B-draft → E4B-target en RTX 3050 6 GB | Sin benchmarks públicos de ese par en 6 GB; los que hay son 31B + draft externo en H100/Blackwell | `llama-bench` con `--model-draft` |"
+          },
+          {
+            "line": 44,
+            "text": "| U5 | Calidad audio nativo Gemma 4 (es-MX) post-#21421 | El cliente reporta 2/5 internos; sin benchmark público comparativo | Mismo set que Whisper, evaluación humana ABX |"
+          },
+          {
+            "line": 47,
+            "text": "| U8 | Brecha real entre Carter 540 (interno, español, tool calling) y MMLU/AIME públicos | Sin literatura externa que correlacione Carter con benches estándar para Gemma 4 | Correlar Pearson PASS rate Carter vs MMLU-pro-es subset en cada G"
+          },
+          {
+            "line": 65,
+            "text": "| VRAM target | Recomendación principal | GGUF exacto | Tamaño en disco | VRAM estimada (ctx 8K, F16 KV, -fa on) | Calidad relativa BF16 | Para qué tarea | Confianza |"
+          },
+          {
+            "line": 67,
+            "text": "| **4 GB** | E2B Q4_K_M | `unsloth/gemma-4-E2B-it-GGUF:UD-Q4_K_XL` | 2.5 GB | ~3.7 GB | KL \"Pareto\" según Unsloth | Conversación corta, tool calling simple (<10 tools) | CITADO |"
+          },
+          {
+            "line": 68,
+            "text": "| **6 GB (HOT)** | **E4B UD-Q4_K_XL** (sustituir Q4_K_M actual) | `unsloth/gemma-4-E4B-it-GGUF:UD-Q4_K_XL` | ~4.7 GB | ~5.6–5.9 GB (sin mmproj, ctx 4K) | mejor KLD que Q4_K_M al mismo tamaño según Unsloth KLD bench | Agentic multi-step en e"
+          },
+          {
+            "line": 69,
+            "text": "| **6 GB (alternativa segura)** | E4B Q4_K_M (estatus quo) | `bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M` | 5.41 GB | ~6.10 GB reportado por el cliente | baseline | Lo que ya está en producción | MEDIDO por cliente |"
+          },
+          {
+            "line": 70,
+            "text": "| **8 GB** | **E4B UD-Q5_K_XL + KV F16** | `unsloth/gemma-4-E4B-it-GGUF:UD-Q5_K_XL` | ~5.9 GB | ~7.2 GB | Pareto KLD según Unsloth | Razonamiento, código corto | CITADO + EXTRAPOLADO de VRAM |"
+          },
+          {
+            "line": 71,
+            "text": "| **8 GB (vision)** | E4B Q4_K_M + mmproj F16 | `bartowski/google_gemma-4-E4B-it-GGUF:Q4_K_M` + `mmproj-f16.gguf` (~990 MB) | 5.41 + 0.99 GB | ~7.3 GB | baseline + visión | OCR, descripción imagen | CITADO |"
+          },
+          {
+            "line": 72,
+            "text": "| **12 GB** | **26B-A4B UD-Q2_K_XL** | `unsloth/gemma-4-26B-A4B-it-GGUF:UD-Q2_K_XL` | ~9.2 GB (cliente) | ~11–11.5 GB | KLD frontera Pareto Unsloth (UD-IQ3_XXS dominado) | Agentic, mejor calidad/byte para \"computer use\" según Unsloth | CITA"
+          }
+        ],
+        "dates": [
+          "2026-05-15",
+          "2026-04-02",
+          "2026-05-05",
+          "2026-04-05",
+          "2026-05-08",
+          "2026-04-04",
+          "2026-04-20",
+          "2026-04-11"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "whisper",
+          "piper",
+          "e4b",
+          "gemma-4",
+          "gemma4",
+          "qwen3"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 3090",
+          "RTX 3050 6 GB",
+          "16 GB",
+          "vram"
+        ],
+        "mechanisms": [
+          {
+            "line": 426,
+            "text": "- **No es gratis en VRAM porque no toca VRAM directamente.** Pero sí puede degradar latencia si la RAM se llena y Windows pagina a disco."
+          },
+          {
+            "line": 737,
+            "text": "20. *Issue #21468: cache reuse is not supported for Gemma 4 models* — phuryn — 2026-04-05 — `https://github.com/ggml-org/llama.cpp/issues/21468` — root cause shared-KV, log de fallo, hipótesis y referencia a PR #22288."
+          }
+        ],
+        "ranges": [
+          "1-847",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/optimization_log.md",
+      "queued_sha256": "5afacf2274b39aa13c89225d7e4a3056358b84015b0e10ef22c2c321ae33c56a",
+      "size_queued": 23780,
+      "exists": true,
+      "disk_sha256": "5afacf2274b39aa13c89225d7e4a3056358b84015b0e10ef22c2c321ae33c56a",
+      "disk_size": 23780,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 346,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Optimization Log — Fase 1 del roadmap del informe de auditoría externa"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "1.1 — Pin de build llama.cpp + warn CUDA 13.2 — APPLIED"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "1.2 — Reserva 1.5 GB WDDM en recommend_profile — APPLIED"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "1.3 — `--keep -1` defensa anti-cache-reuse-roto — APPLIED"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "1.4 — Parser robusto tool_call.arguments (#21384) — APPLIED"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "1.5 — Warning loud si user fuerza KV q8_0 — APPLIED"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "1.6 — `--no-mmproj-offload` cuando vision+VRAM tight — APPLIED"
+          },
+          {
+            "line": 59,
+            "level": 2,
+            "text": "1.7 — Vision counter + recycle hook para mmproj leak (#21690) — APPLIED"
+          },
+          {
+            "line": 69,
+            "level": 2,
+            "text": "1.8 — Compilador tool schemas EXACT Markdown — APPLIED (helper) + DEFERRED (injection)"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "1.9 — Feature-flag MXFP4_MOE experimental — APPLIED"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "1.10 — Detección de CUDA 13.2 — APPLIED (cubierto por 1.1)"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Resumen Fase 1"
+          },
+          {
+            "line": 120,
+            "level": 1,
+            "text": "Fase 2 — Decisiones de producto"
+          },
+          {
+            "line": 124,
+            "level": 2,
+            "text": "2.1 — Perfil `balanced_8gb` con UD-Q4_K_XL E4B — APPLIED"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "2.2 — Speculative decoding opt-in via env var — APPLIED"
+          },
+          {
+            "line": 148,
+            "level": 2,
+            "text": "2.3 — STT alternativo (Parakeet-TDT-0.6B-v3) — DEFERRED"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "2.4 — TTS alternativo (Kokoro-82M-es) — DEFERRED"
+          },
+          {
+            "line": 168,
+            "level": 2,
+            "text": "Resumen Fase 2"
+          },
+          {
+            "line": 187,
+            "level": 1,
+            "text": "Fase 3 — Sprints autónomos (sin tocar agent.py)"
+          },
+          {
+            "line": 191,
+            "level": 2,
+            "text": "Sprint 12 — Hardening operacional llama-server — APPLIED"
+          },
+          {
+            "line": 201,
+            "level": 2,
+            "text": "Sprint 6 — Endpoint `/agent/recycle_server` — APPLIED"
+          },
+          {
+            "line": 211,
+            "level": 2,
+            "text": "Sprint 11 — Telemetría local opt-in — APPLIED"
+          },
+          {
+            "line": 224,
+            "level": 2,
+            "text": "Sprint 7 — Pre-warm KV con system prompt — APPLIED (helper only)"
+          },
+          {
+            "line": 238,
+            "level": 2,
+            "text": "Resumen Fase 3 (subset autónomo)"
+          }
+        ],
+        "lead": "- **Sesión**: 2026-05-15 (autónoma)",
+        "measures": [
+          {
+            "line": 6,
+            "text": "- **Baseline**: 143/143 Modo A PASS, 6/6 anti-bypass PASS, 71/71 tests del repo PASS."
+          },
+          {
+            "line": 16,
+            "text": "- **Validación**: 143/143 smoke + 71/71 tests. Smoke test inline confirma build detectado como `b9090` en la máquina del dev."
+          },
+          {
+            "line": 21,
+            "text": "- **Commit**: `b049b49 feat(profiles): reserve 1.5 GB WDDM in recommend_profile`."
+          },
+          {
+            "line": 23,
+            "text": "- **Cambios**: const `WINDOWS_VRAM_RESERVE_MB = 1500`. `recommend_profile` resta esa reserva antes de mapear. Cortes nuevos: 10500 / 4500 / 2500 MB **efectivos**. Test `test_profiles_recommend_by_vram` actualizado."
+          },
+          {
+            "line": 24,
+            "text": "- **Validación**: 143/143 + 71/71. Confirmado que 16 GB físicos siguen → performance (preserva setup del dev)."
+          },
+          {
+            "line": 32,
+            "text": "- **Validación**: 143/143 + 71/71."
+          },
+          {
+            "line": 40,
+            "text": "- **Validación**: 143/143 + 75/75 (+4 tests nuevos)."
+          },
+          {
+            "line": 47,
+            "text": "- **Cambios**: nuevo env var `GEMMA4_LLAMA_KV_TYPE`. Default vacío = F16 (sin cambios). Si user setea `q8_0` (u otra quantizada), warning grande citando localbench KL 0.377. Lista blanca de tipos válidos; valores fuera de la lista se ignora"
+          },
+          {
+            "line": 48,
+            "text": "- **Validación**: 143/143 + 75/75."
+          },
+          {
+            "line": 53,
+            "text": "- **Commit**: `a7f971a feat(llama_server): --no-mmproj-offload when vision+VRAM tight`."
+          },
+          {
+            "line": 56,
+            "text": "- **Validación**: 143/143 + 75/75."
+          },
+          {
+            "line": 66,
+            "text": "- **Validación**: 143/143 + 76/76. Test confirma counter no dispara prematuro, dispara exactamente una vez al cruzar, no re-dispara, reset funciona."
+          }
+        ],
+        "dates": [
+          "2026-05-15",
+          "2026-04-11"
+        ],
+        "models": [
+          "gemma4",
+          "llama.cpp",
+          "gemma 4",
+          "gemma-4",
+          "e4b",
+          "whisper"
+        ],
+        "hardware": [
+          "16 GB",
+          "VRAM",
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-346",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/optimization_roadmap.md",
+      "queued_sha256": "fdc917b679b1578e00ce13a17c0e64d0b813d69e3a09aecf0678a9aa4932c013",
+      "size_queued": 10014,
+      "exists": true,
+      "disk_sha256": "fdc917b679b1578e00ce13a17c0e64d0b813d69e3a09aecf0678a9aa4932c013",
+      "disk_size": 10014,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 183,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Optimization Roadmap — Fases 2 y 3"
+          },
+          {
+            "line": 9,
+            "level": 2,
+            "text": "Fase 2 — Decisiones de producto pendientes"
+          },
+          {
+            "line": 14,
+            "level": 3,
+            "text": "2.1 — Cambiar default de `balanced` a `unsloth/gemma-4-E4B-it-GGUF:UD-Q4_K_XL`"
+          },
+          {
+            "line": 44,
+            "level": 3,
+            "text": "2.2 — Activar speculative decoding E2B-draft → E4B/26B-A4B-target"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "2.3 — Backend Parakeet-TDT-0.6B-v3 como alternativa a Whisper-small"
+          },
+          {
+            "line": 79,
+            "level": 3,
+            "text": "2.4 — Backend Kokoro-82M-es como alternativa a Piper TTS"
+          },
+          {
+            "line": 96,
+            "level": 2,
+            "text": "Fase 3 — Roadmap a 90 días (no ejecutado en esta sesión)"
+          },
+          {
+            "line": 101,
+            "level": 3,
+            "text": "Sprint 1 (días 1–7) — \"Inyección de tool schemas EXACT al system prompt\""
+          },
+          {
+            "line": 107,
+            "level": 3,
+            "text": "Sprint 2 (días 8–14) — \"Quant upgrade balanced\""
+          },
+          {
+            "line": 112,
+            "level": 3,
+            "text": "Sprint 3 (días 15–21) — \"Bench Carter 540 con Q4_K_M y Q5_K_M\""
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "Sprint 4 (días 22–28) — \"Wiring del callback vision_relaunch\""
+          },
+          {
+            "line": 128,
+            "level": 3,
+            "text": "Sprint 5 (días 29–35) — \"Streaming SSE de tool calls — verificación\""
+          },
+          {
+            "line": 133,
+            "level": 3,
+            "text": "Sprint 6 (días 36–42) — \"Endpoint REST `/agent/restart`\""
+          },
+          {
+            "line": 138,
+            "level": 3,
+            "text": "Sprint 7 (días 43–49) — \"Pre-warm KV con system prompt al startup\""
+          },
+          {
+            "line": 144,
+            "level": 3,
+            "text": "Sprint 8 (días 50–56) — \"Re-evaluar PR #22288 (cache-reuse Gemma 4)\""
+          },
+          {
+            "line": 148,
+            "level": 3,
+            "text": "Sprint 9 (días 57–63) — \"Re-evaluar PR upstream para MTP drafters\""
+          },
+          {
+            "line": 154,
+            "level": 3,
+            "text": "Sprint 10 (días 64–70) — \"Speculative decoding E2B→E4B en 8 GB+\""
+          },
+          {
+            "line": 158,
+            "level": 3,
+            "text": "Sprint 11 (días 71–77) — \"Telemetría local opt-in\""
+          },
+          {
+            "line": 163,
+            "level": 3,
+            "text": "Sprint 12 (días 78–84) — \"Seguridad operacional llama-server\""
+          },
+          {
+            "line": 168,
+            "level": 3,
+            "text": "Sprint 13 (días 85–90) — \"Push Carter 99.81 → 100 %\""
+          },
+          {
+            "line": 175,
+            "level": 2,
+            "text": "Métricas de seguimiento"
+          }
+        ],
+        "lead": "- **Branch**: `feature/gemma4-optimization-roadmap`",
+        "measures": [
+          {
+            "line": 4,
+            "text": "- **Fase 1**: APPLIED (10/10 items). Ver `optimization_log.md`."
+          },
+          {
+            "line": 16,
+            "text": "**Estado actual**: `balanced` apunta a `gemma-4-E2B-it-Q5_K_M.gguf` (4.70 GB VRAM cargada,"
+          },
+          {
+            "line": 17,
+            "text": "+KV F16 8K ≈ 5.10 GB total, holgura ~0.9 GB sobre 6 GB nominales)."
+          },
+          {
+            "line": 20,
+            "text": "- Cambiar a `unsloth/gemma-4-E4B-it-GGUF:UD-Q4_K_XL` (~4.7 GB en disco)."
+          },
+          {
+            "line": 21,
+            "text": "- VRAM estimada por el informe: **~5.6–5.9 GB sin mmproj, ctx 4K**."
+          },
+          {
+            "line": 22,
+            "text": "- Mejora esperada en Carter: **+1–2 pp** por subir de E2B (75–82 % proyectado) a E4B (85–90 % proyectado)."
+          },
+          {
+            "line": 25,
+            "text": "- Con la reserva WDDM de 1.5 GB aplicada en 1.2, **VRAM efectiva en 6 GB físicos = 4.5 GB**."
+          },
+          {
+            "line": 26,
+            "text": "- E4B-UD-Q4_K_XL a 4.7 GB peso → con KV F16 ctx 4K (~0.35 GB) ≈ **5.05 GB total app** vs **4.5 GB efectiva** = **NO entra**."
+          },
+          {
+            "line": 27,
+            "text": "- Solo entraría bajando ctx a 2K (KV ~0.17 GB → 4.87 GB total app, todavía borde) o aceptando KV q8_0 (que el informe explícitamente desaconseja en TL;DR-6)."
+          },
+          {
+            "line": 34,
+            "text": "- Requiere bajar GGUF (~4.7 GB) que el usuario aún NO tiene en disco."
+          },
+          {
+            "line": 35,
+            "text": "- VRAM cabe sólo si re-medimos en RTX 3050 6 GB real con flags actuales (`--keep -1 --no-mmap --flash-attn on`)."
+          },
+          {
+            "line": 36,
+            "text": "- El informe avisa que la VRAM medida del cliente para E4B-Q4_K_M era 6.10 GB (en RTX 4060 Ti 16 GB sin reserva WDDM); en RTX 3050 6 GB con reserva podría no entrar."
+          }
+        ],
+        "dates": [
+          "2026-05-08"
+        ],
+        "models": [
+          "gemma4",
+          "gemma-4",
+          "e4b",
+          "qwen3",
+          "llama.cpp",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM",
+          "6 GB",
+          "RTX 3050 6 GB",
+          "RTX 4060 Ti 16 GB",
+          "RTX 3090"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-183",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/polish_log.md",
+      "queued_sha256": "8e85ae85df72675187d278abaf5c895886d14b23c7068424c058e1f8dc07cc39",
+      "size_queued": 10690,
+      "exists": true,
+      "disk_sha256": "8e85ae85df72675187d278abaf5c895886d14b23c7068424c058e1f8dc07cc39",
+      "disk_size": 10690,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 115,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Polish Log — post-merge finalize"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "P1 — `--cache-reuse 256` (PR #22288 merged upstream) — APPLIED"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "P2 — VRAM balanced_8gb ctx 16K → 12K — APPLIED (cálculo teórico)"
+          },
+          {
+            "line": 35,
+            "level": 2,
+            "text": "P3 — Auditoría del diff de `agent.py` Sprint 1 — DOCUMENTED (excede tope esperado)"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "P4 — Wirear `prewarm_kv` en agent_runner — APPLIED"
+          },
+          {
+            "line": 70,
+            "level": 1,
+            "text": "Resumen Polish Final"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "Estado final del repo"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Lista para producción 6 GB"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "Próxima acción humana sugerida"
+          }
+        ],
+        "lead": "- **Sesión**: 2026-05-15 (continuación post-merge)",
+        "measures": [
+          {
+            "line": 5,
+            "text": "- **Baseline**: 143/143 smoke + 92/92 tests del repo PASS"
+          },
+          {
+            "line": 19,
+            "text": "- **Validación**: 143/143 + 93/93."
+          },
+          {
+            "line": 20,
+            "text": "- **Impacto esperado**: ~93% de TTFT recuperado en primer turno con system prompt grande (60-90s → unidades de segundos con ~46K tokens, según el reporter de #21468). No es medible aquí (requiere LLM real); confirmable correo runtime via ti"
+          },
+          {
+            "line": 23,
+            "text": "- **Commit**: `45aec2b fix(profiles): balanced_8gb ctx 16K -> 12K (VRAM tight)`."
+          },
+          {
+            "line": 24,
+            "text": "- **Status del GGUF**: `models/E4B/gemma-4-E4B-it-UD-Q4_K_XL.gguf` **NO descargado** en la máquina del dev al momento del polish. Por eso la decisión se basa en cálculo teórico, no en medición real con `nvidia-smi`."
+          },
+          {
+            "line": 26,
+            "text": "- Con ctx 16K: VRAM física requerida ~7.70 GB → margen 0.30 GB sobre 8 GB nominales [BORDE peligroso]."
+          },
+          {
+            "line": 27,
+            "text": "- Con ctx 12K: VRAM física requerida ~7.52 GB → margen 0.48 GB [aceptable]."
+          },
+          {
+            "line": 32,
+            "text": "- **Validación**: 143/143 + 93/93."
+          },
+          {
+            "line": 33,
+            "text": "- **TODO seguimiento**: cuando el dev baje UD-Q4_K_XL, correr `nvidia-smi --query-gpu=memory.used` antes/después + 100 tokens de inferencia real. Si peak < 6.0 GB → revertir a 16K. Si ≥6.0 GB → 12K es correcto."
+          },
+          {
+            "line": 66,
+            "text": "- **Validación**: 143/143 + 94/94."
+          },
+          {
+            "line": 74,
+            "text": "| P1 — `--cache-reuse 256` | APPLIED | `3c7ba4d` | +1 | 143/143 + 93/93 |"
+          },
+          {
+            "line": 75,
+            "text": "| P2 — balanced_8gb ctx 16K→12K | APPLIED (cálculo teórico) | `45aec2b` | n/a (test V4 ajustado) | 143/143 + 93/93 |"
+          }
+        ],
+        "dates": [
+          "2026-05-15",
+          "2026-04-24",
+          "2026-05-09"
+        ],
+        "models": [
+          "e4b",
+          "gemma-4",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM",
+          "6 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 49,
+            "text": "- Trade-off elegido: cohesión de clase vs estrictez del constraint. Aceptable a posteriori porque toda la lógica nueva es **aditiva** (no modifica nada de la lógica de turno existente) y opt-outable vía env var."
+          },
+          {
+            "line": 60,
+            "text": "- `tools=None` porque el catálogo ya está como markdown EXACT en el system prompt."
+          }
+        ],
+        "ranges": [
+          "1-115",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/questions_for_red.md",
+      "queued_sha256": "949373a64830e1c4fc7001717e14ec895595417b1e55c3041bf1611f31ce277e",
+      "size_queued": 3753,
+      "exists": true,
+      "disk_sha256": "949373a64830e1c4fc7001717e14ec895595417b1e55c3041bf1611f31ce277e",
+      "disk_size": 3753,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 58,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Preguntas / pendientes para RED — sesión overnight 2026-05-21"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "1. (BAJA — info) Boot E2E con llama-server quedó SIN validar en vivo"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "2. (BAJA) Archivo desconocido sin trackear: `gemma4_agent/ContextoClaude.md`"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "3. (INFO) `middle_ellipsis` tenía un overflow de +3 en límites chicos"
+          },
+          {
+            "line": 27,
+            "level": 2,
+            "text": "4. (DECISIÓN DE RED — comportamiento visible) `_inbox` del agent_runner sin límite"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "5. ✅ RESUELTO (commit 2e9a48f) — Tracing con path malformado"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "Items que quedan para RED (resumen)"
+          }
+        ],
+        "lead": "Ordenado por urgencia. Cada item con el eje del norte rector afectado.",
+        "measures": [
+          {
+            "line": 7,
+            "text": "intérprete (build CPU-only) y `nvidia-smi` mostró 6.7 GB ya en uso en la GPU con"
+          },
+          {
+            "line": 8,
+            "text": "el usuario potencialmente jugando. Levantar un modelo de ~6 GB encima arriesgaba"
+          },
+          {
+            "line": 12,
+            "text": "auditado limpio (rondas 1/6) y cubierto por tests mockeados; solo falta el E2E."
+          },
+          {
+            "line": 32,
+            "text": "no acá. **Por qué necesita a RED:** la única \"mejora\" sería un bound, pero acotar"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-58",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/research_prompt_gemma4_optimization.md",
+      "queued_sha256": "5006d26f4bc98fe8eec84e5a8626a9241164d1e204d33d56d9a2ff762bc9e703",
+      "size_queued": 21627,
+      "exists": true,
+      "disk_sha256": "5006d26f4bc98fe8eec84e5a8626a9241164d1e204d33d56d9a2ff762bc9e703",
+      "disk_size": 21627,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 460,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Prompt de auditoría exhaustiva — Optimización de Carter Agent (local Windows)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "0. Rol y misión"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "1. Contexto del sistema bajo auditoría"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "1.1 Identidad del proyecto"
+          },
+          {
+            "line": 56,
+            "level": 3,
+            "text": "1.2 Hardware target (orden de prioridad)"
+          },
+          {
+            "line": 63,
+            "level": 3,
+            "text": "1.3 Stack técnico actual"
+          },
+          {
+            "line": 76,
+            "level": 3,
+            "text": "1.4 Catálogo de modelos descargados localmente"
+          },
+          {
+            "line": 102,
+            "level": 3,
+            "text": "1.5 Perfiles de runtime actualmente configurados"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "1.6 Catálogo de 62 tools (resumen)"
+          },
+          {
+            "line": 128,
+            "level": 3,
+            "text": "1.7 Restricciones no negociables"
+          },
+          {
+            "line": 136,
+            "level": 3,
+            "text": "1.8 Issues conocidos relevantes (al momento de escribir esto)"
+          },
+          {
+            "line": 146,
+            "level": 2,
+            "text": "2. Preguntas que el informe DEBE responder"
+          },
+          {
+            "line": 152,
+            "level": 3,
+            "text": "Bloque A — Cuantizaciones óptimas por hardware"
+          },
+          {
+            "line": 174,
+            "level": 3,
+            "text": "Bloque B — Flags óptimos de llama-server para Gemma 4"
+          },
+          {
+            "line": 220,
+            "level": 3,
+            "text": "Bloque C — Tool calling en Gemma 4"
+          },
+          {
+            "line": 239,
+            "level": 3,
+            "text": "Bloque D — Latencia y streaming"
+          },
+          {
+            "line": 256,
+            "level": 3,
+            "text": "Bloque E — Visión y audio nativo"
+          },
+          {
+            "line": 282,
+            "level": 3,
+            "text": "Bloque F — Costos ocultos en el budget de VRAM"
+          },
+          {
+            "line": 300,
+            "level": 3,
+            "text": "Bloque G — Profile switching (\"hot-swap\")"
+          },
+          {
+            "line": 313,
+            "level": 3,
+            "text": "Bloque H — Calidad medida vs el bench interno (Carter 540)"
+          },
+          {
+            "line": 327,
+            "level": 3,
+            "text": "Bloque I — Acciones concretas para llegar al 100%"
+          },
+          {
+            "line": 345,
+            "level": 2,
+            "text": "3. Forma del entregable"
+          },
+          {
+            "line": 350,
+            "level": 1,
+            "text": "Carter Agent — Informe de Optimización (auditoría externa)"
+          },
+          {
+            "line": 352,
+            "level": 2,
+            "text": "TL;DR ejecutivo (máx 1 página, 8 bullet points clave con citas)"
+          }
+        ],
+        "lead": "Eres un investigador senior en sistemas de IA local. Tu cliente acaba de",
+        "measures": [
+          {
+            "line": 17,
+            "text": "6 GB de VRAM o más."
+          },
+          {
+            "line": 20,
+            "text": "este sistema al 100% de optimización y calidad. No es opinión: cada"
+          },
+          {
+            "line": 29,
+            "text": "y no a Gemma 3/3n. Si la fuente solo dice \"Gemma\" sin versión, marcarla"
+          },
+          {
+            "line": 48,
+            "text": "- **Objetivo de UX**: latencia mic→texto ≤ 2 s, latencia texto→audio"
+          },
+          {
+            "line": 49,
+            "text": "primer fonema ≤ 1 s tras primer punto del LLM."
+          },
+          {
+            "line": 50,
+            "text": "- **Privacidad**: 100% local. Cero llamadas a APIs externas con"
+          },
+          {
+            "line": 52,
+            "text": "- **Estado actual**: 71/71 unit tests del repo PASS, 143/143 smoke tests"
+          },
+          {
+            "line": 53,
+            "text": "PASS sobre 62 tools del catálogo, bench Carter 540 reporta 99.81 %"
+          },
+          {
+            "line": 54,
+            "text": "PASS con el modelo grande del dev (E4B-Q6_K)."
+          },
+          {
+            "line": 58,
+            "text": "1. **6 GB de VRAM** (RTX 3050 6 GB, 4050 mobile, 3060 6 GB) — **prioridad alta**, es el caso límite que define la app."
+          },
+          {
+            "line": 59,
+            "text": "2. **8 GB de VRAM** (3060 Ti, 4060, 2080) — caso cómodo."
+          },
+          {
+            "line": 60,
+            "text": "3. **12 GB+ de VRAM** (3060 12 GB, 4060 Ti 16 GB, 4070+) — para el dev/power user."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "whisper",
+          "piper",
+          "gemma-4",
+          "qwen3"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 3050 6 GB",
+          "4060",
+          "16 GB",
+          "RTX 4060 Ti"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-460",
+          "h:1",
+          "m:17"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/review_arquitectonico_3_bugs_voz.md",
+      "queued_sha256": "73cb6c431dae323891bc0c18907a3f53f557307d90337619ae485ec3d3accb5d",
+      "size_queued": 19489,
+      "exists": true,
+      "disk_sha256": "73cb6c431dae323891bc0c18907a3f53f557307d90337619ae485ec3d3accb5d",
+      "disk_size": 19489,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 140,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Review arquitectónico — 3 bugs del agente voice local"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Bug 1: Routing por intent semántico, no por mención de plataforma"
+          },
+          {
+            "line": 9,
+            "level": 3,
+            "text": "Diagnóstico arquitectónico"
+          },
+          {
+            "line": 13,
+            "level": 3,
+            "text": "Estrategias evaluadas"
+          },
+          {
+            "line": 21,
+            "level": 3,
+            "text": "Recomendación"
+          },
+          {
+            "line": 27,
+            "level": 3,
+            "text": "Failure mode post-fix"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Bug 2: RAG inyecta replies de éxito que el LLM mimetiza"
+          },
+          {
+            "line": 35,
+            "level": 3,
+            "text": "Diagnóstico arquitectónico"
+          },
+          {
+            "line": 39,
+            "level": 3,
+            "text": "Estrategias evaluadas"
+          },
+          {
+            "line": 47,
+            "level": 3,
+            "text": "Recomendación"
+          },
+          {
+            "line": 63,
+            "level": 1,
+            "text": "Importante: turn.reply_text NUNCA entra al prompt."
+          },
+          {
+            "line": 68,
+            "level": 3,
+            "text": "Failure mode post-fix"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Bug 3: Evaluator declara PASS porque \"no se esperaba tool action\""
+          },
+          {
+            "line": 76,
+            "level": 3,
+            "text": "Diagnóstico arquitectónico"
+          },
+          {
+            "line": 80,
+            "level": 3,
+            "text": "Estrategias evaluadas"
+          },
+          {
+            "line": 88,
+            "level": 3,
+            "text": "Recomendación"
+          },
+          {
+            "line": 106,
+            "level": 1,
+            "text": "mDeBERTa zero-shot entailment, multilingual"
+          },
+          {
+            "line": 118,
+            "level": 3,
+            "text": "Failure mode post-fix"
+          },
+          {
+            "line": 126,
+            "level": 2,
+            "text": "Orden de implementación y dependencias"
+          }
+        ],
+        "lead": "Antes de entrar bug por bug: los tres síntomas comparten una raíz común. El sistema trata como **independientes** tres decisiones que en realidad son la misma pregunta vista desde tres ángulos: *\"¿qué acción concreta sobre el mundo se requiere acá?\"*. El planner la responde lexicalmente (Bug 1), el RAG la responde por similitud de texto crudo (Bug 2), y el evaluator la responde por un flag binario",
+        "measures": [
+          {
+            "line": 60,
+            "text": "f\"outcome={turn.status_code} \"                     # PASS/PARTIAL/FAILED"
+          },
+          {
+            "line": 110,
+            "text": "return FAIL(\"reply claims actions not in tool_events\")"
+          },
+          {
+            "line": 113,
+            "text": "return PASS"
+          },
+          {
+            "line": 128,
+            "text": "Los tres fixes están acoplados pero **no** son del mismo orden de criticidad. Bug 3 es la única red de seguridad: sin él, mejoras en 1 y 2 reducen la *frecuencia* de mentiras pero no la *posibilidad*. Por eso el orden es **3 → 1 → 2**, cont"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-140",
+          "h:1",
+          "m:60"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/smoke_log.md",
+      "queued_sha256": "3caa8ebf0931e231a92b7d540b909bc46ff65644e4f945371916a2f1ae6019b2",
+      "size_queued": 10681,
+      "exists": true,
+      "disk_sha256": "3caa8ebf0931e231a92b7d540b909bc46ff65644e4f945371916a2f1ae6019b2",
+      "disk_size": 10681,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 284,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Smoke Log — Modo A (Direct call con stubs)"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "system"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "filesystem"
+          },
+          {
+            "line": 29,
+            "level": 2,
+            "text": "terminal"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "package"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "database"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "backup_sync"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "notification"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "routine"
+          },
+          {
+            "line": 75,
+            "level": 2,
+            "text": "network"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "maintenance"
+          },
+          {
+            "line": 91,
+            "level": 2,
+            "text": "gui"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "window"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "web"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "browser_real"
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "data_analysis"
+          },
+          {
+            "line": 119,
+            "level": 2,
+            "text": "download"
+          },
+          {
+            "line": 123,
+            "level": 2,
+            "text": "smart_home"
+          },
+          {
+            "line": 126,
+            "level": 2,
+            "text": "audio"
+          },
+          {
+            "line": 130,
+            "level": 2,
+            "text": "audio_device"
+          },
+          {
+            "line": 134,
+            "level": 2,
+            "text": "app"
+          },
+          {
+            "line": 137,
+            "level": 2,
+            "text": "steam"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "vision"
+          },
+          {
+            "line": 143,
+            "level": 2,
+            "text": "browser"
+          }
+        ],
+        "lead": "Generado en sesión autónoma 2026-05-15.",
+        "measures": [
+          {
+            "line": 6,
+            "text": "- [PASS] `system` happy time → expect=ok, got=ok"
+          },
+          {
+            "line": 7,
+            "text": "- [PASS] `system` cpu_ram_gpu → expect=ok, got=ok"
+          },
+          {
+            "line": 8,
+            "text": "- [PASS] `system` disk → expect=ok, got=ok"
+          },
+          {
+            "line": 9,
+            "text": "- [PASS] `system` battery → expect=ok, got=ok"
+          },
+          {
+            "line": 10,
+            "text": "- [PASS] `system` CC-101 shutdown gate → expect=needs_confirmation, got=needs_confirmation"
+          },
+          {
+            "line": 11,
+            "text": "- [PASS] `system` CC-101 restart gate → expect=needs_confirmation, got=needs_confirmation"
+          },
+          {
+            "line": 12,
+            "text": "- [PASS] `system` CC-101 sleep gate → expect=needs_confirmation, got=needs_confirmation"
+          },
+          {
+            "line": 13,
+            "text": "- [PASS] `system` anti-bypass _internal_safe filtered → expect=needs_confirmation, got=needs_confirmation"
+          },
+          {
+            "line": 14,
+            "text": "- [PASS] `system` anti-bypass routine_context filtered → expect=needs_confirmation, got=needs_confirmation"
+          },
+          {
+            "line": 15,
+            "text": "- [PASS] `system` confirmed=True passes gate → expect=ok, got=ok"
+          },
+          {
+            "line": 16,
+            "text": "- [PASS] `system` invalid action → expect=any_error, got=failed"
+          },
+          {
+            "line": 19,
+            "text": "- [PASS] `filesystem` list → expect=ok, got=ok"
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-284",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/smoke_log_mode_b.md",
+      "queued_sha256": "a111c6a18689a883e1b9b7a4fa85dc6861e0e940163d36e299399a14d382e697",
+      "size_queued": 11802,
+      "exists": true,
+      "disk_sha256": "a111c6a18689a883e1b9b7a4fa85dc6861e0e940163d36e299399a14d382e697",
+      "disk_size": 11802,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 297,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Smoke Log — Modo B (LLM real, Gemma 4 via llama-server)"
+          },
+          {
+            "line": 4,
+            "level": 2,
+            "text": "Single-turn prompts (1-45)"
+          },
+          {
+            "line": 6,
+            "level": 3,
+            "text": "Prompt 1 (system_info) — '¿Qué hora es?'"
+          },
+          {
+            "line": 11,
+            "level": 3,
+            "text": "Prompt 2 (system_info) — '¿Cuánta RAM tengo libre?'"
+          },
+          {
+            "line": 16,
+            "level": 3,
+            "text": "Prompt 3 (system_info) — 'Dime el estado de la batería'"
+          },
+          {
+            "line": 21,
+            "level": 3,
+            "text": "Prompt 4 (system_info) — '¿Cuánto espacio libre tengo en C?'"
+          },
+          {
+            "line": 26,
+            "level": 3,
+            "text": "Prompt 5 (system_info) — '¿Qué procesos están corriendo?'"
+          },
+          {
+            "line": 31,
+            "level": 3,
+            "text": "Prompt 6 (filesystem) — 'Lista los archivos en mi carpeta Documentos'"
+          },
+          {
+            "line": 36,
+            "level": 3,
+            "text": "Prompt 7 (filesystem) — 'Lee el archivo C:/test.txt y dime de qué se trata'"
+          },
+          {
+            "line": 41,
+            "level": 3,
+            "text": "Prompt 8 (filesystem) — 'Compara los archivos a.txt y b.txt'"
+          },
+          {
+            "line": 46,
+            "level": 3,
+            "text": "Prompt 9 (filesystem) — 'Comprime la carpeta C:/proyecto a proyecto.zip'"
+          },
+          {
+            "line": 51,
+            "level": 3,
+            "text": "Prompt 10 (filesystem) — 'Borra el archivo C:/temporal.txt'"
+          },
+          {
+            "line": 56,
+            "level": 3,
+            "text": "Prompt 11 (gui) — 'Toma un screenshot del monitor principal'"
+          },
+          {
+            "line": 62,
+            "level": 3,
+            "text": "Prompt 12 (gui) — 'Encuentra el texto 'Aceptar' en pantalla y hazle click'"
+          },
+          {
+            "line": 67,
+            "level": 3,
+            "text": "Prompt 13 (gui) — 'Tipea hola en la ventana activa'"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "Prompt 14 (gui) — 'Lista las ventanas abiertas'"
+          },
+          {
+            "line": 77,
+            "level": 3,
+            "text": "Prompt 15 (gui) — 'Maximiza la ventana de Chrome'"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "Prompt 16 (destructive) — 'Apaga la computadora en 30 segundos'"
+          },
+          {
+            "line": 88,
+            "level": 3,
+            "text": "Prompt 17 (destructive) — 'Reinicia la computadora'"
+          },
+          {
+            "line": 94,
+            "level": 3,
+            "text": "Prompt 18 (destructive) — 'Instala 7zip con winget'"
+          },
+          {
+            "line": 99,
+            "level": 3,
+            "text": "Prompt 19 (destructive) — 'Desinstala VLC'"
+          },
+          {
+            "line": 105,
+            "level": 3,
+            "text": "Prompt 20 (destructive) — 'Ejecuta el comando rd /S /Q C:/test en terminal'"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "Prompt 21 (destructive) — 'Borra todas las filas de la tabla users en mi sqlite C:/data'"
+          },
+          {
+            "line": 116,
+            "level": 3,
+            "text": "Prompt 22 (destructive) — 'Restaura el backup de C:/respaldo.zip a C:/datos sobrescribi'"
+          }
+        ],
+        "lead": "- elapsed: 8.7s",
+        "measures": [
+          {
+            "line": 7,
+            "text": "- elapsed: 8.7s"
+          },
+          {
+            "line": 9,
+            "text": "- expect_match: PASS (ok)"
+          },
+          {
+            "line": 12,
+            "text": "- elapsed: 11.5s"
+          },
+          {
+            "line": 14,
+            "text": "- expect_match: FAIL (no tool_call emitted)"
+          },
+          {
+            "line": 17,
+            "text": "- elapsed: 6.1s"
+          },
+          {
+            "line": 19,
+            "text": "- expect_match: PASS (ok)"
+          },
+          {
+            "line": 22,
+            "text": "- elapsed: 5.3s"
+          },
+          {
+            "line": 24,
+            "text": "- expect_match: PASS (ok)"
+          },
+          {
+            "line": 27,
+            "text": "- elapsed: 7.2s"
+          },
+          {
+            "line": 29,
+            "text": "- expect_match: PASS (ok)"
+          },
+          {
+            "line": 32,
+            "text": "- elapsed: 9.1s"
+          },
+          {
+            "line": 34,
+            "text": "- expect_match: PASS (ok)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-297",
+          "h:1",
+          "m:7"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/smoke_summary.md",
+      "queued_sha256": "673c6a544e78312dcdc590f6a82a61dfc63ccee61ba3de26b607cf0e5a2fdb57",
+      "size_queued": 13444,
+      "exists": true,
+      "disk_sha256": "673c6a544e78312dcdc590f6a82a61dfc63ccee61ba3de26b607cf0e5a2fdb57",
+      "disk_size": 13444,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 196,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Smoke Test Summary — Carter Agent"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Conteo global"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "Top hallazgos (PRIORIDAD ALTA para arreglar mañana)"
+          },
+          {
+            "line": 16,
+            "level": 3,
+            "text": "1. **SCHEMA SYNC BUG — CC-106 / T2-008 / T2-004 / T2-005** (real, accionable)"
+          },
+          {
+            "line": 45,
+            "level": 3,
+            "text": "2. **Classifier vs gate duro — fricción innecesaria**"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Top hallazgos (PRIORIDAD MEDIA)"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "3. Modo B — el modelo E4B-Q6_K elige tool incorrectamente"
+          },
+          {
+            "line": 72,
+            "level": 3,
+            "text": "4. Modo B — Prompt #22 emitió JSON cortado"
+          },
+          {
+            "line": 76,
+            "level": 2,
+            "text": "Verificaciones positivas (todo OK)"
+          },
+          {
+            "line": 78,
+            "level": 3,
+            "text": "Anti-bypass CC-101 (6/6 PASS en Modo A, 0 leaks en Modo B)"
+          },
+          {
+            "line": 90,
+            "level": 3,
+            "text": "Gates duros confirmados (CC-101)"
+          },
+          {
+            "line": 100,
+            "level": 3,
+            "text": "Validación específica confirmada"
+          },
+          {
+            "line": 120,
+            "level": 3,
+            "text": "CC-105 redacción de credenciales"
+          },
+          {
+            "line": 124,
+            "level": 3,
+            "text": "CC-102 atomic API pública"
+          },
+          {
+            "line": 129,
+            "level": 3,
+            "text": "CC-103 parse_ps_json"
+          },
+          {
+            "line": 133,
+            "level": 3,
+            "text": "Sanity de seguridad (host del usuario)"
+          },
+          {
+            "line": 139,
+            "level": 2,
+            "text": "Casos fallados Modo A — detalle completo"
+          },
+          {
+            "line": 152,
+            "level": 2,
+            "text": "Para retomar mañana"
+          },
+          {
+            "line": 154,
+            "level": 3,
+            "text": "Prioridad alta — fix recomendado"
+          },
+          {
+            "line": 163,
+            "level": 3,
+            "text": "Prioridad media"
+          },
+          {
+            "line": 172,
+            "level": 3,
+            "text": "Prioridad baja"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "Artefactos generados"
+          },
+          {
+            "line": 188,
+            "level": 2,
+            "text": "Mensaje para el dev que arregle mañana"
+          }
+        ],
+        "lead": "- Sesión: 2026-05-15 (autónoma nocturna)",
+        "measures": [
+          {
+            "line": 4,
+            "text": "- Modelo en llama-server: `gemma-4-E4B-it-Q6_K.gguf` (más chico que el target IQ4_XS 26B; importante para interpretar Modo B)"
+          },
+          {
+            "line": 5,
+            "text": "- Fixes auditados: los aplicados en la sesión anterior (CC-100/101/102/103/104/105/106/107 + individuales)"
+          },
+          {
+            "line": 9,
+            "text": "| Modo | Casos | PASS | FAIL | Notas |"
+          },
+          {
+            "line": 11,
+            "text": "| **A — Direct call con stubs** | 141 | 135 | 6 | 6/6 anti-bypass PASS |"
+          },
+          {
+            "line": 35,
+            "text": "- [FAIL] `gui` CC-106 monitor=primary: expect=ok, got=failed, error='invalid tool arguments'"
+          },
+          {
+            "line": 36,
+            "text": "- [FAIL] `gui` monitor invalid: expect=needs_user, got=failed, error='invalid tool arguments'"
+          },
+          {
+            "line": 50,
+            "text": "- `backup_sync.restore` con zip-slip → debería caer en el bloqueo `failed` con detalle de los entries blocked. **Actual**: el classifier (`safety.classify_tool_call` línea 42) dispara `needs_confirmation` y el zip-slip ni se evalúa."
+          },
+          {
+            "line": 58,
+            "text": "- [FAIL] `backup_sync` restore skip-policy (no gate): expect=ok, got=needs_confirmation"
+          },
+          {
+            "line": 59,
+            "text": "- [FAIL] `backup_sync` T2-021 zip-slip blocked: expect=failed, got=needs_confirmation"
+          },
+          {
+            "line": 60,
+            "text": "- [FAIL] `notification` T2-024 invalid time format: expect=needs_user, got=needs_confirmation"
+          },
+          {
+            "line": 61,
+            "text": "- [FAIL] `notification` T2-024 HH:MM ok: expect=ok, got=needs_confirmation"
+          },
+          {
+            "line": 70,
+            "text": "- 13 prompts terminaron en \"no tool_call emitted\" — el modelo respondió con texto en vez de tool_call. Esto se acentúa en multi-turn (4/5 multi-turn fallan ya en el primer turno). **Es comportamiento del modelo E4B chico, no del sistema**."
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [
+          "gemma-4",
+          "e4b",
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 43,
+            "text": "El modelo no añade `monitor=primary` porque no aparece en el catálogo que recibe."
+          }
+        ],
+        "ranges": [
+          "1-196",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/auditorias_baseline/tradeoffs.md",
+      "queued_sha256": "c02c8643c721db4f4492c554d5301458a5c0d82508e06dc61ac29199fcf0b6b9",
+      "size_queued": 5515,
+      "exists": true,
+      "disk_sha256": "c02c8643c721db4f4492c554d5301458a5c0d82508e06dc61ac29199fcf0b6b9",
+      "disk_size": 5515,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 92,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Tradeoffs para decisión de RED — sprint de latencia 2026-05-22"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "T1 — Streaming del reply a TTS vs los guards post-generación (ARQUITECTURA vs LATENCIA percibida)"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "T2 — thinking_budget de acciones: ya bien tuneado (decisión #3, RESUELTA con datos)"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "T3 — Multistep inherentemente >5s (para conocimiento de RED, no bloqueante)"
+          }
+        ],
+        "lead": "**Contexto:** la palanca #1 de latencia PERCIBIDA es streamear el reply final al",
+        "measures": [
+          {
+            "line": 6,
+            "text": "usuario token-a-token (TTS empieza a hablar en ~1s en vez de esperar el reply"
+          },
+          {
+            "line": 8,
+            "text": "router mode (commit 3fc94f8, TTFT 130ms medido). PERO:"
+          },
+          {
+            "line": 20,
+            "text": "son pass-through, pero NO puedo garantizar que un answer no contenga \"abrí\" en"
+          },
+          {
+            "line": 30,
+            "text": "escapa un claim. Latencia percibida ~1s en la mayoría de los turnos."
+          },
+          {
+            "line": 32,
+            "text": "incremental (percibida ~1s visual), pero la voz espera los guards. Rompe nada"
+          },
+          {
+            "line": 36,
+            "text": "**Recomendación:** **(C) para la UI ya** (sin riesgo) + **(B) para TTS** si RED"
+          },
+          {
+            "line": 43,
+            "text": "**Costo de no hacer nada:** la latencia percibida sigue = total. Con Fase 2/3 el"
+          },
+          {
+            "line": 44,
+            "text": "total baja a <5s en casi todo, así que la percibida ya mejora sin streaming."
+          },
+          {
+            "line": 45,
+            "text": "Streaming llevaría la percibida a ~1s, que es el objetivo declarado — vale la"
+          },
+          {
+            "line": 50,
+            "text": "siempre a los guards (status quo, percibida=total pero ya <5s con Fase 2/3)?"
+          },
+          {
+            "line": 61,
+            "text": "| \"abre la calculadora\" | 1.15s/r128/tc1 | 1.04s/r128/tc1 | 1.03s/r128/tc1 | 1.01s/r128/tc1 |"
+          },
+          {
+            "line": 62,
+            "text": "| \"minimiza la ventana\" | 1.59s/r182/tc1 | 1.56s/r182/tc1 | 1.06s/r182/tc1 | 1.06s/r182/tc1 |"
+          }
+        ],
+        "dates": [
+          "2026-05-22"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 19,
+            "text": "sobre su estado\" (no fake success). Para turnos puramente informativos los guards"
+          },
+          {
+            "line": 38,
+            "text": "usa, solo adelantado). NO implementé (B) unilateralmente porque adelantar el"
+          },
+          {
+            "line": 40,
+            "text": "bueno. (C) tampoco lo cablé porque toca el contrato del `progress`/UI y quería tu"
+          }
+        ],
+        "ranges": [
+          "1-92",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/backlogs_superados/ROADMAP_perfeccion.md",
+      "queued_sha256": "a93f05e8c91e14853bc8a3388de7bc45fbab3a58d1cf9014ea6ced712d6e3e06",
+      "size_queued": 10513,
+      "exists": true,
+      "disk_sha256": "a93f05e8c91e14853bc8a3388de7bc45fbab3a58d1cf9014ea6ced712d6e3e06",
+      "disk_size": 10513,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 130,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Roadmap de perfeccionamiento — Carter Agent (2026-05-29)"
+          },
+          {
+            "line": 15,
+            "level": 2,
+            "text": "1. Diagnóstico — esto NO es un greenfield"
+          },
+          {
+            "line": 26,
+            "level": 2,
+            "text": "2. Lo que PUEDE FALLAR HOY (verificado, por daño × frecuencia)"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "Críticos — daño irreversible o mentira"
+          },
+          {
+            "line": 40,
+            "level": 3,
+            "text": "Altos"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "3. Roadmap por olas"
+          },
+          {
+            "line": 53,
+            "level": 3,
+            "text": "Ola 1 — Fiabilidad y honestidad (no mentir, no dañar)"
+          },
+          {
+            "line": 61,
+            "level": 3,
+            "text": "Ola 2 — Robustez de hardware (expandir el público)"
+          },
+          {
+            "line": 91,
+            "level": 3,
+            "text": "Ola 3 — Capacidad estratégica"
+          },
+          {
+            "line": 104,
+            "level": 3,
+            "text": "Ola 4 — Latencia y pulido"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "4. Definición de \"perfecto\" — los números"
+          },
+          {
+            "line": 126,
+            "level": 2,
+            "text": "5. Riesgos del plan / qué NO hacer"
+          }
+        ],
+        "lead": "El equipo hizo trabajo enorme y riguroso: B1–B8 shipped, 8 investigaciones aplicadas,",
+        "measures": [
+          {
+            "line": 10,
+            "text": "> se flippea. Nada se shippea contra ruido. Respeta: 4GB VRAM / OSS-free / sin listas"
+          },
+          {
+            "line": 36,
+            "text": "| **C5** | Click reporta **éxito con `state_changed=False`** | `tools.py:5920`, `computer_use.py:346` | \"Listo, hice click\" contradicho por su propia señal. False-PASS 14.3% medido |"
+          },
+          {
+            "line": 37,
+            "text": "| **C6** | Primera **imagen sin pre-flight**; mmproj WARN solo loguea (VERIFICADO: recicla solo en DEGRADE) | `agent.py:1298-1335`, `vram_watchdog.py:116` | OOM/zombie en 4GB con ~1050 MiB libres |"
+          },
+          {
+            "line": 38,
+            "text": "| **C7** | `atexit` cleanup solo si se llamó `get_shared_manager()` | `llama_server.py:167-184` | Cerrás la app, el modelo come 6GB VRAM; `:8080` ocupado |"
+          },
+          {
+            "line": 42,
+            "text": "- **H2** Sin **budget de retry por-clase** → research \"466/513 retries desperdiciados\"."
+          },
+          {
+            "line": 55,
+            "text": "2. **Tri-estado de verify** (C4/C5): `None` deja de colapsar a `False`; nunca \"hice click\" con `state_changed=False`. → **Gate: 0 falsos éxitos, doble-click <2%.**"
+          },
+          {
+            "line": 57,
+            "text": "4. **Taxonomía de error + budget por-clase + error_type en verifiers** (H1/H2). → **Gate: TOOL_NOT_FOUND=0 retried, TRANSIENT ≥80%.**"
+          },
+          {
+            "line": 58,
+            "text": "5. **Catálogo de preconditions** (`support/preconditions.py`). → **Gate: check <50ms p95.**"
+          },
+          {
+            "line": 59,
+            "text": "6. **3ª señal de verify (SetWinEventHook) + anchor-gate labels cortos** (opt-in). → **Gate: false-PASS <2%.**"
+          },
+          {
+            "line": 64,
+            "text": "override `GEMMA4_LLAMA_GPU_VENDOR`. 25 tests + EN VIVO 5/5. **PENDIENTE OPERACIONAL (usuario):**"
+          },
+          {
+            "line": 69,
+            "text": "en turno de texto) cargaba mmproj sin chequeo → OOM en 4GB. `_image_inject_vram_safe` ahora actúa antes"
+          },
+          {
+            "line": 71,
+            "text": "honesta. Fail-open ante error; no-op sin GPU. `agent.py:3088,4746`. 22 tests + EN VIVO 5/5."
+          }
+        ],
+        "dates": [
+          "2026-05-29"
+        ],
+        "models": [
+          "llama.cpp",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM",
+          "6GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 41,
+            "text": "- **H1** `error_type` declarado pero **nunca seteado** por ningún verifier (`verify_core.py:64`)."
+          }
+        ],
+        "ranges": [
+          "1-130",
+          "h:1",
+          "m:10"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/00_inventory.md",
+      "queued_sha256": "6224717913c662db4dd283c8bfcda0d83a566627ee0d4211fcde76a12cbf60f8",
+      "size_queued": 43707,
+      "exists": true,
+      "disk_sha256": "6224717913c662db4dd283c8bfcda0d83a566627ee0d4211fcde76a12cbf60f8",
+      "disk_size": 43707,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 667,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 0 — Inventario crudo"
+          },
+          {
+            "line": 14,
+            "level": 2,
+            "text": "1. Agregados de alto nivel"
+          },
+          {
+            "line": 31,
+            "level": 3,
+            "text": "Top 25 archivos por LOC"
+          },
+          {
+            "line": 61,
+            "level": 3,
+            "text": "Top clases gigantes (`>=200` LOC o `>=15` métodos)"
+          },
+          {
+            "line": 88,
+            "level": 2,
+            "text": "2. Entry points"
+          },
+          {
+            "line": 90,
+            "level": 3,
+            "text": "2.1 Reales (módulos invocados como `python -m gemma4_agent.<x>` o equivalentes)"
+          },
+          {
+            "line": 108,
+            "level": 3,
+            "text": "2.2 Auxiliares (tienen `__main__` pero son test/probe/utility)"
+          },
+          {
+            "line": 117,
+            "level": 2,
+            "text": "3. Dependencias"
+          },
+          {
+            "line": 119,
+            "level": 3,
+            "text": "3.1 Declaración"
+          },
+          {
+            "line": 125,
+            "level": 3,
+            "text": "3.2 Paquetes externos usados (recuento por #archivos que los importan)"
+          },
+          {
+            "line": 171,
+            "level": 3,
+            "text": "3.3 Hallazgos directos sobre dependencias"
+          },
+          {
+            "line": 182,
+            "level": 2,
+            "text": "4. Archivos de configuración y persistencia"
+          },
+          {
+            "line": 184,
+            "level": 3,
+            "text": "4.1 Configuración declarativa (YAML/JSON/TOML)"
+          },
+          {
+            "line": 195,
+            "level": 3,
+            "text": "4.2 Estado persistido por la app"
+          },
+          {
+            "line": 215,
+            "level": 3,
+            "text": "4.3 Configuración por archivo del lado UI"
+          },
+          {
+            "line": 226,
+            "level": 3,
+            "text": "4.4 Outputs de probes JSON (en `docs/`)"
+          },
+          {
+            "line": 232,
+            "level": 2,
+            "text": "5. Estructura del paquete"
+          },
+          {
+            "line": 348,
+            "level": 2,
+            "text": "6. Tabla detallada por archivo"
+          },
+          {
+            "line": 352,
+            "level": 3,
+            "text": "6.1 Archivos de producción (raíz del paquete)"
+          },
+          {
+            "line": 414,
+            "level": 3,
+            "text": "6.2 Subpaquete `ui/`"
+          },
+          {
+            "line": 437,
+            "level": 3,
+            "text": "6.3 Subpaquete `voice/`"
+          },
+          {
+            "line": 448,
+            "level": 3,
+            "text": "6.4 Tests (44 archivos)"
+          },
+          {
+            "line": 497,
+            "level": 3,
+            "text": "6.5 Scripts/probes (huérfanos por definición — son entry-points manuales)"
+          },
+          {
+            "line": 513,
+            "level": 2,
+            "text": "7. Restos del proyecto Carter"
+          }
+        ],
+        "lead": "`tools.py::ToolRegistry` con 3 157 LOC y 142 métodos es el caso más extremo del repo. Lo señalo aquí pero los hallazgos van todos a `08_findings.md`.",
+        "measures": [
+          {
+            "line": 186,
+            "text": "**No hay archivos de configuración declarativa cargados por el agente.** La configuración 100 % vive en:"
+          },
+          {
+            "line": 255,
+            "text": "├── model_info.py                       (153 LOC — ModelInfo + GGUF parse)"
+          },
+          {
+            "line": 536,
+            "text": "| `llama_server.py` | 322 | comentario | \"Acceptance rate estimado 40-60% en Carter (sin medir). VRAM: solo viable\" |"
+          },
+          {
+            "line": 637,
+            "text": "2. **3 god modules concentran 18 332 LOC** (33 % del total):"
+          }
+        ],
+        "dates": [
+          "2026-05-16",
+          "2026-05-15",
+          "2026-05-14",
+          "2026-05-13",
+          "2026-05-12",
+          "2026-05-11"
+        ],
+        "models": [
+          "gemma4",
+          "piper",
+          "whisper",
+          "gemma 4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 177,
+            "text": "5. **No hay dependencias \"declaradas pero no importadas\"** porque no hay declaración. El cruce inverso (importadas pero no en el venv) lo veremos cuando exista `requirements.txt`."
+          },
+          {
+            "line": 188,
+            "text": "| Mecanismo | Detalle |"
+          },
+          {
+            "line": 533,
+            "text": "| `mission_outcome.py` | 15 | comentario docstring | \"Carter v5 mission/verifier.py — 9 outcome states.\" |"
+          }
+        ],
+        "ranges": [
+          "1-667",
+          "h:1",
+          "m:186"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/01_system.md",
+      "queued_sha256": "1615519b536a63fbf47bea7124248ba9e36402257cc6a67bccb85515b7538d7d",
+      "size_queued": 39831,
+      "exists": true,
+      "disk_sha256": "1615519b536a63fbf47bea7124248ba9e36402257cc6a67bccb85515b7538d7d",
+      "disk_size": 39831,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 699,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 1 — Diagrama de sistema (C4 niveles 1 y 2)"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "1. C4 Nivel 1 — System Context"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "2. C4 Nivel 2 — Containers (vista de alto nivel)"
+          },
+          {
+            "line": 202,
+            "level": 2,
+            "text": "3. Inventario de containers, uno por uno"
+          },
+          {
+            "line": 206,
+            "level": 3,
+            "text": "3.1 Superficies de usuario"
+          },
+          {
+            "line": 208,
+            "level": 4,
+            "text": "Container `CLI Chat`"
+          },
+          {
+            "line": 215,
+            "level": 4,
+            "text": "Container `UI Desktop` (PyQt6)"
+          },
+          {
+            "line": 222,
+            "level": 4,
+            "text": "Container `UI Field` (React + Vite + FastAPI)"
+          },
+          {
+            "line": 235,
+            "level": 4,
+            "text": "Container `Voice Loop`"
+          },
+          {
+            "line": 242,
+            "level": 3,
+            "text": "3.2 Orquestación del turno"
+          },
+          {
+            "line": 244,
+            "level": 4,
+            "text": "Container `Agent Core`"
+          },
+          {
+            "line": 251,
+            "level": 4,
+            "text": "Container `Agent Runner`"
+          },
+          {
+            "line": 257,
+            "level": 4,
+            "text": "Container `Sessions/Routines`"
+          },
+          {
+            "line": 263,
+            "level": 3,
+            "text": "3.3 Lifecycle del LLM"
+          },
+          {
+            "line": 265,
+            "level": 4,
+            "text": "Container `Llama-server Manager`"
+          },
+          {
+            "line": 272,
+            "level": 4,
+            "text": "Container `LLM Client`"
+          },
+          {
+            "line": 278,
+            "level": 4,
+            "text": "Container `Multimodal + Prewarm`"
+          },
+          {
+            "line": 283,
+            "level": 3,
+            "text": "3.4 Routing & Validation"
+          },
+          {
+            "line": 285,
+            "level": 4,
+            "text": "Container `Planner + Routing`"
+          },
+          {
+            "line": 296,
+            "level": 4,
+            "text": "Container `Validation Gates`"
+          },
+          {
+            "line": 303,
+            "level": 3,
+            "text": "3.5 Tools / Knowledge"
+          },
+          {
+            "line": 305,
+            "level": 4,
+            "text": "Container `Tool Registry`"
+          },
+          {
+            "line": 311,
+            "level": 4,
+            "text": "Container `Domain Tools`"
+          },
+          {
+            "line": 317,
+            "level": 4,
+            "text": "Container `Ops Tools`"
+          }
+        ],
+        "lead": "El agente Gemma4 corre 100 % local en una máquina Windows 11. Los \"actores externos\" son:",
+        "measures": [
+          {
+            "line": 19,
+            "text": "El agente Gemma4 corre 100 % local en una máquina Windows 11. Los \"actores externos\" son:"
+          },
+          {
+            "line": 24,
+            "text": "- **Modelos de IA en disco** (gemma-4 GGUF + mmproj, Vosk, Whisper, Piper, mDeBERTa NLI, MiniLM embeddings, MS-MARCO cross-encoder)."
+          },
+          {
+            "line": 35,
+            "text": "Models[(Modelos en disco<br/>GGUF + Vosk + Whisper<br/>Piper + NLI + ST)]"
+          },
+          {
+            "line": 280,
+            "text": "- **Archivos:** `multimodal.py` (134 LOC, 0 clases), `prewarm.py` (140 LOC, 0 clases), `model_info.py` (153 LOC, lee metadata GGUF para /model en server)."
+          },
+          {
+            "line": 281,
+            "text": "- **Consume:** `LLMClient`, `AgentConfig`, GGUF en disco."
+          },
+          {
+            "line": 292,
+            "text": "- **Modelos en disco:** MiniLM (~120 MB), mDeBERTa-xnli (~280 MB)."
+          },
+          {
+            "line": 318,
+            "text": "- **Responsabilidad:** tools que tocan navegador / OS / red / dispositivos vía Playwright o subprocess + protocolos crudos."
+          },
+          {
+            "line": 325,
+            "text": "- **Hallazgo de Fase 0/1:** lo llamé \"safety\" porque así se llama el archivo, pero NO es un sandbox de ejecución; son chequeos pre-call y prompts de confirmación. El agente sigue ejecutando código arbitrario del LLM en el mismo proceso."
+          },
+          {
+            "line": 338,
+            "text": "3. `compute_mission_outcome(goal, tool_records, reply)` clasifica en uno de 9 estados (COMPLETED, PARTIAL, FAILED, UNVERIFIED, NEEDS_USER, NEEDS_PERMISSION, BLOCKED_BY_POLICY, TOOL_OK_VERIFIER_INCONCLUSIVE, INTENT_NOT_FULFILLED)."
+          },
+          {
+            "line": 359,
+            "text": "- **Responsabilidad:** ingestar documentos del usuario (PDF/DOCX/etc) y servir RAG con FTS5 + opcional cross-encoder reranker (ms-marco-MiniLM-L-6-v2, ~80 MB)."
+          },
+          {
+            "line": 400,
+            "text": "- **Responsabilidad:** lectura de env vars (`GEMMA4_*`) y profiles (`Standby / Light / Balanced / Balanced 8GB / Performance`) persistidos en `~/.gemma4/active_profile.txt`. Profiles definidos en código (no YAML)."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4",
+          "gemma-4",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 198,
+            "text": "- El **`llama-server.exe`** está representado como un nodo aparte porque es un proceso hijo (no es código del paquete)."
+          },
+          {
+            "line": 325,
+            "text": "- **Hallazgo de Fase 0/1:** lo llamé \"safety\" porque así se llama el archivo, pero NO es un sandbox de ejecución; son chequeos pre-call y prompts de confirmación. El agente sigue ejecutando código arbitrario del LLM en el mismo proceso."
+          },
+          {
+            "line": 328,
+            "text": "- **Responsabilidad:** por cada tool ejecutada, opcionalmente medir efecto real (post-set verify para audio, post-write verify para filesystem, etc.). Cada verifier está registrado por nombre en `VERIFIER_REGISTRY` vía decorador."
+          },
+          {
+            "line": 696,
+            "text": "8. `Agent Core` (al final, porque depende de todos)"
+          }
+        ],
+        "ranges": [
+          "1-699",
+          "h:1",
+          "m:19"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/README.md",
+      "queued_sha256": "352df5918ae349aeccac0ad924248a97e4d98ef73fda31ab11c860b80bb5881e",
+      "size_queued": 3545,
+      "exists": true,
+      "disk_sha256": "352df5918ae349aeccac0ad924248a97e4d98ef73fda31ab11c860b80bb5881e",
+      "disk_size": 3545,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 53,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 2 — Componentes por container (C4 Nivel 3)"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Índice"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Cómo leer estos diagramas"
+          },
+          {
+            "line": 33,
+            "level": 2,
+            "text": "Hallazgos transversales"
+          }
+        ],
+        "lead": "- **Cajas:** archivos o clases concretas.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-53",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/agent_core.md",
+      "queued_sha256": "5666ac2b3a01613f2f200cfe894f9003f759b3ff2be7cbad4fb0c98f10a5a072",
+      "size_queued": 14052,
+      "exists": true,
+      "disk_sha256": "5666ac2b3a01613f2f200cfe894f9003f759b3ff2be7cbad4fb0c98f10a5a072",
+      "disk_size": 14052,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 202,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.08 — Agent Core"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Diagrama: lo que toca el Agent Core"
+          },
+          {
+            "line": 109,
+            "level": 2,
+            "text": "El `run_content` loop (892 LOC, el método más grande del repo)"
+          },
+          {
+            "line": 149,
+            "level": 2,
+            "text": "`subagent.py` (99 LOC, único colaborador directo)"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 176,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "**Datos top-level del módulo (fuera de la clase):**",
+        "measures": [
+          {
+            "line": 5,
+            "text": "> **Total LOC:** 3 067 (~5.5 % del paquete, pero el archivo es el segundo más"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-202",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/llm_lifecycle.md",
+      "queued_sha256": "a8f7738d2cac2a6c2edd390e547b61c684a3f2801be7175df0da719c8643098e",
+      "size_queued": 8148,
+      "exists": true,
+      "disk_sha256": "a8f7738d2cac2a6c2edd390e547b61c684a3f2801be7175df0da719c8643098e",
+      "disk_size": 8148,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 138,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.03 — LLM Lifecycle"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "Diagrama"
+          },
+          {
+            "line": 78,
+            "level": 2,
+            "text": "Tabla de envíos al BUS desde este container"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Tabla del API público"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 116,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.06 — LLM Lifecycle",
+        "measures": [
+          {
+            "line": 18,
+            "text": "| 3 | `model_info.py` | `parse_gguf_name`, `build_model_info`, `mock_model_info`, `is_experimental_quant` | 153 | Parser del nombre de archivo GGUF (Unsloth UD-, MoE A4B, MatFormer E4B) |"
+          },
+          {
+            "line": 45,
+            "text": "GGUF[(modelo.gguf<br/>+ mmproj.gguf)]"
+          },
+          {
+            "line": 67,
+            "text": "Info -. \"parse name\" .- GGUF"
+          },
+          {
+            "line": 74,
+            "text": "%% gguf on disk"
+          },
+          {
+            "line": 75,
+            "text": "Manager -- \"--model path\" --> GGUF"
+          },
+          {
+            "line": 128,
+            "text": "GGUF [shape=cylinder, label=\".gguf\"];"
+          },
+          {
+            "line": 136,
+            "text": "Manager -> GGUF [label=\"--model\"];"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "e4b",
+          "llama.cpp"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-138",
+          "h:1",
+          "m:18"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/memory.md",
+      "queued_sha256": "1421f7533dd9b219eddc893e7446870e30cf8ce7dda469304144c298deb6a150",
+      "size_queued": 11466,
+      "exists": true,
+      "disk_sha256": "1421f7533dd9b219eddc893e7446870e30cf8ce7dda469304144c298deb6a150",
+      "disk_size": 11466,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 182,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.06 — Memory & Knowledge + Skills/Microagents/Personas"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 22,
+            "level": 2,
+            "text": "Las 3 memorias en una sola foto"
+          },
+          {
+            "line": 66,
+            "level": 3,
+            "text": "Tabla comparativa"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Skills + Microagents + Personas — 3 capas declarativas de system_prompt enrichment"
+          },
+          {
+            "line": 136,
+            "level": 3,
+            "text": "Tabla comparativa"
+          },
+          {
+            "line": 148,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 164,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.11 — Tres memorias paralelas con propósitos distintos",
+        "measures": [
+          {
+            "line": 145,
+            "text": "| **Cap defensivo** | por profile (1/2/3/5) | `max_microagents=3` | no aplica |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-182",
+          "h:1",
+          "m:145"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/mission_verification.md",
+      "queued_sha256": "f481107b132c52212e6f9e76b2036fc8d5bc468b3b4e9077e94d81cc9d701aa4",
+      "size_queued": 7856,
+      "exists": true,
+      "disk_sha256": "f481107b132c52212e6f9e76b2036fc8d5bc468b3b4e9077e94d81cc9d701aa4",
+      "disk_size": 7856,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 139,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.04 — Mission Outcome + Verification"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Pipeline"
+          },
+          {
+            "line": 51,
+            "level": 2,
+            "text": "Los 9 estados de `OutcomeStatus`"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Registro decorator-based de verifiers"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "Tabla de los 19 verifiers concretos (estimado)"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 119,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.07 — Mission + Verification pipeline",
+        "measures": [
+          {
+            "line": 47,
+            "text": "MO-->>AG: MissionOutcome(status=COMPLETED|PARTIAL|FAILED|UNVERIFIED|...)"
+          },
+          {
+            "line": 59,
+            "text": "A --> FAILED[\"FAILED<br/>tried, verifiers said No\"]"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 16,
+            "text": "| 3 | `verify_core.py` | `VerifierOutcome` + `VERIFIER_REGISTRY` + `@verifier` decorator + `verify(name, args, result)` + `summarize_verifiers(outcomes)` | 191 | Registry global de verifiers per-tool y summarizer del footer |"
+          },
+          {
+            "line": 17,
+            "text": "| 4 | `verifiers.py` | 19 verifiers concretos (`audio`, `app`, `filesystem`, `clipboard`, etc.) registrados vía `@verifier` decorator | 690 | Implementaciones específicas: post-set audio check, file exists check, window exists check, etc. P"
+          },
+          {
+            "line": 77,
+            "text": "%% Fig 2.09 — Verifier registry (lazy import side-effect)"
+          },
+          {
+            "line": 87,
+            "text": "V -- \"@verifier('audio')<br/>@verifier('app')<br/>@verifier('filesystem')<br/>... x19\" --> R"
+          },
+          {
+            "line": 96,
+            "text": "import en `agent.py:1262` está deliberadamente marcado `# noqa: F401` porque"
+          },
+          {
+            "line": 105,
+            "text": "> (UML), grep concreto a `@verifier(` que va a dar la lista exacta."
+          }
+        ],
+        "ranges": [
+          "1-139",
+          "h:1",
+          "m:47"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/observability.md",
+      "queued_sha256": "9e9ce827dea2e0cbb3fbd73e17f5d731542d24562c4c6064f5fde9305168fd52",
+      "size_queued": 9133,
+      "exists": true,
+      "disk_sha256": "9e9ce827dea2e0cbb3fbd73e17f5d731542d24562c4c6064f5fde9305168fd52",
+      "disk_size": 9133,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 207,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.01 — Observability: Event Bus + 3 sinks"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "Diagrama"
+          },
+          {
+            "line": 65,
+            "level": 2,
+            "text": "EventBus — el switchboard"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "Los 3 sinks"
+          },
+          {
+            "line": 142,
+            "level": 3,
+            "text": "Tabla comparativa de los 3 sinks"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "Solape concreto de información"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "Hallazgos (a `_findings_seed.md`)"
+          },
+          {
+            "line": 186,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.01 — Observability",
+        "measures": [
+          {
+            "line": 91,
+            "text": "ser <1ms y exception-safe."
+          },
+          {
+            "line": 163,
+            "text": "| VRAM peak | – | – | – | ✓ |"
+          },
+          {
+            "line": 199,
+            "text": "Agent  -> Trace [label=\"DIRECT call\", color=\"red\"];"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [
+          "vram",
+          "VRAM"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-207",
+          "h:1",
+          "m:91"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/routing.md",
+      "queued_sha256": "a5cd04f75e64d43e401f498a9343019af7d6a52120273f070d9f6ce9b3602ef8",
+      "size_queued": 10905,
+      "exists": true,
+      "disk_sha256": "a5cd04f75e64d43e401f498a9343019af7d6a52120273f070d9f6ce9b3602ef8",
+      "disk_size": 10905,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 178,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.05 — Routing & Validation"
+          },
+          {
+            "line": 12,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Diagrama: el pipeline completo"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Tabla: 4 decisores trabajando sobre el mismo user_text"
+          },
+          {
+            "line": 116,
+            "level": 2,
+            "text": "Tabla: 4 ambiguous pairs hardcoded"
+          },
+          {
+            "line": 125,
+            "level": 2,
+            "text": "Tabla: 6 entradas en CROSS_REJECT_PAIRS"
+          },
+          {
+            "line": 136,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 152,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.10 — Routing & Validation pipeline",
+        "measures": [
+          {
+            "line": 17,
+            "text": "| 2 | `semantic_router.py` | `suggest_tools_semantic()` + `embed()` + `_STATE` singleton + `TOOL_DESCRIPTIONS` (62 entradas) + LRU cache 256 | 279 | sentence-transformers MiniLM-L12-v2 (~120 MB) | fallback: solo si planner devuelve `[]` y u"
+          },
+          {
+            "line": 18,
+            "text": "| 3 | `capability_classifier.py` | `CapabilityVerdict` + `augment_subset()` + `classify_capability_{sync,async,cached}` + `CAPABILITY_LABELS` (10) + `CAPABILITY_TO_TOOLS` map | 303 | (vía `nli_service`) | hot path con timeout 350ms, después"
+          },
+          {
+            "line": 19,
+            "text": "| 4 | `nli_service.py` | `_NLIService` singleton + `classify_sync/async` + cache LRU 512 | 246 | mDeBERTa-v3-base-xnli (~280 MB) | lazy load primera invocación, ~1200ms por inference CPU |"
+          },
+          {
+            "line": 42,
+            "text": "ST[(MiniLM-L12-v2 ~120MB)]"
+          },
+          {
+            "line": 46,
+            "text": "AS[augment_subset<br/>cache-then-sync 350ms<br/>then async warmup]"
+          },
+          {
+            "line": 54,
+            "text": "Mod[(mDeBERTa-v3-base-xnli ~280MB)]"
+          },
+          {
+            "line": 112,
+            "text": "| `semantic_router.suggest_tools_semantic` | solo si regex devolvió `[]` y user_text >3 palabras no-casual | ~50-150ms primera vez (después cache) | devuelve `[]` |"
+          },
+          {
+            "line": 113,
+            "text": "| `capability_classifier.augment_subset` | siempre, paralelo | 350ms sync, después async fire-and-forget | subset queda como estaba; cache se llena para next turn |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-178",
+          "h:1",
+          "m:17"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/state_config.md",
+      "queued_sha256": "91cca393763b3f81efdac337fce72f64a1a4ceb3dc75c3c33e3050d93df34a15",
+      "size_queued": 10955,
+      "exists": true,
+      "disk_sha256": "91cca393763b3f81efdac337fce72f64a1a4ceb3dc75c3c33e3050d93df34a15",
+      "disk_size": 10955,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 183,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.10 — State + Sessions/Routines + Config/Profiles"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 24,
+            "level": 2,
+            "text": "Diagrama"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Tabla: tipos de \"recursos\" en `data/state.json`"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "Tabla: los 5 profiles VRAM-aware"
+          },
+          {
+            "line": 113,
+            "level": 2,
+            "text": "Tabla: ~20 env vars GEMMA4_*"
+          },
+          {
+            "line": 147,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 162,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.13 — State + Sessions + Config + Profiles",
+        "measures": [
+          {
+            "line": 21,
+            "text": "| 7 | `profiles.py` | `Profile` dataclass + 5 `PROFILES` + `apply_profile_to_env()` + `set_active_profile()` + overrides | 532 | `~/.gemma4/active_profile.txt` + `~/.gemma4/profiles.json` (overrides) | Perfiles VRAM-aware (performance/balan"
+          },
+          {
+            "line": 22,
+            "text": "| 8 | `profile_watcher.py` | `ProfileWatcher` (daemon thread) + `WatcherConfig` + `_Sample` | 398 | (lee `~/.gemma4/active_profile.txt`) | Auto-downgrade al detectar juegos/GPU/RAM/VRAM heavy |"
+          },
+          {
+            "line": 84,
+            "text": "PW -. \"sample every 10s\" .-> PROFS"
+          },
+          {
+            "line": 85,
+            "text": "PW -- \"set_active_profile if game/GPU/RAM/VRAM\" --> AP"
+          },
+          {
+            "line": 103,
+            "text": "| Profile | context_size | model | vision | rerank | parallel_tools | fact_extraction | server | voice | est VRAM |"
+          },
+          {
+            "line": 106,
+            "text": "| Balanced 8GB | (a verificar) | E4B UD-Q4_K_XL | ✓ | ✓ | ✓ | ? | ON | ON | ~7.5 GB |"
+          },
+          {
+            "line": 107,
+            "text": "| Balanced | (a verificar) | E4B Q4_K_M | ✓ | ✓ | ? | ? | ON | ON | ~6 GB |"
+          },
+          {
+            "line": 108,
+            "text": "| Light | (a verificar) | E2B Q5_K_M | ✗ | ✗ | ✗ | ✗ | ON | ON | ~4.7 GB |"
+          },
+          {
+            "line": 122,
+            "text": "| `GEMMA4_MODEL_PATH` | `<project>/models/E4B/gemma-4-E4B-it-Q4_K_M.gguf` | path |"
+          },
+          {
+            "line": 123,
+            "text": "| `GEMMA4_MMPROJ_PATH` | `<project>/models/E4B/mmproj-F16.gguf` | path |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4",
+          "e4b",
+          "gemma-4"
+        ],
+        "hardware": [
+          "VRAM",
+          "6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-183",
+          "h:1",
+          "m:21"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/surfaces.md",
+      "queued_sha256": "f002f4bdeefda9e1c0de79ab6b04d42d2bc996eabf1f7e1fa3b548cc90aa72bb",
+      "size_queued": 10368,
+      "exists": true,
+      "disk_sha256": "f002f4bdeefda9e1c0de79ab6b04d42d2bc996eabf1f7e1fa3b548cc90aa72bb",
+      "disk_size": 10368,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 198,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.09 — Superficies: CLI + UI Desktop + UI Field + MCP Server"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Diagrama"
+          },
+          {
+            "line": 73,
+            "level": 2,
+            "text": "La duplicación más fea del repo"
+          },
+          {
+            "line": 75,
+            "level": 3,
+            "text": "`AgentWorker` (UI Desktop) vs `AgentRunner` (UI Field)"
+          },
+          {
+            "line": 130,
+            "level": 3,
+            "text": "`ServerBootWorker` (UI Desktop) vs `AgentRunner._autostart_llama_server` (UI Field)"
+          },
+          {
+            "line": 134,
+            "level": 2,
+            "text": "Tabla de los 11 entry points"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 174,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.14 — Las 4 superficies, mismo Agent",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-198",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/tools.md",
+      "queued_sha256": "f8cfb29f1b2e13ea8f2c9fc933e47a3cd64fae3b80a44cca647ca89a9183bd3e",
+      "size_queued": 13213,
+      "exists": true,
+      "disk_sha256": "f8cfb29f1b2e13ea8f2c9fc933e47a3cd64fae3b80a44cca647ca89a9183bd3e",
+      "disk_size": 13213,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 209,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.07 — Tools (Registry + Domain + Ops + Safety)"
+          },
+          {
+            "line": 10,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 20,
+            "level": 2,
+            "text": "Diagrama: el dispatcher central"
+          },
+          {
+            "line": 85,
+            "level": 2,
+            "text": "Estructura interna: `ToolRegistry._impls` tiene DOS familias"
+          },
+          {
+            "line": 111,
+            "level": 2,
+            "text": "Pipeline interno de `execute(name, args)`"
+          },
+          {
+            "line": 151,
+            "level": 2,
+            "text": "La clase `AppResolver` (364 LOC adentro de `tools.py`)"
+          },
+          {
+            "line": 171,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 190,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.16 — Tool Registry + dependencies",
+        "measures": [
+          {
+            "line": 6,
+            "text": "> **Total LOC:** 17 170 (31 % del paquete entero)."
+          },
+          {
+            "line": 129,
+            "text": "alt validation fail"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 183,
+            "text": "| **MED** | `_PRE_VALIDATORS` (mapping name → validator) es un mecanismo añadido al pipeline pero solo se documenta inline. No hay un registry decorator-based como el de verifiers. Inconsistencia con `verify_core.@verifier(name)`. | `tools."
+          }
+        ],
+        "ranges": [
+          "1-209",
+          "h:1",
+          "m:6"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/02_components/voice_loop.md",
+      "queued_sha256": "2665105534645518c85201a5d6998308887a33bfbead46738bbf93e36be8b9a0",
+      "size_queued": 7025,
+      "exists": true,
+      "disk_sha256": "2665105534645518c85201a5d6998308887a33bfbead46738bbf93e36be8b9a0",
+      "disk_size": 7025,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 148,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "02.02 — Voice Loop"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Componentes"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Diagrama"
+          },
+          {
+            "line": 82,
+            "level": 2,
+            "text": "State machine `VoiceController`"
+          },
+          {
+            "line": 105,
+            "level": 2,
+            "text": "Tabla de modelos en disco"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Hallazgos"
+          },
+          {
+            "line": 129,
+            "level": 2,
+            "text": "DOT backup"
+          }
+        ],
+        "lead": "%% Fig 2.04 — Voice Loop interno",
+        "measures": [
+          {
+            "line": 11,
+            "text": "| 1 | `voice/audio_io.py` | `AudioCapture` | 245 | PortAudio (sounddevice) | InputStream mic 16kHz mono int16, chunks de 512 samples (Silero v5 requirement) + ring buffer 5s |"
+          },
+          {
+            "line": 12,
+            "text": "| 2 | `voice/wake.py` | `WakeDetector` | 346 | Vosk `vosk-model-small-es-0.42` (~40 MB) | Wake-word \"gemma\"/\"hey gemma\" con vocab restringido, confidence ≥0.85, debounce 2s |"
+          },
+          {
+            "line": 13,
+            "text": "| 3 | `voice/stt.py` | `StreamingSTT` | 863 | faster-whisper `small` + Silero VAD v5 + scipy butter | STT modo dual (greedy ≤3s / beam=5 >3s), bag-of-hallucinations es, high-pass 80 Hz |"
+          },
+          {
+            "line": 31,
+            "text": "AC[AudioCapture<br/>512 samples @ 16kHz<br/>ring buffer 5s]"
+          },
+          {
+            "line": 36,
+            "text": "Vosk[(vosk-model-small-es-0.42<br/>~40MB)]"
+          },
+          {
+            "line": 41,
+            "text": "Whisper[(faster-whisper small<br/>~466MB int8)]"
+          },
+          {
+            "line": 89,
+            "text": "IDLE_DISABLED --> FAILED : load fail"
+          },
+          {
+            "line": 91,
+            "text": "WAKE_DETECTED --> LISTENING : 200ms feedback"
+          },
+          {
+            "line": 93,
+            "text": "LISTENING --> IDLE_LISTENING : 5s silent"
+          },
+          {
+            "line": 94,
+            "text": "TRANSCRIBING --> THINKING : VAD endpoint OR 15s"
+          },
+          {
+            "line": 109,
+            "text": "| Vosk small es-0.42 | `~/.gemma4/models/vosk-model-small-es-0.42/` | ~40 MB | eager en `WakeDetector.load()` | wake-word |"
+          },
+          {
+            "line": 110,
+            "text": "| faster-whisper small | `~/.gemma4/models/whisper/` | ~466 MB (int8) | eager en `StreamingSTT.load()` | STT |"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "piper",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-148",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/README.md",
+      "queued_sha256": "7897d42e5fdc12d48b129ba703dbec7f1e17324f67761dcf4e0a201827c2a692",
+      "size_queued": 2783,
+      "exists": true,
+      "disk_sha256": "7897d42e5fdc12d48b129ba703dbec7f1e17324f67761dcf4e0a201827c2a692",
+      "disk_size": 2783,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 42,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 3 — UML de clases por subsistema"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Convenciones de los diagramas"
+          },
+          {
+            "line": 19,
+            "level": 2,
+            "text": "Índice"
+          },
+          {
+            "line": 34,
+            "level": 2,
+            "text": "Cómo cosechar hallazgos de estos diagramas"
+          }
+        ],
+        "lead": "- **Mermaid `classDiagram`** como formato primario.",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-42",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/agent_core.md",
+      "queued_sha256": "e3cae314803988d42d84a3540d7f7a22b8a810b8ed110160cadbb03c4ef93846",
+      "size_queued": 5718,
+      "exists": true,
+      "disk_sha256": "e3cae314803988d42d84a3540d7f7a22b8a810b8ed110160cadbb03c4ef93846",
+      "disk_size": 5718,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 126,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.08 — Agent Core (clases UML)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Fig 3.08 — Agent Core classes"
+          },
+          {
+            "line": 99,
+            "level": 2,
+            "text": "Funciones top-level (en `agent.py` fuera de la clase)"
+          },
+          {
+            "line": 110,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 118,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-126",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/llm_lifecycle.md",
+      "queued_sha256": "e968a40c01f2457a233479feeb16f2a0bdfed0bd6c4c47d2b4fa413bad495769",
+      "size_queued": 5489,
+      "exists": true,
+      "disk_sha256": "e968a40c01f2457a233479feeb16f2a0bdfed0bd6c4c47d2b4fa413bad495769",
+      "disk_size": 5489,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 109,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.03 — LLM Lifecycle (clases UML)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fig 3.03 — LLM Lifecycle classes"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Funciones top-level relevantes (no son clases pero pertenecen al subsistema)"
+          },
+          {
+            "line": 93,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 102,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-109",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/memory.md",
+      "queued_sha256": "9ee40843e7cd077eee0d8dab6f1640d35ea61ba2b33538f3d8deff77a1b4bc27",
+      "size_queued": 5408,
+      "exists": true,
+      "disk_sha256": "9ee40843e7cd077eee0d8dab6f1640d35ea61ba2b33538f3d8deff77a1b4bc27",
+      "disk_size": 5408,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 122,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.06 — Memory & Knowledge (clases UML)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fig 3.06 — Memory classes"
+          },
+          {
+            "line": 89,
+            "level": 2,
+            "text": "Funciones top-level"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 116,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-122",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/mission_verification.md",
+      "queued_sha256": "e4a3e2d90e3b3a22563e8897f4f290c96d4abcc4cf450162ac98eab05919f43d",
+      "size_queued": 4414,
+      "exists": true,
+      "disk_sha256": "e4a3e2d90e3b3a22563e8897f4f290c96d4abcc4cf450162ac98eab05919f43d",
+      "disk_size": 4414,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 111,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.04 — Mission Outcome + Verification (clases UML)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Fig 3.04 — Mission/Verification classes"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "Funciones top-level (no clases pero pertenecen al subsistema)"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 106,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [
+          {
+            "line": 14,
+            "text": "FAILED"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 60,
+            "text": "verifier: VerifierOutcome|None"
+          },
+          {
+            "line": 75,
+            "text": "_ToolCallRecord o-- VerifierOutcome : verifier"
+          }
+        ],
+        "ranges": [
+          "1-111",
+          "h:1",
+          "m:14"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/observability.md",
+      "queued_sha256": "19980907224e3baf2dc91ff44575c108e70f9e4a8fec6738935b240093136de9",
+      "size_queued": 3648,
+      "exists": true,
+      "disk_sha256": "19980907224e3baf2dc91ff44575c108e70f9e4a8fec6738935b240093136de9",
+      "disk_size": 3648,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 96,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.01 — Observability (clases UML)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Fig 3.01 — Observability"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 92,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [
+          {
+            "line": 60,
+            "text": "record_turn(ttft_ms, tokens, tps, vram, ...)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [
+          "vram"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-96",
+          "h:1",
+          "m:60"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/routing.md",
+      "queued_sha256": "58f99112525ba4b3b0d6af61b28ba4d81bd41c484c0202ec5ba40a5ce7784e8e",
+      "size_queued": 6034,
+      "exists": true,
+      "disk_sha256": "58f99112525ba4b3b0d6af61b28ba4d81bd41c484c0202ec5ba40a5ce7784e8e",
+      "disk_size": 6034,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 138,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.05 — Routing & Validation (clases UML)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fig 3.05 — Routing classes"
+          },
+          {
+            "line": 98,
+            "level": 2,
+            "text": "Funciones top-level (las APIs reales del subsistema)"
+          },
+          {
+            "line": 122,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 132,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [
+          {
+            "line": 66,
+            "text": "note for _NLIService \"246 LOC clase · singleton _SINGLETON\\nLazy load mDeBERTa 280MB · cache LRU 512\""
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-138",
+          "h:1",
+          "m:66"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/state_config.md",
+      "queued_sha256": "36b8e507660673fecd328171c9c229300fa3179a751c6336c683ad3f09f7c195",
+      "size_queued": 6782,
+      "exists": true,
+      "disk_sha256": "36b8e507660673fecd328171c9c229300fa3179a751c6336c683ad3f09f7c195",
+      "disk_size": 6782,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 184,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.10 — State + Config (clases UML)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Fig 3.10 — State + Sessions + Config + Profiles classes"
+          },
+          {
+            "line": 166,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 178,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-184",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/surfaces.md",
+      "queued_sha256": "39c116bf07314cba2be341e340cdd9e88664b438bb98f48f2105185f034e145d",
+      "size_queued": 6890,
+      "exists": true,
+      "disk_sha256": "39c116bf07314cba2be341e340cdd9e88664b438bb98f48f2105185f034e145d",
+      "disk_size": 6890,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 181,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.09 — Surfaces (clases UML)"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Fig 3.09 — Surfaces classes"
+          },
+          {
+            "line": 144,
+            "level": 2,
+            "text": "Notas sobre `server.py` (FastAPI, 1 519 LOC)"
+          },
+          {
+            "line": 153,
+            "level": 2,
+            "text": "Notas sobre `mcp_server.py` (332 LOC)"
+          },
+          {
+            "line": 160,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 175,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [
+          {
+            "line": 87,
+            "text": "pyqtSignal: failed"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-181",
+          "h:1",
+          "m:87"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/tools.md",
+      "queued_sha256": "8a120b4525ccf52b60b126c7efa4ad180ac836d2e110f1badd1e702b707df076",
+      "size_queued": 8003,
+      "exists": true,
+      "disk_sha256": "8a120b4525ccf52b60b126c7efa4ad180ac836d2e110f1badd1e702b707df076",
+      "disk_size": 8003,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 120,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.07 — Tools (clases UML)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fig 3.07 — Tools classes"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "Funciones top-level críticas (no clases pero importantes)"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-120",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/03_classes/voice_loop.md",
+      "queued_sha256": "698461b1cb51105aaa9d4d5a53aac39201c2ec74a08f36174e278d16ba0c5066",
+      "size_queued": 6814,
+      "exists": true,
+      "disk_sha256": "698461b1cb51105aaa9d4d5a53aac39201c2ec74a08f36174e278d16ba0c5066",
+      "disk_size": 6814,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 195,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "03.02 — Voice Loop (clases UML)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Fig 3.02 — Voice Loop classes"
+          },
+          {
+            "line": 177,
+            "level": 2,
+            "text": "Veredictos"
+          },
+          {
+            "line": 190,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "classDiagram",
+        "measures": [
+          {
+            "line": 43,
+            "text": "note for WakeDetector \"346 LOC · 5 métodos\\nVosk vocab restringido + confidence 0.85 + debounce 2s\""
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper",
+          "piper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-195",
+          "h:1",
+          "m:43"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/README.md",
+      "queued_sha256": "64876ce4a4ad85724430108dfe29957e22cf0ba58e4dcae132a900a9bb139426",
+      "size_queued": 2299,
+      "exists": true,
+      "disk_sha256": "64876ce4a4ad85724430108dfe29957e22cf0ba58e4dcae132a900a9bb139426",
+      "disk_size": 2299,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 25,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Fase 4 — Diagramas de secuencia"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Índice"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "Los diagramas exponen 4 patrones que valen documentar como findings:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-25",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/boot.md",
+      "queued_sha256": "1266bc387ee4f2b6547bc6469b518e9ceecfc20f24813f0e08d7ab9cab1fee39",
+      "size_queued": 5459,
+      "exists": true,
+      "disk_sha256": "1266bc387ee4f2b6547bc6469b518e9ceecfc20f24813f0e08d7ab9cab1fee39",
+      "disk_size": 5459,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 120,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04.01 — Cold boot del agente"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Fig 4.01 — Boot completo (UI Field path)"
+          },
+          {
+            "line": 101,
+            "level": 2,
+            "text": "Lo que pasa en `ui/main_window.py` (versión PyQt) es MUY parecido"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Lo que pasa en `chat.py` es MUCHO MÁS SIMPLE"
+          },
+          {
+            "line": 114,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "sequenceDiagram",
+        "measures": [
+          {
+            "line": 47,
+            "text": "AR->>LSM: start(profile, wait_health=True, timeout=120s)"
+          },
+          {
+            "line": 51,
+            "text": "LSM->>LSM: _wait_for_health(120s)"
+          },
+          {
+            "line": 68,
+            "text": "Note over SemR: descarga + load MiniLM (~120MB) + embed 62 tools (~6-8s)"
+          },
+          {
+            "line": 78,
+            "text": "AR->>LLC: chat([{role:user,content:'.'}], max_tokens=1, timeout=180s)"
+          },
+          {
+            "line": 80,
+            "text": "LP->>LP: load_tensors (puede tardar 30-90s)"
+          },
+          {
+            "line": 86,
+            "text": "AR->>LLC: prewarm_kv(client, system_prompt, max_tokens=1, timeout=90s)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-120",
+          "h:1",
+          "m:47"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/_historico/baseline_audit/04_sequences/router_fallback.md",
+      "queued_sha256": "a6597d26ce1d563d5e3606d21cab358bdcdab69874ba2e832061b405abd9d27c",
+      "size_queued": 4499,
+      "exists": true,
+      "disk_sha256": "a6597d26ce1d563d5e3606d21cab358bdcdab69874ba2e832061b405abd9d27c",
+      "disk_size": 4499,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 90,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "04.05 — Router fallback: regex no encuentra tool"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Cadena de fallbacks (4 niveles + último recurso)"
+          },
+          {
+            "line": 74,
+            "level": 2,
+            "text": "Negative anchor: drop \"email\" en caso ambiguo"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "Hallazgos a `_findings_seed.md`"
+          }
+        ],
+        "lead": "sequenceDiagram",
+        "measures": [
+          {
+            "line": 60,
+            "text": "NLI->>NLI: zero-shot classification (~1200ms primera vez)"
+          },
+          {
+            "line": 66,
+            "text": "alt continuation tools heredados (gap < 300s)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 78,
+            "text": "(`mail|email|correo|courriel|posta|messaggio`), **se descarta email** porque"
+          },
+          {
+            "line": 89,
+            "text": "- **Negative anchor \"email + perfil sin mail keywords → drop email\"** es un parche puntual. Si se acumulan más parches así, vale generalizar a un mecanismo de \"anti-patterns\" declarativo."
+          }
+        ],
+        "ranges": [
+          "1-90",
+          "h:1",
+          "m:60"
+        ]
+      }
+    }
+  ]
+}

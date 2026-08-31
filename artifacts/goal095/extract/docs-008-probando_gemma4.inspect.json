@@ -1,0 +1,2902 @@
+{
+  "batch_id": "docs-008-probando_gemma4",
+  "kind": "docs",
+  "source_id": "probando_gemma4",
+  "subsystem": "pg4__tesis_curso",
+  "file_count": 28,
+  "hash_ok": 28,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "files": [
+    {
+      "path": "_tesis_curso/entregables/guion_defensa_oral.md",
+      "queued_sha256": "005fc8cdcc35e23b0d00bddaba6953312c80ccfd25998f884855355619d7e30d",
+      "size_queued": 37108,
+      "exists": true,
+      "disk_sha256": "005fc8cdcc35e23b0d00bddaba6953312c80ccfd25998f884855355619d7e30d",
+      "disk_size": 37108,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 595,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Guion de Defensa Oral — Baxy"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Indicaciones generales para el expositor"
+          },
+          {
+            "line": 38,
+            "level": 2,
+            "text": "Diapositiva 1 — Portada"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Diapositiva 2 — El problema"
+          },
+          {
+            "line": 83,
+            "level": 2,
+            "text": "Diapositiva 3 — Diagrama de Ishikawa (causas raíz)"
+          },
+          {
+            "line": 107,
+            "level": 2,
+            "text": "Diapositiva 4 — Objetivos"
+          },
+          {
+            "line": 129,
+            "level": 2,
+            "text": "Diapositiva 5 — La solución: qué es Baxy"
+          },
+          {
+            "line": 156,
+            "level": 2,
+            "text": "Diapositiva 6 — Arquitectura de alto nivel"
+          },
+          {
+            "line": 180,
+            "level": 2,
+            "text": "Diapositiva 7 — Diferenciadores / MOAT vs. competencia"
+          },
+          {
+            "line": 204,
+            "level": 2,
+            "text": "Diapositiva 8 — Metodología: medir, no celebrar"
+          },
+          {
+            "line": 226,
+            "level": 2,
+            "text": "Diapositiva 9 — Las 3 iteraciones"
+          },
+          {
+            "line": 252,
+            "level": 2,
+            "text": "Diapositiva 10 — Resultados medidos"
+          },
+          {
+            "line": 277,
+            "level": 2,
+            "text": "Diapositiva 11 — Factibilidades"
+          },
+          {
+            "line": 300,
+            "level": 2,
+            "text": "Diapositiva 12 — Riesgos clave + mitigación"
+          },
+          {
+            "line": 324,
+            "level": 2,
+            "text": "Diapositiva 13 — Trabajos futuros"
+          },
+          {
+            "line": 346,
+            "level": 2,
+            "text": "Diapositiva 14 — Cierre / conclusiones"
+          },
+          {
+            "line": 369,
+            "level": 2,
+            "text": "Diapositiva 15 — Apéndice de datos defensivos (NO PROYECTAR)"
+          },
+          {
+            "line": 379,
+            "level": 1,
+            "text": "Banco de respuestas preparadas (ronda de preguntas del jurado)"
+          },
+          {
+            "line": 385,
+            "level": 3,
+            "text": "P1. ¿Por qué local y no en la nube, si la nube da modelos más potentes?"
+          },
+          {
+            "line": 397,
+            "level": 3,
+            "text": "P2. ¿Cómo logra que todo entre en 4 GB de VRAM?"
+          },
+          {
+            "line": 408,
+            "level": 3,
+            "text": "P3. ¿No se pierde demasiada precisión al usar un modelo de 2B en vez del 4B?"
+          },
+          {
+            "line": 421,
+            "level": 3,
+            "text": "P4. ¿Es vendible? ¿Hay un modelo de negocio?"
+          },
+          {
+            "line": 434,
+            "level": 3,
+            "text": "P5. ¿Qué tan honesto es el agente? ¿No puede igual alucinar acciones?"
+          },
+          {
+            "line": 446,
+            "level": 3,
+            "text": "P6. ¿Cuál es el aporte de ingeniería del proyecto? ¿No es solo integrar librerías existentes?"
+          }
+        ],
+        "lead": "- **Tono:** seguro, sereno y técnico, pero accesible. Defensa de tesis, no venta. La",
+        "measures": [
+          {
+            "line": 28,
+            "text": "- **Honestidad:** mencionar de forma proactiva el techo del *tool-calling* (estimado ≈75 %) y"
+          },
+          {
+            "line": 40,
+            "text": "**[Texto hablado, ~30 s]**"
+          },
+          {
+            "line": 60,
+            "text": "**[Texto hablado, ~50 s]**"
+          },
+          {
+            "line": 68,
+            "text": "> dependencia de internet, latencia de red y costo recurrente. Y hay una demanda"
+          },
+          {
+            "line": 85,
+            "text": "**[Texto hablado, ~45 s]**"
+          },
+          {
+            "line": 97,
+            "text": "> tecnología, por ejemplo, la confirmé midiendo la VRAM de cada modelo, no asumiéndola.\""
+          },
+          {
+            "line": 109,
+            "text": "**[Texto hablado, ~45 s]**"
+          },
+          {
+            "line": 113,
+            "text": "> VRAM, local, en Windows, con un Gemma 4 E2B fine-tuneado. De ahí bajé a seis objetivos"
+          },
+          {
+            "line": 131,
+            "text": "**[Texto hablado, ~50 s]**"
+          },
+          {
+            "line": 158,
+            "text": "**[Texto hablado, ~50 s]**"
+          },
+          {
+            "line": 182,
+            "text": "**[Texto hablado, ~50 s]**"
+          },
+          {
+            "line": 206,
+            "text": "**[Texto hablado, ~45 s]**"
+          }
+        ],
+        "dates": [
+          "2026-06-02"
+        ],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "llama.cpp",
+          "piper",
+          "whisper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 215,
+            "text": "> porque el modelo es **no-determinista** y elige caminos que un test no anticipa. Esa"
+          },
+          {
+            "line": 284,
+            "text": "> porque todo es código abierto y reutiliza hardware que el usuario ya tiene. Audité **511"
+          },
+          {
+            "line": 354,
+            "text": "> **'medir, no celebrar'** me hizo encontrar causas raíz contraintuitivas —el *padding* del"
+          },
+          {
+            "line": 355,
+            "text": "> *wake-word*, el *busy-wait* de ONNX, un dataset corrupto— que un parche al síntoma habría"
+          },
+          {
+            "line": 387,
+            "text": "> \"Porque la nube viola las tres restricciones nucleares del producto, que además son la"
+          },
+          {
+            "line": 395,
+            "text": "> y guardas estructurales, porque privacidad y costo cero no son negociables.\""
+          }
+        ],
+        "ranges": [
+          "1-595",
+          "h:1",
+          "m:28"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/portafolio_CAP_I.md",
+      "queued_sha256": "d351acdcbc33c700140c6ee445474f861efca837fbd228f471065f515658e1fa",
+      "size_queued": 41366,
+      "exists": true,
+      "disk_sha256": "d351acdcbc33c700140c6ee445474f861efca837fbd228f471065f515658e1fa",
+      "disk_size": 41366,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 606,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "CAPÍTULO I — PROBLEMA / OPORTUNIDAD Y PLANTEAMIENTO"
+          },
+          {
+            "line": 17,
+            "level": 2,
+            "text": "1.1. Descripción del Problema / Oportunidad"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "1.2. Situación Actual"
+          },
+          {
+            "line": 140,
+            "level": 2,
+            "text": "1.3. Identificación de la Problemática (Diagrama de Ishikawa)"
+          },
+          {
+            "line": 197,
+            "level": 2,
+            "text": "1.4. Descripción de Causas (en qué consiste / qué efecto / cómo incide)"
+          },
+          {
+            "line": 205,
+            "level": 3,
+            "text": "1.4.1. Categoría Tecnología / Máquina (causa principal)"
+          },
+          {
+            "line": 235,
+            "level": 3,
+            "text": "1.4.2. Categoría Costo (causa principal, factor externo)"
+          },
+          {
+            "line": 252,
+            "level": 3,
+            "text": "1.4.3. Categoría Privacidad (causa principal)"
+          },
+          {
+            "line": 264,
+            "level": 3,
+            "text": "1.4.4. Categoría Conectividad (causa secundaria, factor externo)"
+          },
+          {
+            "line": 273,
+            "level": 3,
+            "text": "1.4.5. Categoría Idioma / Usuario (causa secundaria)"
+          },
+          {
+            "line": 285,
+            "level": 3,
+            "text": "1.4.6. Categoría Método (causa principal, factor interno)"
+          },
+          {
+            "line": 311,
+            "level": 3,
+            "text": "1.4.7. Síntesis causal"
+          },
+          {
+            "line": 324,
+            "level": 2,
+            "text": "1.5. Fundamentación del Problema"
+          },
+          {
+            "line": 370,
+            "level": 2,
+            "text": "1.6. Viabilidad del Proyecto (cinco dimensiones)"
+          },
+          {
+            "line": 377,
+            "level": 3,
+            "text": "1.6.1. Viabilidad Legal"
+          },
+          {
+            "line": 403,
+            "level": 3,
+            "text": "1.6.2. Viabilidad Medioambiental"
+          },
+          {
+            "line": 416,
+            "level": 3,
+            "text": "1.6.3. Viabilidad Económica"
+          },
+          {
+            "line": 440,
+            "level": 3,
+            "text": "1.6.4. Viabilidad Tecnológica"
+          },
+          {
+            "line": 459,
+            "level": 3,
+            "text": "1.6.5. Viabilidad Cultural"
+          },
+          {
+            "line": 479,
+            "level": 2,
+            "text": "1.7. Estado del Arte"
+          },
+          {
+            "line": 489,
+            "level": 3,
+            "text": "1.7.1. Asistentes de voz comerciales (Alexa, Siri, Google Assistant)"
+          },
+          {
+            "line": 505,
+            "level": 3,
+            "text": "1.7.2. Asistentes y agentes locales de código abierto"
+          },
+          {
+            "line": 518,
+            "level": 3,
+            "text": "1.7.3. Agentes de *computer-use* y marcos de orquestación"
+          },
+          {
+            "line": 535,
+            "level": 3,
+            "text": "1.7.4. Tabla comparativa (homologación) y vacío identificado"
+          }
+        ],
+        "lead": "**Portafolio de Proyectos (INSW410) — Sumativa 1**",
+        "measures": [
+          {
+            "line": 4,
+            "text": "**Proyecto:** Baxy — Asistente de voz de escritorio local y privado para Windows en hardware modesto (≤ 4 GB de VRAM) mediante un modelo Gemma 4 E2B *fine-tuneado*."
+          },
+          {
+            "line": 25,
+            "text": "millones hacia 2033, con una tasa de crecimiento anual compuesta (CAGR) cercana al 26,8 %,"
+          },
+          {
+            "line": 29,
+            "text": "alcanzó el 88,1 % y el uso semanal subió del 45 % en 2024 al 60 % (Astute Analytica, 2026)."
+          },
+          {
+            "line": 41,
+            "text": "conectividad permanente a internet, introduce latencia de red y, en sus versiones más"
+          },
+          {
+            "line": 49,
+            "text": "apenas 4 GB de memoria de video (VRAM)—.** El análisis comparativo de diez soluciones"
+          },
+          {
+            "line": 62,
+            "text": "Estados Unidos reveló que el 77 % de los usuarios se mostraría más propenso a utilizar"
+          },
+          {
+            "line": 70,
+            "text": "de red propios del enfoque en la nube (Zheng et al., 2024; Cai et al., 2026)."
+          },
+          {
+            "line": 102,
+            "text": "los servidores generan la respuesta; (6) la respuesta se devuelve por la red al dispositivo;"
+          },
+          {
+            "line": 107,
+            "text": "internet. Una caída de red, una zona sin cobertura o una interrupción del servicio del"
+          },
+          {
+            "line": 112,
+            "text": "de terceros. La evidencia indica que cerca del 60 % de los usuarios está, al menos"
+          },
+          {
+            "line": 113,
+            "text": "ocasionalmente, preocupado por su privacidad y que el 49 % desconoce que estos dispositivos"
+          },
+          {
+            "line": 116,
+            "text": "- **Latencia de red.** Cada turno de interacción requiere, como mínimo, un viaje de ida y"
+          }
+        ],
+        "dates": [
+          "2026-06-02",
+          "2026-06-03"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "e4b",
+          "whisper",
+          "piper"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-606",
+          "h:1",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/portafolio_CAP_II.md",
+      "queued_sha256": "59e3c0e0ede03bc7b6f39613ce1ad138ec6b65ad52efb2da9c435254ea85eea7",
+      "size_queued": 38919,
+      "exists": true,
+      "disk_sha256": "59e3c0e0ede03bc7b6f39613ce1ad138ec6b65ad52efb2da9c435254ea85eea7",
+      "disk_size": 38919,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 550,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "CAPÍTULO II — OBJETIVOS, MÉTRICAS, ALCANCE, NORMATIVAS Y PLAN DE PROYECTO"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "2.1. Introducción del capítulo"
+          },
+          {
+            "line": 39,
+            "level": 2,
+            "text": "2.2. Objetivo General"
+          },
+          {
+            "line": 60,
+            "level": 2,
+            "text": "2.3. Objetivos Específicos (SMART)"
+          },
+          {
+            "line": 97,
+            "level": 2,
+            "text": "2.4. Métricas de los Objetivos (Tabla de Justificación)"
+          },
+          {
+            "line": 139,
+            "level": 3,
+            "text": "2.4.1. Modelo de Negocio (CANVAS)"
+          },
+          {
+            "line": 173,
+            "level": 2,
+            "text": "2.5. Alcances y Limitaciones"
+          },
+          {
+            "line": 179,
+            "level": 3,
+            "text": "2.5.1. Alcances (lo que el sistema SÍ hace)"
+          },
+          {
+            "line": 197,
+            "level": 3,
+            "text": "2.5.2. Limitaciones (lo que el sistema NO hace o no garantiza)"
+          },
+          {
+            "line": 221,
+            "level": 3,
+            "text": "2.5.3. Homologación frente al estado del arte"
+          },
+          {
+            "line": 244,
+            "level": 2,
+            "text": "2.6. Normativas y Leyes Aplicables"
+          },
+          {
+            "line": 251,
+            "level": 3,
+            "text": "2.6.1. Legislación chilena sobre privacidad y datos personales"
+          },
+          {
+            "line": 297,
+            "level": 3,
+            "text": "2.6.2. Licenciamiento de software de código abierto"
+          },
+          {
+            "line": 335,
+            "level": 2,
+            "text": "2.7. Plan de Proyecto Inicial"
+          },
+          {
+            "line": 342,
+            "level": 3,
+            "text": "2.7.1. Metodología de Gestión"
+          },
+          {
+            "line": 379,
+            "level": 3,
+            "text": "2.7.2. Metodología de Desarrollo"
+          },
+          {
+            "line": 405,
+            "level": 3,
+            "text": "2.7.3. Plan de Monitoreo y Control"
+          },
+          {
+            "line": 437,
+            "level": 3,
+            "text": "2.7.4. Plan de Gestión de Riesgos"
+          },
+          {
+            "line": 467,
+            "level": 3,
+            "text": "2.7.5. Planificación (Fases del Desarrollo)"
+          },
+          {
+            "line": 516,
+            "level": 2,
+            "text": "Referencias"
+          }
+        ],
+        "lead": "El presente capítulo delimita el alcance del proyecto *Baxy* a",
+        "measures": [
+          {
+            "line": 5,
+            "text": "> para Windows en hardware modesto (≤ 4 GB de VRAM)."
+          },
+          {
+            "line": 43,
+            "text": "> modesto** —con un consumo de memoria de video (VRAM) igual o inferior a **4 GB**—,"
+          },
+          {
+            "line": 45,
+            "text": "> GGUF Q4_K_M) servido mediante llama.cpp, de modo que permita a usuarios de PC"
+          },
+          {
+            "line": 51,
+            "text": "(\"Desarrollar\"); la variable medible (consumo de VRAM ≤ 4 GB y operación local); la"
+          },
+          {
+            "line": 67,
+            "text": "forma concurrente dentro de un presupuesto de **4 GB de VRAM**, garantizando que el"
+          },
+          {
+            "line": 77,
+            "text": "4. **Garantizar** la operación **100 % local y privada** del asistente, sin"
+          },
+          {
+            "line": 107,
+            "text": "| **OE1 — Operar en 4 GB** | Los LLM útiles requieren GPU de 8–24 GB o nube | LLM + visión + voz residentes en GPU de entrada | Delta de VRAM al cargar el modelo (MiB) | ≤ 4.096 MiB (4 GB) | **3.371 MiB (≈ 3,36 GB)** con E2B-Q4_K_M |"
+          },
+          {
+            "line": 119,
+            "text": "> que **no son intercambiables**: (a) **p50 global por turno ≈ 1,22 s** (mediana del turno"
+          },
+          {
+            "line": 121,
+            "text": "> *tool-call* ≈ 2,2 s** (turnos que invocan una herramienta, tras la optimización de caché"
+          },
+          {
+            "line": 122,
+            "text": "> de prefijo); y (c) **p50 ≈ 2,5 s sobre el *replay* de los 1.071 mensajes reales** del"
+          },
+          {
+            "line": 124,
+            "text": "> 4–5 s y se citan con su nombre propio para evitar confundirlas."
+          },
+          {
+            "line": 128,
+            "text": "> en un 47 % de los casos, lo cual es un **artefacto del arnés de medición** y no del"
+          }
+        ],
+        "dates": [
+          "2026-06-02"
+        ],
+        "models": [
+          "gemma 4",
+          "llama.cpp",
+          "livekit",
+          "whisper",
+          "piper",
+          "e4b"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 144,
+            "text": "porque el producto se diseñó desde el inicio para ser **vendible** (stack de licencia"
+          },
+          {
+            "line": 400,
+            "text": "unitarias mockeadas falló en producción porque el modelo, al ser no-determinista,"
+          },
+          {
+            "line": 460,
+            "text": "| R7 | El consumo de recursos congela el equipo | 3 | 4 | **12** | Media | Limitar hilos y prioridad de los runtimes, desactivar *busy-wait*, fijar afinidad de CPU. | 4 |"
+          }
+        ],
+        "ranges": [
+          "1-550",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "_tesis_curso/entregables/portafolio_CAP_III.md",
+      "queued_sha256": "13c0ccd1d0e1ac6410f0ef5c391cab04515664492326470506f0c1f428bd1db2",
+      "size_queued": 54984,
+      "exists": true,
+      "disk_sha256": "13c0ccd1d0e1ac6410f0ef5c391cab04515664492326470506f0c1f428bd1db2",
+      "disk_size": 54984,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 453,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "PORTAFOLIO DE PROYECTOS — CAPÍTULO III"
+          },
+          {
+            "line": 3,
+            "level": 2,
+            "text": "Metodología, Alternativas y Factibilidades, Plan de Proyecto, Arquitectura y Diseño de Alto Nivel, Herramientas de Gestión, Monitoreo y Producto Funcional"
+          },
+          {
+            "line": 13,
+            "level": 2,
+            "text": "1. Introducción del Capítulo"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "2. Metodología de Gestión del Proyecto"
+          },
+          {
+            "line": 23,
+            "level": 3,
+            "text": "2.1. Selección de la metodología mediante tabla comparativa ponderada"
+          },
+          {
+            "line": 40,
+            "level": 3,
+            "text": "2.2. Decisión y justificación"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "3. Metodología de Desarrollo"
+          },
+          {
+            "line": 72,
+            "level": 2,
+            "text": "4. Propuesta de Alternativas de Solución y sus Factibilidades"
+          },
+          {
+            "line": 74,
+            "level": 3,
+            "text": "4.1. Alternativas de arquitectura general"
+          },
+          {
+            "line": 93,
+            "level": 3,
+            "text": "4.2. Alternativa de selección de modelo y cuantización (datos de VRAM medidos)"
+          },
+          {
+            "line": 111,
+            "level": 3,
+            "text": "4.3. Otras decisiones técnicas respaldadas por medición"
+          },
+          {
+            "line": 117,
+            "level": 3,
+            "text": "4.4. Factibilidad de la solución elegida"
+          },
+          {
+            "line": 119,
+            "level": 4,
+            "text": "4.4.1. Factibilidad técnica"
+          },
+          {
+            "line": 130,
+            "level": 4,
+            "text": "4.4.2. Factibilidad económica"
+          },
+          {
+            "line": 147,
+            "level": 4,
+            "text": "4.4.3. Factibilidad social"
+          },
+          {
+            "line": 157,
+            "level": 2,
+            "text": "5. Plan de Proyecto"
+          },
+          {
+            "line": 159,
+            "level": 3,
+            "text": "5.1. Requisitos del sistema"
+          },
+          {
+            "line": 179,
+            "level": 3,
+            "text": "5.2. Planificación (fases del desarrollo)"
+          },
+          {
+            "line": 205,
+            "level": 2,
+            "text": "6. Arquitectura y Diseño de Alto Nivel (Modelo 4+1 de Kruchten)"
+          },
+          {
+            "line": 211,
+            "level": 3,
+            "text": "6.1. Diagrama de contexto (propuesta de solución macro)"
+          },
+          {
+            "line": 246,
+            "level": 3,
+            "text": "6.2. Vista Lógica (paquetes del agente)"
+          },
+          {
+            "line": 278,
+            "level": 3,
+            "text": "6.3. Vista Física (mapeo a hardware)"
+          },
+          {
+            "line": 295,
+            "level": 3,
+            "text": "6.4. Vista de Despliegue (instalación y ejecución)"
+          },
+          {
+            "line": 319,
+            "level": 3,
+            "text": "6.5. Vista de Escenarios (casos de uso clave)"
+          }
+        ],
+        "lead": "El presente capítulo desarrolla la dimensión de **gestión y construcción** del proyecto *Baxy*. A partir del problema y la oportunidad caracterizados en el Capítulo I y de los objetivos, métricas, alcance y restricciones definidos en el Capítulo II, este capítulo expone: (a) la **metodología de gestión** elegida mediante una tabla comparativa ponderada (Scrum) y la **metodología de desarrollo** té",
+        "measures": [
+          {
+            "line": 5,
+            "text": "> **Proyecto:** *Baxy* — Asistente de voz de escritorio local y privado para Windows en hardware modesto (≤ 4 GB de VRAM) mediante un modelo Gemma 4 E2B *fine-tuneado*."
+          },
+          {
+            "line": 85,
+            "text": "| Cabe en 4 GB de VRAM | n/a | ✗ No entra (ver 4.2) | ✓ Entra (3,36 GB medido) |"
+          },
+          {
+            "line": 86,
+            "text": "| Calidad de *tool-calling* | ✓ Alta (modelos enormes) | ✓ ≈91 % (E4B, estimado) | ◐ ≈75 % (E2B, estimado; mitigado con *forced-retry* + FT) |"
+          },
+          {
+            "line": 87,
+            "text": "| Hardware requerido | Servidores remotos | GPU ≥ 6–8 GB | GPU 4 GB o *fallback* CPU |"
+          },
+          {
+            "line": 95,
+            "text": "La decisión E4B → E2B no fue intuitiva, sino que se respaldó con la medición directa del consumo de VRAM de cada variante y cuantización, registrada en `vram_real_medida.csv`:"
+          },
+          {
+            "line": 97,
+            "text": "**Tabla 3.3.** *Consumo de VRAM medido por variante de modelo y cuantización.*"
+          },
+          {
+            "line": 99,
+            "text": "| Variante | Cuantización | Delta de VRAM (MiB) | ¿Cabe en 4 GB? |"
+          },
+          {
+            "line": 101,
+            "text": "| **E2B** | **Q4_K_M** | **3 371** | **✓ Sí (elegida)** |"
+          },
+          {
+            "line": 102,
+            "text": "| E2B | Q5_K_M | 3 609 | ✓ Sí (más pesada) |"
+          },
+          {
+            "line": 104,
+            "text": "| E4B | Q4_K_M | 5 087 | ✗ No |"
+          },
+          {
+            "line": 113,
+            "text": "- **Whisper vs. Parakeet (STT):** ambos corren en CPU con cuantización int8 para no robar VRAM al LLM; Parakeet quedó como motor por defecto y Whisper como *fallback*."
+          },
+          {
+            "line": 115,
+            "text": "- **flash-attention desactivada por defecto:** con FA activa, los *prompts* superiores a ~10 K tokens disparan un *crash* CUDA (#22527); con FA desactivada el sistema se midió estable (37/37 turnos), a costa de un *prefill* ≈2× más lento, m"
+          }
+        ],
+        "dates": [
+          "2026-06-02",
+          "2026-05-26"
+        ],
+        "models": [
+          "gemma 4",
+          "e4b",
+          "whisper",
+          "llama.cpp",
+          "piper",
+          "livekit"
+        ],
+        "hardware": [
+          "VRAM",
+          "RTX 3050 4 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-453",
+          "h:1",
+          "m:5"
+        ]
+      }
+    },
+    {
+      "path": "gemma4_agent/data/README.md",
+      "queued_sha256": "ce027b08abac0771acd95fe226bfc69c42d3ef54b97b541e7672e0d33f443510",
+      "size_queued": 4051,
+      "exists": true,
+      "disk_sha256": "ce027b08abac0771acd95fe226bfc69c42d3ef54b97b541e7672e0d33f443510",
+      "disk_size": 4051,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 91,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "`gemma4_agent/data/` — artefactos de datos y modelos"
+          },
+          {
+            "line": 8,
+            "level": 2,
+            "text": "Archivos pre-computados (`.npz`)"
+          },
+          {
+            "line": 10,
+            "level": 3,
+            "text": "`router_exemplars.npz`"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "`tool2vec_centroids.npz`"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Configuraciones (`.json`, `.yaml`)"
+          },
+          {
+            "line": 49,
+            "level": 2,
+            "text": "Datasets"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Política de reproducibilidad"
+          },
+          {
+            "line": 71,
+            "level": 3,
+            "text": "Encoder del router (`router_encoder_ft/`) — NO versionado (449 MB)"
+          },
+          {
+            "line": 81,
+            "level": 1,
+            "text": "1. reentrenar el encoder (seed fijo 42 = reproducible bit-a-bit, ~3 min en GPU)"
+          },
+          {
+            "line": 83,
+            "level": 1,
+            "text": "2. regenerar TODOS los artefactos derivados con ESE encoder"
+          }
+        ],
+        "lead": "Este directorio aloja datasets, modelos pre-computados y configuraciones",
+        "measures": [
+          {
+            "line": 68,
+            "text": "3. Si el archivo es grande (>10 MB), considerar `.gitignore` + script de"
+          },
+          {
+            "line": 74,
+            "text": "arriba: >10 MB). El runtime cae al base model"
+          },
+          {
+            "line": 82,
+            "text": "GEMMA4_TRAIN_SEED=42 .venv_router_train/Scripts/python.exe scripts/train_router_encoder.py --epochs 3"
+          },
+          {
+            "line": 91,
+            "text": "ejemplos a `tool2vec_queries.jsonl`, holdout 0.9800 mantenido, 4 huecos 25/25."
+          }
+        ],
+        "dates": [
+          "2026-06-10"
+        ],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 77,
+            "text": "versionan porque son chicos — pero están embebidos con el encoder FT, así que en"
+          }
+        ],
+        "ranges": [
+          "1-91",
+          "h:1",
+          "m:68"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/_router_backup/router_encoder_ft/README.md",
+      "queued_sha256": "0e13e8e29708f557e56d3c745f1e9686e8613216d3cf0ef086e772f6965b5a03",
+      "size_queued": 15051,
+      "exists": true,
+      "disk_sha256": "0e13e8e29708f557e56d3c745f1e9686e8613216d3cf0ef086e772f6965b5a03",
+      "disk_size": 15051,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 355,
+        "headings": [
+          {
+            "line": 49,
+            "level": 1,
+            "text": "SentenceTransformer based on sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+          },
+          {
+            "line": 53,
+            "level": 2,
+            "text": "Model Details"
+          },
+          {
+            "line": 55,
+            "level": 3,
+            "text": "Model Description"
+          },
+          {
+            "line": 65,
+            "level": 3,
+            "text": "Model Sources"
+          },
+          {
+            "line": 71,
+            "level": 3,
+            "text": "Full Model Architecture"
+          },
+          {
+            "line": 80,
+            "level": 2,
+            "text": "Usage"
+          },
+          {
+            "line": 82,
+            "level": 3,
+            "text": "Direct Usage (Sentence Transformers)"
+          },
+          {
+            "line": 94,
+            "level": 1,
+            "text": "Download from the 🤗 Hub"
+          },
+          {
+            "line": 96,
+            "level": 1,
+            "text": "Run inference"
+          },
+          {
+            "line": 104,
+            "level": 1,
+            "text": "[3, 384]"
+          },
+          {
+            "line": 106,
+            "level": 1,
+            "text": "Get the similarity scores for the embeddings"
+          },
+          {
+            "line": 109,
+            "level": 1,
+            "text": "[3, 3]"
+          },
+          {
+            "line": 113,
+            "level": 3,
+            "text": "Direct Usage (Transformers)"
+          },
+          {
+            "line": 121,
+            "level": 3,
+            "text": "Downstream Usage (Sentence Transformers)"
+          },
+          {
+            "line": 131,
+            "level": 3,
+            "text": "Out-of-Scope Use"
+          },
+          {
+            "line": 137,
+            "level": 2,
+            "text": "Bias, Risks and Limitations"
+          },
+          {
+            "line": 143,
+            "level": 3,
+            "text": "Recommendations"
+          },
+          {
+            "line": 148,
+            "level": 2,
+            "text": "Training Details"
+          },
+          {
+            "line": 150,
+            "level": 3,
+            "text": "Training Dataset"
+          },
+          {
+            "line": 152,
+            "level": 4,
+            "text": "Unnamed Dataset"
+          },
+          {
+            "line": 176,
+            "level": 3,
+            "text": "Training Hyperparameters"
+          },
+          {
+            "line": 177,
+            "level": 4,
+            "text": "Non-Default Hyperparameters"
+          },
+          {
+            "line": 183,
+            "level": 4,
+            "text": "All Hyperparameters"
+          },
+          {
+            "line": 301,
+            "level": 3,
+            "text": "Framework Versions"
+          }
+        ],
+        "lead": "tags:",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-355",
+          "h:49"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/_wf_findings_raw.md",
+      "queued_sha256": "7ed79008488adbad5dc74d97ee8e77522bc194601073769a06208b0bd7d874ce",
+      "size_queued": 41080,
+      "exists": true,
+      "disk_sha256": "7ed79008488adbad5dc74d97ee8e77522bc194601073769a06208b0bd7d874ce",
+      "disk_size": 41080,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 362,
+        "headings": [
+          {
+            "line": 3,
+            "level": 1,
+            "text": "WORKFLOW: TECHO 2B vs 4B + DESTILACIÓN + cuant/offload/visión"
+          },
+          {
+            "line": 125,
+            "level": 1,
+            "text": "WORKFLOW: AUDIO/VISIÓN NATIVOS — ahorrar componentes"
+          },
+          {
+            "line": 235,
+            "level": 1,
+            "text": "WORKFLOW: HUECOS: datos, despliegue, reproducibilidad, validación, riesgos, costo-beneficio"
+          }
+        ],
+        "lead": "======================================================================",
+        "measures": [
+          {
+            "line": 13,
+            "text": "- xLAM 1B vs 7B, same APIGen data: 78.9% vs 88.2% on BFCL — only ~9.3 pts residual at 7x scale."
+          },
+          {
+            "line": 26,
+            "text": "He refutado adversarialmente el veredicto del analista. No se sostiene para el target real de 4 GB (holds=false)."
+          },
+          {
+            "line": 34,
+            "text": "3. **Dato optimista — el mmproj no pesa 851 MB.** `models/E2B/mmproj-F16.gguf` = 985,654,080 bytes = 940 MiB (coincide con el comentario de `profiles.py:156`). Son ~90 MiB de más."
+          },
+          {
+            "line": 36,
+            "text": "Lo único del analista que se sostiene es la negativa (\"E4B-Q4 no entra en 4 GB\" — confirmado: loaded 6286 MiB). Su recomendación positiva presenta una extrapolación desde 16 GB como hecho, contradice el `--no-mmproj-offload` que el repo ya "
+          },
+          {
+            "line": 51,
+            "text": "**Veredicto:** En 4GB, E2B-Q4_K_M entra COMPLETO en GPU con `-ngl 99` — no necesita offload parcial. Esto ya está implementado y MEDIDO en el repo (cambio de hoy 2026-06-02), y el research web confirma los números."
+          },
+          {
+            "line": 54,
+            "text": "- GGUF real (bartowski/google_gemma-4-E2B-it): Q4_K_M = 3.46GB on-disk; footprint medido por el repo = 3.36GB con visión @16K ctx."
+          },
+          {
+            "line": 55,
+            "text": "- KV-cache diminuto: ~280MB f16 @8k (cota --swa-full), ~140MB SWA-capped @16k. Causa: config.json confirma 1 sola KV head, GQA 8:1, head_dim 256, 35 capas, sliding_window 512."
+          },
+          {
+            "line": 56,
+            "text": "- El embedding de vocab 262144 es el piso que mantiene incluso Q2_K en 3.0GB → bajar de Q4 ahorra solo 0.1-0.4GB a costa de calidad prohibida por CLAUDE.md."
+          },
+          {
+            "line": 58,
+            "text": "**Config recomendada (= la que el repo ya corre):** `-ngl 99 -c 16384`, quant Q4_K_M, `--swa-full`, `--flash-attn off` (crash CUDA #22527), `--no-mmap`."
+          },
+          {
+            "line": 69,
+            "text": "- [bartowski/google_gemma-4-E2B-it-GGUF](https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF)"
+          },
+          {
+            "line": 71,
+            "text": "- [llama.cpp shared VRAM spillover benchmark](https://dev.to/maximsaplin/llamacpp-cpu-vs-gpu-shared-vram-and-inference-speed-3jpl)"
+          },
+          {
+            "line": 72,
+            "text": "- [E2B en GTX 1650 4GB, 40 tok/s](https://oniharnantyo.medium.com/how-i-pushed-gemma-4-to-40-tokens-sec-on-my-old-laptop-30065b1d9f59)"
+          }
+        ],
+        "dates": [
+          "2026-06-02"
+        ],
+        "models": [
+          "e4b",
+          "gemma 4",
+          "gemma-4",
+          "llama.cpp",
+          "qwen3",
+          "whisper",
+          "piper",
+          "voxcpm"
+        ],
+        "hardware": [
+          "16 GB",
+          "RTX 4060 Ti",
+          "VRAM",
+          "vram",
+          "6 GB",
+          "16GB"
+        ],
+        "mechanisms": [
+          {
+            "line": 154,
+            "text": "- El merge+cuantización del LLM no afecta al mmproj porque en llama.cpp visión/audio viajan en un **GGUF mmproj separado** que el FT ni mira. Prod ya separa `gemma-4-E2B-it-Q4_K_M.gguf` + `mmproj-F16.gguf` (`config.py:24-25`)."
+          },
+          {
+            "line": 297,
+            "text": "**Verdict: holds = false** — not because the recommendation is wrong (its direction is sound and overwhelmingly well-supported), but because it contains one load-bearing claim presented as measured fact that is actually unverified and optim"
+          }
+        ],
+        "ranges": [
+          "1-362",
+          "h:3",
+          "m:13"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_canaries_fixed.txt",
+      "queued_sha256": "082f13b6ef35d4a8cab65fb7a8a3c23771fb975baa4316b23cb69bbb7bbb43a3",
+      "size_queued": 58,
+      "exists": true,
+      "disk_sha256": "082f13b6ef35d4a8cab65fb7a8a3c23771fb975baa4316b23cb69bbb7bbb43a3",
+      "disk_size": 58,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 3,
+        "headings": [],
+        "lead": "﻿  (warmup: router hot)",
+        "measures": [
+          {
+            "line": 3,
+            "text": "CANARY PASS: 63/63 = 100.0%"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-3",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_canaries_v3.txt",
+      "queued_sha256": "763dbbdcc3b511a730ed64a7999de43867f2a0c56107a867ef3642a0379411f1",
+      "size_queued": 2527,
+      "exists": true,
+      "disk_sha256": "763dbbdcc3b511a730ed64a7999de43867f2a0c56107a867ef3642a0379411f1",
+      "disk_size": 2527,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 36,
+        "headings": [],
+        "lead": "﻿",
+        "measures": [
+          {
+            "line": 2,
+            "text": "CANARY PASS: 47/63 = 74.6%"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-36",
+          "m:2"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_canary_stages.txt",
+      "queued_sha256": "9be6567078758a1583b665f42c9b651f6a6c5713c75927303fe0f03e806950ef",
+      "size_queued": 4737,
+      "exists": true,
+      "disk_sha256": "9be6567078758a1583b665f42c9b651f6a6c5713c75927303fe0f03e806950ef",
+      "disk_size": 4737,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 97,
+        "headings": [],
+        "lead": "﻿abstain head enabled: True",
+        "measures": [],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-97"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_lid_rescue_eval.txt",
+      "queued_sha256": "1640edd66862522b5b1285deeb2222a33b59415a98ad0e2bcce63bf4a8de0be3",
+      "size_queued": 413,
+      "exists": true,
+      "disk_sha256": "1640edd66862522b5b1285deeb2222a33b59415a98ad0e2bcce63bf4a8de0be3",
+      "disk_size": 413,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 11,
+        "headings": [],
+        "lead": "﻿perfil=es whisper_lang=es",
+        "measures": [
+          {
+            "line": 3,
+            "text": "== A) comandos RED: 84 clips =="
+          },
+          {
+            "line": 4,
+            "text": "TRIGGER [2.5s] exp='reproduce The Last of Us en HBO Max'"
+          },
+          {
+            "line": 7,
+            "text": "A) disparos: 1/84 | mejorados: 0/1"
+          },
+          {
+            "line": 9,
+            "text": "A) latencia extra rescate p50=1457ms"
+          },
+          {
+            "line": 10,
+            "text": "B) fleurs: falsos disparos 0/120"
+          },
+          {
+            "line": 11,
+            "text": "B) chileno: falsos disparos 0/60"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-11",
+          "m:3"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_lid_shortzone.txt",
+      "queued_sha256": "48960921251ade56e3a9de66020002bc53dca4d1a1ccd86c77f43e3add7140c6",
+      "size_queued": 119,
+      "exists": true,
+      "disk_sha256": "48960921251ade56e3a9de66020002bc53dca4d1a1ccd86c77f43e3add7140c6",
+      "disk_size": 119,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 4,
+        "headings": [],
+        "lead": "﻿clips truncados a 1.2s: 60",
+        "measures": [
+          {
+            "line": 1,
+            "text": "﻿clips truncados a 1.2s: 60"
+          },
+          {
+            "line": 3,
+            "text": "outputs con pinta EN (bug LID): 0/60"
+          },
+          {
+            "line": 4,
+            "text": "disparos heurística: 0 | rescatados a ES: 0/1"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-4",
+          "m:1"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_BASELINE.txt",
+      "queued_sha256": "5113a2a80652637aa9c8c7ff97d044b94a1e0b1906a95f251955acd010dd3e1c",
+      "size_queued": 1256,
+      "exists": true,
+      "disk_sha256": "5113a2a80652637aa9c8c7ff97d044b94a1e0b1906a95f251955acd010dd3e1c",
+      "disk_size": 1256,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 16,
+        "headings": [],
+        "lead": "﻿python : W0611 13:03:10.997000 11372 site-packages\\torch\\distributed\\elastic\\multiprocessing\\redirects.py:29] NOTE:",
+        "measures": [
+          {
+            "line": 12,
+            "text": "(warmup: semantic router hot in 25.50s)"
+          },
+          {
+            "line": 13,
+            "text": "[dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)"
+          },
+          {
+            "line": 15,
+            "text": "[holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-16",
+          "m:12"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_BASELINE_slices.txt",
+      "queued_sha256": "c696c8a5266aafd6649c498c314314204d4ab2c507685e325add04fd2db43637",
+      "size_queued": 2415,
+      "exists": true,
+      "disk_sha256": "c696c8a5266aafd6649c498c314314204d4ab2c507685e325add04fd2db43637",
+      "disk_size": 2415,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 37,
+        "headings": [],
+        "lead": "﻿======================================================================",
+        "measures": [
+          {
+            "line": 4,
+            "text": "(warmup: semantic router hot in 7.89s)"
+          },
+          {
+            "line": 5,
+            "text": "[dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)"
+          },
+          {
+            "line": 7,
+            "text": "[holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)"
+          },
+          {
+            "line": 11,
+            "text": "tool           recall 323/330=0.979      no-tool     n/a"
+          },
+          {
+            "line": 12,
+            "text": "no_tool        recall     n/a            no-tool 91/91=1.000"
+          },
+          {
+            "line": 13,
+            "text": "short          recall 139/141=0.986      no-tool 49/49=1.000"
+          },
+          {
+            "line": 14,
+            "text": "continuation   recall 41/42=0.976        no-tool 19/19=1.000"
+          },
+          {
+            "line": 15,
+            "text": "multilingual   recall 7/8=0.875          no-tool     n/a"
+          },
+          {
+            "line": 16,
+            "text": "lang:es        recall 316/322=0.981      no-tool 91/91=1.000"
+          },
+          {
+            "line": 17,
+            "text": "lang:en        recall 3/3=1.000          no-tool     n/a"
+          },
+          {
+            "line": 18,
+            "text": "lang:fr        recall 1/1=1.000          no-tool     n/a"
+          },
+          {
+            "line": 19,
+            "text": "lang:de        recall 1/1=1.000          no-tool     n/a"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-37",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_NEWBASE_noes.txt",
+      "queued_sha256": "52b590c39ad10c28cb86156add334bfaf1b47d8a70999d945afd15012aa50596",
+      "size_queued": 1512,
+      "exists": true,
+      "disk_sha256": "52b590c39ad10c28cb86156add334bfaf1b47d8a70999d945afd15012aa50596",
+      "disk_size": 1512,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 21,
+        "headings": [],
+        "lead": "﻿======================================================================",
+        "measures": [
+          {
+            "line": 4,
+            "text": "(warmup: semantic router hot in 8.00s)"
+          },
+          {
+            "line": 5,
+            "text": "[dev]  TOOL RECALL 1258/1280=0.9828   NO-TOOL keep 395/396=0.9975   (recall misses 22, over-offers 1)"
+          },
+          {
+            "line": 7,
+            "text": "[holdout]  TOOL RECALL 327/334=0.9790   NO-TOOL keep 92/92=1.0000   (recall misses 7, over-offers 0)"
+          },
+          {
+            "line": 11,
+            "text": "tool           recall 327/334=0.979      no-tool     n/a"
+          },
+          {
+            "line": 12,
+            "text": "no_tool        recall     n/a            no-tool 92/92=1.000"
+          },
+          {
+            "line": 13,
+            "text": "short          recall 140/142=0.986      no-tool 50/50=1.000"
+          },
+          {
+            "line": 14,
+            "text": "continuation   recall 41/42=0.976        no-tool 19/19=1.000"
+          },
+          {
+            "line": 15,
+            "text": "multilingual   recall 8/9=0.889          no-tool     n/a"
+          },
+          {
+            "line": 16,
+            "text": "lang:es        recall 319/325=0.982      no-tool 92/92=1.000"
+          },
+          {
+            "line": 17,
+            "text": "lang:en        recall 4/4=1.000          no-tool     n/a"
+          },
+          {
+            "line": 18,
+            "text": "lang:fr        recall 1/1=1.000          no-tool     n/a"
+          },
+          {
+            "line": 19,
+            "text": "lang:de        recall 1/1=1.000          no-tool     n/a"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-21",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_POSTCANARYFIX.txt",
+      "queued_sha256": "b08e056be2c308753f09dce1bb5e92d3312749ab9933a23b061d6ace5de373d7",
+      "size_queued": 1512,
+      "exists": true,
+      "disk_sha256": "b08e056be2c308753f09dce1bb5e92d3312749ab9933a23b061d6ace5de373d7",
+      "disk_size": 1512,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 21,
+        "headings": [],
+        "lead": "﻿======================================================================",
+        "measures": [
+          {
+            "line": 4,
+            "text": "(warmup: semantic router hot in 8.88s)"
+          },
+          {
+            "line": 5,
+            "text": "[dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)"
+          },
+          {
+            "line": 7,
+            "text": "[holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)"
+          },
+          {
+            "line": 11,
+            "text": "tool           recall 323/330=0.979      no-tool     n/a"
+          },
+          {
+            "line": 12,
+            "text": "no_tool        recall     n/a            no-tool 91/91=1.000"
+          },
+          {
+            "line": 13,
+            "text": "short          recall 139/141=0.986      no-tool 49/49=1.000"
+          },
+          {
+            "line": 14,
+            "text": "continuation   recall 41/42=0.976        no-tool 19/19=1.000"
+          },
+          {
+            "line": 15,
+            "text": "multilingual   recall 7/8=0.875          no-tool     n/a"
+          },
+          {
+            "line": 16,
+            "text": "lang:es        recall 316/322=0.981      no-tool 91/91=1.000"
+          },
+          {
+            "line": 17,
+            "text": "lang:en        recall 3/3=1.000          no-tool     n/a"
+          },
+          {
+            "line": 18,
+            "text": "lang:fr        recall 1/1=1.000          no-tool     n/a"
+          },
+          {
+            "line": 19,
+            "text": "lang:de        recall 1/1=1.000          no-tool     n/a"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-21",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_V3_slices.txt",
+      "queued_sha256": "06756b648bfc0c9db5e97881d64ae6222c919aee446a1d3e3e52a3146520dfc1",
+      "size_queued": 2415,
+      "exists": true,
+      "disk_sha256": "06756b648bfc0c9db5e97881d64ae6222c919aee446a1d3e3e52a3146520dfc1",
+      "disk_size": 2415,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 37,
+        "headings": [],
+        "lead": "﻿======================================================================",
+        "measures": [
+          {
+            "line": 4,
+            "text": "(warmup: semantic router hot in 9.15s)"
+          },
+          {
+            "line": 5,
+            "text": "[dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)"
+          },
+          {
+            "line": 7,
+            "text": "[holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)"
+          },
+          {
+            "line": 11,
+            "text": "tool           recall 323/330=0.979      no-tool     n/a"
+          },
+          {
+            "line": 12,
+            "text": "no_tool        recall     n/a            no-tool 91/91=1.000"
+          },
+          {
+            "line": 13,
+            "text": "short          recall 139/141=0.986      no-tool 49/49=1.000"
+          },
+          {
+            "line": 14,
+            "text": "continuation   recall 41/42=0.976        no-tool 19/19=1.000"
+          },
+          {
+            "line": 15,
+            "text": "multilingual   recall 7/8=0.875          no-tool     n/a"
+          },
+          {
+            "line": 16,
+            "text": "lang:es        recall 316/322=0.981      no-tool 91/91=1.000"
+          },
+          {
+            "line": 17,
+            "text": "lang:en        recall 3/3=1.000          no-tool     n/a"
+          },
+          {
+            "line": 18,
+            "text": "lang:fr        recall 1/1=1.000          no-tool     n/a"
+          },
+          {
+            "line": 19,
+            "text": "lang:de        recall 1/1=1.000          no-tool     n/a"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-37",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_V3_slices_clean.txt",
+      "queued_sha256": "1e038decaf11e431712d059bf93d7fc6b345ec161741e7def30899f8b8938660",
+      "size_queued": 2415,
+      "exists": true,
+      "disk_sha256": "1e038decaf11e431712d059bf93d7fc6b345ec161741e7def30899f8b8938660",
+      "disk_size": 2415,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 37,
+        "headings": [],
+        "lead": "﻿======================================================================",
+        "measures": [
+          {
+            "line": 4,
+            "text": "(warmup: semantic router hot in 8.34s)"
+          },
+          {
+            "line": 5,
+            "text": "[dev]  TOOL RECALL 1227/1248=0.9832   NO-TOOL keep 391/392=0.9974   (recall misses 21, over-offers 1)"
+          },
+          {
+            "line": 7,
+            "text": "[holdout]  TOOL RECALL 323/330=0.9788   NO-TOOL keep 91/91=1.0000   (recall misses 7, over-offers 0)"
+          },
+          {
+            "line": 11,
+            "text": "tool           recall 323/330=0.979      no-tool     n/a"
+          },
+          {
+            "line": 12,
+            "text": "no_tool        recall     n/a            no-tool 91/91=1.000"
+          },
+          {
+            "line": 13,
+            "text": "short          recall 139/141=0.986      no-tool 49/49=1.000"
+          },
+          {
+            "line": 14,
+            "text": "continuation   recall 41/42=0.976        no-tool 19/19=1.000"
+          },
+          {
+            "line": 15,
+            "text": "multilingual   recall 7/8=0.875          no-tool     n/a"
+          },
+          {
+            "line": 16,
+            "text": "lang:es        recall 316/322=0.981      no-tool 91/91=1.000"
+          },
+          {
+            "line": 17,
+            "text": "lang:en        recall 3/3=1.000          no-tool     n/a"
+          },
+          {
+            "line": 18,
+            "text": "lang:fr        recall 1/1=1.000          no-tool     n/a"
+          },
+          {
+            "line": 19,
+            "text": "lang:de        recall 1/1=1.000          no-tool     n/a"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-37",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_eval_devfails.txt",
+      "queued_sha256": "df73e27ae83d22d87cc148d7707e651d056af1f7f98dec9e744a581d7f5fd741",
+      "size_queued": 3266,
+      "exists": true,
+      "disk_sha256": "df73e27ae83d22d87cc148d7707e651d056af1f7f98dec9e744a581d7f5fd741",
+      "disk_size": 3266,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 52,
+        "headings": [],
+        "lead": "﻿======================================================================",
+        "measures": [
+          {
+            "line": 4,
+            "text": "(warmup: semantic router hot in 7.90s)"
+          },
+          {
+            "line": 5,
+            "text": "[dev]  TOOL RECALL 1258/1280=0.9828   NO-TOOL keep 395/396=0.9975   (recall misses 22, over-offers 1)"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-52",
+          "m:4"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/_router_pipeline_v3.txt",
+      "queued_sha256": "b0b72fe54d6ab2db02e73806e83a3747550842ad1cb996b40e7df912db735b98",
+      "size_queued": 5120,
+      "exists": true,
+      "disk_sha256": "b0b72fe54d6ab2db02e73806e83a3747550842ad1cb996b40e7df912db735b98",
+      "disk_size": 5120,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 123,
+        "headings": [],
+        "lead": "﻿tools with queries: 62  total queries: 8287",
+        "measures": [
+          {
+            "line": 66,
+            "text": "embedded 250/2061"
+          },
+          {
+            "line": 67,
+            "text": "embedded 500/2061"
+          },
+          {
+            "line": 68,
+            "text": "embedded 750/2061"
+          },
+          {
+            "line": 69,
+            "text": "embedded 1000/2061"
+          },
+          {
+            "line": 70,
+            "text": "embedded 1250/2061"
+          },
+          {
+            "line": 71,
+            "text": "embedded 1500/2061"
+          },
+          {
+            "line": 72,
+            "text": "embedded 1750/2061"
+          },
+          {
+            "line": 73,
+            "text": "embedded 2000/2061"
+          },
+          {
+            "line": 77,
+            "text": "featurized 200/1640"
+          },
+          {
+            "line": 78,
+            "text": "featurized 400/1640"
+          },
+          {
+            "line": 79,
+            "text": "featurized 600/1640"
+          },
+          {
+            "line": 80,
+            "text": "featurized 800/1640"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-123",
+          "m:66"
+        ]
+      }
+    },
+    {
+      "path": "dataset_finetune/out/imatrix_corpus.txt",
+      "queued_sha256": "c7e5b4b7b85e925b9cd1ed162052c92886a0d8485038a49b9015fe85c107f322",
+      "size_queued": 263578,
+      "exists": true,
+      "disk_sha256": "c7e5b4b7b85e925b9cd1ed162052c92886a0d8485038a49b9015fe85c107f322",
+      "disk_size": 263578,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 6103,
+        "headings": [],
+        "lead": "qué?",
+        "measures": [
+          {
+            "line": 23,
+            "text": "Done, volume set to 50%."
+          },
+          {
+            "line": 113,
+            "text": "Volume's at 44%."
+          },
+          {
+            "line": 900,
+            "text": "L'attuale presidente della repubblica italiana è Sergio Mattarella (dati aggiornati alla data 9/02/23)."
+          },
+          {
+            "line": 1130,
+            "text": "Lautstärke auf 77%."
+          },
+          {
+            "line": 1148,
+            "text": "Lautstärke auf 68%."
+          },
+          {
+            "line": 1322,
+            "text": "Pronto, volume em 10%."
+          },
+          {
+            "line": 1351,
+            "text": "Debe responder en 1–8 s sin tools."
+          },
+          {
+            "line": 2065,
+            "text": "Merk dir, dass ich Red heisse"
+          },
+          {
+            "line": 2066,
+            "text": "Notiert, du heisst Red."
+          },
+          {
+            "line": 2069,
+            "text": "Fatto, volume al 10%."
+          },
+          {
+            "line": 2271,
+            "text": "Erledigt, Lautstarke auf 25%."
+          },
+          {
+            "line": 2375,
+            "text": "I'm looking for a colormap that interpolates from blue through white to red. How do i do that?"
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma 4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 260,
+            "text": "Ainda nao comparei nada porque preciso saber o baseline. Qual e o arquivo ou a execucao de referencia?"
+          },
+          {
+            "line": 2900,
+            "text": "reinicia o Steam porque ele travou"
+          },
+          {
+            "line": 4720,
+            "text": "Llueve porque el vapor de agua de la atmósfera se condensa en gotas dentro de las nubes y, al volverse muy pesadas, caen por gravedad."
+          },
+          {
+            "line": 5961,
+            "text": "reinicia Steam porque está pegado"
+          }
+        ],
+        "ranges": [
+          "1-6103",
+          "m:23"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/AUDITORIA_licencias.md",
+      "queued_sha256": "88387923222c2fc080b18886783244cc0da89d55d4a56d1f31e04a42e0a0435c",
+      "size_queued": 9501,
+      "exists": true,
+      "disk_sha256": "88387923222c2fc080b18886783244cc0da89d55d4a56d1f31e04a42e0a0435c",
+      "disk_size": 9501,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 195,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Auditoría de licencias — viabilidad COMERCIAL"
+          },
+          {
+            "line": 5,
+            "level": 2,
+            "text": "⚡ ANÁLISIS: qué BLOQUEA de verdad (cruce con el código de prod)"
+          },
+          {
+            "line": 10,
+            "level": 3,
+            "text": "🔴 1 BLOQUEANTE REAL"
+          },
+          {
+            "line": 19,
+            "level": 3,
+            "text": "🟢 GPL/NC que NO bloquean (no shipeados / excepción / redistribuibles)"
+          },
+          {
+            "line": 30,
+            "level": 3,
+            "text": "❓ Los 104 \"REVISAR\" = metadata ambigua, casi todos permisivos conocidos"
+          },
+          {
+            "line": 34,
+            "level": 3,
+            "text": "✅ Veredicto + acción"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "Resumen"
+          },
+          {
+            "line": 54,
+            "level": 2,
+            "text": "🚫 BLOQUEANTES para vender (AGPL/GPL/non-commercial)"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "⚠️ LGPL (OK por dynamic-linking, no modificar la lib)"
+          },
+          {
+            "line": 81,
+            "level": 2,
+            "text": "❓ REVISAR a mano (metadata ambigua)"
+          },
+          {
+            "line": 188,
+            "level": 2,
+            "text": "MODELOS (NO los cubre pip — chequear a mano)"
+          }
+        ],
+        "lead": "Total: **511 paquetes**. Generado por scripts/_diag/_license_audit.py.",
+        "measures": [],
+        "dates": [],
+        "models": [
+          "piper",
+          "gemma 4",
+          "whisper",
+          "llama.cpp",
+          "livekit"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-195",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/AUDITORIA_uso_del_modelo_gemma4_2026-06-10.md",
+      "queued_sha256": "e504fe57b4289bbd0298a0b0a5b47c8fc4665247c4dc82879e75a597cc513cb7",
+      "size_queued": 8108,
+      "exists": true,
+      "disk_sha256": "e504fe57b4289bbd0298a0b0a5b47c8fc4665247c4dc82879e75a597cc513cb7",
+      "disk_size": 8108,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 112,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Auditoría: ¿usamos Gemma 4 E2B de la mejor forma posible? (2026-06-10)"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Identidad y contrato del modelo (verificado correcto)"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Tabla de auditoría: recomendación → ¿implementado?"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "Veredicto: SÍ, lo usamos muy bien — con 2-3 mejoras posibles acotadas"
+          },
+          {
+            "line": 66,
+            "level": 2,
+            "text": "Lo único oficial que NO aprovechamos (y por qué está bien)"
+          },
+          {
+            "line": 77,
+            "level": 2,
+            "text": "Implementación de los candidatos (2026-06-10)"
+          },
+          {
+            "line": 104,
+            "level": 2,
+            "text": "Fuentes"
+          }
+        ],
+        "lead": "Contraste de 3 fuentes: (a) docs internos del repo sobre el modelo, (b) fuentes",
+        "measures": [
+          {
+            "line": 9,
+            "text": "- Modelo en prod: **`gemma-4-E2B-it-Q4_K_M`** (Gemma 4 oficial, NO Gemma 3n — el"
+          },
+          {
+            "line": 12,
+            "text": "- Servido con `--jinja` (template embebido del GGUF) + `chat_template_kwargs:"
+          },
+          {
+            "line": 16,
+            "text": "(suficiente para voz; 128K no cabe en 4GB ni hace falta)."
+          },
+          {
+            "line": 23,
+            "text": "| **Thinking gateado por complejidad** (Ares −52% tokens; Punto 4) | ✅ `modes.py`: fast_action/fast_info `enable_thinking=False`; quick/deep/vision condicional con `thinking_budget` | **ÓPTIMO** — exactamente el router de complejidad recome"
+          },
+          {
+            "line": 24,
+            "text": "| **`thinking_budget_tokens` por modo** | ✅ quick=32, deep/research mayores; en el body | **OK** (red de seguridad, no mecanismo principal — correcto) |"
+          },
+          {
+            "line": 25,
+            "text": "| **`--reasoning-budget-message`** (cierre limpio) | ✅ implementado, tag `<channel|>` verificado x2 (GGUF + llama.cpp source) | **OK** (impacto chico y honesto, documentado) |"
+          },
+          {
+            "line": 26,
+            "text": "| **Few-shot positivo para tool-call** (mitigar 2/6) | ✅ `action_fewshot.py` (2026-06-10): few-shot dinámico de la tool ofrecida | **ÓPTIMO** — recién agregado, +14pp medido (71→85%) |"
+          },
+          {
+            "line": 27,
+            "text": "| **Prefill `<|tool_call|>`** (Punto 4 mitigación 1) | ⚠️ NO implementado (el few-shot lo sustituye en parte) | **OK aceptable** — el few-shot da el lift; el prefill es +2/6 adicional incierto |"
+          },
+          {
+            "line": 28,
+            "text": "| **--flash-attn on** (oficial Gemma + SWA) | ❌ OFF por default | **CORRECTO desviarse** — crash CUDA #22527 medido con FA+SWA+prompt grande; OFF es estable (37/37) |"
+          },
+          {
+            "line": 30,
+            "text": "| **--cache-type-k/v q8_0** (−0.5GB KV, +0-2% decode) | 🔲 NO aplicado | **CANDIDATO REAL** — liberaría ~0.5-1GB VRAM con riesgo ~0 (sin draft). No medido aún |"
+          },
+          {
+            "line": 31,
+            "text": "| **Speculative decoding (n-gram)** | ❌ no usado | **CORRECTO descartar** — benchmarks: −3 a −12% en hardware comparable, prompts diversos |"
+          },
+          {
+            "line": 32,
+            "text": "| **FR-CoT structured brief CoT** (Qi 2026, +45% rel en BFCL) | 🔲 NO implementado como template explícito | **CANDIDATO** — el thinking ya es chico (0-102 tok medido) por el gateo; el ROI marginal puede ser bajo. MEDIR primero |"
+          }
+        ],
+        "dates": [
+          "2026-06-10",
+          "2026-06-06"
+        ],
+        "models": [
+          "gemma 4",
+          "gemma-4",
+          "llama.cpp",
+          "whisper"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 24,
+            "text": "| **`thinking_budget_tokens` por modo** | ✅ quick=32, deep/research mayores; en el body | **OK** (red de seguridad, no mecanismo principal — correcto) |"
+          }
+        ],
+        "ranges": [
+          "1-112",
+          "h:1",
+          "m:9"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/BRANCHING.md",
+      "queued_sha256": "be7928fce2cde0704325909ada864d91c6ac633b307af3c025fe5bc400b76d03",
+      "size_queued": 4550,
+      "exists": true,
+      "disk_sha256": "be7928fce2cde0704325909ada864d91c6ac633b307af3c025fe5bc400b76d03",
+      "disk_size": 4550,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 104,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Modelo de ramas — Baxy"
+          },
+          {
+            "line": 6,
+            "level": 2,
+            "text": "Ramas vivas"
+          },
+          {
+            "line": 8,
+            "level": 3,
+            "text": "`main` — rama consolidada de producción"
+          },
+          {
+            "line": 24,
+            "level": 3,
+            "text": "`develop` — rama activa de desarrollo continuo"
+          },
+          {
+            "line": 43,
+            "level": 3,
+            "text": "Ramas históricas mantenidas"
+          },
+          {
+            "line": 56,
+            "level": 2,
+            "text": "Tags activos"
+          },
+          {
+            "line": 63,
+            "level": 2,
+            "text": "Workflow estándar para el dev"
+          },
+          {
+            "line": 66,
+            "level": 1,
+            "text": "Empezar feature nuevo"
+          },
+          {
+            "line": 71,
+            "level": 1,
+            "text": "Trabajar, commitear, validar"
+          },
+          {
+            "line": 75,
+            "level": 1,
+            "text": "Cuando esté listo"
+          },
+          {
+            "line": 78,
+            "level": 1,
+            "text": "branch de feature se mantiene para histórico, no se borra"
+          },
+          {
+            "line": 80,
+            "level": 1,
+            "text": "Cuando develop alcanza un estado estable"
+          },
+          {
+            "line": 86,
+            "level": 2,
+            "text": "Reglas duras para `main`"
+          },
+          {
+            "line": 95,
+            "level": 2,
+            "text": "Cuándo crear release"
+          }
+        ],
+        "lead": "**Qué contiene**: estado estable, validado, listo para correr en hardware",
+        "measures": [
+          {
+            "line": 11,
+            "text": "target (6 GB VRAM mínimo). Cada commit en `main` debe cumplir simultáneamente:"
+          },
+          {
+            "line": 13,
+            "text": "- `python audit/smoke_mode_a.py` → 143/143 PASS, 6/6 anti-bypass PASS."
+          },
+          {
+            "line": 14,
+            "text": "- `python -m pytest gemma4_agent/test_gx_features.py gemma4_agent/test_router.py gemma4_agent/test_model_info.py -q` → todo PASS."
+          },
+          {
+            "line": 16,
+            "text": "- Setup del dev (`GEMMA4_MODEL_PATH` apuntando a Q6_K) preservado."
+          },
+          {
+            "line": 22,
+            "text": "`backup/*` se mantienen como red de seguridad entre merges grandes."
+          },
+          {
+            "line": 27,
+            "text": "features intermedios, refactors, fixes que aún no están validados al 100 %"
+          },
+          {
+            "line": 103,
+            "text": "- Carter 540 confirme ≥99% pass-rate sobre `balanced` (6 GB target)."
+          },
+          {
+            "line": 104,
+            "text": "- VRAM real medida en RTX 3050 6 GB confirme que `balanced` y `light` entran sin OOM."
+          }
+        ],
+        "dates": [],
+        "models": [
+          "gemma4"
+        ],
+        "hardware": [
+          "6 GB",
+          "VRAM",
+          "RTX 3050 6 GB"
+        ],
+        "mechanisms": [],
+        "ranges": [
+          "1-104",
+          "h:1",
+          "m:11"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/MCP.md",
+      "queued_sha256": "78bf1daa2dff459b5f940a66f6623c521a4fe85870c467544aee98ab2999fd5b",
+      "size_queued": 3693,
+      "exists": true,
+      "disk_sha256": "78bf1daa2dff459b5f940a66f6623c521a4fe85870c467544aee98ab2999fd5b",
+      "disk_size": 3693,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 123,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Baxy as MCP Server"
+          },
+          {
+            "line": 18,
+            "level": 2,
+            "text": "Arrancarlo"
+          },
+          {
+            "line": 20,
+            "level": 3,
+            "text": "stdio (Claude Desktop, Cursor)"
+          },
+          {
+            "line": 28,
+            "level": 3,
+            "text": "HTTP (debugging, integraciones lan)"
+          },
+          {
+            "line": 32,
+            "level": 1,
+            "text": "health check:  curl http://127.0.0.1:8765/"
+          },
+          {
+            "line": 33,
+            "level": 1,
+            "text": "JSON-RPC:      curl -X POST http://127.0.0.1:8765/ -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\",\"params\":{}}'"
+          },
+          {
+            "line": 36,
+            "level": 2,
+            "text": "Configurar Claude Desktop"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Configurar Cursor"
+          },
+          {
+            "line": 70,
+            "level": 2,
+            "text": "Configurar goose"
+          },
+          {
+            "line": 74,
+            "level": 1,
+            "text": "Add MCP extension"
+          },
+          {
+            "line": 75,
+            "level": 1,
+            "text": "Type: STDIO"
+          },
+          {
+            "line": 76,
+            "level": 1,
+            "text": "Command: python -m gemma4_agent.tools_pkg.mcp_server"
+          },
+          {
+            "line": 79,
+            "level": 2,
+            "text": "Protocolo"
+          },
+          {
+            "line": 90,
+            "level": 2,
+            "text": "Honestidad / seguridad"
+          },
+          {
+            "line": 103,
+            "level": 2,
+            "text": "Tests"
+          },
+          {
+            "line": 112,
+            "level": 2,
+            "text": "Smoke test manual"
+          }
+        ],
+        "lead": "Baxy puede exponer sus **compound tools** como un servidor",
+        "measures": [],
+        "dates": [
+          "2024-11-05"
+        ],
+        "models": [
+          "gemma 4",
+          "gemma4"
+        ],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-123",
+          "h:1"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/PORTING_PLAN.md",
+      "queued_sha256": "a60a85af85cab17c7fa5e95b785be9310729afbb5bc30475f35d09ec7cf936eb",
+      "size_queued": 39122,
+      "exists": true,
+      "disk_sha256": "a60a85af85cab17c7fa5e95b785be9310729afbb5bc30475f35d09ec7cf936eb",
+      "disk_size": 39122,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 1009,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Porting Plan — TIER 1 + TIER 2 desde Carter v5 / Competidores"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Estado final del porting (cierre de la branch)"
+          },
+          {
+            "line": 23,
+            "level": 2,
+            "text": "TL;DR"
+          },
+          {
+            "line": 44,
+            "level": 2,
+            "text": "Estado actual de Baxy (baseline, no inventar)"
+          },
+          {
+            "line": 64,
+            "level": 2,
+            "text": "Análisis costo/beneficio (ROI)"
+          },
+          {
+            "line": 82,
+            "level": 1,
+            "text": "TIER 1 — 4 patrones de alto valor / esfuerzo medio"
+          },
+          {
+            "line": 84,
+            "level": 2,
+            "text": "1. Loop detection estructural"
+          },
+          {
+            "line": 86,
+            "level": 3,
+            "text": "Por qué importa"
+          },
+          {
+            "line": 110,
+            "level": 3,
+            "text": "Origen"
+          },
+          {
+            "line": 115,
+            "level": 3,
+            "text": "Plan de port — Baxy"
+          },
+          {
+            "line": 122,
+            "level": 1,
+            "text": "loop_detection.py"
+          },
+          {
+            "line": 177,
+            "level": 3,
+            "text": "Testing"
+          },
+          {
+            "line": 189,
+            "level": 3,
+            "text": "Riesgos"
+          },
+          {
+            "line": 200,
+            "level": 2,
+            "text": "2. Verifier estructural por-tool con decorator"
+          },
+          {
+            "line": 202,
+            "level": 3,
+            "text": "Por qué importa"
+          },
+          {
+            "line": 230,
+            "level": 3,
+            "text": "Origen"
+          },
+          {
+            "line": 241,
+            "level": 3,
+            "text": "Plan de port — Baxy"
+          },
+          {
+            "line": 297,
+            "level": 1,
+            "text": "Verificar via tasklist o psutil (ya tenemos _running_process_names)"
+          },
+          {
+            "line": 301,
+            "level": 1,
+            "text": "Wait 2s + psutil check"
+          },
+          {
+            "line": 333,
+            "level": 1,
+            "text": "... resto de actions: read, delete, copy, move, etc."
+          },
+          {
+            "line": 337,
+            "level": 1,
+            "text": "usa pycaw como Carter para leer estado real post-action"
+          },
+          {
+            "line": 342,
+            "level": 1,
+            "text": "usa win32gui.GetForegroundWindow / EnumWindows para confirmar focus/close"
+          },
+          {
+            "line": 345,
+            "level": 1,
+            "text": "... resto de tools del catálogo"
+          },
+          {
+            "line": 361,
+            "level": 1,
+            "text": "Inyectar evidence en loop_state para anti-loop"
+          }
+        ],
+        "lead": "Tests totales sumando todos los suites de los TIER portados: **177**",
+        "measures": [
+          {
+            "line": 276,
+            "text": "failed = sum(1 for o in outcomes if o.confirmed is False)"
+          },
+          {
+            "line": 278,
+            "text": "if failed == 0 and unverifiable == 0:"
+          },
+          {
+            "line": 282,
+            "text": "if failed:    parts.append(f\"{failed} no confirmada(s)\")"
+          },
+          {
+            "line": 364,
+            "text": "# Si verifier dice failed pero result decia ok → reportar inconsistencia"
+          },
+          {
+            "line": 468,
+            "text": "- **OUTCOME**: COMPLETED | PARTIAL | FAILED | UNVERIFIED | NEEDS_USER | ..."
+          },
+          {
+            "line": 579,
+            "text": "**Cap por perfil** (mapear los 5 perfiles VRAM):"
+          },
+          {
+            "line": 755,
+            "text": "`[mission PARTIAL: 1/2 expected satisfied]` y puede corregir."
+          },
+          {
+            "line": 773,
+            "text": "`OutcomeStatus` enum (`COMPLETED`, `PARTIAL`, `FAILED`, `UNVERIFIED`,"
+          },
+          {
+            "line": 922,
+            "text": "- **VRAM compartida**: si Cursor y la GUI de Baxy corren a la vez, el"
+          },
+          {
+            "line": 973,
+            "text": "| Tiempo entre user input y tool_call (promedio) | ~2-3s (post fase 3) | igual o mejor (no afecta) |"
+          }
+        ],
+        "dates": [
+          "2026-05-15"
+        ],
+        "models": [
+          "whisper",
+          "piper",
+          "gemma 4",
+          "llama.cpp",
+          "gemma4"
+        ],
+        "hardware": [
+          "VRAM"
+        ],
+        "mechanisms": [
+          {
+            "line": 12,
+            "text": "| 2 | Verifier por-tool (12 tools) | ✅ DONE | `08e05cc` |"
+          },
+          {
+            "line": 15,
+            "text": "| 5 | Mission Goal verifier (Voyager pattern) | ✅ DONE | `370840a` |"
+          },
+          {
+            "line": 26,
+            "text": "**capacidad real, no tweaks de latencia**. Son portables porque:"
+          },
+          {
+            "line": 36,
+            "text": "- Más **honesto** (verifier estructural + mission goal)"
+          },
+          {
+            "line": 58,
+            "text": "| Verifier por-tool | **NO** — la verificación está mezclada dentro de cada herramienta |"
+          },
+          {
+            "line": 61,
+            "text": "| Mission goal verifier | **NO** — `MissionPlan` (planner.py) solo prioriza tools, no verifica intención |"
+          }
+        ],
+        "ranges": [
+          "1-1009",
+          "h:1",
+          "m:276"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/PRODUCTION_READY.md",
+      "queued_sha256": "5f0926819ef17be0de47e99345589de993f7044c6408416cf253d285a9d1d2ac",
+      "size_queued": 4500,
+      "exists": true,
+      "disk_sha256": "5f0926819ef17be0de47e99345589de993f7044c6408416cf253d285a9d1d2ac",
+      "disk_size": 4500,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 89,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "`gemma4_agent` — Production-Ready Acceptance Gate"
+          },
+          {
+            "line": 11,
+            "level": 2,
+            "text": "Los 5 thresholds"
+          },
+          {
+            "line": 21,
+            "level": 2,
+            "text": "Métricas auxiliares (NO bloqueantes, solo informativas)"
+          },
+          {
+            "line": 32,
+            "level": 2,
+            "text": "Decisión"
+          },
+          {
+            "line": 43,
+            "level": 2,
+            "text": "Cómo se corre"
+          },
+          {
+            "line": 46,
+            "level": 1,
+            "text": "Modo full (todos los thresholds, 5min en hardware operador):"
+          },
+          {
+            "line": 49,
+            "level": 1,
+            "text": "Modo CI (rápido, solo los thresholds que no requieren GPU/audio fresh):"
+          },
+          {
+            "line": 52,
+            "level": 1,
+            "text": "Modo single (un threshold específico):"
+          },
+          {
+            "line": 58,
+            "level": 2,
+            "text": "Audios requeridos"
+          },
+          {
+            "line": 71,
+            "level": 2,
+            "text": "Política de re-medición"
+          },
+          {
+            "line": 79,
+            "level": 2,
+            "text": "Lo que NO está acá (intencional)"
+          }
+        ],
+        "lead": "- **Filter false-positive rate**: % turns con `whisper_raw_text`",
+        "measures": [
+          {
+            "line": 15,
+            "text": "| 1 | **Wake recall** | ≥70% en `testaudio_v2.wav` (nativo WAV, no m4a) | `bench.py` cuenta wakes detectados vs wakes esperados (anotados en `testaudio_v2_expected.json`) | ❌ 25% en `Grabación (2).m4a`, sin medición en v2 |"
+          },
+          {
+            "line": 18,
+            "text": "| 4 | **STT latency p95** | ≤1.2s para clips ≤3s, GPU disponible | `bench.py` mide `_transcribe_buffer` sobre clips sintetizados; p95 sobre 20 iteraciones por clip | ❌ Sprint N corrió en CPU/int8 (DLL missing) — invalida medición |"
+          },
+          {
+            "line": 19,
+            "text": "| 5 | **Voice end-to-end p95** | ≤5s wake→TTS start, sesión real con 20 comandos diversos | Sesión manual con 20 turnos, recorder anota timings en manifest; bench parsea | ❌ Sin medición; budget operator memory dice 4-5s |"
+          },
+          {
+            "line": 24,
+            "text": "no-vacío PERO `whisper_transcription` null en manifest. Si >20%"
+          },
+          {
+            "line": 37,
+            "text": "- 4/5 verde + 1 rojo → NO production-ready. Reportar cuál falla y"
+          },
+          {
+            "line": 39,
+            "text": "- 5/5 verde EN UN MISMO COMMIT → production-ready."
+          },
+          {
+            "line": 76,
+            "text": "- Si alguno de los 5 retrocedió ≥10%, rollback del commit que"
+          },
+          {
+            "line": 85,
+            "text": "- Cobertura de tools (65/65 con verifier) NO es threshold —"
+          }
+        ],
+        "dates": [
+          "2026-05-18"
+        ],
+        "models": [
+          "whisper"
+        ],
+        "hardware": [],
+        "mechanisms": [
+          {
+            "line": 85,
+            "text": "- Cobertura de tools (65/65 con verifier) NO es threshold —"
+          }
+        ],
+        "ranges": [
+          "1-89",
+          "h:1",
+          "m:15"
+        ]
+      }
+    },
+    {
+      "path": "documentacion/00_producto/computer_use_capability_layers.md",
+      "queued_sha256": "fcdcc487b845fa8cace52afcaee5ed372183a1ef49a167ed8fc53aa6816a733f",
+      "size_queued": 2930,
+      "exists": true,
+      "disk_sha256": "fcdcc487b845fa8cace52afcaee5ed372183a1ef49a167ed8fc53aa6816a733f",
+      "disk_size": 2930,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_err": "no-git",
+      "extract": {
+        "binary": false,
+        "lines": 66,
+        "headings": [
+          {
+            "line": 1,
+            "level": 1,
+            "text": "Computer Use Capability Layers"
+          },
+          {
+            "line": 7,
+            "level": 2,
+            "text": "Orden De Capas"
+          },
+          {
+            "line": 42,
+            "level": 2,
+            "text": "Contratos De Calidad"
+          },
+          {
+            "line": 55,
+            "level": 2,
+            "text": "Fuentes"
+          }
+        ],
+        "lead": "Objetivo: ampliar compatibilidad por capas sin prometer control perfecto sobre",
+        "measures": [
+          {
+            "line": 37,
+            "text": "6. Honest fail"
+          }
+        ],
+        "dates": [],
+        "models": [],
+        "hardware": [],
+        "mechanisms": [],
+        "ranges": [
+          "1-66",
+          "h:1",
+          "m:37"
+        ]
+      }
+    }
+  ]
+}
