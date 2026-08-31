@@ -1,0 +1,972 @@
+{
+  "schema": "baxy.goal095.0956-synthesis.v1",
+  "goal": "09.5.6",
+  "closed_utc": "2026-08-31T18:00:00Z",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + artifacts/goal095/extract/_09510_requirements.json + artifacts/goal095/queue/sparse_exclusions.json + Goal 09 closeout (documentacion/herencia/09_VOZ.md, documentacion/03_COSTURAS.md voice rows, artifacts/goal09/); no biblioteca bodies; no source-tree walk",
+  "next_human_prompt": "documentacion/sprints/09.5.7_TOOLS_SKILLS_MISIONES.md",
+  "languages_in_scope": ["es", "en", "spanglish"],
+  "other_languages_create_work": false,
+  "other_language_work_items": [],
+  "english_app_names_in_spanish_count_as_spanglish": true,
+  "goal09_reopened": false,
+  "live_weights_changed": false,
+  "catalog_constraint": "El catálogo sigue siendo datos tipados. Wake/STT/TTS se sustituyen por fichero+SHA en el manifiesto del sidecar, no por nombres cocidos en pesos.",
+  "qwen_asr": {
+    "silenced": false,
+    "status": "rechazo_medido",
+    "piece": "Qwen3-ASR-0.6B int8 (sherpa-onnx CPU; GGUF ~1 GB en disco no adoptado)",
+    "metrics": "Development 2026-08-11: audio arena n=12 corpusWer=0.08125 criticalAnchorRecall=0.888889 (16/18) p95=5.608 s; minds14 n=84 intentSemanticPreservation=0.988095 p95=9.092 s RTF p95=0.512 RSS pico=2711912448 B; uniqueIntentRescuesBeyondNemotron=[]; candidatePromoted=false. Reasons: recall<0.99, p95>2 s, no unique rescue.",
+    "hardware": "Windows CPU 8 threads · sherpa-onnx 1.13.4 · 2026-08-11",
+    "corpus": "artifacts/development/stt_audio_arena_qwen3_asr_onnx_cpu_development_v1.json SHA 70bc6701…; stt_minds14_qwen3_asr_onnx_cpu_development_v1.json SHA 1c218b74…; verdict SHA in stt_qwen3_asr_onnx_cpu_development_verdict_v1.json",
+    "kind": "benchmark",
+    "why_not_product": "Goal 09: pediría otro runtime y competiría por RAM; el fallo del nombre propio no es el wake. No se silencia: queda como rechazo medido, no como oído vigente.",
+    "citations": [
+      {"card_id": "code_tests-408-baxy-17-experiments-stt_quality-evaluate_qwen3_asr_onnx_development.", "batch_id": "code_tests-408-baxy"},
+      {"card_id": "code_tests-436-baxy-04-legacy-models-qwen_asr.py", "batch_id": "code_tests-436-baxy"},
+      {"card_id": "evidence_assets-049-baxy-baxy_art_development-05-artifacts-development-r16_sapi_qwen3_asr_failures_developmen", "batch_id": "evidence_assets-049-baxy-baxy_art_development"}
+    ]
+  },
+  "gemma_native_audio": {
+    "silenced": false,
+    "status": "rechazo_medido",
+    "piece": "Gemma 4 E4B native audio (Ollama input_audio vs llama-mtmd-cli + mmproj)",
+    "metrics": "llama.cpp#21868: llama-server no rutea input_audio; workaround recarga el modelo por clip (frío). 5 clips sintéticos (hora, negation, multistep, phonetic stim, codeswitch). Español rioplatense 2/5 (pobre) citado en Carter v5 whisper_stt.py. WAV y results/audio_E4B.json no están en el lote.",
+    "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0 · 2026-05-09",
+    "corpus": "5 WAV 16 kHz System.Speech 'Sabina', no voz humana; harness audio_probes.py / audio_full.py",
+    "kind": "código",
+    "why_not_product": "API no lista; tres caminos apilados; Goal 01 ya midió Parakeet CPU como oído. No se silencia.",
+    "citations": [
+      {"card_id": "harness-gemma-native-audio", "batch_id": "code_tests-001-carter"},
+      {"card_id": "code_tests-029-carter-carter_v5-30-carter_v5-multimodal-whisper_stt.py", "batch_id": "code_tests-029-carter-carter_v5"}
+    ]
+  },
+  "sparse_assets": {
+    "ref": "artifacts/goal095/extract/_09510_requirements.json",
+    "ids": ["pg4-gguf-models", "pg4-training-datasets", "pg4-training-checkpoints"],
+    "individual_hashes": "not invented",
+    "wake_stt_consumer": "pg4-training-datasets (~39 GiB) alimentaba wake_universal_eval / livekit / nemotron / voxcpm; snapshot 1354 files / 247259115 bytes remain",
+    "rule": "ausencia deliberada no es pérdida medida ni FALLO_DE_AMBIENTE de 09.5.6: ningún candidato de trasplante exige el blob. Si 09.5.9 nombra reutilizar uno, 09.5.10 pausa en FALLO_DE_AMBIENTE por el asset exacto"
+  },
+  "ambiente": {
+    "status": "ok_for_synthesis",
+    "approving_simulation": false,
+    "fallo_de_ambiente": [],
+    "note": "Ningún dispositivo/asset requerido para cerrar esta síntesis falta. Existir no es works. Hashes individuales de blobs dispersos: not invented."
+  },
+  "transplants": [],
+  "transplants_empty_reason": "Ninguna pieza histórica mejora un hueco demostrado de Goal 09 sin reabrir el umbral wake 0,5 ni apilar un segundo STT/TTS. El corrector fonético, hotwords contextuales, Silero VAD, AEC/ducking y barge-in ya viven en src/baxy_mind/voice.py + voice_aec.py + voice_output.py. Qwen-ASR y Gemma-native-audio son rechazos medidos, no candidatos. HyperSpotter/CTC/clasificadores propios ya perdieron cobertura+seguridad. FAR 2,50/h vs 0,1/h se registra; retocar el umbral reabriría Goal 09.",
+  "subareas": [
+    {
+      "id": "wake_word",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "Sin KWS de producto propio; voz/visión andamiaje mayo 2026 no torneó wake.",
+        "probando_gemma4": "LiveKit ONNX 3 grafos reimplementados en onnxruntime+numpy (Python 3.10); wake_universal_eval 13 idiomas (fuera de alcance).",
+        "functiongemma": "Sin pila de wake; mmproj speech_model no es KWS.",
+        "baxy_anterior": "openWakeWord/LiveKit cabeza de una palabra BAXY; HyperSpotter/CTC/clasificadores propios rechazados.",
+        "schemas": "n/a (no es catálogo de tools)."
+      },
+      "best_historical": {
+        "piece": "LiveKit/openWakeWord baxy.onnx (mel+embedding+cabeza) vía onnxruntime",
+        "source": "probando_gemma4 livekit_runtime.py → BAXY legacy wake_livekit/",
+        "metrics": "Goal 01 voz real: positivo máx 0,916 (664 ventanas>0,5); negativo 18,7 s español sin «baxy» máx 0,225, 0 disparos; RTF 0,026. Goal 09 holdout 12/12 FRR 0 umbral 0,5.",
+        "hardware": "esta máquina Windows · RTX 4060 Ti 16 GB · CPU para KWS",
+        "corpus": "Goal 01 clip voz real + 18,7 s español; Goal 09 isolated Baxy/Baxy. Sabina es-MX + Zira en-US rates −3/0/+3 n=12",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "baxy.onnx SHA 9b1ae5db… umbral 0,5 manifiesto baxy-wakeword-v1.json SHA fefb9517… (R281)",
+        "metrics": "Holdout 2026-08-24 12/12 matched, FRR 0, max_score 0,854 min 0,162 p50_wall 0,117 s. Umbral locked before open. calibration.approved false.",
+        "hardware": "Windows · esta máquina · 2026-08-24",
+        "corpus": "artifacts/goal09/wake_holdout.json; isolated Baxy/Baxy. Sabina+Zira −3/0/+3",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "La cabeza cumple FRR 0 en holdout SAPI aislado; no cumple el listón de promoción FAR. No se retoca 0,5 ni se cambia el ONNX aquí."
+      },
+      "exitos": [
+        {
+          "piece": "baxy.onnx holdout 12/12",
+          "metrics": "12/12 matched FRR 0; negative_synth 0/12 max_score 0,091",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "Sabina es-MX + Zira en-US isolated Baxy/Baxy. n=12+12",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "HyperSpotter Conformer/Whisper open-vocabulary",
+          "metrics": "Conformer 10/24, 21/48, 38/48 positivos (endpoint-confusable/v20/humano v14) con 14/96, 5/96, 19/96 FA; Whisper 19/24, 36/48, 42/48 con 25/96, 18/96, 32/96 FA. Umbral 0,5 no se tocó.",
+          "hardware": "esta máquina · checkpoints oficiales fuera del repo SHA c85f06fb… / 76b77d5c… / cfde3bd6…",
+          "corpus": "R90 evaluate_hyperspotter_open_vocabulary_wake_pilot_v1.py; no v17",
+          "kind": "benchmark"
+        },
+        {
+          "piece": "wake_universal_eval 13 idiomas Piper held-out",
+          "metrics": "Harness de recall sobre ~1 s clips 'hey gemma' en 13 lenguas. Fuera de alcance de producto.",
+          "hardware": "Windows · Probando Gemma 4 snapshot 09.5.0",
+          "corpus": "25 voces Piper held-out × 13 languages — no crea trabajo",
+          "kind": "diseño"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-346-probando_gemma4-02-gemma4_agent-voice-livekit_runtime.py", "batch_id": "code_tests-346-probando_gemma4"},
+        {"card_id": "code_tests-468-baxy-06-src-baxy_mind-wakeword.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "code_tests-413-baxy-baxy_exp_voice_latency-21-experiments-voice_latency-evaluate_hyperspotter_baxy.py", "batch_id": "code_tests-413-baxy-baxy_exp_voice_latency"},
+        {"card_id": "voz-vision-andamiaje-no-torneo", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "falsos_disparos",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "No midió FAR de wake de producto.",
+        "probando_gemma4": "wake_universal negativos y confusables; no es el FAR de película de Goal 09.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "Cascadas léxicas/log-mel/HyperSpotter no conservaron 0 FA con cobertura.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "FAR Poisson 95 % sobre TV que no habla a BAXY, umbral locked",
+        "source": "Goal 09 measure_goal09_far.py (BAXY actual, no promesa)",
+        "metrics": "2,00 h terminada partial=false; 5 disparos; 2,50/h; upper 5,26/h; umbral 0,5 no promocionado",
+        "hardware": "esta máquina Windows · 2026-08-24",
+        "corpus": "7 archivos Impractical Jokers S11 (último S11E09 1080p HEVC); artifacts/goal09/wake_far.json",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "mismo FAR; calibration.approved=false; APLAZADOS vigente",
+        "metrics": "2,50/h vs listón de promoción 0,1/h (upper 5,26/h). Identidad exige escucha permanente sin promocionar el listón.",
+        "hardware": "Windows · esta máquina · 2026-08-24",
+        "corpus": "artifacts/goal09/wake_far.json hours=2.0 activations=5 files_used=7",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "FAR no cumple 0,1/h. Registrar el hueco es obligatorio; retocar el umbral o cambiar la cabeza reabriría Goal 09, prohibido aquí. Candidatos históricos de cabeza no ganan cobertura+seguridad a la vez."
+      },
+      "exitos": [
+        {
+          "piece": "negative_synth holdout 0/12",
+          "metrics": "0 matched, max_score 0,091 < 0,5",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "SAPI isolated no-Baxy n=12",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "HyperSpotter Whisper (mejor cobertura, peor seguridad)",
+          "metrics": "32/96 FA en humano v14; 25/96 endpoint-confusable",
+          "hardware": "esta máquina · R90",
+          "corpus": "96 negativos × tres corpus abiertos",
+          "kind": "benchmark"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-413-baxy-baxy_exp_voice_latency-10-experiments-voice_latency-evaluate_baxy_openwakeword_raw_cor", "batch_id": "code_tests-413-baxy-baxy_exp_voice_latency"},
+        {"card_id": "code_tests-413-baxy-baxy_exp_voice_latency-21-experiments-voice_latency-evaluate_hyperspotter_baxy.py", "batch_id": "code_tests-413-baxy-baxy_exp_voice_latency"},
+        {"card_id": "code_tests-468-baxy-06-src-baxy_mind-wakeword.py", "batch_id": "code_tests-468-baxy"}
+      ]
+    },
+    {
+      "id": "ruido",
+      "evidence_kind": "benchmark",
+      "lineage": {
+        "carter": "No torneó ruido de micrófono (sin tools de micro/speaker).",
+        "probando_gemma4": "stt_noise_robustness.py mezcla RED+música a SNR; false-trigger guard de música pura.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "FAR de series + AEC simulado contra peli más fuerte que la voz.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "stt_noise_robustness.py (Parakeet+corrector vs música a SNR) + FAR de TV Goal 09",
+        "source": "probando_gemma4 scripts/stt_noise_robustness.py",
+        "metrics": "Entity-recall de comandos a varios SNR; música pura no debe alucinar comandos. FAR TV: 5/2,00 h.",
+        "hardware": "Windows · Probando Gemma 4 snapshot; FAR esta máquina 2026-08-24",
+        "corpus": "comandos RED mezclados con masters de música; Impractical Jokers S11",
+        "kind": "benchmark"
+      },
+      "current_goal09": {
+        "piece": "FAR de series como ruido de ambiente; no hay rerun SNR de STT en Goal 09",
+        "metrics": "5 disparos / 2,00 h TV comedia EN. STT holdout es SAPI limpio, no SNR.",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "artifacts/goal09/wake_far.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "El ruido que dispara wake está medido (TV). La robustez STT a SNR es evidencia histórica no reejecutada en Goal 09; no autoriza un motor nuevo."
+      },
+      "exitos": [
+        {
+          "piece": "Goal 09 launch noise_did_not_wake 2/2",
+          "metrics": "voice_launch.json run1+run2 noise_did_not_wake=true luego wake_detected=true",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "artifacts/goal09/voice_launch.json n=2",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Simular que el AEC 'funciona' sin loopback",
+          "metrics": "voice_aec.py: sin backend/endpoint se informa AEC=false; nunca simula que hubo AEC",
+          "hardware": "Windows WASAPI",
+          "corpus": "src/baxy_mind/voice_aec.py (BAXY anterior + vigente)",
+          "kind": "código"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-342-probando_gemma4-55-scripts-stt_noise_robustness.py", "batch_id": "code_tests-342-probando_gemma4"},
+        {"card_id": "code_tests-342-probando_gemma4-67-scripts-wake_aec_sim_eval.py", "batch_id": "code_tests-342-probando_gemma4"},
+        {"card_id": "code_tests-468-baxy-02-src-baxy_mind-voice_aec.py", "batch_id": "code_tests-468-baxy"}
+      ]
+    },
+    {
+      "id": "vad",
+      "evidence_kind": "código",
+      "lineage": {
+        "carter": "No hay VAD de producto medido.",
+        "probando_gemma4": "Silero ONNX (~2 GB torch sólo si se usa el wrapper; A/B raw-onnxruntime vs silero_vad).",
+        "functiongemma": "n/a",
+        "baxy_anterior": "Silero VAD 6.x oficial ONNX/CPU: (1) antes de openWakeWord, (2) EOU 700 ms de silencio.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Silero VAD ONNX/CPU, dos usos: gate de ruido + EOU",
+        "source": "BAXY anterior legacy/voice/vad.py → src/baxy_mind/voice.py SileroVad",
+        "metrics": "EOU live Goal 09: ingest habla+silencio → recognized p50 0,21 s máx 0,31 s (bar 1,5 s)",
+        "hardware": "Windows CPU · 2026-08-24",
+        "corpus": "artifacts/goal09/eou_first_signal.json n=3 (zira/sabina/codeswitch)",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "SileroVad en VoiceEngine; no se rehízo el bucle",
+        "metrics": "p50 0,205 s máx 0,307 s; passed vs bar_p50 1,5 s / never_silent 3,0 s",
+        "hardware": "Windows CPU 2026-08-24",
+        "corpus": "eou_first_signal.json prompts: open notepad please / buenas noches / abre notepad please",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "EOU cumple el listón de primera señal de oído. No hay A/B Silero vs webrtc-vad en Goal 09 que gane coste; no se apila otro VAD."
+      },
+      "exitos": [
+        {
+          "piece": "EOU 3/3 recognized",
+          "metrics": "p50 0,205 s máx 0,307 s first_event=recognized",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "SAPI zira+sabina n=3",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Wrapper torch de Silero si hay ONNX paridad",
+          "metrics": "A/B _ab_vad_onnx.py: si speech_prob por frame matchea, la reimplementación ONNX es suficiente (ley 4 RAM).",
+          "hardware": "Windows · Probando Gemma 4",
+          "corpus": "secuencia de chunks (script de paridad, no Goal 09)",
+          "kind": "código"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-454-baxy-18-legacy-voice-vad.py", "batch_id": "code_tests-454-baxy"},
+        {"card_id": "code_tests-468-baxy-01-src-baxy_mind-voice.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "docs-017-probando_gemma4-13-requirements-voice.txt", "batch_id": "docs-017-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "stt",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "faster-whisper tiny RTF ~0,24 (2 s tone); large-v3-turbo en v5 porque Gemma native audio no rutea.",
+        "probando_gemma4": "Parakeet-TDT-0.6b-v3 int8 sherpa-onnx greedy; Whisper eliminado del pipeline (test_stt_no_whisper_fallback).",
+        "functiongemma": "n/a (no es ASR).",
+        "baxy_anterior": "Parakeet CPU + corrector; Qwen3-ASR evaluado y no promovido; Faster-Whisper large-v3-turbo no promovido (entidad <99 %).",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Parakeet TDT 0.6b v3 int8 sherpa-onnx CPU greedy",
+        "source": "probando_gemma4 gemma4_agent/voice/parakeet_stt.py",
+        "metrics": "Voz real 2026-05-23: WER chileno 0,044 vs Whisper 0,075; WER comandos RED n=84 0,335 vs 0,445; p50 71 ms vs 1570 ms (20×). Goal 01: carga 2,4 s RTF 0,065–0,087; 18,7 s ES 1 error / 47 palabras.",
+        "hardware": "Windows CPU · 2026-05-23 / Goal 01 2026-08-16 esta máquina",
+        "corpus": "data/stt_eval/real_mic 2026-05-23; clip 18,7 s español Goal 01",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "Parakeet TDT 0.6b v3 int8 SHA agregado 5a70e086… CPU; Qwen3-ASR GGUF en disco no adoptado",
+        "metrics": "Holdout SAPI 3/3 es/en/codeswitch; p50 decode 0,20 s máx 0,51 s. EOU p50 0,21 s.",
+        "hardware": "Windows CPU · 2026-08-24",
+        "corpus": "artifacts/goal09/stt_holdout.json: «open notepad please» / «buenas noches» / «abre notepad please»",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Parakeet gana a Whisper en voz real y es el bundle declarado. Qwen-ASR no se silencia y no se adopta. El hueco restante es entidad (Spotify/BAXY), no el motor de wake."
+      },
+      "exitos": [
+        {
+          "piece": "Goal 09 STT holdout 3/3",
+          "metrics": "hits=3 n=3 codeswitch_hit=true p50=0,203 s",
+          "hardware": "Windows SAPI Zira+Sabina 2026-08-24",
+          "corpus": "stt_holdout.json en/es/codeswitch",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Qwen3-ASR-0.6B int8 como motor de producto",
+          "metrics": "candidatePromoted=false; criticalAnchorRecall 0,889; p95 arena 5,61 s; RSS 2,71 GiB; 0 rescates únicos vs Nemotron",
+          "hardware": "CPU 8 threads sherpa-onnx 1.13.4 2026-08-11",
+          "corpus": "audio arena n=12 + minds14 n=84",
+          "kind": "benchmark"
+        },
+        {
+          "piece": "Gemma 4 native audio como STT",
+          "metrics": "input_audio no rutea; 2/5 rioplatense; recarga por clip",
+          "hardware": "RTX 4060 Ti 16 GB Carter 2026-05-09",
+          "corpus": "5 WAV sintéticos Sabina",
+          "kind": "código"
+        },
+        {
+          "piece": "Whisper-small / faster-whisper como oído vigente",
+          "metrics": "p50 1570 ms vs Parakeet 71 ms; test_stt_no_whisper_fallback: Whisper ELIMINADO, sin fallback LID",
+          "hardware": "Windows CPU 2026-05-23 / 2026-06-17",
+          "corpus": "RED n=84 + invariante Parakeet-only",
+          "kind": "código"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-350-probando_gemma4-pg4_voice-01-gemma4_agent-voice-parakeet_stt.py", "batch_id": "code_tests-350-probando_gemma4-pg4_voice"},
+        {"card_id": "code_tests-345-probando_gemma4-13-gemma4_agent-tests-test_stt_no_whisper_fallback.py", "batch_id": "code_tests-345-probando_gemma4"},
+        {"card_id": "code_tests-408-baxy-17-experiments-stt_quality-evaluate_qwen3_asr_onnx_development.", "batch_id": "code_tests-408-baxy"},
+        {"card_id": "harness-gemma-native-audio", "batch_id": "code_tests-001-carter"}
+      ]
+    },
+    {
+      "id": "nombres_propios",
+      "evidence_kind": "benchmark",
+      "lineage": {
+        "carter": "Nombres de app en few-shots del CORE_PROMPT (rechazo de catálogo), no STT.",
+        "probando_gemma4": "Entity-recall 64%→81% [70–89] con corrector fonético ES; beam+hotwords D5 sobre RED n=84.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "Hotword oracle sherpa 5/18 + dañó 18 entidades + 69 distractores — rechazado. MSNER 504: Parakeet greedy entidad exacta 81,96 %.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Corrector fonético ES (Spanish Metaphone) + catálogo, no beam-hotwords",
+        "source": "probando_gemma4 test_voice_parakeet_stt.py / BAXY src/baxy_mind/corrector.py (ya en producto)",
+        "metrics": "RED noche 2026-05-23: Entity-Recall 70%→81% [70–89]; p50 1593→74 ms. MSNER hotword oracle 5/18, dañó 18, insertó 69 — no es la pieza.",
+        "hardware": "Windows 2026-05-23 / MSNER 2026-08-11",
+        "corpus": "comandos RED n=84; MSNER español VoxPopuli 504 locuciones desarrollo",
+        "kind": "benchmark"
+      },
+      "current_goal09": {
+        "piece": "Parakeet + _transcript_is_doubtful + corrector/hotwords ya en voice.py; dudo no ejecuta",
+        "metrics": "«BAXY» aislado y «Spotify» propio a menudo fallan. Holdout «abre notepad please» hit en stt_holdout; EOU del mismo prompt transcribió «Abre Nootpad, please.» (hit=false).",
+        "hardware": "Windows SAPI 2026-08-24",
+        "corpus": "artifacts/goal09/stt_holdout.json + eou_first_signal.json + goal09_measure.json filas STT",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Nombres ingleses de apps (Spotify, Notepad) y el propio BAXY siguen siendo el fallo. El corrector ya está; beam+hotwords y Qwen-ASR no cierran entidad a 99 %. No se apila un segundo ASR."
+      },
+      "exitos": [
+        {
+          "piece": "Holdout notepad codeswitch",
+          "metrics": "«abre notepad please» → «Abre notepad, please.» hit=true 0,203 s",
+          "hardware": "SAPI Sabina 2026-08-24",
+          "corpus": "stt_holdout.json mix_sabina",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "sherpa modified_beam_search + hotwords como reconocedor",
+          "metrics": "MSNER oracle 5/18 objetivos; dañó 18 entidades antes correctas; 69 distractores",
+          "hardware": "Windows 2026-08-11",
+          "corpus": "artifacts/development/msner_spanish_contextual_hotword_oracle_development_v1.json n=504 shard desarrollo",
+          "kind": "benchmark"
+        }
+      ],
+      "citations": [
+        {"card_id": "docs-009-probando_gemma4-06-documentacion-03_voz_stt-research", "batch_id": "docs-009-probando_gemma4"},
+        {"card_id": "code_tests-408-baxy-08-experiments-stt_quality-contextual_hotwords.py", "batch_id": "code_tests-408-baxy"},
+        {"card_id": "evidence_assets-047-baxy-baxy_art_development-17-artifacts-development-msner_spanish_contextual_hotword_oracl", "batch_id": "evidence_assets-047-baxy-baxy_art_development"},
+        {"card_id": "code_tests-345-probando_gemma4-61-gemma4_agent-tests-test_voice_parakeet_stt.py", "batch_id": "code_tests-345-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "bilingue_spanglish",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "Codeswitch clip en harness Gemma native audio (sintético).",
+        "probando_gemma4": "Parakeet medido ES chileno + comandos; no corpus ServiceNow.",
+        "functiongemma": "fg_probe_multiling pt/fr/de/it — fuera de alcance, cero trabajo.",
+        "baxy_anterior": "ServiceNow codeswitch development n=59; MSNER ES; Goal 09 holdout es/en/codeswitch.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Parakeet greedy sobre codeswitch + Goal 09 SAPI holdout 3/3",
+        "source": "BAXY experiments/stt_quality/evaluate_servicenow_codeswitch_development.py + Goal 09",
+        "metrics": "ServiceNow development n=59: corpusWer=0,0945 ES errorRate=0,00714 EN=0,130 criticalAnchorRecall=0,733 (107/146) fail vs 0,99; RTF p50=0,067. Goal 09: 3/3 including «abre notepad please».",
+        "hardware": "Windows CPU Parakeet int8 · 2026-08-11 / 2026-08-24",
+        "corpus": "ServiceNow ASR codeswitched development_rg2_v1 59 cases (texto fuera del repo, métricas versionadas); stt_holdout.json",
+        "kind": "benchmark"
+      },
+      "current_goal09": {
+        "piece": "Holdout SAPI es + en + codeswitch con nombre de app inglés",
+        "metrics": "3/3 hits; codeswitch_hit=true. EOU del codeswitch falló «Nootpad» — inestable en app names.",
+        "hardware": "Windows SAPI Zira en-US + Sabina es-MX 2026-08-24",
+        "corpus": "stt_holdout.json + eou_first_signal.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "ES/EN/spanglish están cubiertos. Nombres ingleses de apps dentro de frase española cuentan como spanglish y siguen frágiles. pt/fr/de/it y el eval 13 lenguas del wake no crean trabajo."
+      },
+      "exitos": [
+        {
+          "piece": "Goal 09 3/3 es/en/spanglish",
+          "metrics": "en «Open notepad please»; es «Buenas noches.»; mix «Abre notepad, please.»",
+          "hardware": "SAPI 2026-08-24",
+          "corpus": "stt_holdout.json n=3",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Holdout 13 idiomas del wake_universal_eval como requisito",
+          "metrics": "Identidad: acentos latinos e inglés. 13 lenguas Piper held-out no crean metas.",
+          "hardware": "Probando Gemma 4 snapshot",
+          "corpus": "wake_universal_eval.py 13 languages",
+          "kind": "diseño"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-408-baxy-19-experiments-stt_quality-evaluate_servicenow_codeswitch_devel", "batch_id": "code_tests-408-baxy"},
+        {"card_id": "evidence_assets-050-baxy-baxy_art_development-27-artifacts-development-servicenow_codeswitch_parakeet_greedy_", "batch_id": "evidence_assets-050-baxy-baxy_art_development"},
+        {"card_id": "harness-gemma-native-audio", "batch_id": "code_tests-001-carter"},
+        {"card_id": "code_tests-342-probando_gemma4-81-scripts-wake_universal_eval.py", "batch_id": "code_tests-342-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "tts",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "Piper binario ausente en torneo (NOT_EXECUTED_FULL_ENV_LIMITATION); XTTS en venv.",
+        "probando_gemma4": "Piper streaming speak_stream: corta en .!?; worker sounddevice; productor LLM no espera.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "Piper ONNX + eSpeak; piper.exe GPL rechazado; Sherpa OfflineTts rechazó el export (sin sample_rate).",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Piper es_MX-claude-high ONNX + eSpeak es-419 vía onnxruntime (no piper.exe)",
+        "source": "BAXY anterior durable_piper_backend / Goal 09 NeuralSpeechOutput",
+        "metrics": "Goal 09: load 1,44 s; first_audio 0,02 s con worker arriba; cancel() corta a media frase. ADR-0007 había elegido SAPI para no importar GPL; Goal 09 manda voz con carácter.",
+        "hardware": "Windows CPU onnxruntime · 2026-08-23/24",
+        "corpus": "artifacts/goal09/tts_measure.json + goal09_measure.json tts block SHA 3ef40a71…",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "Piper es_MX-claude-high.onnx SHA 3ef40a71…; SAPI degradación si falta ONNX",
+        "metrics": "available=true accepted=true load_s=1,439 first_audio_s=0,02 cancelled_mid_utterance=true",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "artifacts/goal09/goal09_measure.json tts + tts_measure.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Voz de producto neural latina medida. VoxCPM2/LiveKit IPA son investigación, no A/B que gane primera muestra+cancelación+licencia. No se reabre TTS."
+      },
+      "exitos": [
+        {
+          "piece": "Piper ONNX primera muestra + cancel",
+          "metrics": "first_audio 0,02 s; cancelled_mid_utterance true; load 1,44 s",
+          "hardware": "Windows onnxruntime 2026-08-24",
+          "corpus": "goal09_measure.json tts SHA 3ef40a71…",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "SAPI como voz de producto",
+          "metrics": "ADR-0007 la eligió por GPL; Goal 09 la deja como fallback. Licencia aislada: onnxruntime Apache + pesos MIT + eSpeak ya instalado.",
+          "hardware": "Windows SAPI Sabina/Zira",
+          "corpus": "documentacion/herencia/09_VOZ.md + ADR-0007",
+          "kind": "diseño"
+        },
+        {
+          "piece": "piper.exe GPL in-process",
+          "metrics": "Rechazo vigente de auditoría de licencias. Carter: binario ausente, no es works.",
+          "hardware": "Carter RTX 4060 Ti 16 GB · 2026-05-02",
+          "corpus": "voz-vision-andamiaje-no-torneo: Piper no en PATH",
+          "kind": "asset"
+        },
+        {
+          "piece": "Sherpa OfflineTts sobre este export",
+          "metrics": "Rechazó es_MX-claude-high (sin sample_rate en metadatos); no se descargó bundle duplicado",
+          "hardware": "Windows 2026-08-23",
+          "corpus": "Goal 09 TTS closeout",
+          "kind": "asset"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-468-baxy-03-src-baxy_mind-voice_output.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "code_tests-363-probando_gemma4-04-gemma4_agent-voice-tts.py", "batch_id": "code_tests-363-probando_gemma4"},
+        {"card_id": "voz-vision-andamiaje-no-torneo", "batch_id": "docs-001-carter"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"}
+      ]
+    },
+    {
+      "id": "primera_senal",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "No midió EOU de producto.",
+        "probando_gemma4": "Parakeet p50 71 ms decode (no es EOU de captura).",
+        "functiongemma": "n/a",
+        "baxy_anterior": "first_signal_latency.json es el camino LLM (otro recinto, 09.5.5). Goal 09 midió EOU de oído aparte.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "EOU live: silencio → evento recognized (oído, no LLM)",
+        "source": "Goal 09 eou_first_signal.json",
+        "metrics": "p50 0,205 s máx 0,307 s; bar_p50 1,5 s; first_signal_never_claims_a_result=true",
+        "hardware": "Windows CPU Parakeet+Silero 2026-08-24",
+        "corpus": "3 prompts SAPI (en/es/codeswitch)",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "mismo EOU; TTS first_audio 0,02 s; launch first_signal 0,13–0,20 s",
+        "metrics": "voice_launch run1 0,204 s run2 0,127 s; tts first_audio 0,02 s (worker up) vs 2,03 s cold tts_measure.json",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "eou_first_signal.json + voice_launch.json + tts_measure.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "La primera señal de oído cumple <<1,5 s. No confundir con p50 2,18 s del decisor Qwen (09.5.5). TTS cold start 2,03 s es load, no la muestra con worker arriba."
+      },
+      "exitos": [
+        {
+          "piece": "EOU p50 0,21 s",
+          "metrics": "3/3 recognized; máx 0,307 s < bar 1,5 s",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "eou_first_signal.json",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Usar first_signal_latency.json del router como métrica de oído",
+          "metrics": "artifacts/product/first_signal_latency.json es el camino modelo, no VAD/STT",
+          "hardware": "esta máquina Goal 03",
+          "corpus": "evidence_assets first_signal_latency.json",
+          "kind": "benchmark"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-468-baxy-01-src-baxy_mind-voice.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "evidence_assets-086-baxy-baxy_art_product-11-artifacts-product-first_signal_latency.json", "batch_id": "evidence_assets-086-baxy-baxy_art_product"},
+        {"card_id": "code_tests-350-probando_gemma4-pg4_voice-01-gemma4_agent-voice-parakeet_stt.py", "batch_id": "code_tests-350-probando_gemma4-pg4_voice"}
+      ]
+    },
+    {
+      "id": "barge_in",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "No medido.",
+        "probando_gemma4": "Diseño: 17 chunks ~500 ms a 30 ms; umbral de barge en THINKING/SPEAKING; false-positive resilience.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "VoiceEngine barge_frames>=3 emite barge_in; TTS cancel() corta a media frase.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "TTS cancel mid-utterance + barge-in del mic mientras habla",
+        "source": "Goal 09 NeuralSpeechOutput.cancel + VoiceEngine barge_frames",
+        "metrics": "tts cancelled_mid_utterance=true; voice_launch 2/2 spoke=true cancelled=true",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "artifacts/goal09/tts_measure.json + voice_launch.json n=2",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "mismo: barge-in corta a media frase; no se rehízo el bucle",
+        "metrics": "2/2 launch cancel; tts_measure cancelled_mid_utterance true",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "voice_launch.json + tts_measure.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Barge-in de producto está medido. El diseño PG4 de 500 ms es precedente, no un segundo controlador. No se apilan umbrales."
+      },
+      "exitos": [
+        {
+          "piece": "Launch 2/2 cancel mid-utterance",
+          "metrics": "spoke=true cancelled_mid_utterance=true ambos runs",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "voice_launch.json",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Ignorar audio en THINKING/SPEAKING sin umbral sostenido",
+          "metrics": "Audit PG4: ~5 ms/30 ms callback; 17 chunks ~500 ms como compromiso FP vs latencia",
+          "hardware": "Probando Gemma 4 snapshot",
+          "corpus": "docs-009 design barge-in",
+          "kind": "diseño"
+        }
+      ],
+      "citations": [
+        {"card_id": "docs-009-probando_gemma4-02-documentacion-01_arquitectura-design", "batch_id": "docs-009-probando_gemma4"},
+        {"card_id": "code_tests-468-baxy-01-src-baxy_mind-voice.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "code_tests-468-baxy-03-src-baxy_mind-voice_output.py", "batch_id": "code_tests-468-baxy"}
+      ]
+    },
+    {
+      "id": "audio_ducking",
+      "evidence_kind": "código",
+      "lineage": {
+        "carter": "No.",
+        "probando_gemma4": "test_voice_ducking.py: LISTENING baja volumen; restaura el valor EXACTO; idempotente; no-op sin endpoint; no deja el PC mudo.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "legacy/voice/ducking.py Alexa-style ~20%; src/baxy_mind/voice_aec.py AudioDucker + AEC NLMS.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "AudioDucker reversible + AEC NLMS con loopback WASAPI",
+        "source": "probando_gemma4 test_voice_ducking.py + BAXY voice_aec.py",
+        "metrics": "Degrada honesto: sin loopback AEC=false. Duck/restore en start/stop captura. Capacidades exponen ducking=pycaw available.",
+        "hardware": "Windows WASAPI/pycaw",
+        "corpus": "unit tests test_voice_ducking.py; código voice_aec.py",
+        "kind": "código"
+      },
+      "current_goal09": {
+        "piece": "VoiceEngine._ducker = AudioDucker(); captura llama duck()/restore(); AEC en el mismo frontend",
+        "metrics": "No hay prueba física Goal 09 de dB bajados; el contrato es código+degradación honesta. Goal 09 closeout lista AEC/ducking como heredado no reescrito.",
+        "hardware": "Windows 2026-08-23",
+        "corpus": "documentacion/herencia/09_VOZ.md; src/baxy_mind/voice.py",
+        "kind": "código"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Ducking ya está en el sidecar. Falta una prueba física de dB, no un segundo ducker. No se simula AEC si no hay loopback."
+      },
+      "exitos": [
+        {
+          "piece": "Contrato restore-exact / no mudo",
+          "metrics": "test_voice_ducking: restaura valor exacto, robusto ante fallo, idempotente, no-op sin endpoint",
+          "hardware": "Windows · Probando Gemma 4 tests",
+          "corpus": "gemma4_agent/tests/test_voice_ducking.py",
+          "kind": "código"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "AEC que afirma works sin captura",
+          "metrics": "_aec_check_capture.py pregunta si hay voz del usuario en crudo vs cancelado; voice_aec nunca simula AEC",
+          "hardware": "Windows WASAPI",
+          "corpus": "scripts/_diag/_aec_check_capture.py + voice_aec.py",
+          "kind": "código"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-345-probando_gemma4-55-gemma4_agent-tests-test_voice_ducking.py", "batch_id": "code_tests-345-probando_gemma4"},
+        {"card_id": "code_tests-454-baxy-04-legacy-voice-ducking.py", "batch_id": "code_tests-454-baxy"},
+        {"card_id": "code_tests-468-baxy-02-src-baxy_mind-voice_aec.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "code_tests-336-probando_gemma4-57-scripts-_diag-_aec_check_capture.py", "batch_id": "code_tests-336-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "dispositivos",
+      "evidence_kind": "diseño",
+      "lineage": {
+        "carter": "NOT_EXECUTED_FULL_ENV_LIMITATION: no había tools de micrófono ni speaker en el torneo de mayo.",
+        "probando_gemma4": "Captura AEC fase 2; mic real_mic 2026-05-23 para STT.",
+        "functiongemma": "n/a",
+        "baxy_anterior": "WASAPI loopback como referencia de lo que Windows reproduce; mic crudo si no hay loopback.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "WASAPI loopback + mic crudo con reporte honesto de capacidades",
+        "source": "src/baxy_mind/voice_aec.py",
+        "metrics": "Sin backend/endpoint: voz continúa, AEC=false. No simula dispositivo.",
+        "hardware": "Windows WASAPI",
+        "corpus": "voice_aec.py + _aec_check_capture.py",
+        "kind": "código"
+      },
+      "current_goal09": {
+        "piece": "Sidecar Python captura; motores no en .NET; wake/STT/TTS sustituibles sin recompilar",
+        "metrics": "runtime_voice_identity.json engines_in_dotnet=false engines_in_python_sidecar=true. Idle listen 60 s midió RSS, no un mic nuevo.",
+        "hardware": "Windows 2026-08-24 GPU 510/16380 MiB llama-server no corre",
+        "corpus": "artifacts/goal09/runtime_voice_identity.json + idle_listen.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Carter no pudo tornear voz por falta de mic/speaker tools: eso es FALLO_DE_AMBIENTE histórico, no un pass. Goal 09 sí ejecutó en esta máquina. No se afirma que un device ausente works."
+      },
+      "exitos": [
+        {
+          "piece": "Goal 09 launch 2/2 wake+transcribe+speak en esta máquina",
+          "metrics": "wake_detected=true transcripts=['Open notepad please'] spoke=true",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "voice_launch.json",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Torneo Carter STT/TTS como evidencia de dispositivo",
+          "metrics": "faster-whisper RTF ~0,24; Piper ausente; Voz NOT_EXECUTED_FULL_ENV_LIMITATION. No es el stack vigente.",
+          "hardware": "RTX 4060 Ti 16 GB · Windows · 2026-05-02 · faster-whisper CPU sin cuBLAS 12",
+          "corpus": "docs-001-carter voz-vision-andamiaje-no-torneo",
+          "kind": "diseño"
+        }
+      ],
+      "citations": [
+        {"card_id": "voz-vision-andamiaje-no-torneo", "batch_id": "docs-001-carter"},
+        {"card_id": "code_tests-468-baxy-02-src-baxy_mind-voice_aec.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "code_tests-336-probando_gemma4-57-scripts-_diag-_aec_check_capture.py", "batch_id": "code_tests-336-probando_gemma4"}
+      ]
+    },
+    {
+      "id": "modelos_assets",
+      "evidence_kind": "asset",
+      "lineage": {
+        "carter": "Piper no en PATH; faster-whisper tiny.",
+        "probando_gemma4": "Parakeet int8 bundle; LiveKit 3 ONNX; data/ ~39 GiB disperso; models/ ~17 GiB GGUF vacío en snapshot.",
+        "functiongemma": "speech_model/mmproj-Q8_0.gguf inventariado; no es STT/TTS/wake de producto.",
+        "baxy_anterior": "Manifiesto SHA wake/STT/TTS; Qwen-ASR GGUF en disco no adoptado.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Manifiesto runtime: nombre+SHA-256 de wake, STT, TTS",
+        "source": "R281 + Goal 09 runtime_voice_identity / assets",
+        "metrics": "stt_dir sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8 SHA 5a70e086…; tts es_MX-claude-high.onnx SHA 3ef40a71…; wake baxy.onnx SHA 9b1ae5db… manifiesto fefb9517…",
+        "hardware": "Windows · %LOCALAPPDATA% BAXYRuntime assets",
+        "corpus": "artifacts/goal09/runtime_voice_identity.json + goal09_measure.json",
+        "kind": "asset"
+      },
+      "current_goal09": {
+        "piece": "mismos hashes; sustituir = fichero + SHA sin recompilar App; sidecar único (no 3× llama-server)",
+        "metrics": "engines_in_python_sidecar=true substitutable_without_recompile=true. Qwen3-ASR-0.6B GGUF ~1 GB en disco no adoptado.",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "runtime_voice_identity.json; 09_VOZ.md",
+        "kind": "asset"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Blobs pesados de Probando Gemma 4 (pg4-gguf-models, datasets, checkpoints) tienen hashes not invented. No se necesitan para cerrar 09.5.6. Si 09.5.9 los nombra, 09.5.10 FALLO_DE_AMBIENTE."
+      },
+      "exitos": [
+        {
+          "piece": "Parakeet+Piper+baxy.onnx con SHA en manifiesto",
+          "metrics": "5a70e086… / 3ef40a71… / 9b1ae5db…",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "runtime_voice_identity.json + goal09_measure.json",
+          "kind": "asset"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "FunctionGemma mmproj-Q8_0.gguf como oído/voz",
+          "metrics": "binario inventariado; existence is not works; no es Parakeet ni Piper",
+          "hardware": "FunctionGemma snapshot 09.5.0",
+          "corpus": "evidence_assets-032 speech_model/mmproj-Q8_0.gguf",
+          "kind": "asset"
+        },
+        {
+          "piece": "Inventar hashes de pg4-training-datasets / pg4-gguf-models",
+          "metrics": "individual_hashes=not invented; datasets 1354 files remain of ~39 GiB; gguf models empty dir 0 files",
+          "hardware": "snapshot 09.5.0",
+          "corpus": "artifacts/goal095/extract/_09510_requirements.json",
+          "kind": "asset"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-468-baxy-06-src-baxy_mind-wakeword.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "evidence_assets-032-functiongemma-70-speech_model-mmproj-Q8_0.gguf", "batch_id": "evidence_assets-032-functiongemma"},
+        {"card_id": "code_tests-436-baxy-04-legacy-models-qwen_asr.py", "batch_id": "code_tests-436-baxy"}
+      ]
+    },
+    {
+      "id": "latencia",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "faster-whisper transcribe 480 ms RTF ~0,24 (tone 2 s).",
+        "probando_gemma4": "Parakeet p50 71 ms vs Whisper 1570 ms; RTF 0,065–0,087 Goal 01.",
+        "functiongemma": "0,11–0,23 s/decisión — no es STT.",
+        "baxy_anterior": "Qwen-ASR p95 5,6–9,1 s rechazado. Goal 09 STT p50 0,20 s EOU 0,21 s TTS 0,02 s.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Parakeet CPU p50 71 ms (voz real) / Goal 09 p50 0,20 s decode",
+        "source": "probando_gemma4 parakeet_stt.py + Goal 09 stt_holdout",
+        "metrics": "71 ms vs Whisper 1570 ms (n=84 RED); Goal 09 p50 0,203 s máx 0,513 s; EOU p50 0,205 s; wake p50_wall 0,117 s",
+        "hardware": "Windows CPU",
+        "corpus": "RED n=84; stt_holdout n=3; wake_holdout n=12",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "STT p50 0,20 s; EOU p50 0,21 s; TTS first 0,02 s; wake p50 0,12 s",
+        "metrics": "Todos bajo 1,5 s de oído. No se compara con p90 3,02 s del LLM.",
+        "hardware": "Windows CPU 2026-08-24",
+        "corpus": "stt_holdout.json eou_first_signal.json tts_measure.json wake_holdout.json",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Latencia de oído/voz cumple. Qwen-ASR p95>2 s es evidencia en contra de swap. No hay hueco que un motor más pesado cierre."
+      },
+      "exitos": [
+        {
+          "piece": "Parakeet 20× vs Whisper-small",
+          "metrics": "p50 71 ms vs 1570 ms; RTF 0,065–0,087 Goal 01",
+          "hardware": "Windows CPU 2026-05-23 / 2026-08-16",
+          "corpus": "RED n=84; clip 18,7 s ES",
+          "kind": "benchmark"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Qwen3-ASR latencia de producto",
+          "metrics": "audio arena p95 5,608 s; minds14 p95 9,092 s (bars 2,0 / 1,5 s)",
+          "hardware": "CPU 8 threads 2026-08-11",
+          "corpus": "arena n=12 minds14 n=84",
+          "kind": "benchmark"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-350-probando_gemma4-pg4_voice-01-gemma4_agent-voice-parakeet_stt.py", "batch_id": "code_tests-350-probando_gemma4-pg4_voice"},
+        {"card_id": "code_tests-408-baxy-17-experiments-stt_quality-evaluate_qwen3_asr_onnx_development.", "batch_id": "code_tests-408-baxy"},
+        {"card_id": "voz-vision-andamiaje-no-torneo", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "recursos",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "faster-whisper CPU; llava 7b 13175 MiB (visión, no voz).",
+        "probando_gemma4": "_measure_parakeet_ram.py proceso efímero; STT ~640 MB CPU citado en mapa Goal 01; wake 3,3 MB.",
+        "functiongemma": "278 MB Q8_0 — selector, no STT.",
+        "baxy_anterior": "Idle listen 60 s RSS 1088 MB; GPU 510/16380; llama-server no corre; STT/TTS CPU.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Idle listen always-on: RSS ~1088 MB, decisor VRAM intacta",
+        "source": "Goal 09 idle_listen.json",
+        "metrics": "60,016 s rss_mb=1087,8 peak=1087,9; gpu nvidia-smi 510,16380 MiB; llama_server_running=false; stt_on_cpu=true tts_on_cpu=true decisor_vram_untouched=true",
+        "hardware": "Windows · GPU 16 GB (16380 MiB) · 2026-08-24",
+        "corpus": "artifacts/goal09/idle_listen.json 59 samples",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "mismo idle; Qwen-ASR RSS pico 2,71 GiB sería capa extra sobre los 1088 MB",
+        "metrics": "1088 MB RSS wake on; Qwen-ASR minds14 peakRssBytesObserved=2711912448 (~2,53 GiB) además del idle",
+        "hardware": "Windows 2026-08-24 / 2026-08-11",
+        "corpus": "idle_listen.json + stt_qwen3_asr verdict",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "Presupuesto de oído cabe en CPU y no toca los 4 GiB del decisor. Un STT extra (Qwen-ASR 2,7 GiB RSS) viola ley 4 de facto al apilar. No se adopta."
+      },
+      "exitos": [
+        {
+          "piece": "Idle 60 s 1088 MB RSS, GPU libre",
+          "metrics": "rss 1087,8 MB; llama-server false; GPU 510/16380",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "idle_listen.json",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Qwen-ASR RSS 2,71 GiB como sidecar adicional",
+          "metrics": "peakRssBytesObserved=2711912448; Goal 09: competiría por RAM",
+          "hardware": "CPU 8 threads 2026-08-11",
+          "corpus": "minds14 qwen3 asr runtime",
+          "kind": "benchmark"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-340-probando_gemma4-pg4_scripts-95-scripts-_measure_parakeet_ram.py", "batch_id": "code_tests-340-probando_gemma4-pg4_scripts"},
+        {"card_id": "code_tests-408-baxy-17-experiments-stt_quality-evaluate_qwen3_asr_onnx_development.", "batch_id": "code_tests-408-baxy"},
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"}
+      ]
+    },
+    {
+      "id": "presencia",
+      "evidence_kind": "prueba_fisica",
+      "lineage": {
+        "carter": "No hay always-on medido.",
+        "probando_gemma4": "Pipeline wake continuo; accesibilidad no_vidente persistida en ~/.gemma4 (Goal 01).",
+        "functiongemma": "n/a",
+        "baxy_anterior": "wake_on_start vía BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED; VoiceListenCommand apaga.",
+        "schemas": "n/a"
+      },
+      "best_historical": {
+        "piece": "Escucha permanente por identidad, no por promoción FAR 0,1/h",
+        "source": "Goal 09 idle_listen + costuras wake_on_start",
+        "metrics": "always_on_listen=true; 60 s wake on RSS 1088 MB; interruptor visible VoiceListenCommand. calibration.approved sigue false.",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "idle_listen.json; documentacion/03_COSTURAS.md wake row; APLAZADOS FAR",
+        "kind": "prueba_fisica"
+      },
+      "current_goal09": {
+        "piece": "wake_on_start true por costura explícita; hash publicado aunque escucha apagada en runtime_voice_identity (wake_manifest null en ese snapshot de identidad de motores)",
+        "metrics": "Idle 60 s wake started; runtime_voice_identity wake_on_start=false es el manifiesto de motores, no el flag de producto. Costura BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED=1.",
+        "hardware": "Windows 2026-08-24",
+        "corpus": "idle_listen.json + runtime_voice_identity.json + 09_VOZ.md",
+        "kind": "prueba_fisica"
+      },
+      "gap": {
+        "proven": true,
+        "reopen_goal09": false,
+        "text": "BAXY permanece disponible al arrancar. El hueco es FAR, no la presencia. No se apaga la escucha para 'cerrar' el listón 0,1/h ni se promociona calibration.approved."
+      },
+      "exitos": [
+        {
+          "piece": "Idle listen 60 s always-on",
+          "metrics": "wake_started=true always_on_listen=true rss~1088 MB llama-server off",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "idle_listen.json 60,016 s",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "rechazos": [
+        {
+          "piece": "Promocionar umbral 0,5 porque identidad pide always-on",
+          "metrics": "FAR 2,50/h upper 5,26/h; listón 0,1/h no cumplido; calibration.approved false a propósito",
+          "hardware": "Windows 2026-08-24",
+          "corpus": "wake_far.json + APLAZADOS",
+          "kind": "prueba_fisica"
+        }
+      ],
+      "citations": [
+        {"card_id": "code_tests-468-baxy-01-src-baxy_mind-voice.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "code_tests-468-baxy-06-src-baxy_mind-wakeword.py", "batch_id": "code_tests-468-baxy"},
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "baxy.goal095.0956-ledger.v1",
+  "batch_id": "synthesis-09.5.6",
+  "kind": "synthesis",
+  "status": "complete",
+  "goal": "09.5.6",
+  "closed_utc": "2026-08-31T18:00:00Z",
+  "synthesis_ref": "artifacts/goal095/synthesis/09.5.6_voz_audio_presencia.v1.json",
+  "markdown_ref": "documentacion/herencia/09_5_6_SINTESIS_VOZ.md",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + Goal 09 closeout + _09510_requirements.json",
+  "campaigns_remain_closed": {
+    "docs": "25/25 pending=0 claimed=0",
+    "code_tests": "477/477 pending=0 claimed=0",
+    "evidence_assets": "132/132 pending=0 claimed=0"
+  },
+  "languages_in_scope": ["es", "en", "spanglish"],
+  "english_app_names_in_spanish_count_as_spanglish": true,
+  "other_languages_create_work": false,
+  "live_weights_changed": false,
+  "goal09_reopened": false,
+  "qwen_asr_silenced": false,
+  "gemma_native_audio_silenced": false,
+  "transplants": [],
+  "fallo_de_ambiente": [],
+  "next_prompt": "documentacion/sprints/09.5.7_TOOLS_SKILLS_MISIONES.md"
+}

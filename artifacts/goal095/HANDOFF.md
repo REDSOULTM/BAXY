@@ -1,44 +1,45 @@
-# Handoff — 09.5.5 modelos/router/idiomas — 2026-08-31
+# Handoff — 09.5.6 voz/audio/presencia — 2026-08-31
 
 ## Objetivo
-Comparar evidencia heredada de modelos de habla/decisión, cuantizaciones, routers, schemas y corpora ES/EN/spanglish, y nombrar qué reabrir antes del Goal 10.
+Combinar la mejor evidencia del linaje sobre escuchar, transcribir, despertar,
+interrumpir, hablar y permanecer disponible, comparándola con el cierre del Goal 09.
 
 ## Estado
-Hecho: síntesis 09.5.5 cerrada. Campañas 09.5.2–09.5.4 siguen pending=0 claimed=0.
-En curso: nada de 09.5.5.
-Sin empezar: `09.5.6_VOZ_AUDIO_PRESENCIA.md`.
+Hecho: síntesis 09.5.6 cerrada. Campañas 09.5.2–09.5.4 siguen pending=0 claimed=0.
+En curso: nada de 09.5.6.
+Sin empezar: `09.5.7_TOOLS_SKILLS_MISIONES.md`.
 
 ## Decisiones tomadas
-- Conservar Qwen3-4B-Q4_K_M, Q4_K_M, llama.cpp b9980, e5-small, puerta léxica, catálogo tipado 169, verificador de hoja Qwen. Cero `reemplazar_candidato`. Cero torneo nuevo.
-- FunctionGemma: no conversa (0/3, 0/4); catálogo cocido en pesos; primer split abstención 0/3. No es hablante ni selector mientras cueza nombres.
-- Gemma-4-E2B ya perdió Goal 03 (63 vs 82 cruda). E4B/26B/31B: no comparable; GGUF `pg4-gguf-models` ausente, hashes not invented.
-- MiniLM/Tool2Vec 0.9521 es granularidad 31, no 169 ops.
-- pt/fr/de/it no crean trabajo. Qwen-VL → 09.5.7/08; Qwen-ASR → 09.5.6.
-- Pesos vivos / encoder / manifiestos: no se tocaron.
+- Conservar Parakeet int8, `baxy.onnx` umbral 0,5, Piper `es_MX-claude-high`, Silero, AEC/ducking, barge-in, always-on por costura. Cero trasplantes.
+- FAR 2,50/h (upper 5,26/h) vs 0,1/h se registra; no se retoca el umbral ni `calibration.approved`.
+- Qwen-ASR: rechazo medido (recall 0,889, p95 5,61 s, RSS 2,71 GiB). Gemma native audio: API no lista. No se silencian.
+- pt/fr/de/it y wake 13 lenguas no crean trabajo. Nombres de apps en inglés = spanglish.
+- Pesos/manifiestos vivos: no se tocaron. Goal 09 no se reabre.
 
 ## Archivos tocados
-- `artifacts/goal095/synthesis/09.5.5_modelos_router_idiomas.v1.json`
-- `artifacts/goal095/ledger/synthesis-09.5.5.json`
-- `documentacion/herencia/09_5_5_SINTESIS_MODELOS.md`
+- `artifacts/goal095/synthesis/09.5.6_voz_audio_presencia.v1.json`
+- `artifacts/goal095/ledger/synthesis-09.5.6.json`
+- `documentacion/herencia/09_5_6_SINTESIS_VOZ.md`
 - `documentacion/herencia/09_5_COBERTURA.md`
-- `scripts/goal095_0955_synthesis.py` + `tests/test_goal095_0955_synthesis.py`
-- `artifacts/goal095/campaigns/evidence_assets.json` y `ledger/evidence_assets-132-*.json` `next_prompt` → 09.5.6
+- `scripts/goal095_0956_synthesis.py` + `tests/test_goal095_0956_synthesis.py`
+- `artifacts/goal095/campaigns/evidence_assets.json` y `ledger/evidence_assets-132-*.json` `next_prompt` → 09.5.7
 
 ## Archivos relevantes aun sin tocar
-- `documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md` — siguiente prompt humano
+- `documentacion/sprints/09.5.7_TOOLS_SKILLS_MISIONES.md` — siguiente prompt humano
 
 ## Hipotesis
-Confirmadas: recinto 25/25, 477/477, 132/132 pending=0. Qwen vigente sin evidencia nueva comparable en contra. FunctionGemma fallos en tarjetas, no folklore.
-Descartadas: «E4B/26B/hermes3/FG 88.3% autorizan swap» — no comparable o ley 4 o catálogo cocido. «Falta relanzar 09.5.5».
+Confirmadas: recinto 25/25, 477/477, 132/132 pending=0. Parakeet/Piper/baxy.onnx vigentes. FAR hueco real.
+Descartadas: «HyperSpotter/Qwen-ASR/Gemma-audio cierran Goal 09» — métricas en contra o no comparable. «Falta relanzar 09.5.2–09.5.5».
 
 ## Comandos ejecutados y resultado
-- `py -3.12 scripts/_goal095_validate_evidence_campaign.py` → pending=0 claimed=0 complete=132 relaunch_09_5_4=0 next_human=09.5.6
+- `py -3.12 -m pytest tests/test_goal095_0956_synthesis.py tests/test_goal095_0955_synthesis.py tests/test_goal095_evidence_ledger.py tests/test_goal095_docs_ledger.py tests/test_goal095_code_ledger.py -q` → 36 passed, 0 skip, 0 failed
+- `py -3.12 scripts/_goal095_validate_evidence_campaign.py` → pending=0 claimed=0 complete=132 relaunch_09_5_4=0 next_human=09.5.7
 - `py -3.12 scripts/_goal095_validate_docs_campaign.py` → 25/25 pending=0
 - `py -3.12 scripts/_goal095_validate_code_campaign.py` → 477/477 pending=0
-- `py -3.12 -m pytest tests/test_goal095_0955_synthesis.py tests/test_goal095_evidence_ledger.py tests/test_goal095_docs_ledger.py tests/test_goal095_code_ledger.py -q` → 32 passed, 0 skip
+- No ejecutado: `.\scripts\test_source_quality.ps1 -Mode Full` — no es cierre de esta síntesis
 
 ## Problemas pendientes
-Ninguno de 09.5.5. Siguiente humano: 09.5.6.
+Ninguno de 09.5.6. Siguiente humano: 09.5.7.
 
 ## Siguiente accion recomendada
-Pegar `documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md` (sesión nueva, /goal). No relanzar 09.5.5.
+Pegar `documentacion/sprints/09.5.7_TOOLS_SKILLS_MISIONES.md` (sesión nueva, /goal). No relanzar 09.5.2–09.5.6.

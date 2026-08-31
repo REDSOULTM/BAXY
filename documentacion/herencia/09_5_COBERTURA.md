@@ -117,8 +117,8 @@ Campana `evidence_assets` (09.5.4, 2026-08-31):
 - Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
 - Smoke contemporaneo omitido; resultados recuperados
 - Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
-- `next_human_prompt`: `09.5.6_VOZ_AUDIO_PRESENCIA.md` (09.5.5 cerrado)
-- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md`
+- `next_human_prompt`: `09.5.7_TOOLS_SKILLS_MISIONES.md` (09.5.6 cerrado)
+- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md`
 
 Síntesis 09.5.5 (2026-08-31):
 
@@ -129,7 +129,14 @@ Síntesis 09.5.5 (2026-08-31):
 - GGUF dispersos de Probando Gemma 4: `_09510_requirements.json`, hashes not invented.
 - Artefacto: `artifacts/goal095/synthesis/09.5.5_modelos_router_idiomas.v1.json`
 
+Síntesis 09.5.6 (2026-08-31):
+
+- **25/25 + 477/477 + 132/132** siguen `pending=0` `claimed=0`. No relanzar 09.5.2–09.5.5.
+- 16/16 subáreas con mejor pieza, estado Goal 09 y hueco. Cero trasplantes.
+- FAR 2,50/h (upper 5,26/h) registrado; umbral 0,5 no se toca. Qwen-ASR y Gemma-native-audio no se silencian.
+- Artefacto: `artifacts/goal095/synthesis/09.5.6_voz_audio_presencia.v1.json`
+
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md`.
-No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4 ni 09.5.5.
+Prompt humano distinto: `documentacion/sprints/09.5.7_TOOLS_SKILLS_MISIONES.md`.
+No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5 ni 09.5.6.
