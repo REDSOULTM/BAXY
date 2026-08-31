@@ -20,6 +20,9 @@ SYNTHESIS_REL = "artifacts/goal095/synthesis/09.5.9_decidir_herencia.v1.json"
 ASSIGNMENT_REL = "artifacts/goal095/synthesis/09.5.9_card_assignment.v1.json"
 CAMPAIGN_REL = "artifacts/goal095/campaigns/transplant.json"
 LEDGER_REL = "artifacts/goal095/ledger/synthesis-09.5.9.json"
+LEDGER_09510_REL = "artifacts/goal095/ledger/transplant-09.5.10.json"
+HANDOFF_REL = "artifacts/goal095/HANDOFF.md"
+MARKDOWN_09510_REL = "documentacion/herencia/09_5_10_TRASPLANTAR.md"
 REQUIREMENTS_REL = "artifacts/goal095/extract/_09510_requirements.json"
 SYNTHESIS_0955 = "artifacts/goal095/synthesis/09.5.5_modelos_router_idiomas.v1.json"
 SYNTHESIS_0956 = "artifacts/goal095/synthesis/09.5.6_voz_audio_presencia.v1.json"
@@ -102,6 +105,10 @@ def synthesis_ledger_path(repo: Path = REPO) -> Path:
     return repo / LEDGER_REL
 
 
+def transplant_ledger_path(repo: Path = REPO) -> Path:
+    return repo / LEDGER_09510_REL
+
+
 def load_matrix(repo: Path = REPO) -> dict[str, Any]:
     path = matrix_path(repo)
     if not path.is_file():
@@ -121,6 +128,68 @@ def load_campaign(repo: Path = REPO) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(path)
     return load_json(path)
+
+
+def load_transplant_ledger(repo: Path = REPO) -> dict[str, Any]:
+    path = transplant_ledger_path(repo)
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    return load_json(path)
+
+
+def campaign_is_drained(campaign: dict[str, Any]) -> bool:
+    counts = campaign_counts(campaign)
+    return counts["pending"] == 0 and counts["claimed"] == 0
+
+
+def closeout_next_human_prompt(campaign: dict[str, Any]) -> str:
+    """Empty-queue and last-lot closeout share this pointer.
+
+    A drained campaign (pending=0, claimed=0) names 09.5.11A. A live
+    campaign keeps 09.5.10 as the owner prompt to resume, never as a
+    second human launch.
+    """
+    if campaign_is_drained(campaign):
+        return REVALIDATE_PROMPT
+    return TRANSPLANT_PROMPT
+
+
+def apply_transplant_closeout(
+    campaign: dict[str, Any],
+    *,
+    updated_utc: str,
+) -> dict[str, Any]:
+    """Return campaign accounting after drain. Does not touch src/."""
+    out = json.loads(json.dumps(campaign))
+    lots = list(out.get("lots") or [])
+    out["lots"] = lots
+    counts = campaign_counts(out)
+    out["counts"] = {
+        "pending": counts["pending"],
+        "claimed": counts["claimed"],
+        "complete": counts["complete"],
+        "total": len(lots),
+    }
+    out["required_human_launches"] = 1
+    out["owner_prompt"] = TRANSPLANT_PROMPT
+    out["next_human_prompt"] = closeout_next_human_prompt(out)
+    if campaign_is_drained(out):
+        out["cursor_status"] = "complete"
+        out["cursor_batch_id"] = None
+    out["updated_utc"] = updated_utc
+    return out
+
+
+def index_orphan_transplant_claims(repo: Path = REPO) -> list[str]:
+    claims_dir = repo / "artifacts" / "goal095" / "claims"
+    if not claims_dir.is_dir():
+        return []
+    orphans: list[str] = []
+    for path in sorted(claims_dir.glob("transplant*.json")):
+        rec = load_json(path)
+        if rec.get("status") == "claimed":
+            orphans.append(path.name)
+    return orphans
 
 
 def index_audit_card_ids(repo: Path = REPO) -> set[str]:
@@ -384,6 +453,8 @@ def validate_matrix(
 def validate_campaign(
     campaign: dict[str, Any],
     matrix: dict[str, Any],
+    *,
+    repo: Path | None = None,
 ) -> list[str]:
     errors: list[str] = []
     if campaign.get("schema") != CAMPAIGN_SCHEMA:
@@ -392,6 +463,11 @@ def validate_campaign(
         errors.append("campaign_id is not transplant")
     if campaign.get("kind") != "transplant":
         errors.append("kind is not transplant")
+    if campaign.get("required_human_launches") != 1:
+        errors.append("required_human_launches")
+    owner = str(campaign.get("owner_prompt") or "")
+    if owner != TRANSPLANT_PROMPT:
+        errors.append(f"owner_prompt={owner}")
     expected = lots_from_matrix(matrix)
     expected_ids = [lot["responsibility_id"] for lot in expected]
     lots = campaign.get("lots") or []
@@ -416,12 +492,18 @@ def validate_campaign(
     if order_ids != sorted_ids:
         errors.append("lots not ordered by dependencia/valor")
     protected = set(PROTECTED_REJECTS)
+    drained = campaign_is_drained(campaign)
     for lot in lots:
         rid = str(lot.get("responsibility_id") or "")
         if rid in protected:
             errors.append(f"protected reject {rid} re-entered transplant queue")
         if lot.get("status") not in {"pending", "claimed", "complete"}:
             errors.append(f"{rid}: lot status {lot.get('status')!r}")
+        if drained and lot.get("status") != "complete":
+            errors.append(f"{rid}: drained campaign lot not complete")
+        if drained and lot.get("status") == "complete":
+            if not str(lot.get("terminal") or "").strip():
+                errors.append(f"{rid}: complete lot missing terminal")
         if str(lot.get("decision") or "") in REUSE_ADAPT:
             if not str(lot.get("pieza_que_se_retira") or "").strip():
                 errors.append(f"{rid}: lot missing pieza_que_se_retira")
@@ -429,10 +511,62 @@ def validate_campaign(
         if str(lot.get("decision") or "") in REUSE_ADAPT and tokens is not None and tokens >= BATCH_CAP:
             errors.append(f"{rid}: lot transplant_batch {tokens} >= {BATCH_CAP}")
     next_human = str(campaign.get("next_human_prompt") or "")
-    if next_human not in ALLOWED_NEXT:
-        errors.append(f"campaign next_human_prompt={next_human}")
+    expected_next = closeout_next_human_prompt(campaign)
+    if next_human != expected_next:
+        errors.append(f"campaign next_human_prompt={next_human} expected {expected_next}")
     if DECIDE_PROMPT in next_human:
         errors.append("campaign remits to 09.5.9")
+    if drained and TRANSPLANT_PROMPT in next_human:
+        errors.append("campaign remits to 09.5.10")
     if counts["claimed"] and not lots:
         errors.append("orphan claimed lots on empty campaign")
+    if repo is not None:
+        orphans = index_orphan_transplant_claims(repo)
+        if orphans:
+            errors.append(f"orphan claimed {orphans[:8]}")
+    return errors
+
+
+def validate_transplant_closeout(
+    campaign: dict[str, Any],
+    matrix: dict[str, Any],
+    *,
+    repo: Path = REPO,
+) -> list[str]:
+    """09.5.10 terminal: drained campaign, next is 11A, no self-remit."""
+    errors = validate_campaign(campaign, matrix, repo=repo)
+    if str(matrix.get("next_human_prompt") or "") != closeout_next_human_prompt(campaign):
+        if campaign_is_drained(campaign):
+            errors.append(
+                f"matrix next_human_prompt={matrix.get('next_human_prompt')} "
+                f"expected {REVALIDATE_PROMPT}"
+            )
+    ledger_path = transplant_ledger_path(repo)
+    if not ledger_path.is_file():
+        errors.append("missing transplant-09.5.10 ledger")
+    else:
+        ledger = load_json(ledger_path)
+        next_prompt = str(ledger.get("next_prompt") or "")
+        if next_prompt != REVALIDATE_PROMPT:
+            errors.append(f"ledger next_prompt={next_prompt}")
+        if TRANSPLANT_PROMPT in next_prompt:
+            errors.append("ledger remits to 09.5.10")
+        if ledger.get("status") != "complete":
+            errors.append(f"ledger status={ledger.get('status')}")
+        raw = ledger_path.read_text(encoding="utf-8").casefold()
+        if "c:\\users\\" in raw or "d:\\perfil\\" in raw:
+            errors.append("ledger contains absolute personal path")
+    handoff = repo / HANDOFF_REL
+    if not handoff.is_file():
+        errors.append("missing HANDOFF.md")
+    else:
+        text = handoff.read_text(encoding="utf-8")
+        if REVALIDATE_PROMPT not in text.replace("\\", "/"):
+            errors.append("handoff does not name 09.5.11A")
+        siguiente = text
+        marker = "## Siguiente accion recomendada"
+        if marker in text:
+            siguiente = text.split(marker, 1)[1]
+        if "09.5.10_TRASPLANTAR_LOTE.md" in siguiente.replace("\\", "/"):
+            errors.append("handoff next remits to 09.5.10")
     return errors

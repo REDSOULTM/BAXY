@@ -7,8 +7,8 @@ Asignación 1:1 de las 9.268 tarjetas 09.5.2–09.5.4:
 Campaña:
 [`artifacts/goal095/campaigns/transplant.json`](../../artifacts/goal095/campaigns/transplant.json).
 
-Siguiente (esta misma meta ejecuta 09.5.10 una vez):
-[`../sprints/09.5.10_TRASPLANTAR_LOTE.md`](../sprints/09.5.10_TRASPLANTAR_LOTE.md).
+09.5.10 ejecutó la campaña `transplant` (cola vacía). Siguiente prompt humano:
+[`../sprints/09.5.11A_REVALIDAR_01_03C.md`](../sprints/09.5.11A_REVALIDAR_01_03C.md).
 
 Inventario desde tarjetas 09.5.2–09.5.4 y síntesis 09.5.5–09.5.8. No se leyeron
 cuerpos de `biblioteca/` ni se recorrieron árboles fuente.

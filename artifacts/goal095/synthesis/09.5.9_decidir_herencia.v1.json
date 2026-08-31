@@ -3,7 +3,7 @@
   "goal": "09.5.9",
   "closed_utc": "2026-08-31T20:00:00Z",
   "inventory_source": "artifacts/goal095/ledger/*.json cards 09.5.2–09.5.4 + synthesis 09.5.5–09.5.8 JSON; no biblioteca bodies; no source-tree walk",
-  "next_human_prompt": "documentacion/sprints/09.5.10_TRASPLANTAR_LOTE.md",
+  "next_human_prompt": "documentacion/sprints/09.5.11A_REVALIDAR_01_03C.md",
   "terminals": [
     "reusar_exacto",
     "adaptar",

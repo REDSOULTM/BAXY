@@ -117,7 +117,7 @@ Campana `evidence_assets` (09.5.4, 2026-08-31):
 - Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
 - Smoke contemporaneo omitido; resultados recuperados
 - Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
-- `next_human_prompt`: `09.5.10_TRASPLANTAR_LOTE.md` (09.5.9 cerrado; 09.5.10 se ejecuta bajo la misma meta)
+- `next_human_prompt`: `09.5.11A_REVALIDAR_01_03C.md` (09.5.10 cerrado; cola transplant vacía)
 - Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md` ni a `09.5.6_VOZ_AUDIO_PRESENCIA.md` ni a `09.5.7_TOOLS_SKILLS_MISIONES.md` ni a `09.5.8_RUNTIME_UI_RECURSOS.md`
 
 Síntesis 09.5.5 (2026-08-31):
@@ -158,7 +158,17 @@ Síntesis 09.5.9 (2026-08-31):
 - Rechazos protegidos: FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído.
 - Artefacto: `artifacts/goal095/synthesis/09.5.9_decidir_herencia.v1.json`
 
+Campaña `transplant` (09.5.10, 2026-08-31):
+
+- **0/0 complete**, pending 0, claimed 0. Cero claims huérfanas. `required_human_launches=1`.
+- Empty-queue closeout: misma función que el último lote (`apply_transplant_closeout`).
+- Cero `src/` tocado. Cero FALLO_DE_AMBIENTE (blobs dispersos no reutilizados; hashes not invented).
+- Cursor: `artifacts/goal095/campaigns/transplant.json`
+- `next_human_prompt`: `09.5.11A_REVALIDAR_01_03C.md`
+- Cero salida remite a `09.5.10_TRASPLANTAR_LOTE.md`
+- Artefacto: `artifacts/goal095/ledger/transplant-09.5.10.json`
+
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.10_TRASPLANTAR_LOTE.md` (esta meta lo ejecuta una vez).
-No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6, 09.5.7, 09.5.8 ni 09.5.9.
+Prompt humano distinto: `documentacion/sprints/09.5.11A_REVALIDAR_01_03C.md`.
+No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4, 09.5.5, 09.5.6, 09.5.7, 09.5.8, 09.5.9 ni 09.5.10.
