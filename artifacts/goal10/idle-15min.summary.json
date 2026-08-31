@@ -1,0 +1,55 @@
+{
+  "elapsed_s": 904.296,
+  "listen_start": true,
+  "listen_end": true,
+  "ready_start": true,
+  "ready_end": true,
+  "first_wake_start": null,
+  "first_wake_end": null,
+  "nvidia_start": {
+    "memory_used_mib": 4132,
+    "memory_total_mib": 6144,
+    "utilization_pct": 38
+  },
+  "nvidia_end": {
+    "memory_used_mib": 991,
+    "memory_total_mib": 6144,
+    "utilization_pct": 18
+  },
+  "totals_start": {
+    "n": 13,
+    "ws": 3726995456,
+    "handles": 4971,
+    "vram": 0,
+    "cpu": 109.71875,
+    "names": [
+      "Baxy",
+      "baxy-core",
+      "conhost",
+      "llama-server",
+      "msedgewebview2",
+      "python"
+    ]
+  },
+  "totals_end": {
+    "n": 13,
+    "ws": 3951976448,
+    "handles": 4935,
+    "vram": 0,
+    "cpu": 749.875,
+    "names": [
+      "Baxy",
+      "baxy-core",
+      "conhost",
+      "llama-server",
+      "msedgewebview2",
+      "python"
+    ]
+  },
+  "working_set_delta": 224980992,
+  "handle_delta": -36,
+  "published_n": 39,
+  "monotonic_working_set": false,
+  "gpu_used_delta_mib": -3141,
+  "ceiling_4gib_adapter": true
+}

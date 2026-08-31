@@ -1,0 +1,228 @@
+{
+  "label": "launch",
+  "utc": "2026-08-31T21:31:29.840238+00:00",
+  "tray_hwnd": 593122,
+  "autostart": "\"D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe\" --from-windows-start",
+  "status": {
+    "schema": "baxy-presence-status-v1",
+    "utc": "2026-08-31T21:31:30.2203826+00:00",
+    "ready": true,
+    "input_enabled": true,
+    "listening": true,
+    "wake_listening": true,
+    "mind_ready": true,
+    "mic_available": true,
+    "terminal": "ready",
+    "tray_hwnd": 593122,
+    "tray_registered": true,
+    "autostart_registered": true,
+    "autostart_command": "\"D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe\" --from-windows-start",
+    "processes": [
+      {
+        "process_id": 8524,
+        "name": "python",
+        "path": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+        "working_set_bytes": 4366336,
+        "handle_count": 62,
+        "cpu_seconds": 0.015625,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 14284,
+        "name": "msedgewebview2",
+        "path": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+        "working_set_bytes": 36950016,
+        "handle_count": 354,
+        "cpu_seconds": 0.28125,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 23384,
+        "name": "llama-server",
+        "path": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
+        "working_set_bytes": 2916585472,
+        "handle_count": 231,
+        "cpu_seconds": 5.703125,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 26980,
+        "name": "conhost",
+        "path": "C:\\windows\\system32\\conhost.exe",
+        "working_set_bytes": 7962624,
+        "handle_count": 97,
+        "cpu_seconds": 0.015625,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 30260,
+        "name": "python",
+        "path": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+        "working_set_bytes": 4374528,
+        "handle_count": 55,
+        "cpu_seconds": 0.015625,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 32324,
+        "name": "msedgewebview2",
+        "path": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+        "working_set_bytes": 134975488,
+        "handle_count": 803,
+        "cpu_seconds": 25.640625,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 41552,
+        "name": "baxy-core",
+        "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+        "working_set_bytes": 34066432,
+        "handle_count": 227,
+        "cpu_seconds": 0.96875,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 42660,
+        "name": "msedgewebview2",
+        "path": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+        "working_set_bytes": 20230144,
+        "handle_count": 167,
+        "cpu_seconds": 0.078125,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 43064,
+        "name": "msedgewebview2",
+        "path": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+        "working_set_bytes": 239132672,
+        "handle_count": 332,
+        "cpu_seconds": 27.90625,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 43524,
+        "name": "msedgewebview2",
+        "path": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+        "working_set_bytes": 11051008,
+        "handle_count": 168,
+        "cpu_seconds": 0.046875,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 46748,
+        "name": "msedgewebview2",
+        "path": "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\141.0.3537.71\\msedgewebview2.exe",
+        "working_set_bytes": 120963072,
+        "handle_count": 1315,
+        "cpu_seconds": 1.796875,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 47548,
+        "name": "Baxy",
+        "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe",
+        "working_set_bytes": 175026176,
+        "handle_count": 1075,
+        "cpu_seconds": 10.203125,
+        "vram_bytes": 0
+      },
+      {
+        "process_id": 49116,
+        "name": "conhost",
+        "path": "C:\\windows\\system32\\conhost.exe",
+        "working_set_bytes": 7835648,
+        "handle_count": 98,
+        "cpu_seconds": 0.015625,
+        "vram_bytes": 0
+      }
+    ]
+  },
+  "nvidia": {
+    "memory_used_mib": 4119,
+    "memory_total_mib": 6144,
+    "utilization_pct": 36
+  },
+  "processes": [
+    {
+      "ProcessId": 41752,
+      "Name": "python.exe",
+      "WorkingSetSize": 17895424,
+      "HandleCount": 145,
+      "ExecutablePath": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "ProcessId": 47548,
+      "Name": "Baxy.exe",
+      "WorkingSetSize": 176017408,
+      "HandleCount": 1077,
+      "ExecutablePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe"
+    },
+    {
+      "ProcessId": 41552,
+      "Name": "baxy-core.exe",
+      "WorkingSetSize": 34066432,
+      "HandleCount": 227,
+      "ExecutablePath": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe"
+    },
+    {
+      "ProcessId": 8524,
+      "Name": "python.exe",
+      "WorkingSetSize": 4366336,
+      "HandleCount": 62,
+      "ExecutablePath": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe"
+    },
+    {
+      "ProcessId": 31080,
+      "Name": "python.exe",
+      "WorkingSetSize": 1109344256,
+      "HandleCount": 652,
+      "ExecutablePath": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    },
+    {
+      "ProcessId": 23384,
+      "Name": "llama-server.exe",
+      "WorkingSetSize": 2916585472,
+      "HandleCount": 231,
+      "ExecutablePath": "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe"
+    },
+    {
+      "ProcessId": 30260,
+      "Name": "python.exe",
+      "WorkingSetSize": 4374528,
+      "HandleCount": 55,
+      "ExecutablePath": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe"
+    },
+    {
+      "ProcessId": 47220,
+      "Name": "python.exe",
+      "WorkingSetSize": 341774336,
+      "HandleCount": 426,
+      "ExecutablePath": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    }
+  ],
+  "elapsed_s": 46.497,
+  "tray_found": true,
+  "status_after_wait": {
+    "schema": "baxy-presence-status-v1",
+    "utc": "2026-08-31T21:31:29.2636971+00:00",
+    "ready": true,
+    "input_enabled": true,
+    "listening": true,
+    "wake_listening": true,
+    "mind_ready": true,
+    "mic_available": true,
+    "terminal": "ready",
+    "tray_hwnd": 593122,
+    "tray_registered": true,
+    "autostart_registered": true,
+    "autostart_command": "\"D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\Baxy.exe\" --from-windows-start",
+    "processes": []
+  },
+  "listen_toggle": {
+    "already_on": true,
+    "before": true,
+    "after": true,
+    "mind_ready": true,
+    "mic_available": true
+  }
+}

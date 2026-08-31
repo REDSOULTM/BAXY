@@ -219,6 +219,14 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
         if (method == "POST" && route == "/voice/start")
         {
+            if (!FieldBridgeContract.TryAcceptVoiceControl(
+                    _viewModel.IsReady,
+                    out string voiceError,
+                    out int voiceStatus))
+            {
+                return Error(voiceError, voiceStatus);
+            }
+
             bool running = _viewModel.IsWakeListening
                 || await _viewModel.SetWakeVoiceAsync(true, _lifetimeCancellation)
                     .ConfigureAwait(true);
@@ -241,6 +249,14 @@ internal sealed class FieldUiBridge : IAsyncDisposable
 
         if (method == "POST" && route == "/voice/trigger")
         {
+            if (!FieldBridgeContract.TryAcceptVoiceControl(
+                    _viewModel.IsReady,
+                    out string triggerError,
+                    out int triggerStatus))
+            {
+                return Error(triggerError, triggerStatus);
+            }
+
             bool running = await _viewModel
                 .StartDirectVoiceAsync(_lifetimeCancellation)
                 .ConfigureAwait(true);
@@ -256,16 +272,15 @@ internal sealed class FieldUiBridge : IAsyncDisposable
                 ShellTraceScopes.Bridge,
                 turnId,
                 ShellTraceStages.SubmitReceived);
-            if (!_viewModel.IsInputEnabled)
-            {
-                return Error("agent_not_ready", 409);
-            }
-
             JsonObject? payload = ParseBody(body);
             string text = (string?)payload?["text"] ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(text))
+            if (!FieldBridgeContract.TryAcceptTurn(
+                    _viewModel.IsInputEnabled,
+                    text,
+                    out string turnError,
+                    out int turnStatus))
             {
-                return Error("invalid_text", 400);
+                return Error(turnError, turnStatus);
             }
 
             ShellTraceSink.Record(

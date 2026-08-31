@@ -45,6 +45,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private string? _pendingMindClarificationObjective;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
+    private int _voiceCommandBusy;
     private string _draft = string.Empty;
     private string _statusText = "Iniciando";
     private string _statusDescription = "Preparando BAXY";
@@ -58,6 +59,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private string _currentTurnTraceId = "t0";
     private string? _progressLabel;
     private DateTimeOffset? _lastBaxyVisibleUtc;
+    private DateTimeOffset? _firstWakeUtc;
 
     public MainWindowViewModel()
         : this(testTurnResolver: null)
@@ -236,6 +238,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     }
 
     public bool IsInputEnabled => IsReady && !IsBusy;
+
+    public DateTimeOffset? FirstWakeUtc => _firstWakeUtc;
+
+    public bool IsMindReady => _mindClient is { IsReady: true };
 
     public bool CanSend => IsInputEnabled && !string.IsNullOrWhiteSpace(Draft);
 
@@ -1390,7 +1396,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     public async Task ToggleVoiceAsync(CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady || !IsMicAvailable)
+        if (mind is null || !mind.IsReady)
         {
             return;
         }
@@ -1421,6 +1427,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             cancellationToken);
         if (started)
         {
+            IsMicAvailable = true;
             IsListening = true;
             IsWakeListening = false;
             StatusDescription = "Escuchando";
@@ -1433,8 +1440,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     public async Task ToggleWakeVoiceAsync(CancellationToken cancellationToken)
     {
+        if (Interlocked.CompareExchange(ref _voiceCommandBusy, 1, 0) != 0)
+        {
+            return;
+        }
+
+        try
+        {
+            await ToggleWakeVoiceCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            Volatile.Write(ref _voiceCommandBusy, 0);
+        }
+    }
+
+    private async Task ToggleWakeVoiceCoreAsync(CancellationToken cancellationToken)
+    {
         MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady || !IsMicAvailable)
+        if (mind is null || !mind.IsReady)
         {
             return;
         }
@@ -1456,6 +1480,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             cancellationToken);
         if (started)
         {
+            IsMicAvailable = true;
             IsListening = false;
             IsWakeListening = true;
             StatusDescription = "Esperando «Baxy»";
@@ -1504,8 +1529,27 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         bool enabled,
         CancellationToken cancellationToken)
     {
+        if (Interlocked.CompareExchange(ref _voiceCommandBusy, 1, 0) != 0)
+        {
+            return IsWakeListening == enabled;
+        }
+
+        try
+        {
+            return await SetWakeVoiceCoreAsync(enabled, cancellationToken);
+        }
+        finally
+        {
+            Volatile.Write(ref _voiceCommandBusy, 0);
+        }
+    }
+
+    private async Task<bool> SetWakeVoiceCoreAsync(
+        bool enabled,
+        CancellationToken cancellationToken)
+    {
         MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady || !IsMicAvailable)
+        if (mind is null || !mind.IsReady)
         {
             return false;
         }
@@ -1528,6 +1572,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return false;
             }
 
+            IsMicAvailable = true;
             IsListening = false;
             IsWakeListening = true;
             IsVoiceSpeaking = false;
@@ -1559,7 +1604,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal async Task<bool> StartDirectVoiceAsync(CancellationToken cancellationToken)
     {
         MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady || !IsMicAvailable)
+        if (mind is null || !mind.IsReady)
         {
             return false;
         }
@@ -1574,6 +1619,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
+        IsMicAvailable = true;
         IsListening = true;
         IsWakeListening = false;
         IsVoiceSpeaking = false;
@@ -1655,6 +1701,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 else if (eventName == "wake")
                 {
                     StatusDescription = "Te escucho";
+                    if (_firstWakeUtc is null)
+                    {
+                        _firstWakeUtc = DateTimeOffset.UtcNow;
+                        OnPropertyChanged(nameof(FirstWakeUtc));
+                    }
                 }
                 else if (eventName == "wake_detected")
                 {
@@ -1662,6 +1713,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     // The following ASR turn transcribes content; it does not
                     // decide whether BAXY woke up.
                     StatusDescription = "Te escucho…";
+                    if (_firstWakeUtc is null)
+                    {
+                        _firstWakeUtc = DateTimeOffset.UtcNow;
+                        OnPropertyChanged(nameof(FirstWakeUtc));
+                    }
                 }
                 else if (eventName == "partial")
                 {
@@ -1775,16 +1831,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 mind.VoiceEventReceived += OnMindVoiceEvent;
                 mind.TurnSignalReceived += OnMindTurnSignal;
                 _mindClient = mind;
+                MindVoiceStatus? voice = await mind.VoiceStatusAsync(
+                    TimeSpan.FromSeconds(10),
+                    cancellationToken);
+                IsMicAvailable = voice?.Available == true || voice?.InputAvailable == true;
                 _mindStartupState = MindStartupState.Ready;
+                OnPropertyChanged(nameof(IsMindReady));
                 if (!IsBusy)
                 {
                     StatusDescription = "Todo listo";
                 }
-                MindVoiceStatus? voice = await mind.VoiceStatusAsync(
-                    TimeSpan.FromSeconds(10),
-                    cancellationToken);
-                IsMicAvailable = voice?.Available == true;
-                if (IsMicAvailable && WakeOnStartRequested())
+                if ((IsMicAvailable || voice?.SttAvailable == true) && WakeOnStartRequested())
                 {
                     bool wakeStarted = await mind.VoiceStartAsync(
                         "wake",
@@ -1793,6 +1850,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     IsWakeListening = wakeStarted;
                     if (wakeStarted)
                     {
+                        IsMicAvailable = true;
                         StatusDescription = "Esperando «Baxy»";
                     }
                 }

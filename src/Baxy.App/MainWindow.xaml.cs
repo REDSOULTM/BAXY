@@ -17,12 +17,18 @@ public partial class MainWindow : Window
     private readonly MainWindowViewModel _viewModel;
     private readonly CancellationTokenSource _lifetimeCancellation = new();
     private readonly AppSurfaceNavigator _surfaceNavigator;
+    private readonly PresenceHost? _presence;
     private FieldUiBridge? _bridge;
     private AppSurfaceSession? _fieldNavigationLoadingSession;
     private bool _closing;
     private bool _disposed;
 
     public MainWindow()
+        : this(presence: null)
+    {
+    }
+
+    internal MainWindow(PresenceHost? presence)
     {
         InitializeComponent();
         Rect initialBounds = FitInitialBounds(
@@ -34,10 +40,12 @@ public partial class MainWindow : Window
         Height = initialBounds.Height;
         Left = initialBounds.Left;
         Top = initialBounds.Top;
+        _presence = presence;
         _viewModel = new MainWindowViewModel();
         _surfaceNavigator = new AppSurfaceNavigator(
             AppSurfaceCatalog.CreateDefault(),
             new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer));
+        _presence?.Attach(this, _viewModel);
     }
 
     internal static Rect FitInitialBounds(
@@ -420,6 +428,13 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (_presence is { IsExitRequested: false })
+        {
+            eventArgs.Cancel = true;
+            Hide();
+            return;
+        }
+
         eventArgs.Cancel = true;
         if (_closing)
         {
@@ -450,5 +465,9 @@ public partial class MainWindow : Window
         _lifetimeCancellation.Dispose();
         _disposed = true;
         Close();
+        if (_presence is not null)
+        {
+            Application.Current?.Shutdown();
+        }
     }
 }

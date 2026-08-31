@@ -12,6 +12,7 @@ public partial class App : Application
 {
     private const string InstanceMutexName = @"Local\BAXY.Product.App";
     private Mutex? _instanceMutex;
+    private PresenceHost? _presence;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -36,12 +37,20 @@ public partial class App : Application
             return;
         }
 
-        MainWindow = new MainWindow();
+        _presence = PresenceHost.CreateDefault();
+        _presence.Start(e.Args);
+        var window = new MainWindow(_presence);
+        MainWindow = window;
         ShellTraceSink.Record(
             ShellTraceScopes.Startup,
             "process",
             ShellTraceStages.WindowCreated);
-        MainWindow.Show();
+        window.Show();
+        if (_presence.StartHidden)
+        {
+            window.Hide();
+        }
+
         ShellTraceSink.Record(
             ShellTraceScopes.Startup,
             "process",
@@ -50,6 +59,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _presence?.Dispose();
+        _presence = null;
         if (_instanceMutex is not null)
         {
             try
