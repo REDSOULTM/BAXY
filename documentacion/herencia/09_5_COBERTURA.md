@@ -117,10 +117,19 @@ Campana `evidence_assets` (09.5.4, 2026-08-31):
 - Omisiones dispersas (GGUF/datasets/checkpoints de Probando Gemma 4): `artifacts/goal095/extract/_09510_requirements.json` — hashes individuales no inventados
 - Smoke contemporaneo omitido; resultados recuperados
 - Cursor: `artifacts/goal095/campaigns/evidence_assets.json`
-- `next_human_prompt`: `09.5.5_MODELOS_ROUTER_IDIOMAS.md`
-- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md`
+- `next_human_prompt`: `09.5.6_VOZ_AUDIO_PRESENCIA.md` (09.5.5 cerrado)
+- Cero ledger remite a `09.5.4_AUDITAR_EVIDENCIA_LOTE.md` ni a `09.5.5_MODELOS_ROUTER_IDIOMAS.md`
+
+Síntesis 09.5.5 (2026-08-31):
+
+- **25/25 + 477/477 + 132/132** siguen `pending=0` `claimed=0`. No relanzar 09.5.2–09.5.4.
+- Inventario desde tarjetas, no desde cuerpos de biblioteca ni árboles fuente.
+- Decisión: conservar Qwen3-4B-Q4_K_M, e5-small, llama.cpp b9980, catálogo tipado, puerta léxica. Cero `reemplazar_candidato`.
+- FunctionGemma: no conversa; catálogo cocido en pesos; abstención primer split 0/3.
+- GGUF dispersos de Probando Gemma 4: `_09510_requirements.json`, hashes not invented.
+- Artefacto: `artifacts/goal095/synthesis/09.5.5_modelos_router_idiomas.v1.json`
 
 ## Siguiente
 
-Prompt humano distinto: `documentacion/sprints/09.5.5_MODELOS_ROUTER_IDIOMAS.md`.
-No relanzar 09.5.1, 09.5.2, 09.5.3 ni 09.5.4.
+Prompt humano distinto: `documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md`.
+No relanzar 09.5.1, 09.5.2, 09.5.3, 09.5.4 ni 09.5.5.

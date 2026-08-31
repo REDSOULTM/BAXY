@@ -90,7 +90,7 @@ def main() -> int:
     if campaign.get("next_human_prompt") == OWNER_PROMPT:
         errors.append("campaign relaunches 09.5.4")
     if campaign.get("next_human_prompt") != (
-        "documentacion/sprints/09.5.5_MODELOS_ROUTER_IDIOMAS.md"
+        "documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md"
     ):
         if counts["pending"] == 0 and counts["claimed"] == 0:
             errors.append(f"next_human={campaign.get('next_human_prompt')}")

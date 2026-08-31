@@ -151,7 +151,7 @@
   "overlaps": 0,
   "hash_check": "inspect hash_ok=3 drift=0 miss=0",
   "next_evidence_assets_batch_id": null,
-  "next_prompt": "documentacion/sprints/09.5.5_MODELOS_ROUTER_IDIOMAS.md",
+  "next_prompt": "documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md",
   "inspect": "artifacts/goal095/extract/evidence_assets-132-baxy_schema_agent.parse.json",
   "smoke": "skipped; results recovered; existence is not works"
 }

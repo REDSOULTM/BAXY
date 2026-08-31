@@ -30,13 +30,14 @@ from scripts.goal095_evidence_campaign import (
     CAMPAIGN_CONTINUE,
     MODELS_PROMPT,
     OWNER_PROMPT,
+    VOICE_PROMPT,
     write_campaign,
 )
 
 SCHEMA = "baxy.goal095.evidence-ledger.v1"
 KIND = "evidence_assets"
 LEASE_SECONDS = 6 * 3600
-ALLOWED_NEXT_PROMPTS = frozenset({CAMPAIGN_CONTINUE, MODELS_PROMPT})
+ALLOWED_NEXT_PROMPTS = frozenset({CAMPAIGN_CONTINUE, MODELS_PROMPT, VOICE_PROMPT})
 TERMINALS = frozenset(
     {
         "parseado_completo",
@@ -130,7 +131,7 @@ def claimed_evidence(queue_ledger: dict[str, Any]) -> list[dict[str, Any]]:
 def unit_next_prompt(queue_ledger: dict[str, Any], next_id: str | None) -> str:
     if next_id:
         return CAMPAIGN_CONTINUE
-    return MODELS_PROMPT
+    return VOICE_PROMPT
 
 
 def expire_stale_claims(

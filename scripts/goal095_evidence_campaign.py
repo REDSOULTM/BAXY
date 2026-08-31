@@ -19,6 +19,7 @@ KIND = "evidence_assets"
 OWNER_PROMPT = "documentacion/sprints/09.5.4_AUDITAR_EVIDENCIA_LOTE.md"
 CAMPAIGN_CONTINUE = "campaign:evidence_assets"
 MODELS_PROMPT = "documentacion/sprints/09.5.5_MODELOS_ROUTER_IDIOMAS.md"
+VOICE_PROMPT = "documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md"
 DOCS_PROMPT = "documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md"
 CODE_PROMPT = "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md"
 
@@ -66,7 +67,7 @@ def next_human_prompt(queue_ledger: dict[str, Any]) -> str | None:
     evidence = counts_for(queue_ledger)
     if evidence["pending"] or evidence["claimed"]:
         return None
-    return MODELS_PROMPT
+    return VOICE_PROMPT
 
 
 def write_campaign(

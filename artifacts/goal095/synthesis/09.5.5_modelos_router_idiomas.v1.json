@@ -1,0 +1,929 @@
+{
+  "schema": "baxy.goal095.0955-synthesis.v1",
+  "goal": "09.5.5",
+  "closed_utc": "2026-08-31T12:00:00Z",
+  "inventory_source": "artifacts/goal095/ledger/*.json cards + artifacts/goal095/extract/_09510_requirements.json + artifacts/goal095/queue/sparse_exclusions.json; no biblioteca bodies; no source-tree walk",
+  "next_human_prompt": "documentacion/sprints/09.5.6_VOZ_AUDIO_PRESENCIA.md",
+  "catalog_constraint": "El catálogo sigue siendo datos tipados autorizados por el kernel, nunca nombres cocidos en pesos ni listas OpenAI en el prompt. Cambiar una operación es editar el catálogo, no reentrenar.",
+  "languages_in_scope": ["es", "en", "spanglish"],
+  "other_languages_create_work": false,
+  "other_language_work_items": [],
+  "fresh_corpus": {
+    "path": "artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256_prefix": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+    "n_in_catalog": 124,
+    "n_out_catalog": 36,
+    "languages": ["es", "en", "spanglish"],
+    "comparable_instrument": "experiments/mind_router_spike/run_goal03_comprehension.py --gguf <candidato>; cuatro columnas a la vez: decisión cruda, punta a punta, latencia primera señal (listón 3 s), abstención honesta fuera de catálogo"
+  },
+  "blind_benchmark_if_reopened": {
+    "id": "goal03_fresh_es_en_spanglish_v1",
+    "corpus": "artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl SHA-256 761c1bc3…",
+    "split": "una corrida ciega; no retocar umbrales al abrir; reportar es/en/spanglish por separado (corrida 7 vigente: es 30/73, en 15/35, spanglish 12/16)",
+    "columns": [
+      "decision_cruda_124",
+      "punta_a_punta_124",
+      "abstencion_36",
+      "p50_p90_primera_senal",
+      "vram_pico_wddm",
+      "ram_pico",
+      "arranque_s",
+      "catalog_swap_probe"
+    ],
+    "reject_if": "sube acierto bajando abstención; inventa nombres fuera del catálogo declarado; catalog_swap_probe emite el nombre viejo; VRAM > 4 GiB techo; prosa degenera (repetición / palabras inventadas)",
+    "other_languages": "pt/fr/de/it u otros se registran como contaminación/procedencia y no crean filas, tests ni metas"
+  },
+  "sparse_assets": {
+    "ref": "artifacts/goal095/extract/_09510_requirements.json",
+    "ids": ["pg4-gguf-models", "pg4-training-datasets", "pg4-training-checkpoints"],
+    "individual_hashes": "not invented",
+    "rule": "ausencia deliberada no es pérdida medida; si 09.5.9 reutiliza un blob, 09.5.10 pausa en FALLO_DE_AMBIENTE por el asset exacto"
+  },
+  "inventory_claimed_ids": [
+    "qwen3-4b-q4_k_m",
+    "qwen3.5-4b",
+    "qwen3.5-0.8b",
+    "qwen3-4b-instruct-2507",
+    "qwen3-8b",
+    "qwen2.5-7b-instruct",
+    "hermes3-8b",
+    "functiongemma-270m-ft",
+    "gemma4-e2b-qat",
+    "gemma4-e4b",
+    "gemma4-26b",
+    "gemma4-31b",
+    "phi-4-mini",
+    "lfm2.5-1.2b",
+    "e5-small",
+    "embeddinggemma-300m",
+    "minilm-l12-tool2vec",
+    "qwen3-embedding-0.6b",
+    "bge-m3",
+    "cross-encoder-reranker",
+    "llama-cpp-b9980",
+    "ollama-runtime",
+    "agent-function-schema",
+    "q2-quant-gemma",
+    "q4-k-xl-qat-gemma",
+    "q8-0-functiongemma",
+    "kva-abstain-head",
+    "lexical-domain-gate",
+    "qwen-vl",
+    "qwen-asr"
+  ],
+  "current_stack": [
+    {
+      "id": "llm_decisor",
+      "piece": "LLM decisor",
+      "chosen": "Qwen3-4B-Q4_K_M SHA 7485fe6f…",
+      "decision": "conservar",
+      "umbrales": "Sobre corpus fresco 761c1bc3…: no bajar de 82/124 decisión cruda ni 33/36 abstención ni empeorar p90>3.02 s en idle; un candidato que suba acierto bajando abstención se rechaza. VRAM techo 4 GiB.",
+      "coste": "0 (se conserva el GGUF y llama-server actuales). Un recambio exige una corrida Goal 03 completa + prosa, no una cifra de otro hardware."
+    },
+    {
+      "id": "cuantizacion",
+      "piece": "Cuantización del decisor",
+      "chosen": "Q4_K_M del mismo Qwen3-4B",
+      "decision": "conservar",
+      "umbrales": "No bajar de Q4_K_M sin GGUF más ligero del mismo modelo en disco y A/B de prosa ES (instrucción, repetición, palabras inventadas, latencia). No heredar el Q2 de Gemma.",
+      "coste": "0. Un Q3/IQ4 de Qwen3-4B no aparece en las tarjetas 09.5.2–09.5.4; no se inventa."
+    },
+    {
+      "id": "runtime_inferencia",
+      "piece": "Runtime de inferencia",
+      "chosen": "llama.cpp b9980 CUDA 12.4 ngl=99 ctx=4096",
+      "decision": "conservar",
+      "umbrales": "Mismo GGUF a ambos lados; p50/p90 y decisión cruda no pueden cambiar con el runtime. --reasoning-budget 0 no se usa: convierte el thinking EN en respuesta visible.",
+      "coste": "0. Ollama y backends cloud quedan fuera (invariante 6)."
+    },
+    {
+      "id": "encoder_recuperador",
+      "piece": "Recuperador / embeddings",
+      "chosen": "intfloat/multilingual-e5-small, passage:/query:, rankea operaciones no familias",
+      "decision": "conservar",
+      "umbrales": "Operación esperada en shortlist ≥103/124 vivo; no rankear familias. Score no sirve de abstención (separación 0.026). Encoder de producción sin autoridad de ruteo.",
+      "coste": "0. MiniLM/Tool2Vec 0.9521 es granularidad 31, no comparable. EmbeddingGemma más pesado sin dato nuevo en catálogo 169."
+    },
+    {
+      "id": "puerta_abstencion",
+      "piece": "Puerta de alcance (abstención)",
+      "chosen": "Puerta léxica de dominio + decisor Qwen; no fail-closed por verbo extra",
+      "decision": "conservar",
+      "umbrales": "Leer juntos conservación de propuestas legítimas y rechazo OOD 33/36. Cinco mecanismos OOD ya medidos; el supervisado 0.58 AUC en paráfrasis libre. No añadir una sexta capa (KVA) encima.",
+      "coste": "0. FunctionGemma primer split 0/3 es evidencia en contra de FG, no de esta puerta."
+    },
+    {
+      "id": "forma_catalogo",
+      "piece": "Forma del catálogo",
+      "chosen": "169 operaciones tipadas, 158 alcanzables, sello dc0a7893…",
+      "decision": "conservar",
+      "umbrales": "Catálogo = datos tipados. Consolidar a 16 ya midió 75.93%→62.96% en Carter. Schema Agent tool_schemas.py se rechaza.",
+      "coste": "0. Cero nombres cocidos en pesos."
+    },
+    {
+      "id": "verificador_identidad",
+      "piece": "Verificador de identidad de operación",
+      "chosen": "OPERATION_IDENTITY_PROMPT sobre el mismo Qwen3-4B, 24 tokens, p50 0.15 s",
+      "decision": "conservar",
+      "umbrales": "Conserva ≥46/48 propuestas correctas y rechaza ≥21/84 equivocadas. FunctionGemma como selector no se mide mientras el catálogo quede cocido en pesos.",
+      "coste": "0. El experimento functiongemma_selector (90 casos desarrollo) no es el corpus fresco 160."
+    }
+  ],
+  "candidates": [
+    {
+      "id": "qwen3-4b-q4_k_m",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": true,
+      "evidencia_a_favor": "Goal 03 corpus fresco equivalente vs Gemma-4-E2B: decisión cruda 82/124 vs 63, punta a punta 56/124 vs 49, p90 3.02 s vs 3.59 s, 13 turnos >3 s vs 34, abstención 33/36 vs 34/36. Corrida 7 instalada 57/124. MVP posterior: venció Qwen3.5-4B, Phi-4-mini e Instruct-2507 en esta máquina. SHA 7485fe6f….",
+      "evidencia_en_contra": "Comprensión 46% no ≥90%. Bajo carga real (Steam/WhatsApp/WebView) p50 del camino modelo 3.7–4.0 s y ~103/122 turnos >3 s. es 30/73 y en 15/35 peor que spanglish 12/16. Thinking residual si se abusa de flags de reasoning.",
+      "comparabilidad": "si",
+      "comparabilidad_razon": "Misma población 761c1bc3…, mismo hardware, cuatro columnas. Las cifras Carter/Ollama 8B no se usan como victoria.",
+      "decision": "conservar",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "82/124 cruda; 57/124 punta a punta instalado", "comparable": true, "note": "Goal 03 fresco"},
+        "conversacion": {"value": "prosa ES con system prompt; idioma del último mensaje", "comparable": true, "note": "ADR Qwen3.5 fallaba EN→ES 6/30; este Qwen3-4B es el vigente post-Goal 03"},
+        "tool_call_valido": {"value": "contrato de esquema; 56/124 e2e con reconocedor", "comparable": true, "note": ""},
+        "abstencion": {"value": "33/36 OOD honesto (corrida 3/7)", "comparable": true, "note": "tool_choice required bajó a 25/36 — rechazado"},
+        "prosa": {"value": "Q4_K_M; guarda de infinitivos inventados en compose_user_message", "comparable": true, "note": "Q2 Gemma no se hereda"},
+        "latencia": {"value": "p50 2.18 s / p90 3.02 s idle; p50 3.7–4.0 s bajo carga", "comparable": true, "note": "listón 3 s no se cumple con GPU ocupada"},
+        "ram_vram": {"value": "MVP GPU pico ~3066/3072 MiB en presupuesto 4 GB", "comparable": true, "note": ""},
+        "arranque": {"value": "llama-server sidecar; encoder E5 ~11 s load aparte", "comparable": true, "note": ""},
+        "facilidad_catalogo": {"value": "schemas del hello/catálogo tipado; no FT de nombres", "comparable": true, "note": "invariante 1"}
+      },
+      "citations": [
+        {"card_id": "docs-022-baxy-05-experiments-mind_llm_tournament", "batch_id": "docs-022-baxy"},
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"},
+        {"card_id": "evidence_assets-105-baxy-04-experiments-mind_llm_tournament-results", "batch_id": "evidence_assets-105-baxy"}
+      ]
+    },
+    {
+      "id": "gemma4-e2b-qat",
+      "family": "gemma4",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "ADR-0005 torneo 2026-07-16: tools+args 76.5%, abstención 92.9%, convo juzgada 87%, p50 0.32 s, VRAM delta 1540 MiB. Auto-pass convo 27/30. Cero llamadas mutantes 30/30. Goal 01: prosa ES y persona «Soy BAXY» sólo con system prompt.",
+      "evidencia_en_contra": "Goal 03 fresco equivalente: 63/124 cruda vs Qwen 82; e2e 49 vs 56; p90 3.59 s vs 3.02 s; 34 turnos >3 s vs 13. Thinking 200–400 tokens EN antes de cada respuesta (6.3–11.4 s/turno). --reasoning-budget 0 hace el borrador EN la respuesta visible. «Funciona y no sirve».",
+      "comparabilidad": "si",
+      "comparabilidad_razon": "Goal 03 es comparable (mismo corpus/hardware). El torneo ADR 362+30 usa catálogo ~21 tools y no sustituye a Goal 03.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "63/124 cruda Goal 03 (pierde vs Qwen 82)", "comparable": true, "note": ""},
+        "conversacion": {"value": "ADR 87% juzgada; 27/30 auto-pass", "comparable": false, "note": "oráculo 30 probes, no corpus 160"},
+        "tool_call_valido": {"value": "ADR 76.5% de 362; Goal 03 e2e 49/124", "comparable": true, "note": "e2e Goal 03 es la columna comparable"},
+        "abstencion": {"value": "Goal 03 34/36; ADR 92.9%", "comparable": true, "note": "Goal 03 casi empate con Qwen"},
+        "prosa": {"value": "Q4_K_XL QAT correcta; thinking EN visible si se corta reasoning", "comparable": true, "note": "Goal 01 A/B Q2 vs Q4"},
+        "latencia": {"value": "Goal 03 p90 3.59 s; Goal 01 6.3–11.4 s/turno con thinking", "comparable": true, "note": ""},
+        "ram_vram": {"value": "ADR 1540 MiB delta; GGUF 2499 MiB", "comparable": false, "note": "ADR 21-tool stack, no presupuesto MVP 45/45"},
+        "arranque": {"value": "llama-server; mmproj no aplica al texto", "comparable": false, "note": "no medido como arranque de producto Goal 03"},
+        "facilidad_catalogo": {"value": "tools del hello; no FT", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-022-baxy-05-experiments-mind_llm_tournament", "batch_id": "docs-022-baxy"},
+        {"card_id": "docs-022-baxy-06-experiments-mind_llm_tournament-results", "batch_id": "docs-022-baxy"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"}
+      ]
+    },
+    {
+      "id": "gemma4-e4b",
+      "family": "gemma4",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Carter v4 from_gemma E4B; harness audio y sampling flags. Era el tamaño «grande» del linaje Gemma 4 Agent.",
+      "evidencia_en_contra": "Audio nativo Gemma rechazado (llama-server no rutea input_audio; recarga por clip). IQ2_M citado. GGUF de Probando Gemma 4/models omitido (~17 GiB, pg4-gguf-models); hashes individuales not invented. Mismo mecanismo de thinking que E2B. Ley 4: E4B no tiene medición VRAM en techo 4 GiB.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Nunca corrió el corpus fresco 761c1bc3… contra Qwen3-4B. Blob físico ausente (_09510_requirements.json pg4-gguf-models). Cifras Carter/harness no son Goal 03.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no medido en Goal 03", "comparable": false, "note": "blob ausente; no se inventa hash"},
+        "conversacion": {"value": "no medido en Goal 03", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "harness stubs 55-57/60 no es catálogo Kernel", "comparable": false, "note": "card harness-openai-tools-stubs"},
+        "abstencion": {"value": "no medido en fresco 36 OOD", "comparable": false, "note": ""},
+        "prosa": {"value": "Q2 IQ2 citado; Q2 Gemma degenera (FunctionGemma 2026-06)", "comparable": false, "note": "no es Qwen"},
+        "latencia": {"value": "no comparable", "comparable": false, "note": ""},
+        "ram_vram": {"value": "no medido en techo 4 GiB", "comparable": false, "note": "RTX 4060 Ti 16 GB de Carter no es el techo de producto"},
+        "arranque": {"value": "no medido", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "tools OpenAI del harness, no ProductCatalog", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "harness-gemma-native-audio", "batch_id": "code_tests-001-carter"},
+        {"card_id": "carter-v4-gemma4-sampling-flags", "batch_id": "code_tests-001-carter"},
+        {"extract_ref": "artifacts/goal095/extract/_09510_requirements.json#pg4-gguf-models"}
+      ]
+    },
+    {
+      "id": "gemma4-26b",
+      "family": "gemma4",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Aparece en el torneo harness Gemma 4 E2B/E4B/26B/31B (trazas extended).",
+      "evidencia_en_contra": "Viola la ley 4 (techo 4 GiB VRAM). Hardware Carter 16 GB no es el recinto de producto. Blob GGUF en pg4-gguf-models ausente; hashes not invented.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Otro tamaño, otro presupuesto VRAM, corpus 540/harness no equivalente. No se mide: ni siquiera cabe en el techo.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": "ley 4"},
+        "conversacion": {"value": "no Goal 03", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "trazas harness", "comparable": false, "note": "stubs"},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "no", "comparable": false, "note": ""},
+        "latencia": {"value": "no", "comparable": false, "note": ""},
+        "ram_vram": {"value": "26B incompatible con 4 GiB", "comparable": false, "note": "no es un win omitido"},
+        "arranque": {"value": "no", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "no", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "harness-openai-tools-stubs", "batch_id": "code_tests-001-carter"},
+        {"card_id": "evidence_assets-001-carter-03-docs-investigaciones-evidencia pruebas gemma4", "batch_id": "evidence_assets-001-carter"},
+        {"extract_ref": "artifacts/goal095/extract/_09510_requirements.json#pg4-gguf-models"}
+      ]
+    },
+    {
+      "id": "gemma4-31b",
+      "family": "gemma4",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Mismo torneo harness que 26B; trazas 31B-UD-IQ2_XXS / Q2_K_XL inventariadas.",
+      "evidencia_en_contra": "Ley 4. Quant Q2. Blob ausente (pg4-gguf-models, hashes not invented).",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "No hay corrida en corpus fresco ni en 4 GiB. Existir en el harness no es works.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": "ley 4"},
+        "conversacion": {"value": "no", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "trazas harness", "comparable": false, "note": ""},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "Q2", "comparable": false, "note": "Q2 Gemma degenera"},
+        "latencia": {"value": "no", "comparable": false, "note": ""},
+        "ram_vram": {"value": "31B incompatible con 4 GiB", "comparable": false, "note": ""},
+        "arranque": {"value": "no", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "no", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "harness-openai-tools-stubs", "batch_id": "code_tests-001-carter"},
+        {"extract_ref": "artifacts/goal095/extract/_09510_requirements.json#pg4-gguf-models"}
+      ]
+    },
+    {
+      "id": "functiongemma-270m-ft",
+      "family": "functiongemma",
+      "role": "llm_selector",
+      "current_choice": false,
+      "evidencia_a_favor": "Holdout FT run6: tool-acc 88.3% (base 12.5%), 99.7% calls bien formadas, no_tool 100% en ese holdout, 0 inventadas en holdout, GGUF Q8_0 278 MB, 0.11–0.23 s/decisión (30–50× vs E2B). Encoder+Tool2Vec holdout recall 0.9521 a 31 tools.",
+      "evidencia_en_contra": "No conversa: conocimiento 0/3, smalltalk 0/4 (Goal 01, esta máquina). Catálogo cocido en pesos: cambiar una operación exige reentrenar; chocó invariante 1. Abstención rota en el primer split 0/3 (R-007); inventó set_volume / no_query_query en 4/8 casos live y llamó tool ante pregunta de conocimiento. Los 13 GGUF iter/run7–9 no se heredan.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "88.3% es holdout del catálogo FT, no corpus fresco 761c1bc3… ni 169 ops tipadas. Goal 01 live SÍ es esta máquina pero n=8/3/4, no las 160 paráfrasis. No autoriza swap.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03 124", "comparable": false, "note": "holdout FT"},
+        "conversacion": {"value": "0/3 conocimiento, 0/4 smalltalk — no conversa", "comparable": true, "note": "Goal 01 esta máquina; suficiente para rechazar como hablante"},
+        "tool_call_valido": {"value": "holdout 88.3%; live inventa nombres 4/8", "comparable": false, "note": "live n pequeño; holdout no es catálogo actual"},
+        "abstencion": {"value": "primer split 0/3; holdout no_tool 100% no se reejecutó", "comparable": false, "note": "R-007; KVA se añadió encima — capa extra"},
+        "prosa": {"value": "no es modelo de habla", "comparable": true, "note": "rechazo como conversador"},
+        "latencia": {"value": "0.11–0.23 s", "comparable": true, "note": "esta máquina Goal 01; no compensa nombres inventados"},
+        "ram_vram": {"value": "278 MB Q8_0 CPU", "comparable": true, "note": "cabe en 4 GiB; no es el fallo"},
+        "arranque": {"value": "rápido", "comparable": false, "note": "no medido como sidecar de producto"},
+        "facilidad_catalogo": {"value": "nombres cocidos en pesos — falla dura", "comparable": true, "note": "constraint vinculante 09.5.5"}
+      },
+      "citations": [
+        {"card_id": "docs-018-functiongemma-01-AGENTS.md", "batch_id": "docs-018-functiongemma"},
+        {"card_id": "code_tests-398-functiongemma-20-fg_probe_notool.py", "batch_id": "code_tests-398-functiongemma"},
+        {"card_id": "code_tests-398-functiongemma-18-fg_probe_knowledge.py", "batch_id": "code_tests-398-functiongemma"},
+        {"card_id": "docs-022-baxy-04-experiments-functiongemma_selector", "batch_id": "docs-022-baxy"}
+      ]
+    },
+    {
+      "id": "qwen3.5-4b",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "ADR torneo: tools+args 84.8% (mejor crudo), abstención 91.8%. Apache 2.0. Fallback documentado en ADR-0005.",
+      "evidencia_en_contra": "ADR convo 77%; responde ES a prompts EN 6/30; registró recordatorio como memoria. VRAM 3028 MiB vs Gemma 1540. MVP posterior esta máquina: 11 errores semánticos GPU y 12 CPU, más VRAM/RAM/latencia que Qwen3-4B. Rechazado sin cambiar el manifest.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "ADR 362+30 ≠ corpus 160 Goal 03. El rechazo MVP 45 solicitudes/perfil SÍ es esta máquina, pero no el instrumento Goal 03. No hay evidencia nueva comparable que gane las cuatro columnas.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03 124", "comparable": false, "note": "ADR 21-tool"},
+        "conversacion": {"value": "77% ADR; 6/30 idioma invertido", "comparable": false, "note": "30 probes"},
+        "tool_call_valido": {"value": "ADR 84.8%; MVP 11 errores GPU", "comparable": false, "note": "instrumentos distintos"},
+        "abstencion": {"value": "ADR 91.8%", "comparable": false, "note": ""},
+        "prosa": {"value": "idioma invertido EN→ES", "comparable": false, "note": ""},
+        "latencia": {"value": "ADR p50 0.79 s; MVP peor narración que Qwen3-4B", "comparable": false, "note": "ADR vs MVP"},
+        "ram_vram": {"value": "ADR 3028 MiB; MVP pico 3077.6 MiB", "comparable": true, "note": "MVP esta máquina vs Qwen3-4B"},
+        "arranque": {"value": "llama.cpp b9980 lo cargó", "comparable": true, "note": "MVP"},
+        "facilidad_catalogo": {"value": "schemas hello", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-022-baxy-06-experiments-mind_llm_tournament-results", "batch_id": "docs-022-baxy"},
+        {"card_id": "evidence_assets-105-baxy-04-experiments-mind_llm_tournament-results", "batch_id": "evidence_assets-105-baxy"},
+        {"card_id": "docs-019-baxy-28-contexto-04_arquitectura-ADR", "batch_id": "docs-019-baxy"}
+      ]
+    },
+    {
+      "id": "qwen3.5-0.8b",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Pequeño (508 MiB GGUF); p50 0.32 s en ADR.",
+      "evidencia_en_contra": "ADR: tools 65.2%, abstención 49.0% ✗ hard gate. No entra a convo.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Sólo torneo ADR 21-tool. Abstención rota en ese recinto ya basta para no reabrir como decisor.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "ADR 65.2% tools", "comparable": false, "note": "no Goal 03"},
+        "conversacion": {"value": "no evaluada (hard gate)", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "65.2%", "comparable": false, "note": ""},
+        "abstencion": {"value": "49.0% fail hard gate", "comparable": false, "note": "ADR"},
+        "prosa": {"value": "no", "comparable": false, "note": ""},
+        "latencia": {"value": "p50 0.32 s ADR", "comparable": false, "note": ""},
+        "ram_vram": {"value": "GGUF 508 MiB", "comparable": false, "note": ""},
+        "arranque": {"value": "no", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "schemas hello", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "evidence_assets-105-baxy-04-experiments-mind_llm_tournament-results", "batch_id": "evidence_assets-105-baxy"}
+      ]
+    },
+    {
+      "id": "qwen3-4b-instruct-2507",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Más rápido que Qwen3-4B en el sondeo MVP. Mismo tamaño de familia.",
+      "evidencia_en_contra": "ABBA sellado esta máquina: activo 180/180, 2507 178/180 con fallo GPU arguments-06 reproducible en ambas corridas B. Latencia no compensa falla reproducible.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Contrato MVP 180, no corpus 160 Goal 03. Rechazo local válido para no swap; no se reabre sin hipótesis nueva.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": "ABBA 180 contratos MVP"},
+        "conversacion": {"value": "no separado", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "178/180; arguments-06 GPU x2", "comparable": false, "note": "no es 124 fresco"},
+        "abstencion": {"value": "no reportado aparte", "comparable": false, "note": ""},
+        "prosa": {"value": "no A/B prosa Goal 06", "comparable": false, "note": ""},
+        "latencia": {"value": "más rápido; no compensa", "comparable": false, "note": ""},
+        "ram_vram": {"value": "misma familia 4B", "comparable": false, "note": ""},
+        "arranque": {"value": "cargó", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "schemas", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-013-probando_gemma4-pg4_docs__historico-03-documentacion-_historico-bench_carter", "batch_id": "docs-013-probando_gemma4-pg4_docs__historico"}
+      ]
+    },
+    {
+      "id": "qwen3-8b",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Carter v2 lab; tool_pass fair 1.00 en un leaderboard. Default Ollama citado.",
+      "evidencia_en_contra": "p95 31389 ms por thinking; cae a #14 (0.605). Stability: qwen3 NOT_SUITABLE. Perfiles 6–24 GB contradicen techo 4 GiB. Switch default incompleto entre Ollama y llama.cpp.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "16 modelos × 7 protocolos × 5 casos Ollama ~165 GB disco; catálogo Carter; no Goal 03. Ley 4.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": "Carter 5 casos"},
+        "conversacion": {"value": "thinking enorme", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "fair 1.00 en 5 casos sesgados", "comparable": false, "note": "hermes3-fair-no-era-default"},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "thinking EN", "comparable": false, "note": ""},
+        "latencia": {"value": "p95 31.4 s", "comparable": false, "note": "otro recinto"},
+        "ram_vram": {"value": "perfil 16 GB", "comparable": false, "note": "ley 4"},
+        "arranque": {"value": "Ollama", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "protocolo tools= como palanca de modelo", "comparable": false, "note": "carter-v2-model-lab-gates"}
+      },
+      "citations": [
+        {"card_id": "hermes3-fair-no-era-default", "batch_id": "docs-001-carter"},
+        {"card_id": "carter-v2-model-lab-gates", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"}
+      ]
+    },
+    {
+      "id": "qwen2.5-7b-instruct",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Default escrito de Carter v2 (.env TEXT_MODEL). Rebaseline ADOPT con 5 fallos qwen3 resueltos bajo qwen25 (lab).",
+      "evidencia_en_contra": "Switch full_default_switch_completed=false: Ollama qwen2.5 vs llama.cpp qwen3-8b. Caducado por Goal 01. No es el stack BAXY. 7B en techo 4 GiB no medido.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Lab Carter, catálogo distinto, switch a medias. No corpus fresco.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": ""},
+        "conversacion": {"value": "no", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "lab 13 casos volátiles", "comparable": false, "note": ""},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "no", "comparable": false, "note": ""},
+        "latencia": {"value": "no", "comparable": false, "note": ""},
+        "ram_vram": {"value": "7B no medido en 4 GiB", "comparable": false, "note": "ley 4"},
+        "arranque": {"value": "Ollama default", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "env knobs", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "carter-v2-runtime-env", "batch_id": "code_tests-001-carter"},
+        {"card_id": "carter-v2-model-lab-gates", "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"}
+      ]
+    },
+    {
+      "id": "hermes3-8b",
+      "family": "qwen_vigente",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Leaderboard fair: gana perfiles 8–16 GB (0.763, p95 1597 ms, 4857 MiB) vía json_direct.",
+      "evidencia_en_contra": "No se validó live-safe como default. Default real se dejó en qwen3:8b. 4857 MiB > techo 4 GiB. Caducado. Disco Ollama ~165 GB no es recinto de producto.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "5 casos × protocolos Carter; hardware 16 GB; ley 4. No Goal 03.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": ""},
+        "conversacion": {"value": "no", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "0.763 fair 16 GB", "comparable": false, "note": "5 casos"},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "no", "comparable": false, "note": ""},
+        "latencia": {"value": "p95 1597 ms en ese lab", "comparable": false, "note": ""},
+        "ram_vram": {"value": "4857 MiB > 4 GiB", "comparable": false, "note": "ley 4"},
+        "arranque": {"value": "Ollama", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "json_direct", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "hermes3-fair-no-era-default", "batch_id": "docs-001-carter"}
+      ]
+    },
+    {
+      "id": "phi-4-mini",
+      "family": "gemma4",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "ADR lo incluyó. MVP: entra más holgado en VRAM que Qwen3-4B.",
+      "evidencia_en_contra": "ADR: excluido técnico — no emite tool calls bajo llama.cpp --jinja. MVP: 3 contratos GPU y 4 CPU fallidos; narró más lento. Rechazado.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "ADR 21-tool y MVP 45/perfil ≠ Goal 03. Rechazo local suficiente para no swap. Family tag gemma4 aquí es inventario (candidato del torneo), no linaje Gemma.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": ""},
+        "conversacion": {"value": "no ADR (excluido)", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "no emite tools --jinja; MVP 3+4 fallos", "comparable": false, "note": "MVP esta máquina"},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "narró más lento", "comparable": false, "note": ""},
+        "latencia": {"value": "peor que Qwen3-4B GPU", "comparable": false, "note": "MVP"},
+        "ram_vram": {"value": "más holgado; GGUF 2376 MiB ADR", "comparable": false, "note": ""},
+        "arranque": {"value": "cargó", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "falla jinja tools", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "evidence_assets-105-baxy-04-experiments-mind_llm_tournament-results", "batch_id": "evidence_assets-105-baxy"},
+        {"card_id": "evidence_assets-096-baxy-baxy_art_research-29-artifacts-research-phi4_mini_candidate_verdict_20260811.json", "batch_id": "evidence_assets-096-baxy-baxy_art_research"}
+      ]
+    },
+    {
+      "id": "lfm2.5-1.2b",
+      "family": "gemma4",
+      "role": "llm",
+      "current_choice": false,
+      "evidencia_a_favor": "Pequeño (~800 MiB); p50 0.21 s ADR.",
+      "evidencia_en_contra": "ADR tools 35.6%, abstención 65.3% ✗ hard gate.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Sólo ADR. Abstención rota. Family tag de inventario del torneo Gemma/LLM, no linaje Gemma.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "35.6% tools ADR", "comparable": false, "note": ""},
+        "conversacion": {"value": "no (hard gate)", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "35.6%", "comparable": false, "note": ""},
+        "abstencion": {"value": "65.3% fail", "comparable": false, "note": ""},
+        "prosa": {"value": "no", "comparable": false, "note": ""},
+        "latencia": {"value": "p50 0.21 s", "comparable": false, "note": ""},
+        "ram_vram": {"value": "~800 MiB", "comparable": false, "note": ""},
+        "arranque": {"value": "no", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "schemas", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "evidence_assets-105-baxy-04-experiments-mind_llm_tournament-results", "batch_id": "evidence_assets-105-baxy"}
+      ]
+    },
+    {
+      "id": "e5-small",
+      "family": "encoder_tool2vec",
+      "role": "encoder",
+      "current_choice": true,
+      "evidencia_a_favor": "ADR router: cobertura 99.85% (674/675), LOO 89.33%, 15.8 ms/consulta CPU, 880 MiB RAM, 470 MiB peso. Goal 03: operación esperada en shortlist 103/124 con passage:/query:. Worker de producto expone sólo embeddings; sin autoridad de ruteo.",
+      "evidencia_en_contra": "37 fallos LOO peligrosos vs 21 de EmbeddingGemma. Score no abstiene (separación 0.026). Arranque ~11 s; un timeout mal clasificado retiraba el router para siempre (reparado Goal 03). Carter v4 tool-retrieval e5 recortaba el catálogo que el LLM ve — reject_candidate de esa capa, no del modelo.",
+      "comparabilidad": "si",
+      "comparabilidad_razon": "ADR 4 encoders mismo protocolo. Goal 03 usa este encoder sobre 169 ops — comparable para conservar. MiniLM 0.9521 no es el mismo eje (31 familias).",
+      "decision": "conservar",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "103/124 expected-in-shortlist Goal 03", "comparable": true, "note": "rankea operaciones"},
+        "conversacion": {"value": "n/a (encoder)", "comparable": true, "note": "no habla"},
+        "tool_call_valido": {"value": "ofrece hojas; no llama tools", "comparable": true, "note": ""},
+        "abstencion": {"value": "score no abstiene; fail-closed del worker", "comparable": true, "note": "0.026 separación"},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "15.8 ms ADR; encode interactivo timeout 0.75 s", "comparable": true, "note": ""},
+        "ram_vram": {"value": "880 MiB RAM ADR; CPU", "comparable": true, "note": ""},
+        "arranque": {"value": "~11 s load worker", "comparable": true, "note": "Goal 03 defecto B reparado"},
+        "facilidad_catalogo": {"value": "banco intent_bank.jsonl; catálogo autenticado aparte", "comparable": true, "note": "no cuece nombres en pesos"}
+      },
+      "citations": [
+        {"card_id": "docs-022-baxy-07-experiments-mind_router_spike", "batch_id": "docs-022-baxy"},
+        {"card_id": "carter-v4-tool-retrieval-e5", "batch_id": "code_tests-001-carter"},
+        {"card_id": "evidence_assets-105-baxy-06-experiments-mind_router_spike-results", "batch_id": "evidence_assets-105-baxy"}
+      ]
+    },
+    {
+      "id": "embeddinggemma-300m",
+      "family": "encoder_tool2vec",
+      "role": "encoder",
+      "current_choice": false,
+      "evidencia_a_favor": "ADR: misma cobertura 99.85%, LOO 87.11%, 21 peligrosos LOO (mejor que e5). Fallback documentado.",
+      "evidencia_en_contra": "78 ms/consulta, 1110 MiB RAM, 1211 MiB peso. Pierde desempate LOO 2.2 pp. No hay dato nuevo en catálogo 169 ops.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Comparable en ADR 21-tool/675. No rerun en Goal 03 169 ops. Sin evidencia nueva comparable no se reabre.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "ADR LOO 87.11%", "comparable": false, "note": "no 103/124 Goal 03"},
+        "conversacion": {"value": "n/a", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "n/a encoder", "comparable": true, "note": ""},
+        "abstencion": {"value": "21 peligrosos LOO", "comparable": false, "note": "oráculo 675"},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "78 ms", "comparable": false, "note": "ADR"},
+        "ram_vram": {"value": "1110 / 1211 MiB", "comparable": false, "note": "más pesado"},
+        "arranque": {"value": "no vs e5 en producto", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "mismo banco", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "evidence_assets-105-baxy-06-experiments-mind_router_spike-results", "batch_id": "evidence_assets-105-baxy"}
+      ]
+    },
+    {
+      "id": "minilm-l12-tool2vec",
+      "family": "encoder_tool2vec",
+      "role": "encoder",
+      "current_choice": false,
+      "evidencia_a_favor": "FunctionGemma router MiniLM-L12 FT: holdout tool recall 0.9521; encoder-67 vs encoder-31 equivalentes. ONNX 2.1 ms/frase, 384 dim, carga 0.40 s (Goal 01). Centroides tool2vec inventariados.",
+      "evidencia_en_contra": "0.9521 es granularidad de 31 herramientas/familias; el fallo está en la hoja. Catálogo actual ~169 ops. ADR paraphrase-MiniLM-L12-v2: cobertura 98.67% ✗ hard gate. Retrain atado al set de 31. Costuras lo descarta.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "31 familias ≠ 169 operaciones. Goal 03 midió que rankear familias y repartir plazas 73/124 vs 102/124. No es victoria contra e5.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "0.9521 @31; no 103/124 @169", "comparable": false, "note": "granularidad"},
+        "conversacion": {"value": "n/a", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "n/a encoder", "comparable": true, "note": ""},
+        "abstencion": {"value": "ADR MiniLM sobre-abstiene/rutas falsas", "comparable": false, "note": "hard gate"},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "2.1 ms Goal 01; ADR 13.6 ms", "comparable": false, "note": "distintos MiniLM"},
+        "ram_vram": {"value": "ADR 1222 MiB / 4407 MiB peso", "comparable": false, "note": ""},
+        "arranque": {"value": "0.40 s ONNX Goal 01", "comparable": false, "note": "encoder 31-tool"},
+        "facilidad_catalogo": {"value": "centroides atados al set; reentrenar para cambiar", "comparable": true, "note": "peor que e5+catálogo datos"}
+      },
+      "citations": [
+        {"card_id": "docs-018-functiongemma-03-router-data-router_encoder_ft", "batch_id": "docs-018-functiongemma"},
+        {"card_id": "code_tests-391-functiongemma-49-router-scripts-router_tool2vec_build.py", "batch_id": "code_tests-391-functiongemma"},
+        {"card_id": "evidence_assets-032-functiongemma-66-router-data-tool2vec_centroids.npz", "batch_id": "evidence_assets-032-functiongemma"}
+      ]
+    },
+    {
+      "id": "qwen3-embedding-0.6b",
+      "family": "encoder_tool2vec",
+      "role": "encoder",
+      "current_choice": false,
+      "evidencia_a_favor": "ADR candidato; LOO 88.30%.",
+      "evidencia_en_contra": "Cobertura 99.41% ✗ hard gate. 243.4 ms/consulta, 1178 MiB RAM, 1152 MiB peso. Cascade BGE+Qwen R186 no promovido.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Hard gate ADR. No Goal 03.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "cobertura fail hard gate", "comparable": false, "note": ""},
+        "conversacion": {"value": "n/a", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "n/a", "comparable": true, "note": ""},
+        "abstencion": {"value": "sobre-abstención/rutas falsas", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "243.4 ms", "comparable": false, "note": ""},
+        "ram_vram": {"value": "1178 MiB", "comparable": false, "note": ""},
+        "arranque": {"value": "no", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "banco ADR", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "evidence_assets-105-baxy-06-experiments-mind_router_spike-results", "batch_id": "evidence_assets-105-baxy"},
+        {"card_id": "code_tests-472-baxy-baxy_tests-47-tests-test_bge_qwen_embedding_cascade_r186.py", "batch_id": "code_tests-472-baxy-baxy_tests"}
+      ]
+    },
+    {
+      "id": "bge-m3",
+      "family": "encoder_tool2vec",
+      "role": "encoder",
+      "current_choice": false,
+      "evidencia_a_favor": "Línea R186–R257: adquisición, prototipo, retrieval, abstención semántica atestiguados como experimentos.",
+      "evidencia_en_contra": "No sustituyó a e5-small en producción. Cascada extra. Goal 03: el cuello no es el encoder (shortlist 8 vs 28 no mueve al decisor).",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Experimentos de desarrollo, no Goal 03 lado a lado vs e5 en 169 ops como ganador.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no 103/124 publicado como win vs e5", "comparable": false, "note": ""},
+        "conversacion": {"value": "n/a", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "n/a", "comparable": true, "note": ""},
+        "abstencion": {"value": "prototipo semantic abstention; no puerta de producto", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "más pesado que e5", "comparable": false, "note": ""},
+        "ram_vram": {"value": "M3 más grande", "comparable": false, "note": ""},
+        "arranque": {"value": "capa extra", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "no cuece nombres", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "code_tests-402-baxy-baxy_exp_mind_router_spike-31-experiments-mind_router_spike-attest_bge_m3_acquisition_r232", "batch_id": "code_tests-402-baxy-baxy_exp_mind_router_spike"}
+      ]
+    },
+    {
+      "id": "cross-encoder-reranker",
+      "family": "encoder_tool2vec",
+      "role": "reranker",
+      "current_choice": false,
+      "evidencia_a_favor": "R208/R210/R238/R244: línea de reranker supervisado atestiguada.",
+      "evidencia_en_contra": "R209 cross-encoder 16/77 rechazado (card carter-v4-tool-retrieval-e5 limitations). Capa extra sobre e5. Ley 2: si se añade, hay que retirar la que sustituye — no hay win medido.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "16/77 no es corpus 124. No se trata como victoria.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "R209 16/77 rechazado", "comparable": false, "note": ""},
+        "conversacion": {"value": "n/a", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "n/a", "comparable": true, "note": ""},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "segunda pasada", "comparable": false, "note": ""},
+        "ram_vram": {"value": "modelo extra", "comparable": false, "note": ""},
+        "arranque": {"value": "capa extra", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "no cuece nombres", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "carter-v4-tool-retrieval-e5", "batch_id": "code_tests-001-carter"},
+        {"card_id": "code_tests-402-baxy-baxy_exp_mind_router_spike-52-experiments-mind_router_spike-audit_cross_encoder_r210.py", "batch_id": "code_tests-402-baxy-baxy_exp_mind_router_spike"}
+      ]
+    },
+    {
+      "id": "llama-cpp-b9980",
+      "family": "qwen_vigente",
+      "role": "runtime",
+      "current_choice": true,
+      "evidencia_a_favor": "Sostiene 122 turnos Qwen3-4B p50 2.18 s p90 3.02 s. Mismo GGUF a ambos lados al comparar runtime. Job Object kill-on-close. CPU fallback NGL=0.",
+      "evidencia_en_contra": "--reasoning-budget 0 no quita thinking: el borrador EN pasa a ser la respuesta. WDDM oculta VRAM por-proceso.",
+      "comparabilidad": "si",
+      "comparabilidad_razon": "Goal 03 / costuras, mismo GGUF. Ollama es otro runtime (no comparable como win).",
+      "decision": "conservar",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no cambia el modelo si el GGUF es el mismo", "comparable": true, "note": ""},
+        "conversacion": {"value": "jinja/tools OK con Qwen3-4B; Phi-4-mini no", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "JSON schema grammar", "comparable": true, "note": ""},
+        "abstencion": {"value": "n/a runtime", "comparable": true, "note": ""},
+        "prosa": {"value": "reasoning-budget 0 rompe prosa visible", "comparable": true, "note": ""},
+        "latencia": {"value": "p50 2.18 / p90 3.02 idle", "comparable": true, "note": ""},
+        "ram_vram": {"value": "ngl 99; KV q4_0 + FA", "comparable": true, "note": ""},
+        "arranque": {"value": "llama-server puerto efímero", "comparable": true, "note": ""},
+        "facilidad_catalogo": {"value": "schema en el request, no en pesos", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"},
+        {"card_id": "carter-v4-gemma4-sampling-flags", "batch_id": "code_tests-001-carter"}
+      ]
+    },
+    {
+      "id": "ollama-runtime",
+      "family": "qwen_vigente",
+      "role": "runtime",
+      "current_choice": false,
+      "evidencia_a_favor": "Carter v2/v4 lo usó; OpenAI-compat :11434; audio probes E4B.",
+      "evidencia_en_contra": "Tres backends conviviendo (ollama, llamacpp, openai). Cloud openai rompe invariante 6. Audio nativo no rutea en llama-server. No es el runtime de producto.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "No hay A/B mismo GGUF Ollama vs llama.cpp b9980 sobre Goal 03.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": ""},
+        "conversacion": {"value": "Carter", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "sesgo tools= OpenAI (card model-lab)", "comparable": false, "note": ""},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "no", "comparable": false, "note": ""},
+        "latencia": {"value": "no vs b9980", "comparable": false, "note": ""},
+        "ram_vram": {"value": "perfiles 6–24 GB", "comparable": false, "note": "ley 4"},
+        "arranque": {"value": "servicio Ollama", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "protocolo tools palanca", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "carter-v2-runtime-env", "batch_id": "code_tests-001-carter"},
+        {"card_id": "harness-gemma-native-audio", "batch_id": "code_tests-001-carter"}
+      ]
+    },
+    {
+      "id": "agent-function-schema",
+      "family": "agent_function_schema",
+      "role": "schema",
+      "current_choice": false,
+      "evidencia_a_favor": "Schema Agent: tests de no inventar tools, drift, cache de nombres (adapt_candidate). Function Schema es alias de la misma etapa (no existe carpeta Probando schemas). Inventario evidence_assets-132 schemas_16 / schemas_60.",
+      "evidencia_en_contra": "tool_schemas.py es catálogo OpenAI/JSON en el prompt (reject_candidate). El universo de tools vive en un módulo Python que el LLM ve. BAXY exige ProductCatalog .NET. Goal 01 rechazó catálogo cocido en pesos/prompt. 16 consolidated vs 60 individuales es el recorte que midió 75.93%→62.96%.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "No es un modelo. La comparabilidad es arquitectónica (invariante 1), no una cifra de corpus. Los tests de «no inventar» se adaptan al kernel, no se trasplanta el módulo.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "n/a schema", "comparable": false, "note": "no decisor"},
+        "conversacion": {"value": "n/a", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "contrato pytest Python sobre catálogo abandonado", "comparable": false, "note": ""},
+        "abstencion": {"value": "n/a", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": false, "note": ""},
+        "latencia": {"value": "n/a", "comparable": false, "note": ""},
+        "ram_vram": {"value": "n/a", "comparable": false, "note": ""},
+        "arranque": {"value": "n/a", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "falla: nombres en prompt/pesos. Conservar datos tipados.", "comparable": true, "note": "constraint"}
+      },
+      "citations": [
+        {"card_id": "schema-agent-tool-schemas", "batch_id": "code_tests-477-baxy_schema_agent-baxy_schema_agent"},
+        {"card_id": "schema-agent-schema-tests", "batch_id": "code_tests-477-baxy_schema_agent-baxy_schema_agent"},
+        {"card_id": "evidence_assets-132-baxy_schema_agent-01-documentacion-datos_crudos-schemas_16_consolidated.json", "batch_id": "evidence_assets-132-baxy_schema_agent"}
+      ]
+    },
+    {
+      "id": "q2-quant-gemma",
+      "family": "gemma4",
+      "role": "quant",
+      "current_choice": false,
+      "evidencia_a_favor": "Ahorra ~0.43 GB vs Q4_K_XL E2B (2.19 vs 2.62 GB).",
+      "evidencia_en_contra": "FunctionGemma 2026-06: Q2 inventaba fysico/lumínar y rompía persona. Goal 01 A/B: no reprodujo esas palabras; sí degeneración por repetición y fallo de «en cuatro frases»; Q2 más lento 8.1–12.6 s vs 6.3–11.4 s. No se hereda como conclusión para Qwen3.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "A/B es Gemma E2B, n=6 prompts, no Qwen3-4B ni corpus 160. Costuras: no bajar Qwen sin GGUF más ligero del mismo modelo.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "no Goal 03", "comparable": false, "note": ""},
+        "conversacion": {"value": "persona seca; 3 frases de 4", "comparable": false, "note": "n=6"},
+        "tool_call_valido": {"value": "no", "comparable": false, "note": ""},
+        "abstencion": {"value": "no", "comparable": false, "note": ""},
+        "prosa": {"value": "degeneración; Q2 Gemma no Qwen", "comparable": false, "note": "no heredar"},
+        "latencia": {"value": "más lento que Q4 en el A/B", "comparable": false, "note": "n=6"},
+        "ram_vram": {"value": "−0.43 GB", "comparable": false, "note": "Gemma no Qwen"},
+        "arranque": {"value": "no", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "n/a quant", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "code_tests-025-carter-carter_v2-30-Carter_v2-scripts-quantize_q2k.py", "batch_id": "code_tests-025-carter-carter_v2"},
+        {"card_id": "carter-v4-gemma4-core-prompt", "batch_id": "code_tests-001-carter"}
+      ]
+    },
+    {
+      "id": "q4-k-xl-qat-gemma",
+      "family": "gemma4",
+      "role": "quant",
+      "current_choice": false,
+      "evidencia_a_favor": "QAT Q4_K_XL: prosa correcta, sigue instrucción, sin degeneración en A/B Goal 01. Era la quant del E2B elegido en ADR.",
+      "evidencia_en_contra": "Atada a Gemma-4-E2B, que Goal 03 perdió contra Qwen3-4B Q4_K_M. No es la quant vigente.",
+      "comparabilidad": "si",
+      "comparabilidad_razon": "A/B Q2 vs Q4 del mismo Gemma es comparable entre sí. Vs Qwen Q4_K_M el modelo cambió (Goal 03).",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "la del E2B Goal 03 63/124", "comparable": true, "note": "modelo+quant"},
+        "conversacion": {"value": "persona completa en A/B", "comparable": false, "note": "n=6"},
+        "tool_call_valido": {"value": "ADR E2B", "comparable": false, "note": ""},
+        "abstencion": {"value": "ADR E2B", "comparable": false, "note": ""},
+        "prosa": {"value": "Q4 QAT OK en Gemma", "comparable": true, "note": "no trasladar a Qwen"},
+        "latencia": {"value": "6.3–11.4 s Goal 01 thinking", "comparable": true, "note": ""},
+        "ram_vram": {"value": "2.62 GB GGUF", "comparable": true, "note": ""},
+        "arranque": {"value": "llama-server", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "n/a", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-022-baxy-05-experiments-mind_llm_tournament", "batch_id": "docs-022-baxy"}
+      ]
+    },
+    {
+      "id": "q8-0-functiongemma",
+      "family": "functiongemma",
+      "role": "quant",
+      "current_choice": false,
+      "evidencia_a_favor": "Campeón run6 cuantizado a functiongemma-ft-270m-it-Q8_0.gguf 278 MB.",
+      "evidencia_en_contra": "Quant del modelo rechazado (no conversa, catálogo cocido, primer split 0/3). Q8 no cura esos fallos.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "No hay A/B Q4 vs Q8 de FG en corpus fresco. El rechazo es del modelo, no del bitwidth.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "n/a", "comparable": false, "note": ""},
+        "conversacion": {"value": "el modelo no conversa", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "Q8_0 del FT", "comparable": false, "note": ""},
+        "abstencion": {"value": "primer split 0/3 independiente del Q8", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": false, "note": ""},
+        "latencia": {"value": "0.11–0.23 s", "comparable": false, "note": ""},
+        "ram_vram": {"value": "278 MB", "comparable": true, "note": ""},
+        "arranque": {"value": "rápido", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "cocido igual", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-018-functiongemma-01-AGENTS.md", "batch_id": "docs-018-functiongemma"},
+        {"card_id": "code_tests-391-functiongemma-12-finetune_llm-quantize_fg.py", "batch_id": "code_tests-391-functiongemma"}
+      ]
+    },
+    {
+      "id": "kva-abstain-head",
+      "family": "abstencion",
+      "role": "abstain_head",
+      "current_choice": false,
+      "evidencia_a_favor": "Gate CONOCIMIENTO-vs-ACCIÓN barato sobre MiniLM-FT, sin reentrenar FG. Respuesta al primer split 0/3. Probes no_tool/knowledge/multiling en FunctionGemma.",
+      "evidencia_en_contra": "Capa extra para tapar FG. Goal 03 midió cinco mecanismos OOD (incluido supervisado 0.58 AUC en paráfrasis libre) y la puerta léxica es el techo. fg_probe_multiling cubre pt/fr/de/it — fuera de alcance, cero trabajo. MiniLM no es el encoder vigente.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "No se midió sobre las 36 OOD del corpus fresco con e5-small. Añadirla apilaría caminos (ley 2).",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "n/a cabeza binaria", "comparable": false, "note": ""},
+        "conversacion": {"value": "desvía a no_tool", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "no", "comparable": false, "note": ""},
+        "abstencion": {"value": "diseñada para el 0/3; no rerun 36 OOD", "comparable": false, "note": "Goal 03 techo léxico"},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "head barata", "comparable": false, "note": ""},
+        "ram_vram": {"value": "sobre MiniLM", "comparable": false, "note": ""},
+        "arranque": {"value": "capa extra", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "no cuece nombres", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "code_tests-398-functiongemma-02-build_kva_gate.py", "batch_id": "code_tests-398-functiongemma"},
+        {"card_id": "code_tests-398-functiongemma-20-fg_probe_notool.py", "batch_id": "code_tests-398-functiongemma"},
+        {"card_id": "code_tests-398-functiongemma-19-fg_probe_multiling.py", "batch_id": "code_tests-398-functiongemma"}
+      ]
+    },
+    {
+      "id": "lexical-domain-gate",
+      "family": "abstencion",
+      "role": "abstain_gate",
+      "current_choice": true,
+      "evidencia_a_favor": "Goal 03/03B/03C/04: con puerta 57/124 y 33/36 OOD; sin puerta 83/124 pero 20/36 efectos no pedidos. Veredicto ternario y near-miss 03C intactos.",
+      "evidencia_en_contra": "No es un mecanismo de abstención semántico: es vocabulario. Techo medido. 11/20 OOD aterrizan en ops de dominio «todo el idioma».",
+      "comparabilidad": "si",
+      "comparabilidad_razon": "Mismo corpus 761c1bc3… corridas 3 vs 6.",
+      "decision": "conservar",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "quita 26 filas vs sin puerta (83→57)", "comparable": true, "note": "trade-off explícito"},
+        "conversacion": {"value": "incertidumbre → conversación (R-007 vigente en producto)", "comparable": true, "note": ""},
+        "tool_call_valido": {"value": "no inventa tools", "comparable": true, "note": ""},
+        "abstencion": {"value": "33/36 OOD; sin puerta 16/36", "comparable": true, "note": ""},
+        "prosa": {"value": "n/a", "comparable": true, "note": ""},
+        "latencia": {"value": "determinista", "comparable": true, "note": ""},
+        "ram_vram": {"value": "0 modelo extra", "comparable": true, "note": ""},
+        "arranque": {"value": "0", "comparable": true, "note": ""},
+        "facilidad_catalogo": {"value": "listas por dominio; catálogo sigue datos", "comparable": true, "note": ""}
+      },
+      "citations": [
+        {"card_id": "docs-025-baxy-06-src-baxy_mind", "batch_id": "docs-025-baxy"}
+      ]
+    },
+    {
+      "id": "qwen-vl",
+      "family": "qwen_vigente",
+      "role": "vision",
+      "current_choice": false,
+      "evidencia_a_favor": "Módulos legacy qwen_vl.py y tests de runtime security en BAXY.",
+      "evidencia_en_contra": "R-023: Qwen-VL inventó juegos ambiguos. No es modelo de habla/decisión. Recinto 09.5.5 no sintetiza visión (09.5.7/08). Cero trabajo aquí.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Fuera de recinto 09.5.5. Hallado en tarjetas; no se silencia. No crea metas.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "visión, no Goal 03 texto", "comparable": false, "note": "defer 09.5.7/08"},
+        "conversacion": {"value": "n/a", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "n/a 09.5.5", "comparable": false, "note": ""},
+        "abstencion": {"value": "R-023 alucinación visual", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": false, "note": ""},
+        "latencia": {"value": "n/a", "comparable": false, "note": ""},
+        "ram_vram": {"value": "n/a", "comparable": false, "note": ""},
+        "arranque": {"value": "n/a", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "n/a", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "code_tests-436-baxy-05-legacy-models-qwen_vl.py", "batch_id": "code_tests-436-baxy"}
+      ]
+    },
+    {
+      "id": "qwen-asr",
+      "family": "qwen_vigente",
+      "role": "stt",
+      "current_choice": false,
+      "evidencia_a_favor": "GGUF/ONNX de Qwen3-ASR evaluados en experiments/stt_quality.",
+      "evidencia_en_contra": "Costuras Goal 09: Qwen3-ASR GGUF en disco no se adoptó. STT vigente Parakeet. Recinto 09.5.6. Cero trabajo aquí.",
+      "comparabilidad": "no",
+      "comparabilidad_razon": "Fuera de recinto 09.5.5. Hallado; diferido a 09.5.6. No se silencia.",
+      "other_language_work_items": [],
+      "axes": {
+        "comprension": {"value": "STT no decisor", "comparable": false, "note": "defer 09.5.6"},
+        "conversacion": {"value": "n/a", "comparable": false, "note": ""},
+        "tool_call_valido": {"value": "n/a", "comparable": false, "note": ""},
+        "abstencion": {"value": "n/a", "comparable": false, "note": ""},
+        "prosa": {"value": "n/a", "comparable": false, "note": ""},
+        "latencia": {"value": "n/a 09.5.5", "comparable": false, "note": ""},
+        "ram_vram": {"value": "n/a", "comparable": false, "note": ""},
+        "arranque": {"value": "n/a", "comparable": false, "note": ""},
+        "facilidad_catalogo": {"value": "n/a", "comparable": false, "note": ""}
+      },
+      "citations": [
+        {"card_id": "code_tests-408-baxy-17-experiments-stt_quality-evaluate_qwen3_asr_onnx_development.", "batch_id": "code_tests-408-baxy"}
+      ]
+    }
+  ],
+  "reopen_before_goal_10": {
+    "llm": "nada. Conservar Qwen3-4B-Q4_K_M. Ningún candidato histórico gana en corpus fresco equivalente. Gemma E2B ya perdió. FunctionGemma no conversa y cuece el catálogo.",
+    "encoder": "nada. Conservar e5-small. Tool2Vec/MiniLM no comparable a 169 ops. EmbeddingGemma sin dato nuevo.",
+    "quant": "nada sin GGUF más ligero del mismo Qwen3-4B en disco. Q2 Gemma no se hereda.",
+    "schema": "nada que transplantar como catálogo. Tests de no-inventar → 09.5.7 como idea, no como tool_schemas.py.",
+    "sparse_gguf": "sólo si 09.5.9 nombra un GGUF concreto de Probando Gemma 4; entonces 09.5.10 FALLO_DE_AMBIENTE (pg4-gguf-models). No inventar hashes.",
+    "voice_stt": "09.5.6 (Parakeet vs Qwen-ASR vs Gemma native audio). No aquí.",
+    "benchmark_if_09_5_9_reopens_llm": "goal03_fresh_es_en_spanglish_v1 (este documento). Presupuesto: 1 corrida ciega, 0 ajuste de umbral, VRAM techo 4 GiB, catalog_swap_probe obligatorio."
+  },
+  "live_weights_changed": false
+}
