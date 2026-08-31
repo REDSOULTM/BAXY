@@ -1,48 +1,61 @@
-# Handoff — Goal 10.2 presencia y recursos — 2026-08-31
+# Handoff — Goal 10.3 uso real A — 2026-08-31 — preparación (0/50)
 
 ## Objetivo
-BAXY disponible sin fricción: bandeja, arranque con Windows, entrada sólo tras readiness, idle 15 min atribuido sin secuestrar el PC.
+Cerrar el primer bloque limpio de 50 turnos reales: 25 pedidos espontáneos del dueño y cinco repeticiones de cada familia congelada. Esta sesión no lo cierra.
 
 ## Estado
-Hecho: bandeja Win32 `BAXY.Presence.Tray`, HKCU Run `BAXY` → `Baxy.exe --from-windows-start`, input/voice gated until ready, cold start + restart recover voz/mente/UI, 15 min idle with listen on. Owner tests 26+5 two times, 0 fail 0 skip.
-En curso: nada.
-Sin empezar: `10.3_USO_REAL_A.md`.
+Hecho: preflight técnico 10.3; causa del hijack de arranque (`memory_recovery_pending` tragaba el primer turno y `cancelar` no retiraba el outbox) corregida en App; regresión dueño verde dos veces; evidencia privada de la tanda fallida ignorada por git.
+En curso: Goal 10.3. Contador **0/50**. Cero espontáneos del dueño. Cero repeticiones de familia contadas.
+Sin empezar: las 25 interacciones espontáneas del dueño; las 25 repeticiones (5× `conversation`, `media.play`, `audio.volume`, `system.status`, `system.settings`); cierre 10.3; `10.4_USO_REAL_B.md`.
 
 ## Decisiones tomadas
-- Autostart = HKCU Run, not Startup folder; no Windows reboot. Launching the Run command starts BAXY (status under `%LOCALAPPDATA%\BAXY\1` when `BAXY_DATA_DIR` is unset).
-- Tray is a message-only window + Shell_NotifyIcon; close hides to tray; Salir shuts down (`ShutdownMode=OnExplicitShutdown`).
-- Keep-warm / `process_lifecycle` unchanged. Idle measured the live llama-server; no unload-on-idle path.
-- Process attribution: descendants of Baxy.exe with start-time ≥ root, python only under `BAXYRuntime`. System Python312 excluded.
-- Overlapping VoiceStart/Stop serialized with `_voiceCommandBusy`.
+- 0/50 se declara, no se finge. La regla de la dosis prohíbe guionizar los 25 espontáneos o sustituirlos por corpus. Sin el dueño no hay bloque.
+- El lote vivo de arranque quedó como evidencia fallida, no como parte de los 50. Reinicio del bloque desde 0 tras el arreglo.
+- No se repite la prueba viva de cancelación: dos sesiones se atascaron ahí. La prueba dueño `RecoveredPersistentMemoryCanBeCancelledWithoutExecuting` cubre el defecto.
+- `ContinueCancel` ya existía; no se añade un array gemelo. Cancelar recovery que no puede retirarse usa `cannot_withdraw_pending`, igual que la confirmación hermana.
+- Mute del endpoint Realtek no es `FALLO_DE_AMBIENTE`: pycaw lee scalar=1.0. El JSON original mintió `FALLO_DE_AMBIENTE` por un `Read` COM de PowerShell; revalidado.
+- `artifacts/goal10/private/` queda gitignored. `owner-tests-1.log` / `2.log` siguen siendo la evidencia 10.2 (commit `b12f64e`).
 
 ## Archivos tocados
-- `src/Baxy.App/Presence*.cs`, `WindowsAutostartRegistration.cs`, `OwnedProcessReader.cs` — tray, autostart, idle samples, status.v1.json
-- `src/Baxy.App/App.xaml(.cs)`, `MainWindow.xaml.cs` — hide-to-tray, presence host
-- `src/Baxy.App/FieldBridgeContract.cs`, `FieldUiBridge.cs` — `/turn` and `/voice` reject `agent_not_ready`
-- `src/Baxy.App/MainWindowViewModel.cs` — FirstWakeUtc, mind/mic publish, voice busy latch
-- `src/Baxy.App/CoreProcessClient.cs` — injectable exe for dead-child bound
-- `main.py` — kill leftover development Baxy if hide-to-tray ignores CloseMainWindow
-- `tests/Baxy.Integration.Tests/Presence*.cs`
+- `src/Baxy.App/MainWindowViewModel.cs` — `HandlePendingMemoryOperationAsync` acepta `cancelar` y vacía el outbox
+- `src/Baxy.App/PrivateOperationNarration.cs` — recovery ofrece continuar/cancelar
+- `src/Baxy.App/TurnVisibleFacts.cs` — sin array duplicado
+- `tests/Baxy.Integration.Tests/MemoryAppFlowTests.cs` — `RecoveredPersistentMemoryCanBeCancelledWithoutExecuting`
+- `.gitignore` — `/artifacts/goal10/private/`
+- `artifacts/goal10/preflight-10.3.md` + `.json` — preflight + revalidación pycaw
+- `artifacts/goal10/owner-tests-10.3-1.log` + `-2.log`
 
 ## Archivos relevantes aún sin tocar
-- `documentacion/sprints/10.3_USO_REAL_A.md` — next prompt, not this session
-- Goal 09 wake/STT/TTS — no recailbration
+- `%LOCALAPPDATA%\BAXY\dev-mente-v2\shell\retry-outbox.v1.json` — 1 entrada `memory.forget` (no versionada)
+- `documentacion/sprints/10.3_USO_REAL_A.md` — criterios de cierre siguen abiertos
+- `documentacion/sprints/10.4_USO_REAL_B.md` — no abrir
 
 ## Hipótesis
-Confirmadas: no NotifyIcon/autostart in src before this goal → defect, now shipped. Corrupt outbox still fail-closes (`CorruptDefaultOutboxLeavesTheShellUnavailable`). Keep-warm llama-server stays in the idle tree.
-Descartadas: transplant vram_manager/Ollama/unload-on-idle; soak 24 h; FindWindow on WS_POPUP (not enumerable).
+Confirmadas: recovery persistente al arrancar interceptaba conversación y no se podía cancelar → tests dueño 3/3 dos veces; lote fallido `artifacts/goal10/private/failed-batches/10.3-batch0-launch1-memory-recovery-hijack.jsonl`.
+Descartadas: inventar 50 turnos; prueba viva de cancelación; `FALLO_DE_AMBIENTE` por mute o por el `Read` de PowerShell; avanzar a 10.4.
 
 ## Comandos ejecutados y resultado
-- `dotnet test tests\Baxy.Integration.Tests ... --filter Presence*|VoiceListen|CorruptDefaultOutbox` → `26 passed, 0 fail, 0 skip` twice (327 ms / 350 ms)
-- `py -3.12 -m pytest tests/test_process_lifecycle.py -q` → `5 passed` twice
-- Live `py main.py`: tray hwnd queryable, ready/input/mind/listen; cold-start 46.5 s; restart 28.9 s; autostart exe `--from-windows-start` ready in `%LOCALAPPDATA%\BAXY\1`
-- Idle 904 s listen on, 39 samples, working_set not monotonic, handles −36, adapter GPU 4132→991 MiB
-- Evidence: `artifacts/goal10/{preflight-10.2.md,launch-1.json,cold-start.json,restart.json,idle-15min.json,idle-15min.summary.json,autostart-launch.json}`
-- No ejecutado: Full — not this session’s close
+- `dotnet test tests\Baxy.Integration.Tests -c Release --filter "FullyQualifiedName~MemoryAppFlowTests.RecoveredPersistentMemory|FullyQualifiedName~MemoryAppFlowTests.ViewModelRecovery|FullyQualifiedName~MemoryAppFlowTests.ReconciliationChallenge" --nologo -v:minimal` → `3 passed, 0 fail, 0 skip` dos veces (41 s / 40 s)
+- pycaw `GetSpeakers().EndpointVolume` → device `Altavoces (Realtek(R) Audio)`, scalar 1.0, muted true
+- No ejecutado: Full; soak; 50 turnos reales; prueba viva de cancelación; `10.4`
 
 ## Problemas pendientes
-- nvidia-smi compute-apps does not attribute MiB to llama-server (vram_bytes=0 per pid); adapter-level used as the VRAM ceiling check
-- First acoustic wake during idle was null (listen armed; no “Baxy” spoken)
+- 25 espontáneos del dueño — sin ellos el bloque no arranca.
+- Outbox leftover `memory.forget` en `dev-mente-v2`: el próximo `py main.py` ofrecerá recovery. `cancelar` es preparación, no turno 1.
+- `status.v1.json` de 22:46Z puede estar stale; no reutilizar esa sesión para los 50.
+- Endpoint de salida muteado; no bloquea `audio.volume`, pero hay que tenerlo en cuenta al verificar playback.
 
 ## Siguiente acción recomendada
-`documentacion/sprints/10.3_USO_REAL_A.md` (sesión nueva, un pegado).
+Misma meta `documentacion/sprints/10.3_USO_REAL_A.md`, receta abajo. No pegar `10.4`. No relanzar el fichero. No inventar espontáneos.
+
+### Receta exacta para continuar
+1. Sesión nueva, **sin** `/goal` nuevo y **sin** pegar `10.4_USO_REAL_B.md`. Continuar 10.3 desde este handoff.
+2. No repetir la prueba viva de cancelación. No guionizar los 25 espontáneos. No copiar corpus.
+3. El dueño aporta 25 pedidos espontáneos reales (ES/EN/spanglish). Hasta que existan, el contador sigue 0/50.
+4. Arranque de campaña: `py main.py` (Release `Baxy.exe`), data root `%LOCALAPPDATA%\BAXY\dev-mente-v2`. Si aparece `memory_recovery_pending`, enviar `cancelar` como prep de ambiente (no cuenta). Entonces turno 1.
+5. 25 repeticiones: 5 de cada familia congelada en `tests/data/goal10_corpus_freeze.v1.json` → `conversation`, `media.play`, `audio.volume`, `system.status`, `system.settings`. Acciones reversibles en físico; Spotify está instalado; brillo WMI 100; volumen scalar 1.0 muted true.
+6. Cada turno: entrada, salida visible, operación/plan, hechos contemporáneos, postcondición, terminal, veredicto. Privado en `artifacts/goal10/private/turns-10.3.jsonl` (gitignored). Resumen versionable sin texto de usuario.
+7. El lote `private/failed-batches/10.3-batch0-launch1-memory-recovery-hijack.jsonl` y las 2 líneas actuales de `turns-10.3.jsonl` **no** son de los 50. El bloque arranca en 0.
+8. Afirmación falsa, efecto no pedido o prosa fija → corregir causa mínima, test dueño dos veces, **reiniciar este bloque desde 0**.
+9. Petición in-scope imposible por ambiente → `FALLO_DE_AMBIENTE` en `artifacts/goal10/environment/10.3.md`, pausa, no skip, no 10.4.
+10. Cierre 10.3 sólo con 50/50 pass individuales, cero invariantes duros rotos, artefacto privado + resumen, handoff, commit y push. Entonces, y sólo entonces, `10.4_USO_REAL_B.md`.

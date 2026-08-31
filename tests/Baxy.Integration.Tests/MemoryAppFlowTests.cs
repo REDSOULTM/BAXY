@@ -739,6 +739,51 @@ public sealed class MemoryAppFlowTests
     }
 
     [Test]
+    public async Task RecoveredPersistentMemoryCanBeCancelledWithoutExecuting()
+    {
+        using TemporaryDirectory temporary = new();
+        string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
+        Environment.SetEnvironmentVariable("BAXY_DATA_DIR", temporary.Path);
+        string outbox = Path.Combine(temporary.Path, "shell", "retry-outbox.v1.json");
+
+        try
+        {
+            MemoryOperationProtector previous = MemoryOperationProtector.CreateDefault(
+                Guid.NewGuid().ToString("D"));
+            var registry = RetryableOperationRegistry.CreateDefault(previous);
+            PreparedOperation persistent = registry.GetOrAdd(previous.Prepare(
+                SaveRoute(Canary + "-cancel", "persistent", "personal")));
+
+            await using var viewModel = new MainWindowViewModel();
+            await viewModel.InitializeAsync(CancellationToken.None);
+            Assert.Multiple(() =>
+            {
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_recovery_pending"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Contain("cancelar"));
+                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain(Canary));
+            });
+
+            await SubmitAsync(viewModel, "cancelar");
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(
+                    LastAssistantMessage(viewModel),
+                    Does.Contain("memory_cancelled"));
+            });
+
+            await SubmitAsync(viewModel, "hola, preséntate en una frase y no toques el sistema");
+            Assert.That(
+                LastAssistantMessage(viewModel),
+                Does.Not.Contain("memory_recovery_pending"));
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("BAXY_DATA_DIR", previousDataRoot);
+        }
+    }
+
+    [Test]
     public async Task ReconciliationChallengeCannotBeCancelledWithAFalseNoEffectClaim()
     {
         using TemporaryDirectory temporary = new();

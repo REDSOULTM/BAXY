@@ -147,6 +147,10 @@ data/exemplar_candidates.json
 /tests/data/goal10_m10.v1.jsonl
 /tests/data/goal10_c10.v1.jsonl
 
+# Goal 10.3 private per-turn payload (entrada, salida visible, user text).
+# Versionable summaries and handoff stay tracked.
+/artifacts/goal10/private/
+
 # Evidencia local regenerable de gates de comportamiento y cobertura.
 /artifacts/validation/
 

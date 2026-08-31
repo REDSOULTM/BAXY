@@ -807,7 +807,28 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         PreparedOperation pending = _pendingMemoryOperation
             ?? throw new InvalidOperationException("No hay una operación de memoria por reconciliar.");
-        if (NoteChoiceReplyParser.Parse(text).Kind != NoteChoiceReplyKind.Continue)
+        NoteChoiceReply reply = NoteChoiceReplyParser.Parse(text);
+        if (reply.Kind == NoteChoiceReplyKind.Cancel)
+        {
+            if (!TryRemoveMemoryOperation(registry, pending))
+            {
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Failure("cannot_withdraw_pending"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Error(
+                        UserMessageDiagnosticCodes.ActionNotCompleted));
+                return;
+            }
+
+            _pendingMemoryOperation = null;
+            _pendingMemoryRecoveryAnnounced = false;
+            AddMessage("BAXY", TurnVisibleFacts.Status("memory_cancelled"), isUser: false);
+            ContinueMemoryRecovery(registry);
+            return;
+        }
+
+        if (reply.Kind != NoteChoiceReplyKind.Continue)
         {
             AddMessage(
                 "BAXY",

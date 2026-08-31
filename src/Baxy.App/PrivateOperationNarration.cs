@@ -92,7 +92,7 @@ internal static class PrivateOperationNarration
         };
         return TurnVisibleFacts.Confirmation(
             "memory_recovery_pending",
-            TurnVisibleFacts.ContinueRetry,
+            TurnVisibleFacts.ContinueCancel,
             new JsonObject { ["category"] = category });
     }
 
