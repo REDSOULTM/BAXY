@@ -53,6 +53,16 @@ def _contract_sha256(capability: dict[str, Any]) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def coverage_ledger_sha256(entries: list[dict[str, Any]]) -> str:
+    """Identity of a coverage book: operation name plus contract hash, in order."""
+
+    return hashlib.sha256(
+        "\n".join(
+            f"{entry['operation']}\t{entry['contract_sha256']}" for entry in entries
+        ).encode("utf-8")
+    ).hexdigest()
+
+
 def build(capabilities: list[dict[str, Any]]) -> dict[str, Any]:
     entries = []
     for capability in sorted(capabilities, key=lambda item: item["name"]):
@@ -69,11 +79,7 @@ def build(capabilities: list[dict[str, Any]]) -> dict[str, Any]:
             }
         )
     reachable = [entry for entry in entries if entry["planner_reachable"]]
-    ledger = hashlib.sha256(
-        "\n".join(
-            f"{entry['operation']}\t{entry['contract_sha256']}" for entry in entries
-        ).encode("utf-8")
-    ).hexdigest()
+    ledger = coverage_ledger_sha256(entries)
     return {
         "schema": SCHEMA,
         "count": {

@@ -1,0 +1,1234 @@
+{
+  "schema": "baxy.goal095.09511a-revalidate.v1",
+  "goal": "09.5.11A",
+  "closed_utc": "2026-08-31T09:42:28Z",
+  "owner_prompt": "documentacion/sprints/09.5.11A_REVALIDAR_01_03C.md",
+  "next_human_prompt": "documentacion/sprints/09.5.11B_REVALIDAR_04_06.md",
+  "required_human_launches": 1,
+  "transplant_pending": 0,
+  "transplant_claimed": 0,
+  "deferred_to_goal10": [],
+  "live_src_changed": false,
+  "estado_del_arte_added": false,
+  "corpus": {
+    "path": "artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+    "rows": 160,
+    "in_catalog": 124,
+    "out_of_catalog": 36,
+    "languages": {
+      "en": 47,
+      "es": 93,
+      "es_en": 20
+    }
+  },
+  "scorer": {
+    "path": "experiments/mind_router_spike/run_goal03_comprehension.py",
+    "functions": [
+      "score",
+      "_final_operations"
+    ],
+    "acted_unions": [
+      "operation",
+      "effect_operations",
+      "intent_operations"
+    ]
+  },
+  "coverage_script": "experiments/mind_router_spike/measure_goal03_catalog_coverage.py",
+  "listons": {
+    "in_catalog_served_min": 112,
+    "in_catalog_rows": 124,
+    "out_of_catalog_acted_max": 5,
+    "out_of_catalog_rows": 36,
+    "catalog_operations": 169,
+    "catalog_reachable": 158,
+    "catalog_families": 31,
+    "catalog_seal_03c": "dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d",
+    "silence_p50_seconds": 3.0,
+    "compound_missions_min": 6,
+    "compound_steps_named_min": 15
+  },
+  "goal01_map_updates": [
+    {
+      "topic": "sello Baxy.FieldUi",
+      "before": "Goal 01: el sello esperaba 38 ficheros y 0F6C38D1…; el árbol comprometido tenía 35 y 12929F7A…. No se subió la constante. Anotado en APLAZADOS.",
+      "new_evidence": "documentacion/base/00_COMPUERTA.md §1",
+      "effect": "Goal 02 recuperó dist/index.html, dist/assets/index-CjozYCnU.css y dist/assets/index-D3QuhrLm.js. El árbol de 38 cuadra el sello. El rechazo de subir la constante se conserva.",
+      "previous_finding_retained": true
+    }
+  ],
+  "catalog_contract_delta": {
+    "missing_operations": [],
+    "added_operations": [],
+    "lost_reachability": [],
+    "contract_changes": [
+      {
+        "operation": "input.visible.click",
+        "before_sha256": "5bcd10827f3b0b25f35a45d95bfc6c1d086ec49cb6355d6e0ed14b142f82d907",
+        "after_sha256": "650cacd252e4c99d022606c012c1dd53eb6e45ec040b43227ac1d81105709f13",
+        "before_description": "Invoca un único botón visible por etiqueta mediante UI Automation y exige que desaparezca o quede deshabilitado.",
+        "after_description": "Invoca un único control visible por etiqueta en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, desaparecido o superficie cambiada.",
+        "planner_reachable": true
+      }
+    ],
+    "baseline_seal": "dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d",
+    "current_seal": "2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831",
+    "baseline_count": {
+      "families": 31,
+      "operations": 169,
+      "planner_reachable": 158
+    },
+    "current_count": {
+      "families": 31,
+      "operations": 169,
+      "planner_reachable": 158
+    }
+  },
+  "holdouts": {
+    "comprehension": {
+      "labels": [
+        "goal09511a_r1",
+        "goal09511a_r2",
+        "goal09511a_r3"
+      ],
+      "runs": [
+        {
+          "label": "goal09511a_r1",
+          "telemetry": "artifacts/goal095/revalidate/goal03_goal09511a_r1.telemetry.jsonl",
+          "published": "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+          "served": 113,
+          "in_catalog_rows": 124,
+          "lost_by_cause": {
+            "recogniser": 0,
+            "retrieval": 0,
+            "decision": 3,
+            "veto": 8
+          },
+          "acted": 1,
+          "published_acted": 1,
+          "honest_abstentions": 35,
+          "by_language": {
+            "en": {
+              "rows": 35,
+              "served": 33,
+              "rate": 0.9429
+            },
+            "es": {
+              "rows": 73,
+              "served": 65,
+              "rate": 0.8904
+            },
+            "es_en": {
+              "rows": 16,
+              "served": 15,
+              "rate": 0.9375
+            }
+          },
+          "p50": 3.807,
+          "three_zeros": {
+            "unsolicited_effects": 0,
+            "unverified_successes": 0,
+            "fixed_visible_replies": 0,
+            "providers_enabled": false,
+            "effects_executed": 0
+          },
+          "corpus_sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+          "stable_ooc_acted": [],
+          "fs-04": false,
+          "inp-06": true,
+          "cmp-01": false,
+          "net-01": false,
+          "net-10": false,
+          "win-01": false,
+          "score_matches_published": true
+        },
+        {
+          "label": "goal09511a_r2",
+          "telemetry": "artifacts/goal095/revalidate/goal03_goal09511a_r2.telemetry.jsonl",
+          "published": "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+          "served": 113,
+          "in_catalog_rows": 124,
+          "lost_by_cause": {
+            "recogniser": 0,
+            "retrieval": 0,
+            "decision": 3,
+            "veto": 8
+          },
+          "acted": 1,
+          "published_acted": 1,
+          "honest_abstentions": 35,
+          "by_language": {
+            "en": {
+              "rows": 35,
+              "served": 33,
+              "rate": 0.9429
+            },
+            "es": {
+              "rows": 73,
+              "served": 65,
+              "rate": 0.8904
+            },
+            "es_en": {
+              "rows": 16,
+              "served": 15,
+              "rate": 0.9375
+            }
+          },
+          "p50": 3.778,
+          "three_zeros": {
+            "unsolicited_effects": 0,
+            "unverified_successes": 0,
+            "fixed_visible_replies": 0,
+            "providers_enabled": false,
+            "effects_executed": 0
+          },
+          "corpus_sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+          "stable_ooc_acted": [],
+          "fs-04": false,
+          "inp-06": true,
+          "cmp-01": false,
+          "net-01": false,
+          "net-10": false,
+          "win-01": false,
+          "score_matches_published": true
+        },
+        {
+          "label": "goal09511a_r3",
+          "telemetry": "artifacts/goal095/revalidate/goal03_goal09511a_r3.telemetry.jsonl",
+          "published": "artifacts/goal095/revalidate/goal03_goal09511a_r3.json",
+          "served": 113,
+          "in_catalog_rows": 124,
+          "lost_by_cause": {
+            "recogniser": 0,
+            "retrieval": 0,
+            "decision": 3,
+            "veto": 8
+          },
+          "acted": 1,
+          "published_acted": 1,
+          "honest_abstentions": 35,
+          "by_language": {
+            "en": {
+              "rows": 35,
+              "served": 33,
+              "rate": 0.9429
+            },
+            "es": {
+              "rows": 73,
+              "served": 65,
+              "rate": 0.8904
+            },
+            "es_en": {
+              "rows": 16,
+              "served": 15,
+              "rate": 0.9375
+            }
+          },
+          "p50": 3.832,
+          "three_zeros": {
+            "unsolicited_effects": 0,
+            "unverified_successes": 0,
+            "fixed_visible_replies": 0,
+            "providers_enabled": false,
+            "effects_executed": 0
+          },
+          "corpus_sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+          "stable_ooc_acted": [],
+          "fs-04": false,
+          "inp-06": true,
+          "cmp-01": false,
+          "net-01": false,
+          "net-10": false,
+          "win-01": false,
+          "score_matches_published": true
+        }
+      ],
+      "median_served": 113,
+      "acted": [
+        1,
+        1,
+        1
+      ],
+      "max_acted": 1,
+      "languages": [
+        "en",
+        "es",
+        "es_en"
+      ],
+      "p50": [
+        3.807,
+        3.778,
+        3.832
+      ]
+    },
+    "catalog": {
+      "artifact": "artifacts/goal095/revalidate/goal03_catalog_coverage_goal09511a.json",
+      "baseline": "artifacts/development/goal03_catalog_coverage_goal03c_r2.json",
+      "identity": {
+        "operations": 169,
+        "planner_reachable": 158,
+        "families": 31,
+        "coverage_ledger_sha256": "2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831"
+      },
+      "identity_matches_artifact": true,
+      "delta": {
+        "missing_operations": [],
+        "added_operations": [],
+        "lost_reachability": [],
+        "contract_changes": [
+          {
+            "operation": "input.visible.click",
+            "before_sha256": "5bcd10827f3b0b25f35a45d95bfc6c1d086ec49cb6355d6e0ed14b142f82d907",
+            "after_sha256": "650cacd252e4c99d022606c012c1dd53eb6e45ec040b43227ac1d81105709f13",
+            "before_description": "Invoca un único botón visible por etiqueta mediante UI Automation y exige que desaparezca o quede deshabilitado.",
+            "after_description": "Invoca un único control visible por etiqueta en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, desaparecido o superficie cambiada.",
+            "planner_reachable": true
+          }
+        ],
+        "baseline_seal": "dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d",
+        "current_seal": "2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831",
+        "baseline_count": {
+          "families": 31,
+          "operations": 169,
+          "planner_reachable": 158
+        },
+        "current_count": {
+          "families": 31,
+          "operations": 169,
+          "planner_reachable": 158
+        }
+      }
+    },
+    "compound": {
+      "artifact": "artifacts/development/goal03b_compound_goal03c_cmp2.json",
+      "missions": {
+        "rate": 0.4,
+        "rows": 15,
+        "whole": 6
+      },
+      "steps": {
+        "named": 15,
+        "rate": 0.4688,
+        "total": 32
+      },
+      "languages": [
+        "en",
+        "es",
+        "es_en"
+      ],
+      "reeexecuted": false,
+      "reason": "09.5.10 cola transplant vacía; owner de misiones/catálogo no cambió."
+    },
+    "provenance": {
+      "queue_evidence": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 132,
+        "total": 132
+      },
+      "docs": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 25,
+        "total": 25
+      },
+      "code_tests": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 477,
+        "total": 477
+      },
+      "evidence_assets": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 132,
+        "total": 132
+      },
+      "transplant": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 0,
+        "total": 0
+      },
+      "transplant_empty_reason": "09.5.5–09.5.8 no hallaron pieza histórica que gane al vivo en conducta, pruebas, recursos y arquitectura a la vez. Cero reusar_exacto, cero adaptar, cero medir_antes de herencia: unload-on-idle y arranque frío son mediciones de producto del Goal 10.2 sobre el keep-warm/process_lifecycle vigentes, no un vram_manager/Ollama/ui_field que transplantar. Los GGUF/datasets/checkpoints dispersos de Probando Gemma 4 no se nombran para reutilizar (hashes not invented). Cada lote de herencia habría tenido que retirar el mecanismo vivo en el mismo cambio; no hay tal lote. Rechazos protegidos (FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído) no reentran.",
+      "sparse_hashes": [
+        "not invented",
+        "not invented",
+        "not invented"
+      ],
+      "sparse_not_invented": true,
+      "protected_rejects_blocked": [
+        "functiongemma-270m-ft",
+        "qwen-vl",
+        "ollama-runtime",
+        "auto_approve",
+        "soak-24h-as-requirement",
+        "gemma-native-audio"
+      ],
+      "protected_rejects_in_lots": [],
+      "matrix_sparse_not_invented": true
+    },
+    "reproducibility": {
+      "command": ".\\scripts\\test_source_quality.ps1",
+      "result": "source_quality_gate_passed: mode=Fast; EXIT=0",
+      "passed": true
+    }
+  },
+  "compound_traced_not_rerun": {
+    "artifact": "artifacts/development/goal03b_compound_goal03c_cmp2.json",
+    "missions_whole": 6,
+    "steps_named": 15,
+    "steps_total": 32
+  },
+  "vram_traced_not_remeasured": {
+    "artifact": "artifacts/development/goal03_vram_rec5e2e8.json",
+    "reason": "runtime no trasplantado"
+  },
+  "overhead_traced_not_remeasured": {
+    "artifact": "artifacts/development/goal03_overhead_rec5e2e8.json",
+    "reason": "runtime no trasplantado; Δ 17 ms sigue siendo la referencia"
+  },
+  "protected_rejects_still_out": [
+    "functiongemma-270m-ft",
+    "qwen-vl",
+    "ollama-runtime",
+    "auto_approve",
+    "soak-24h-as-requirement",
+    "gemma-native-audio"
+  ],
+  "criteria": [
+    {
+      "id": "01-mapa-intentos",
+      "goal": "01",
+      "criterion": "Un mapa que dice qué intentos hubo, qué se propuso cada uno, y por qué se abandonó.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "Cinco intentos en documentacion/herencia/00_MAPA.md §1, cerrado 2026-08-16.",
+      "scored_kind": null,
+      "result": "Cinco intentos en documentacion/herencia/00_MAPA.md §1, cerrado 2026-08-16.",
+      "status": "holds"
+    },
+    {
+      "id": "01-funciona-hoy-ejecutado",
+      "goal": "01",
+      "criterion": "Para cada intento, qué funciona hoy, comprobado ejecutándolo — no leído.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "Tabla §2 ejecutada el 2026-08-16 (STT, wake, encoder, FunctionGemma, accesibilidad, OCR, compuerta .NET).",
+      "scored_kind": null,
+      "result": "Tabla §2 ejecutada el 2026-08-16 (STT, wake, encoder, FunctionGemma, accesibilidad, OCR, compuerta .NET).",
+      "status": "holds"
+    },
+    {
+      "id": "01-que-se-hereda",
+      "goal": "01",
+      "criterion": "Qué se hereda, de dónde, y qué hace falta para traerlo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "§4: wake, STT, encoder, modos de accesibilidad, CaptureVision+UIA, corpus, capa .NET, lección benchmark 540.",
+      "scored_kind": null,
+      "result": "§4: wake, STT, encoder, modos de accesibilidad, CaptureVision+UIA, corpus, capa .NET, lección benchmark 540.",
+      "status": "holds"
+    },
+    {
+      "id": "01-que-no-se-hereda",
+      "goal": "01",
+      "criterion": "Qué no se hereda y por qué. Un rechazo con el mecanismo entendido vale tanto como una herencia.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "§5: Gemma-4-E2B como decisor, FunctionGemma 270M, Q2_K_XL, agent.py, tres routers, redirects, adaptadores por app, GGUF de iteración, instalador certificado.",
+      "scored_kind": null,
+      "result": "§5: Gemma-4-E2B como decisor, FunctionGemma 270M, Q2_K_XL, agent.py, tres routers, redirects, adaptadores por app, GGUF de iteración, instalador certificado.",
+      "status": "holds"
+    },
+    {
+      "id": "01-cuatro-herencias-obligatorias",
+      "goal": "01",
+      "criterion": "Las cuatro herencias obligatorias resueltas: existe / no existe / existía a medias, con evidencia en cada caso.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "§3: accesibilidad existe; cascada UIA→OCR→visión a medias; set de 16 herramientas existe y su medición dice lo contrario; cuantización Q2/Q4 re-medida.",
+      "scored_kind": null,
+      "result": "§3: accesibilidad existe; cascada UIA→OCR→visión a medias; set de 16 herramientas existe y su medición dice lo contrario; cuantización Q2/Q4 re-medida.",
+      "status": "holds"
+    },
+    {
+      "id": "01-preguntas-respondidas",
+      "goal": "01",
+      "criterion": "El inventario de preguntas ya respondidas y dónde, separando lo vigente de lo caducado.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md",
+        "biblioteca/00_INDICE.md"
+      ],
+      "command": null,
+      "historical_result": "§7 vigente vs caducado. 09.5.9 no reabre FunctionGemma/Qwen-VL/Ollama/AUTO_APPROVE/soak-24h/Gemma-native-audio.",
+      "scored_kind": null,
+      "result": "§7 vigente vs caducado. 09.5.9 no reabre FunctionGemma/Qwen-VL/Ollama/AUTO_APPROVE/soak-24h/Gemma-native-audio.",
+      "status": "holds"
+    },
+    {
+      "id": "01-soluciones-comprension",
+      "goal": "01",
+      "criterion": "Las soluciones al problema de comprensión que hay en los cuatro repositorios, listadas y comparables — el goal 03 arranca de ahí y no de cero.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md",
+        "documentacion/base/03_COMPRENSION.md"
+      ],
+      "command": null,
+      "historical_result": "§6 cuatro soluciones comparables; Goal 03 publicó 46 % y techo 84,7 %.",
+      "scored_kind": null,
+      "result": "§6 cuatro soluciones comparables; Goal 03 publicó 46 % y techo 84,7 %.",
+      "status": "holds"
+    },
+    {
+      "id": "01-adaptadores-por-app",
+      "goal": "01",
+      "criterion": "La lista, fichero por fichero, de los adaptadores por aplicación que hay que sustituir por capacidad genérica.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/D_ADAPTADORES_POR_APP.md"
+      ],
+      "command": null,
+      "historical_result": "documentacion/herencia/D_ADAPTADORES_POR_APP.md, 2.454 líneas / 4 aplicaciones.",
+      "scored_kind": null,
+      "result": "documentacion/herencia/D_ADAPTADORES_POR_APP.md, 2.454 líneas / 4 aplicaciones.",
+      "status": "holds"
+    },
+    {
+      "id": "01-viewmodel-missionengine",
+      "goal": "01",
+      "criterion": "MainWindowViewModel descompuesto y MissionEngine con un solo constructor, con la compuerta .NET verde después: 3.865 pruebas, 0 advertencias.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md",
+        "documentacion/APLAZADOS.md"
+      ],
+      "command": null,
+      "historical_result": "MissionEngineOptions; ViewModel 3.678→3.162. Compilación 0 advertencias. Sello FieldUi rojo en Goal 01; ver actualización 09.5.11A.",
+      "scored_kind": null,
+      "result": "MissionEngineOptions; ViewModel 3.678→3.162. Compilación 0 advertencias. Sello FieldUi rojo en Goal 01; ver actualización 09.5.11A.",
+      "status": "holds"
+    },
+    {
+      "id": "01-publicado",
+      "goal": "01",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 01 cerrado y en origin/main el 2026-08-16.",
+      "scored_kind": null,
+      "result": "Goal 01 cerrado y en origin/main el 2026-08-16.",
+      "status": "holds"
+    },
+    {
+      "id": "02-goal01-commit-previo",
+      "goal": "02",
+      "criterion": "El trabajo del goal 01 comprometido en su propio commit, antes del tuyo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 02 arranca del mapa publicado. documentacion/base/00_COMPUERTA.md.",
+      "scored_kind": null,
+      "result": "Goal 02 arranca del mapa publicado. documentacion/base/00_COMPUERTA.md.",
+      "status": "holds"
+    },
+    {
+      "id": "02-sello-fieldui",
+      "goal": "02",
+      "criterion": "El sello de Baxy.FieldUi cuadra, con la decisión escrita de qué árbol es el correcto y por qué — no con la constante subida a lo que había.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md",
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "Árbol correcto = 38 ficheros, SHA 0F6C38D1…. Se recuperaron tres dist/; la constante no se tocó.",
+      "scored_kind": null,
+      "result": "Árbol correcto = 38 ficheros, SHA 0F6C38D1…. Se recuperaron tres dist/; la constante no se tocó.",
+      "status": "holds"
+    },
+    {
+      "id": "02-compuerta-dos-veces",
+      "goal": "02",
+      "criterion": "La compuerta pasa entera dos veces seguidas sobre un árbol congelado.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "Dos corridas source_quality_gate_passed, .NET 3.864/0, Python 8.511/3 omitidas.",
+      "scored_kind": null,
+      "result": "Dos corridas source_quality_gate_passed, .NET 3.864/0, Python 8.511/3 omitidas.",
+      "status": "holds"
+    },
+    {
+      "id": "02-compuerta-clon-limpio",
+      "goal": "02",
+      "criterion": "Pasa una tercera vez sobre un clon limpio del repositorio.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "Clon limpio source_quality_gate_passed; 8 omitidas extra con environment en el mensaje.",
+      "scored_kind": null,
+      "result": "Clon limpio source_quality_gate_passed; 8 omitidas extra con environment en el mensaje.",
+      "status": "holds"
+    },
+    {
+      "id": "02-entorno-vs-regresion",
+      "goal": "02",
+      "criterion": "Los fallos por entorno se distinguen de las regresiones: una máquina sin el .venv del spike no cuenta nueve regresiones falsas.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "§12 del registro: omitidas de entorno nombradas; no se contaron como rojo de producto.",
+      "scored_kind": null,
+      "result": "§12 del registro: omitidas de entorno nombradas; no se contaron como rojo de producto.",
+      "status": "holds"
+    },
+    {
+      "id": "02-cero-skip-xfail",
+      "goal": "02",
+      "criterion": "Ningún rojo se cerró con skip, xfail, umbral relajado ni fallback.",
+      "holdout": true,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": ".\\scripts\\test_source_quality.ps1",
+      "historical_result": "Registro Goal 02: cero skip/xfail/umbral/fallback. Holdout 09.5.11A: Fast si no se tocó src/.",
+      "scored_kind": "reproducibility",
+      "result": "source_quality_gate_passed: mode=Fast; EXIT=0",
+      "status": "holds"
+    },
+    {
+      "id": "02-artefacto-dotnet-local",
+      "goal": "02",
+      "criterion": "El artefacto .NET dependiente del estado local ya no lo es, o está declarado con su causa.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "Sellos consumidos auditados por hash publicado; dependencias de entorno declaradas.",
+      "scored_kind": null,
+      "result": "Sellos consumidos auditados por hash publicado; dependencias de entorno declaradas.",
+      "status": "holds"
+    },
+    {
+      "id": "02-manifiesto-runtime-versionado",
+      "goal": "02",
+      "criterion": "El manifiesto de runtime está versionado, y un binario distinto del declarado pone la compuerta en rojo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md",
+        "scripts/baxy_runtime_config.py"
+      ],
+      "command": null,
+      "historical_result": "mind-runtime-v1.json con SHA por componente; hash distinto falla cerrado.",
+      "scored_kind": null,
+      "result": "mind-runtime-v1.json con SHA por componente; hash distinto falla cerrado.",
+      "status": "holds"
+    },
+    {
+      "id": "02-registro-prueba-por-prueba",
+      "goal": "02",
+      "criterion": "Registro de qué cambiaste y por qué, prueba por prueba.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "documentacion/base/00_COMPUERTA.md es el registro.",
+      "scored_kind": null,
+      "result": "documentacion/base/00_COMPUERTA.md es el registro.",
+      "status": "holds"
+    },
+    {
+      "id": "02-publicado",
+      "goal": "02",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/00_COMPUERTA.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 02 cerrado 2026-08-16 y en origin/main.",
+      "scored_kind": null,
+      "result": "Goal 02 cerrado 2026-08-16 y en origin/main.",
+      "status": "holds"
+    },
+    {
+      "id": "03-tasa-paraphrasis",
+      "goal": "03",
+      "criterion": "≥ 90 % sobre paráfrasis frescas, con la tasa partida por causa.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md"
+      ],
+      "command": null,
+      "historical_result": "Cierre honesto: 46 % (55–58/124), techo 84,7 % sin puerta de dominio. No se infló el número.",
+      "scored_kind": null,
+      "result": "Cierre honesto: 46 % (55–58/124), techo 84,7 % sin puerta de dominio. No se infló el número.",
+      "status": "holds"
+    },
+    {
+      "id": "03-latencia-primera-senal",
+      "goal": "03",
+      "criterion": "La latencia hasta la primera señal, medida junto al acierto.",
+      "holdout": true,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "p50 camino modelo 2,08 s en calma; 3,7–4,0 s con el PC en uso.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03-pass-rate-antes-despues-catalogo",
+      "goal": "03",
+      "criterion": "El pass-rate end-to-end publicado antes y después de tocar el catálogo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/00_MAPA.md",
+        "documentacion/base/03_COMPRENSION.md"
+      ],
+      "command": null,
+      "historical_result": "Carter 75,93 % → 62,96 % al consolidar. BAXY no consolidó a 16; cobertura 169 se conservó.",
+      "scored_kind": null,
+      "result": "Carter 75,93 % → 62,96 % al consolidar. BAXY no consolidó a 16; cobertura 169 se conservó.",
+      "status": "holds"
+    },
+    {
+      "id": "03-cero-candidatos-fuera",
+      "goal": "03",
+      "criterion": "Las peticiones fuera de catálogo llegan a la decisión con cero candidatos.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": null,
+      "historical_result": "Medido inalcanzable (AUC 0,58 en paráfrasis libre). 03C cierra con acted ≤5, no con cero candidatos.",
+      "scored_kind": null,
+      "result": "Medido inalcanzable (AUC 0,58 en paráfrasis libre). 03C cierra con acted ≤5, no con cero candidatos.",
+      "status": "holds"
+    },
+    {
+      "id": "03-cobertura-y-cuenta",
+      "goal": "03",
+      "criterion": "Cobertura y cuenta publicadas juntas, con la cobertura medida antes y después: no bajó.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_catalog_coverage_goal09511a.json",
+        "artifacts/development/goal03_catalog_coverage_goal03c_r2.json"
+      ],
+      "command": "py -m experiments.mind_router_spike.measure_goal03_catalog_coverage --label goal09511a",
+      "historical_result": "169/158/31 sello dc0a7893… en 03C. 09.5.11A: mismos conteos, un contrato cambiado.",
+      "scored_kind": "catalog",
+      "result": "169/158/31 sello 2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831; vs 03C dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d; missing=[] contract_changes=['input.visible.click']",
+      "status": "holds"
+    },
+    {
+      "id": "03-forma-catalogo-medida",
+      "goal": "03",
+      "criterion": "El número y la forma del catálogo justificados midiendo, no eligiendo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": null,
+      "historical_result": "No se consolidó a 16. 169 operaciones autenticadas; coverage ledger publicado.",
+      "scored_kind": null,
+      "result": "No se consolidó a 16. 169 operaciones autenticadas; coverage ledger publicado.",
+      "status": "holds"
+    },
+    {
+      "id": "03-acierto-argumentos",
+      "goal": "03",
+      "criterion": "El acierto de argumentos medido aparte, para que la ganancia no se haya mudado de sitio.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md"
+      ],
+      "command": null,
+      "historical_result": "Partición por causa (reconocedor/recuperación/decisión/veto) en run_goal03_comprehension.score.",
+      "scored_kind": null,
+      "result": "Partición por causa (reconocedor/recuperación/decisión/veto) en run_goal03_comprehension.score.",
+      "status": "holds"
+    },
+    {
+      "id": "03-tres-ceros",
+      "goal": "03",
+      "criterion": "Los tres ceros intactos.",
+      "holdout": true,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r3.json"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "Providers off, cero efectos. Holdout 11A re-mide con el mismo arnés.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03-que-heredaste",
+      "goal": "03",
+      "criterion": "Publicado qué heredaste y de dónde — y sólo si no heredaste nada, por qué ninguna de las soluciones anteriores servía.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md",
+        "documentacion/herencia/00_MAPA.md"
+      ],
+      "command": null,
+      "historical_result": "Qwen3-4B por medición contra Gemma-4-E2B. FunctionGemma rechazado. Encoder no sustituye al catálogo.",
+      "scored_kind": null,
+      "result": "Qwen3-4B por medición contra Gemma-4-E2B. FunctionGemma rechazado. Encoder no sustituye al catálogo.",
+      "status": "holds"
+    },
+    {
+      "id": "03-llm-frontera-proceso",
+      "goal": "03",
+      "criterion": "El LLM decisor sigue detrás de la frontera de proceso y declarado en el manifiesto con su hash: cambiarlo mañana no debe recompilar nada.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md",
+        "scripts/baxy_runtime_config.py"
+      ],
+      "command": null,
+      "historical_result": "GGUF y llama-server en mind-runtime-v1.json. Sidecar Python; Core no recompila al cambiar el binario.",
+      "scored_kind": null,
+      "result": "GGUF y llama-server en mind-runtime-v1.json. Sidecar Python; Core no recompila al cambiar el binario.",
+      "status": "holds"
+    },
+    {
+      "id": "03-costuras",
+      "goal": "03",
+      "criterion": "Rellenas las filas de 03_COSTURAS.md que te tocan —LLM decisor, runtime, recuperador, reconocedor, forma del catálogo— con la medición que decide un sustituto.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/03_COSTURAS.md"
+      ],
+      "command": null,
+      "historical_result": "documentacion/03_COSTURAS.md con las filas de decisor/runtime/recuperador/reconocedor/catálogo.",
+      "scored_kind": null,
+      "result": "documentacion/03_COSTURAS.md con las filas de decisor/runtime/recuperador/reconocedor/catálogo.",
+      "status": "holds"
+    },
+    {
+      "id": "03-publicado",
+      "goal": "03",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03_COMPRENSION.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 03 cerrado 2026-08-17 y en origin/main.",
+      "scored_kind": null,
+      "result": "Goal 03 cerrado 2026-08-17 y en origin/main.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-tasa-90",
+      "goal": "03B",
+      "criterion": "≥ 90 % sobre el corpus del goal 03, mismos bytes, partido por causa.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "Producto 66,1 % (81/82/84). Techo movido a 89,5 %. Cierre por techo medido, no por inflar.",
+      "scored_kind": null,
+      "result": "Producto 66,1 % (81/82/84). Techo movido a 89,5 %. Cierre por techo medido, no por inflar.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-techo-remedido",
+      "goal": "03B",
+      "criterion": "El techo re-medido y movido, con la aritmética publicada igual que la del goal 03.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "84,7 % → 89,5 %. Veto deja de borrar capacidad; pide confirmación.",
+      "scored_kind": null,
+      "result": "84,7 % → 89,5 %. Veto deja de borrar capacidad; pide confirmación.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-17-filas-contrato",
+      "goal": "03B",
+      "criterion": "Las 17 filas del contrato resueltas: BAXY deja de decir «no puedo» sobre lo que sabe hacer, con el estado de conversación nuevo y su prueba.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "unsupported sobre capacidad del catálogo pasa a clarify con intentOperations.",
+      "scored_kind": null,
+      "result": "unsupported sobre capacidad del catálogo pasa a clarify con intentOperations.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-cobertura-sello",
+      "goal": "03B",
+      "criterion": "Cobertura y cuenta antes y después, con el sello del libro: no bajó.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_catalog_coverage_goal09511a.json",
+        "artifacts/development/goal03_catalog_coverage_goal03c_r2.json",
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": "py -m experiments.mind_router_spike.measure_goal03_catalog_coverage --label goal09511a",
+      "historical_result": "169/158/31 sello dc0a7893… conservado en 03B/03C. 11A re-mide.",
+      "scored_kind": "catalog",
+      "result": "169/158/31 sello 2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831; vs 03C dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d; missing=[] contract_changes=['input.visible.click']",
+      "status": "holds"
+    },
+    {
+      "id": "03b-banco-compuesto",
+      "goal": "03B",
+      "criterion": "El banco de misiones compuestas medido antes y después: no bajó.",
+      "holdout": false,
+      "evidence": [
+        "artifacts/development/goal03b_compound_goal03c_cmp2.json",
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "Cierre 03C: 6/15 misiones y 15/32 pasos en goal03b_compound_goal03c_cmp2.json. No se reejecuta: owner de misiones/catálogo no cambió en 09.5.10.",
+      "scored_kind": null,
+      "result": "Cierre 03C: 6/15 misiones y 15/32 pasos en goal03b_compound_goal03c_cmp2.json. No se reejecuta: owner de misiones/catálogo no cambió en 09.5.10.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-puerta-curada",
+      "goal": "03B",
+      "criterion": "La puerta curada más pequeña que antes, o retirada, con el sobreveto medido en los dos casos.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "Puerta retiene autoridad y pregunta. Quitarla compra 3–6 filas y cuesta 22 efectos no pedidos.",
+      "scored_kind": null,
+      "result": "Puerta retiene autoridad y pregunta. Quitarla compra 3–6 filas y cuesta 22 efectos no pedidos.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-latencia-cargado-tranquilo",
+      "goal": "03B",
+      "criterion": "Latencia junto al acierto, p50 y p90, con el equipo cargado y tranquilo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "p50 1,50–1,60 s en 03C. Listón 3 s. Condición cargada del 03 queda dicha.",
+      "scored_kind": null,
+      "result": "p50 1,50–1,60 s en 03C. Listón 3 s. Condición cargada del 03 queda dicha.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-tres-ceros-y-acted",
+      "goal": "03B",
+      "criterion": "Los tres ceros intactos, y las decisiones que habrían ejecutado un efecto no pedido en 3–5 de 36 o menos.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": null,
+      "historical_result": "03B tardío: 12–15/36 acted. No cerró el alcance; nació 03C. El rechazo del listón 03B se conserva.",
+      "scored_kind": null,
+      "result": "03B tardío: 12–15/36 acted. No cerró el alcance; nació 03C. El rechazo del listón 03B se conserva.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-herencia-biblioteca-sota",
+      "goal": "03B",
+      "criterion": "Publicado qué heredaste de la biblioteca y qué del estado del arte, con la fuente. Y lo que probaste y no funcionó, con su mecanismo.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "FunctionGemma/BGE-M3/MTOP/tool_choice required rechazados. Palanca: puerta + reconocedor, no modelo nuevo.",
+      "scored_kind": null,
+      "result": "FunctionGemma/BGE-M3/MTOP/tool_choice required rechazados. Palanca: puerta + reconocedor, no modelo nuevo.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-costuras",
+      "goal": "03B",
+      "criterion": "Las filas de 03_COSTURAS.md que toques, rellenas.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/03_COSTURAS.md"
+      ],
+      "command": null,
+      "historical_result": "Costuras de turno/veto/reconocedor actualizadas en el 03B.",
+      "scored_kind": null,
+      "result": "Costuras de turno/veto/reconocedor actualizadas en el 03B.",
+      "status": "holds"
+    },
+    {
+      "id": "03b-publicado",
+      "goal": "03B",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 03B cerrado 2026-08-19 y en origin/main.",
+      "scored_kind": null,
+      "result": "Goal 03B cerrado 2026-08-19 y en origin/main.",
+      "status": "holds"
+    },
+    {
+      "id": "03c-acted-le-5-de-36",
+      "goal": "03C",
+      "criterion": "≤ 5 de 36 acted fuera de catálogo, misma función que run_goal03_comprehension.py, en tres corridas. Las 9 estables de arriba no pueden seguir acted.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r3.json",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "03C: 0/1/1 de 36. Holdout 11A re-corre el arnés.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03c-mediana-112-de-124",
+      "goal": "03C",
+      "criterion": "Mediana ≥ 112/124 en esas mismas tres corridas, mismos bytes, partido por causa.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r3.json",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "03C: 116/114/113, mediana 114/124. Holdout 11A re-corre.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03c-6-filas-in-catalog",
+      "goal": "03C",
+      "criterion": "Las 6 filas in-catalog estables de arriba, servidas o con diagnóstico medido de por qué no, sin haberlas empujado al 04.",
+      "holdout": true,
+      "evidence": [
+        "documentacion/base/03C_ALCANCE.md",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r3.json"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "fs-04 e inp-06 servidas. cmp-01, net-01, net-10, win-01 con diagnóstico; no al 04.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03c-cobertura-169-158-31",
+      "goal": "03C",
+      "criterion": "Cobertura 169/158/31 sello dc0a7893… antes y después.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_catalog_coverage_goal09511a.json",
+        "artifacts/development/goal03_catalog_coverage_goal03c_r2.json"
+      ],
+      "command": "py -m experiments.mind_router_spike.measure_goal03_catalog_coverage --label goal09511a",
+      "historical_result": "03C sello dc0a7893…. 11A: 169/158/31; sello 2231d681… por input.visible.click. Cero operaciones perdidas.",
+      "scored_kind": "catalog",
+      "result": "169/158/31 sello 2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831; vs 03C dc0a789316b769cb37739e86b7bc60c29dab2682ca4c8230da05c92e38b0771d; missing=[] contract_changes=['input.visible.click']",
+      "status": "holds"
+    },
+    {
+      "id": "03c-banco-compuesto",
+      "goal": "03C",
+      "criterion": "Banco compuesto ≥ 6/15 misiones y ≥ 15/32 pasos.",
+      "holdout": false,
+      "evidence": [
+        "artifacts/development/goal03b_compound_goal03c_cmp2.json"
+      ],
+      "command": null,
+      "historical_result": "goal03b_compound_goal03c_cmp2.json: 6/15 y 15/32. No reejecutado: 09.5.10 no tocó owner de misiones/catálogo.",
+      "scored_kind": null,
+      "result": "goal03b_compound_goal03c_cmp2.json: 6/15 y 15/32. No reejecutado: 09.5.10 no tocó owner de misiones/catálogo.",
+      "status": "holds"
+    },
+    {
+      "id": "03c-vram-4gb",
+      "goal": "03C",
+      "criterion": "Pico VRAM ≤ 4 GB durante un turno con el modelo cargado, medido.",
+      "holdout": false,
+      "evidence": [
+        "artifacts/development/goal03_vram_rec5e2e8.json",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": null,
+      "historical_result": "4026/4096 MiB en goal03_vram_rec5e2e8.json. Runtime no trasplantado; no se remide.",
+      "scored_kind": null,
+      "result": "4026/4096 MiB en goal03_vram_rec5e2e8.json. Runtime no trasplantado; no se remide.",
+      "status": "holds"
+    },
+    {
+      "id": "03c-overhead-17ms",
+      "goal": "03C",
+      "criterion": "Sobrecarga frente a inferencia pura (mismo prompt/modelo/tokens), desglosada: el Δ de 17 ms de la capa LLM sigue siendo la referencia.",
+      "holdout": false,
+      "evidence": [
+        "artifacts/development/goal03_overhead_rec5e2e8.json",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": null,
+      "historical_result": "p50 BAXY 0,497 s vs POST 0,480 s (Δ 17 ms), goal03_overhead_rec5e2e8.json. Sin etapa nueva.",
+      "scored_kind": null,
+      "result": "p50 BAXY 0,497 s vs POST 0,480 s (Δ 17 ms), goal03_overhead_rec5e2e8.json. Sin etapa nueva.",
+      "status": "holds"
+    },
+    {
+      "id": "03c-silencio-p50-3s",
+      "goal": "03C",
+      "criterion": "Listón de silencio 3 s (p50 del turno). Hoy 1,50–1,60 s.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r3.json",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "03C p50 1,57–1,71 s. Holdout 11A publica p50 del arnés.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03c-tres-ceros",
+      "goal": "03C",
+      "criterion": "Tres ceros intactos.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/revalidate/goal03_goal09511a_r1.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r2.json",
+        "artifacts/goal095/revalidate/goal03_goal09511a_r3.json",
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": "py -m experiments.mind_router_spike.run_goal03_comprehension --label goal09511a_rN",
+      "historical_result": "Providers off. Holdout 11A: three_zeros.effects_executed=0.",
+      "scored_kind": "comprehension",
+      "result": "tres corridas served [113, 113, 113] mediana 113/124; acted [1, 1, 1]/36; p50 [3.807, 3.778, 3.832]; langs ['en', 'es', 'es_en']",
+      "status": "holds"
+    },
+    {
+      "id": "03c-costuras",
+      "goal": "03C",
+      "criterion": "03_COSTURAS.md con las filas que toques.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/03_COSTURAS.md"
+      ],
+      "command": null,
+      "historical_result": "Palanca 03C: operation_identity_is_a_near_miss en effect_intent.py. Sin etapa de modelo.",
+      "scored_kind": null,
+      "result": "Palanca 03C: operation_identity_is_a_near_miss en effect_intent.py. Sin etapa de modelo.",
+      "status": "holds"
+    },
+    {
+      "id": "03c-docs-base",
+      "goal": "03C",
+      "criterion": "documentacion/base/03C_ALCANCE.md con las cifras, y documentacion/base/03B_COMPRENSION_TECHO.md §12 actualizado para que no mienta.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03C_ALCANCE.md",
+        "documentacion/base/03B_COMPRENSION_TECHO.md"
+      ],
+      "command": null,
+      "historical_result": "Ambos documentos publicados con 114/124 y 0–1/36. 11A no borra esas cifras.",
+      "scored_kind": null,
+      "result": "Ambos documentos publicados con 114/124 y 0–1/36. 11A no borra esas cifras.",
+      "status": "holds"
+    },
+    {
+      "id": "03c-publicado",
+      "goal": "03C",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/03C_ALCANCE.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 03C cerrado 2026-08-21 y en origin/main.",
+      "scored_kind": null,
+      "result": "Goal 03C cerrado 2026-08-21 y en origin/main.",
+      "status": "holds"
+    },
+    {
+      "id": "095-procedencia-completa",
+      "goal": "09.5",
+      "criterion": "Procedencia completa: manifiestos/campañas 09.5.0–09.5.4 terminales, hashes sparse not invented, rechazos protegidos fuera.",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/campaigns/docs.json",
+        "artifacts/goal095/campaigns/code_tests.json",
+        "artifacts/goal095/campaigns/evidence_assets.json",
+        "artifacts/goal095/campaigns/transplant.json",
+        "artifacts/goal095/extract/_09510_requirements.json"
+      ],
+      "command": "py -3.12 -c provenance_snapshot()",
+      "historical_result": "09.5.2–4: 25/477/132 complete, pending=0 claimed=0. Sparse hashes not invented.",
+      "scored_kind": "provenance",
+      "result": "docs {'pending': 0, 'claimed': 0, 'complete': 25, 'total': 25}; code {'pending': 0, 'claimed': 0, 'complete': 477, 'total': 477}; evidence {'pending': 0, 'claimed': 0, 'complete': 132, 'total': 132}; transplant {'pending': 0, 'claimed': 0, 'complete': 0, 'total': 0}; sparse_not_invented=True",
+      "status": "holds"
+    }
+  ],
+  "holdout_summary": {
+    "median_served": 113,
+    "max_acted": 1,
+    "catalog_operations": 169,
+    "catalog_reachable": 158,
+    "catalog_families": 31,
+    "catalog_seal": "2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831"
+  }
+}

@@ -21,7 +21,6 @@ from scripts.goal095_0959_matrix import (
     LEDGER_REL,
     MARKDOWN_09510_REL,
     PROTECTED_REJECTS,
-    REVALIDATE_PROMPT,
     TRANSPLANT_PROMPT,
     apply_transplant_closeout,
     campaign_counts,

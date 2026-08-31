@@ -1,43 +1,47 @@
-# Handoff — 09.5.10 trasplantar lote — 2026-08-31
+# Handoff — 09.5.11A revalidar 01–03C — 2026-08-31
 
 ## Objetivo
-Vaciar la campaña `transplant` bajo un solo lanzamiento humano y dejar el
-siguiente prompt en 09.5.11A.
+Demostrar que la herencia reconciliada conserva o mejora los cierres 01–03C.
 
 ## Estado
-Hecho: cola 09.5.9 re-verificada (`reusar_exacto`/`adaptar`/`medir_antes` = 0),
-claims expiradas/reanudadas (ninguna), closeout empty-queue = last-lot, tests
-dueño, next = 09.5.11A. En curso: nada. Sin empezar: 09.5.11A.
+Hecho: matriz 01–03C, holdouts de procedencia/catálogo/comprensión/reproducibilidad,
+mapa FieldUi actualizado sin borrar el hallazgo, next=09.5.11B.
+En curso: nada. Sin empezar: 09.5.11B.
 
 ## Decisiones tomadas
-- No inventar lotes: la matriz 09.5.9 ya dejó `transplants_empty_reason`.
-- `pending=0` nombra `09.5.11A_REVALIDAR_01_03C.md`; `owner_prompt` sigue 09.5.10.
-- Cero `src/` ; cero FALLO_DE_AMBIENTE (09.5.9 no reutiliza blobs dispersos).
-- Rechazos protegidos no reentran.
+- Cola transplant vacía no exime holdouts; sí exime reejecutar compuesto/VRAM/17 ms.
+- Sello de catálogo 03C se conserva como identidad histórica; el vivo documenta
+  `input.visible.click` (cascada). Conteos 169/158/31.
+- El arnés de comprensión espera el deadline de promoción E5 del producto (185 s);
+  no se relajó `score` ni `_final_operations`.
+- Cero aplazos al Goal 10.
 
 ## Archivos tocados
-- `artifacts/goal095/campaigns/transplant.json` — next_human_prompt 09.5.11A
-- `artifacts/goal095/synthesis/09.5.9_decidir_herencia.v1.json` — next 09.5.11A
-- `artifacts/goal095/ledger/transplant-09.5.10.json` — terminal 09.5.10
-- `scripts/goal095_0959_matrix.py` + `scripts/goal095_09510_close.py` + tests dueño
-- `documentacion/herencia/09_5_10_TRASPLANTAR.md` + `09_5_COBERTURA.md`
+- `artifacts/goal095/synthesis/09.5.11A_revalidar_01_03C.v1.json` — matriz machine-readable
+- `artifacts/goal095/ledger/revalidate-09.5.11A.json` — ledger 09.5.11A
+- `documentacion/herencia/09_5_11A_REVALIDAR.md` — cierre documental
+- `artifacts/goal095/revalidate/goal03_catalog_coverage_goal09511a.json` — cobertura hello
+- `artifacts/goal095/revalidate/goal03_goal09511a_r*.json` — tres corridas
+- `documentacion/herencia/00_MAPA.md` — actualización FieldUi
+- `tests/test_goal095_09511a_revalidate.py` — prueba dueña
 
 ## Archivos relevantes aun sin tocar
-- `documentacion/sprints/09.5.11A_REVALIDAR_01_03C.md` — se nombra, no se ejecuta
-- `src/` — no cambia
+- `documentacion/sprints/09.5.11B_REVALIDAR_04_06.md` — se nombra, no se ejecuta
+- `src/` — no cambia por 09.5.10; holdouts no exigieron owner de producto
 
 ## Hipotesis
-Confirmadas: cola vacía con razón escrita es cierre válido de 09.5.10.
-Descartadas: «hay que fabricar un lote para que la campaña exista». «Remitir otra vez a 09.5.10».
+Confirmadas: 169/158/31 se sostiene; mediana served y acted caben en los listones 03C
+(113/124, acted [1, 1, 1]).
+Descartadas: «cola vacía = no medir». «Sustituir holdout con telemetría 03C».
 
 ## Comandos ejecutados y resultado
-- `py -3.12 scripts/goal095_09510_close.py` → pending=0 claimed=0 total=0, errors=[]
-- `py -3.12 -m pytest tests/test_goal095_09510_transplant.py tests/test_goal095_0959_matrix.py -q` → 13 passed (2.09s); re-run 13 passed (2.03s)
-- `py -3.12 scripts/_goal095_validate_transplant_campaign.py` → errors=[], next=09.5.11A
-- No ejecutado: Full / `test_source_quality.ps1` / `py main.py` — cero lotes, cero `src/`
+- comprensión r1/r2/r3 served [113, 113, 113] acted [1, 1, 1] p50 [3.807, 3.778, 3.832]
+- catálogo 169/158/31 sello 2231d681fb396c12…
+- `.\scripts\test_source_quality.ps1` → source_quality_gate_passed: mode=Fast; EXIT=0
+- validate_report errors=[]
 
 ## Problemas pendientes
-Ninguno de 09.5.10. No ejecutar 09.5.11A en esta meta. No relanzar este goal.
+Ninguno de 09.5.11A. No ejecutar 09.5.11B en esta meta.
 
 ## Siguiente accion recomendada
-`documentacion/sprints/09.5.11A_REVALIDAR_01_03C.md` (sesión nueva, un pegado).
+`documentacion/sprints/09.5.11B_REVALIDAR_04_06.md` (sesión nueva, un pegado).

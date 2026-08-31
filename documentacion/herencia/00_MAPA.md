@@ -336,6 +336,20 @@ causó este goal**:
   cambio silencioso ponga la compuerta en rojo, y no está establecido cuál de los
   dos árboles es el bueno. Anotado en `APLAZADOS.md`.
 
+### Actualización 09.5.11A — sello FieldUi (el hallazgo de arriba no se borra)
+
+**Antes (Goal 01, 2026-08-16):** el sello esperaba 38 ficheros y
+`0F6C38D1E3C377012BD7231372363334DB7ADD51845578074E59EFB1195E8122`; el árbol
+comprometido tenía 35 y `12929F7A…`. La constante no se tocó.
+
+**Evidencia nueva:** [`../base/00_COMPUERTA.md`](../base/00_COMPUERTA.md) §1.
+Goal 02 recuperó `dist/index.html`, `dist/assets/index-CjozYCnU.css` y
+`dist/assets/index-D3QuhrLm.js`. El hash del árbol de 38 cuadra el sello
+publicado. La constante no se subió.
+
+**Efecto:** el rechazo de «subir la constante al hash de 35» se conserva. El
+árbol correcto era el de 38, y ya está versionado.
+
 Y un hallazgo de entorno que **sí** se arregló: 8 pruebas de
 `MindShellEndToEndTests` fallaban por `FileNotFoundException: The deterministic
 mind contract test requires Python`, porque `FindPython` busca

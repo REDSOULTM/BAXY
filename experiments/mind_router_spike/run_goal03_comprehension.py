@@ -118,14 +118,23 @@ def _await_semantic_retrieval(
     audit_path: Path,
     timeout: float,
     *,
-    attempts: int = 12,
+    attempts: int = 48,
+    deadline_seconds: float = 185.0,
 ) -> None:
     """Probe until the audit reports the E5 catalogue, or give up and say so."""
 
-    # The encoder subprocess starts 3 s in and needs ~11 s to load; probing
-    # before that only burns model calls.
+    # The encoder subprocess starts 3 s in. Loading SentenceTransformer plus
+    # hashing the pinned snapshot plus embedding the hello catalogue can take
+    # ~30 s on a cold box (measured 2026-08-31: verify 2.6 s, load 27.8 s)
+    # and longer when llama-server is warming the same GPU. The product
+    # promotion thread itself has a 185 s deadline; stopping at 12 probes
+    # left the measurement on the lexical snapshot after E5 was still
+    # loading. Wait for the same deadline, then fail closed.
+    started = time.monotonic()
     time.sleep(20.0)
     for attempt in range(attempts):
+        if time.monotonic() - started >= deadline_seconds:
+            break
         client.request(
             {
                 "type": "turn.decide",

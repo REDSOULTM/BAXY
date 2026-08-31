@@ -96,3 +96,22 @@ Filtrar hojas ungrounded, exentar `read_only`, reactivar el verificador
 del reconocedor como retirada, un sexto gate, FunctionGemma, BGE-M3,
 MTOP, `tool_choice: required`, unión ranker+E5. Una línea en
 `APLAZADOS.md` por el `acted` residual `ooc-12`.
+
+## 7. Revalidación 09.5.11A (el cierre de arriba no se borra)
+
+Las cifras de las tres corridas de cierre (116/114/113, `acted` 0/1/1,
+sello `dc0a7893…`) siguen siendo el cierre del 03C.
+
+El hello del core en 09.5.11A sigue en **169/158/31**. El sello de
+contrato pasó a
+`2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831`
+porque `input.visible.click` describe ya la cascada UIA→OCR→visión
+(Goals 07+). Cero operaciones perdidas, cero alcanzabilidades
+perdidas. El sello `dc0a7893…` se conserva como identidad histórica.
+
+Cola `transplant` vacía: el banco compuesto, el pico VRAM y el Δ de
+17 ms no se reejecutaron. La comprensión/abstención/alcance sí, con el
+mismo corpus y el mismo `score`: tres corridas **113/113/113** (mediana
+**113/124**) y **1/1/1** de 36 `acted` (ooc-05, no las nueve estables).
+p50 3,78–3,83 s en esta máquina en uso (Goal 03 ya midió 3,7–4,0 s con
+el PC ocupado; el determinista sigue en 12 ms).

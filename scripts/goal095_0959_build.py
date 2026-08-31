@@ -30,7 +30,6 @@ from scripts.goal095_0959_matrix import (
     SYNTHESIS_0958,
     SYNTHESIS_REL,
     TRANSPLANT_PROMPT,
-    TRANSPLANT_TERMINALS,
     campaign_counts,
     dump_json,
     index_synthesis_responsibility_ids,
@@ -115,7 +114,6 @@ def reject(
 
 
 def responsibilities() -> list[dict[str, Any]]:
-    qwen = "Qwen3-4B-Q4_K_M SHA 7485fe6f… / llama.cpp b9980 / corpus fresco 761c1bc3…"
     return [
         keep(
             "llm_decisor",

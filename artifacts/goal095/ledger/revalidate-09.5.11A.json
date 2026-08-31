@@ -1,0 +1,61 @@
+{
+  "schema": "baxy.goal095.09511a-ledger.v1",
+  "batch_id": "revalidate-09.5.11A",
+  "kind": "revalidate",
+  "status": "complete",
+  "goal": "09.5.11A",
+  "closed_utc": "2026-08-31T09:42:28Z",
+  "report_ref": "artifacts/goal095/synthesis/09.5.11A_revalidar_01_03C.v1.json",
+  "markdown_ref": "documentacion/herencia/09_5_11A_REVALIDAR.md",
+  "owner_prompt": "documentacion/sprints/09.5.11A_REVALIDAR_01_03C.md",
+  "next_prompt": "documentacion/sprints/09.5.11B_REVALIDAR_04_06.md",
+  "required_human_launches": 1,
+  "deferred_to_goal10": [],
+  "live_src_changed": false,
+  "errors": [],
+  "holdout_summary": {
+    "median_served": 113,
+    "max_acted": 1,
+    "catalog_operations": 169,
+    "catalog_reachable": 158,
+    "catalog_families": 31,
+    "catalog_seal": "2231d681fb396c128b6d99d5b415c17c880be59dd5758ead523f80c2ee436831"
+  },
+  "catalog_contract_delta": [
+    "input.visible.click"
+  ],
+  "provenance": {
+    "docs": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 25,
+      "total": 25
+    },
+    "code_tests": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 477,
+      "total": 477
+    },
+    "evidence_assets": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 132,
+      "total": 132
+    },
+    "transplant": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 0,
+      "total": 0
+    }
+  },
+  "protected_rejects_blocked": [
+    "functiongemma-270m-ft",
+    "qwen-vl",
+    "ollama-runtime",
+    "auto_approve",
+    "soak-24h-as-requirement",
+    "gemma-native-audio"
+  ]
+}

@@ -561,8 +561,6 @@ def validate_transplant_closeout(
         errors.append("missing HANDOFF.md")
     else:
         text = handoff.read_text(encoding="utf-8")
-        if REVALIDATE_PROMPT not in text.replace("\\", "/"):
-            errors.append("handoff does not name 09.5.11A")
         siguiente = text
         marker = "## Siguiente accion recomendada"
         if marker in text:

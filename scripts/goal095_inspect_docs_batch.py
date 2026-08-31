@@ -228,7 +228,7 @@ def inspect_batch(repo: Path, batch_id: str) -> dict[str, Any]:
     )
     index_lines = [
         f"batch_id={batch_id}",
-        f"kind=docs",
+        "kind=docs",
         f"file_count={len(rows)}",
         f"hash_ok={hash_ok} drift={hash_drift} miss={hash_miss}",
         f"subsystem={batch.get('subsystem')}",
