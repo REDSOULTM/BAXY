@@ -49,6 +49,7 @@ CENSO_SCRIPT_REL = "scripts/censo_voz_visible.py"
 VOICE_SAMPLE_REL = "artifacts/development/goal06_cien_respuestas.jsonl"
 GOAL05_MATRIX_REL = "artifacts/goal095/revalidate/goal05_execution_matrix_goal09511b.json"
 GOAL05_HISTORICAL_MATRIX_REL = "documentacion/base/05_MATRIZ_EJECUCION.json"
+GOAL05_HISTORICAL_MEASURED_PREFIX = "2026-08-21T22:34:17"
 LLM_REL = "src/baxy_mind/llm.py"
 VIEWMODEL_REL = "src/Baxy.App/MainWindowViewModel.cs"
 APLAZADOS_REL = "documentacion/APLAZADOS.md"
@@ -571,9 +572,15 @@ def _fill_goal05(repo: Path) -> dict[str, Any]:
         if item.get("status") != "completed" and item.get("messageStartsListo") is True
     ]
     contracts = goal05_contracts(repo)
+    historical_path = repo / GOAL05_HISTORICAL_MATRIX_REL
+    historical = load_json(historical_path)
     return {
         "artifact": GOAL05_MATRIX_REL,
         "historical": GOAL05_HISTORICAL_MATRIX_REL,
+        "historical_measured_at": historical.get("measuredAtUtc"),
+        "historical_sha256": sha256_file(historical_path),
+        "contemporaneous_measured_at": matrix.get("measuredAtUtc"),
+        "contemporaneous_sha256": sha256_file(matrix_path),
         "schema": matrix.get("schema"),
         "catalog_operations": matrix.get("catalogOperations"),
         "observed": matrix.get("observed"),
@@ -863,6 +870,14 @@ def validate_report(report: dict[str, Any], repo: Path = REPO) -> list[str]:
             errors.append("goal05 live runs too few")
         if goal05.get("live_failed_starting_listo"):
             errors.append("live failed row starts with Listo")
+        historical_at = str(goal05.get("historical_measured_at") or "")
+        if not historical_at.startswith(GOAL05_HISTORICAL_MEASURED_PREFIX):
+            errors.append(
+                "documentacion/base/05_MATRIZ_EJECUCION.json is not the Goal 05 "
+                f"2026-08-21 close ({historical_at!r})"
+            )
+        if goal05.get("historical_sha256") == goal05.get("contemporaneous_sha256"):
+            errors.append("historical Goal 05 matrix was overwritten with the 11B live copy")
         contracts = goal05.get("contracts") or goal05_contracts(repo)
         if contracts.get("missing"):
             errors.append("goal05 contracts missing: " + ", ".join(contracts["missing"]))
@@ -1047,6 +1062,7 @@ def write_handoff(repo: Path, report: dict[str, Any], errors: list[str]) -> None
         "- Cola transplant vacía no exime holdouts 04–06.",
         "- Goal 09 reintrodujo 4 literales de escucha; se sustituyen por TurnVisibleFacts, no se relaja el censo.",
         "- La muestra de 100 se re-puntúa (compose no se reabrió); el censo sí se corre sobre src vivo.",
+        "- Live Goal 05 tests overwrite documentacion/base/05_MATRIZ_EJECUCION.json; that file stays the 2026-08-21 close. The 11B live matrix is artifacts/goal095/revalidate/goal05_execution_matrix_goal09511b.json.",
         "- Cero aplazos al Goal 10.",
         "",
         "## Archivos tocados",

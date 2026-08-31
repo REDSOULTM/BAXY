@@ -117,10 +117,11 @@ goal.**
 ## 8. Revalidación 09.5.11B (el cierre de arriba no se borra)
 
 Las cifras de cierre (170/82/88, lying executor, terminales) siguen siendo el
-cierre del 05. Holdout 09.5.11B reejecutó las suites dueñas dos veces
-(Kernel 10/10, Integration Goal05+VoiceListen 46/46, 0 omitidas) y publicó
-la matriz contemporánea en
+cierre del 05. Este fichero `05_MATRIZ_EJECUCION.json` permanece el de
+**2026-08-21** (`measuredAtUtc` `2026-08-21T22:34:17…`). `PublishMatrix` de
+las suites live lo pisa; 09.5.11B lo restaura y guarda la medición
+contemporánea en
 `artifacts/goal095/revalidate/goal05_execution_matrix_goal09511b.json`:
 **170** operaciones, **82** observadas, **88** no verificables (todas con
-razón), 41 filas live, 40 completed+verified. El token de confirmación no
-autoriza otro `invocationId`. Un ejecutor que miente no publica «Listo».
+razón), 42 filas live. El token de confirmación no autoriza otro
+`invocationId`. Un ejecutor que miente no publica «Listo».

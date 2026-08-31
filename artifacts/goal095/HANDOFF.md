@@ -12,6 +12,7 @@ En curso: nada. Sin empezar: 09.5.11C.
 - Cola transplant vacía no exime holdouts 04–06.
 - Goal 09 reintrodujo 4 literales de escucha; se sustituyen por TurnVisibleFacts, no se relaja el censo.
 - La muestra de 100 se re-puntúa (compose no se reabrió); el censo sí se corre sobre src vivo.
+- Live Goal 05 tests overwrite documentacion/base/05_MATRIZ_EJECUCION.json; that file stays the 2026-08-21 close. The 11B live matrix is artifacts/goal095/revalidate/goal05_execution_matrix_goal09511b.json.
 - Cero aplazos al Goal 10.
 
 ## Archivos tocados

@@ -8,6 +8,8 @@ from experiments.mind_router_spike.score_goal04_honesty import score_telemetry
 from scripts.censo_voz_visible import censar
 from scripts.goal095_09511b_revalidate import (
     CORPUS_SHA256,
+    GOAL05_HISTORICAL_MATRIX_REL,
+    GOAL05_HISTORICAL_MEASURED_PREFIX,
     GOAL05_MATRIX_REL,
     HANDOFF_REL,
     HONESTY_RUNNER_SHA256,
@@ -28,6 +30,7 @@ from scripts.goal095_09511b_revalidate import (
     provenance_snapshot,
     report_path,
     required_criterion_ids,
+    sha256_file,
     validate_report,
 )
 
@@ -134,12 +137,20 @@ def test_goal05_matrix_and_shipped_contracts_hold() -> None:
     report = load_report(REPO)
     goal05 = report["holdouts"]["goal05"]
     matrix = load_json(REPO / GOAL05_MATRIX_REL)
+    historical = load_json(REPO / GOAL05_HISTORICAL_MATRIX_REL)
     assert matrix["schema"] == "baxy.goal05-execution-matrix.v1"
     assert matrix["catalogOperations"] == 170 == goal05["catalog_operations"]
     assert matrix["observed"] + matrix["unverifiable"] == 170
     assert goal05["unverifiable_without_reason"] == []
     assert goal05["live_runs"] > 4
     assert goal05["live_failed_starting_listo"] == []
+    assert str(historical.get("measuredAtUtc") or "").startswith(
+        GOAL05_HISTORICAL_MEASURED_PREFIX
+    )
+    assert sha256_file(REPO / GOAL05_HISTORICAL_MATRIX_REL) != sha256_file(
+        REPO / GOAL05_MATRIX_REL
+    )
+    assert goal05["historical_measured_at"] == historical["measuredAtUtc"]
     contracts = goal05_contracts(REPO)
     assert contracts["missing"] == []
     assert contracts["holds"] is True
