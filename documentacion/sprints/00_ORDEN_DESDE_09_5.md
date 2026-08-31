@@ -5,15 +5,16 @@ en una sesión nueva de Grok 4.6 High con `/goal`. No pegues el mapa ni el proto
 por separado: cada prompt ordena leerlos desde el repositorio.
 
 No avances si el prompt no cerró cumplido. `FALLO_DE_AMBIENTE` significa preparar
-el PC y repetir exactamente el mismo enlace. Los workers marcados «repetir» se
-ejecutan una sesión por lote hasta que su propia cola quede vacía.
+el PC y reanudar la meta desde su cursor. Los prompts de campaña recorren sus
+unidades internas, compactan y continúan solos: una unidad no exige volver a pegar
+el enlace.
 
 ## Fase 09.5 — recuperar todo el linaje
 
 1. [09.5.0 — Fuentes y ambiente](09.5.0_FUENTES_Y_AMBIENTE.md)
 2. [09.5.1 — Manifiesto y colas](09.5.1_MANIFIESTO_Y_COLAS.md)
 3. [09.5.2 — Leer documentación: repetir por cada lote docs](09.5.2_LEER_DOCUMENTACION_LOTE.md)
-4. [09.5.3 — Auditar código y pruebas: repetir por cada lote code_tests](09.5.3_AUDITAR_CODIGO_LOTE.md)
+4. [09.5.3 — Auditar toda la campaña de código y pruebas: lanzar una vez](09.5.3_AUDITAR_CODIGO_LOTE.md)
 5. [09.5.4 — Auditar evidencia y assets: repetir por cada lote evidence_assets](09.5.4_AUDITAR_EVIDENCIA_LOTE.md)
 6. [09.5.5 — Modelos, router e idiomas](09.5.5_MODELOS_ROUTER_IDIOMAS.md)
 7. [09.5.6 — Voz, audio y presencia](09.5.6_VOZ_AUDIO_PRESENCIA.md)

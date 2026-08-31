@@ -3,8 +3,9 @@
 Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, y
 **se deja correr hasta que se cumple**. Antes del 10 se intercala la recuperación
 09.5 porque aparecieron fuentes históricas cuya cobertura no estaba demostrada.
-09.5, 10 y 11 son mapas: su unidad de ejecución son sus subgoals, una sesión nueva
-por prompt o lote.
+09.5, 10 y 11 son mapas: su unidad de ejecución son sus subgoals. Un prompt de
+campaña se lanza una vez y puede consumir muchos checkpoints internos sin devolver
+al dueño un bucle manual.
 
 Acceso directo en orden a todos los prompts ejecutables:
 [`00_ORDEN_DESDE_09_5.md`](00_ORDEN_DESDE_09_5.md).
@@ -42,9 +43,10 @@ fijas), texto visible auditado a mano. Evidencia en
 pegado entero con `/goal` delante: Grok trabaja por rondas y **no lo da por cumplido hasta
 que una revisión de evidencia independiente reproduce el resultado**; si no puede
 reproducirlo, el goal sigue abierto con los huecos nombrados. Eso es exactamente el
-invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una sesión por
-goal ejecutable, no una sesión para todo el día. En 09.5.x/10.x/11.x el techo operativo es
-**500k tokens** y nunca se juntan dos ficheros.
+invariante 2 aplicado al agente. `/goal status` para ver dónde está. Una meta por
+goal ejecutable. En 09.5.x/10.x/11.x el techo operativo es **500k tokens por
+ventana**; las campañas persisten el cursor, compactan y continúan bajo la misma
+meta.
 
 **El contenido no cambia entre versiones**: mismo objetivo, misma evidencia
 heredada, mismos criterios de cierre. Lo que cambia es el bloque «Cómo trabajas

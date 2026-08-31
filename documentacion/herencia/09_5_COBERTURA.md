@@ -1,5 +1,15 @@
 # Goal 9.5.1 — Cobertura y cola de auditoria
 
+> **Cola schema v1 obsoleta desde 2026-08-30.** Sus conteos se conservan debajo
+> como evidencia de la particion fallida, pero no autorizan reclamar otro lote.
+> Produjo 634 lanzamientos tecnicos —477 `code_tests`, 333 de ellos de
+> `Probando Gemma 4`— y traslado el bucle al dueño. El siguiente paso valido es
+> relanzar una sola vez `09.5.1_MANIFIESTO_Y_COLAS.md`: reconstruira campañas
+> reanudables, conservara por hash los terminales cerrados y devolvera cualquier
+> claim incompleta a `pending`.
+>
+> Hasta que esa reconstruccion cierre, **no reclamar `code_tests-002`**.
+
 Generado por `scripts/build_goal095_queues.py`. Estimador: `bytes_div_2`.
 Tokenizer compatible para el arbol: ninguno (no se vuelca contenido).
 No decide herencia. No lee cuerpos.
@@ -87,5 +97,6 @@ Proximo lote code_tests pendiente:
 
 ## Siguiente
 
-Primer lote code_tests pendiente: `code_tests-002-carter-carter_legacy_Carter_v2` — prompt `documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md`.
-Docs sigue pendiente en `docs-002-carter` (prompt 09.5.2).
+Reconstruir la cola obsoleta ejecutando una vez
+`documentacion/sprints/09.5.1_MANIFIESTO_Y_COLAS.md`. No continuar con
+`code_tests-002` ni con otro lote de schema v1.
