@@ -574,7 +574,7 @@ public sealed class CoreNotesEndToEndTests
             {
                 Assert.That(ambiguousTrash.Status, Is.EqualTo(OperationStatuses.Failed));
                 Assert.That(ambiguousTrash.ErrorCode, Is.EqualTo("note_ambiguous"));
-                Assert.That(ambiguousTrash.Message, Does.Contain("no hice cambios"));
+                Assert.That(ambiguousTrash.Message, Does.Contain("note_ambiguous"));
                 Assert.That(ambiguousTrash.Result, Is.Not.Null);
                 JsonElement[] candidates = ambiguousTrash.Result!.Value
                     .GetProperty("candidates")
@@ -713,7 +713,7 @@ public sealed class CoreNotesEndToEndTests
                 Is.EqualTo(selectedRevision + 2));
             Assert.That(stale.Status, Is.EqualTo(OperationStatuses.Failed));
             Assert.That(stale.ErrorCode, Is.EqualTo("note_selection_stale"));
-            Assert.That(stale.Message, Does.Contain("no hice cambios"));
+            Assert.That(stale.Message, Does.Contain("note_selection_stale"));
             Assert.That(selectedRead.Result?.GetProperty("revision").GetInt64(),
                 Is.EqualTo(selectedRevision + 2));
             Assert.That(selectedRead.Result?.GetProperty("isTrashed").GetBoolean(), Is.False);

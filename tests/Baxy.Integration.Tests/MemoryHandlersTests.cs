@@ -63,8 +63,9 @@ public sealed class MemoryHandlersTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(
-                Message(outcome),
-                Is.EqualTo("Completé y verifiqué la petición sobre la memoria local."));
+                OperationOutcomeNarration.Facts(MemoryOperationIds.Enable, outcome)["polarity"]
+                    ?.GetValue<string>(),
+                Is.EqualTo("success"));
             Assert.That(outcome.Result?.GetRawText(), Does.Not.Contain("enabled"));
             Assert.That(opened.Payload.GetProperty("enabled").GetBoolean(), Is.True);
             Assert.That(harness.Store.ConfigureRequests.Single().InvocationId,

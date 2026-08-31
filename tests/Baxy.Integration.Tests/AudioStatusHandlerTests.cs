@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.Audio;
@@ -65,8 +66,13 @@ public sealed class AudioStatusHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Does.Contain($"{volumePercent} %"));
-            Assert.That(Message(outcome), Does.Contain(expectedMuteState));
+            Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+            Assert.That(
+                result.GetProperty("state").GetProperty("volumePercent").GetInt32(),
+                Is.EqualTo(volumePercent));
+            Assert.That(
+                result.GetProperty("state").GetProperty("muted").GetBoolean(),
+                Is.EqualTo(muted));
             Assert.That(provider.LastStatusQuery?.InvocationId,
                 Is.EqualTo(invocation.InvocationId));
             Assert.That(result.GetProperty("operation").GetString(),
@@ -151,6 +157,9 @@ public sealed class AudioStatusHandlerTests
 
     private static string Message(OperationOutcome outcome) =>
         OperationOutcomeNarration.For(AudioOperationIds.Status, outcome);
+
+    private static JsonObject Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.Facts(AudioOperationIds.Status, outcome);
 
     private sealed class StubProvider(
         Func<AudioStatusQuery, AudioStatusReceipt>? status = null) : IAudioControlProvider

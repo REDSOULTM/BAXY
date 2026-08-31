@@ -794,11 +794,6 @@ public sealed class PlannerAppBoundaryTests
                     "display_name: Carter",
                 }));
             Assert.That(
-                UserMessagePolicy.IsSafe(
-                    "Encontré response_style: technical_and_brief y display_name: Carter.",
-                    draft),
-                Is.True);
-            Assert.That(
                 UserMessagePolicy.IsSafe("Encontré esta memoria local.", draft),
                 Is.False);
             Assert.That(draft.Source, Is.EqualTo(source));

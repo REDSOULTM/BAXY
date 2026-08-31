@@ -1609,6 +1609,7 @@ def test_wake_manifest_rejects_modified_calibration_report(tmp_path) -> None:
 def test_wake_manifest_requires_calibration_unless_explicit_dev_override(
     monkeypatch, tmp_path
 ) -> None:
+    monkeypatch.delenv("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED", raising=False)
     manifest = _write_wake_manifest(tmp_path, approved=False)
 
     config, error = inspect_wakeword_config(manifest)

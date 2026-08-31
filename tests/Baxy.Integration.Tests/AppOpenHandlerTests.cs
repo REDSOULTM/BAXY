@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Journal;
@@ -40,9 +41,9 @@ public sealed class AppOpenHandlerTests
         });
     }
 
-    [TestCase(false, "Listo, abrí Bloc de notas.")]
-    [TestCase(true, "Listo, enfoqué Bloc de notas.")]
-    public async Task VerifiedResultIsTheOnlySuccess(bool alreadyRunning, string expectedMessage)
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task VerifiedResultIsTheOnlySuccess(bool alreadyRunning)
     {
         OperationInvocation invocation = Invocation("{\"appId\":\"windows.notepad\"}");
         var handler = new AppOpenHandler(new StubProvider(Success(
@@ -52,12 +53,14 @@ public sealed class AppOpenHandlerTests
         OperationOutcome outcome = await handler.ExecuteAsync(
             invocation,
             CancellationToken.None);
+        JsonObject facts = Facts(outcome);
 
         Assert.Multiple(() =>
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Is.EqualTo(expectedMessage));
+            Assert.That(facts["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+            Assert.That(facts["operation"]?.GetValue<string>(), Is.EqualTo("app.open"));
             Assert.That(outcome.Result?.GetProperty("appId").GetString(), Is.EqualTo(ApplicationIds.Notepad));
             Assert.That(outcome.Result?.GetProperty("processId").GetInt32(), Is.EqualTo(4242));
             Assert.That(outcome.Result?.GetProperty("windowHandle").GetInt64(), Is.EqualTo(73));
@@ -147,7 +150,8 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo("verification_failed"));
-            Assert.That(Message(outcome), Does.Contain("puede haber quedado abierto"));
+            Assert.That(Facts(outcome)["effectUncertain"]?.GetValue<bool>(), Is.True);
+            Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("failure"));
             Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
         });
     }
@@ -244,12 +248,9 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
-            Assert.That(Message(outcome), Does.Contain("puede haber quedado abierto"));
+            Assert.That(Facts(outcome)["effectUncertain"]?.GetValue<bool>(), Is.True);
+            Assert.That(Facts(outcome)["error"]?.GetValue<string>(), Is.EqualTo(errorCode));
             Assert.That(Message(outcome), Does.Not.StartWith("Listo"));
-            if (string.Equals(errorCode, "inventory_failed", StringComparison.Ordinal))
-            {
-                Assert.That(Message(outcome), Does.Contain("pudo haber comenzado"));
-            }
         });
     }
 
@@ -330,7 +331,8 @@ public sealed class AppOpenHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Is.EqualTo("Listo, abrí Steam."));
+            Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+            Assert.That(Facts(outcome)["operation"]?.GetValue<string>(), Is.EqualTo("app.open"));
             Assert.That(outcome.Result!.Value.GetProperty("appId").GetString(), Is.EqualTo("Steam"));
         });
     }
@@ -415,6 +417,9 @@ public sealed class AppOpenHandlerTests
 
     private static string Message(OperationOutcome outcome) =>
         OperationOutcomeNarration.For("app.open", outcome);
+
+    private static JsonObject Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.Facts("app.open", outcome);
 
     private sealed class StubProvider : IApplicationOpenProvider
     {

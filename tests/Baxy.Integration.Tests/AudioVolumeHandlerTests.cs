@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Journal;
@@ -104,7 +105,7 @@ public sealed class AudioVolumeHandlerTests
         {
             Assert.That(outcome.Succeeded, Is.True);
             Assert.That(outcome.Verified, Is.True);
-            Assert.That(Message(outcome), Does.Contain($"{observed} %"));
+            Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
             Assert.That(result.GetProperty("operation").GetString(),
                 Is.EqualTo(AudioOperationIds.Volume));
             Assert.That(result.GetProperty("targetId").GetString(),
@@ -140,8 +141,8 @@ public sealed class AudioVolumeHandlerTests
             invocation,
             CancellationToken.None);
 
-        Assert.That(Message(outcome), Is.EqualTo(
-            "Listo, el volumen del sistema ya estaba en 55 %."));
+        Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+        Assert.That(outcome.Result?.GetProperty("final").GetProperty("volumePercent").GetInt32(), Is.EqualTo(55));
     }
 
     [Test]
@@ -161,8 +162,8 @@ public sealed class AudioVolumeHandlerTests
             invocation,
             CancellationToken.None);
 
-        Assert.That(Message(outcome), Is.EqualTo(
-            "Confirmé que el volumen del sistema está en 30 % tras recuperar el intento."));
+        Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+        Assert.That(outcome.Result?.GetProperty("reconciled").GetBoolean(), Is.True);
     }
 
     [TestCase("invocation")]
@@ -266,8 +267,8 @@ public sealed class AudioVolumeHandlerTests
         {
             Assert.That(outcome.Retryable, Is.False);
             Assert.That(outcome.ErrorCode, Is.EqualTo(AudioControlErrorCodes.EffectUncertain));
-            Assert.That(Message(outcome), Does.Contain("pudo haber cambiado"));
-            Assert.That(Message(outcome), Does.Not.Contain("no inicié"));
+            Assert.That(Facts(outcome)["effectUncertain"]?.GetValue<bool>(), Is.True);
+            Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("failure"));
         });
     }
 
@@ -296,8 +297,8 @@ public sealed class AudioVolumeHandlerTests
             Assert.That(outcome.Retryable, Is.True);
             Assert.That(outcome.ErrorCode, Is.EqualTo(
                 AudioControlErrorCodes.ReconciliationRequired));
-            Assert.That(Message(outcome), Does.Contain("misma petición"));
-            Assert.That(Message(outcome), Does.Contain("pudo haber cambiado"));
+            Assert.That(Facts(outcome)["pending"]?.GetValue<bool>(), Is.True);
+            Assert.That(Facts(outcome)["effectUncertain"]?.GetValue<bool>(), Is.True);
         });
     }
 
@@ -326,8 +327,8 @@ public sealed class AudioVolumeHandlerTests
         Assert.Multiple(() =>
         {
             Assert.That(outcome.ErrorCode, Is.EqualTo(errorCode));
-            Assert.That(Message(outcome), Does.Contain("pudo haber cambiado"));
-            Assert.That(Message(outcome), Does.Not.Contain("no inicié"));
+            Assert.That(Facts(outcome)["effectUncertain"]?.GetValue<bool>(), Is.True);
+            Assert.That(Facts(outcome)["polarity"]?.GetValue<string>(), Is.EqualTo("failure"));
         });
     }
 
@@ -565,6 +566,9 @@ public sealed class AudioVolumeHandlerTests
 
     private static string Message(OperationOutcome outcome) =>
         OperationOutcomeNarration.For(AudioOperationIds.Volume, outcome);
+
+    private static JsonObject Facts(OperationOutcome outcome) =>
+        OperationOutcomeNarration.Facts(AudioOperationIds.Volume, outcome);
 
     private sealed class StubProvider : IAudioControlProvider
     {

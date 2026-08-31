@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -150,13 +152,10 @@ public sealed class MindShellEndToEndTests
             Assert.Multiple(() =>
             {
                 Assert.That(turns, Has.Length.EqualTo(3));
-                Assert.That(time, Does.StartWith("La fecha local es "));
-                Assert.That(time, Does.Contain("la hora local es "));
-                Assert.That(
-                    plan,
-                    Does.StartWith(
-                        "Completé y verifiqué los 2 pasos de la misión."));
-                Assert.That(plan, Does.Contain("CPU"));
+                Assert.That(time, Does.Contain("system.time"));
+                Assert.That(time, Does.Contain("\"polarity\":\"success\""));
+                Assert.That(plan, Does.Contain("mission_completed"));
+                Assert.That(plan, Does.Contain("system.status"));
                 Assert.That(
                     turns.Select(static entry => Property(entry, "text")),
                     Is.EqualTo(new[]
@@ -238,10 +237,8 @@ public sealed class MindShellEndToEndTests
                     trace,
                     Has.None.Matches<JsonElement>(static entry =>
                         Property(entry, "type") == "plan"));
-                Assert.That(answer, Does.StartWith("La fecha local es "));
-                Assert.That(answer, Does.Contain("la hora local es "));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("{"));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("["));
+                Assert.That(answer, Does.Contain("system.time"));
+                Assert.That(answer, Does.Contain("\"polarity\":\"success\""));
             });
             AssertOutboxEmpty(dataRoot);
         });
@@ -259,9 +256,9 @@ public sealed class MindShellEndToEndTests
             JsonElement[] trace = ReadTrace(tracePath);
             Assert.Multiple(() =>
             {
-                Assert.That(prompt, Does.Contain("requiere tu confirmación"));
-                Assert.That(prompt, Does.Contain("confirmar / confirm"));
-                Assert.That(prompt, Does.Contain("cancelar / cancel"));
+                Assert.That(prompt, Does.Contain("confirmation"));
+                Assert.That(prompt, Does.Contain("confirmar"));
+                Assert.That(prompt, Does.Contain("cancelar"));
                 Assert.That(prompt, Does.Not.Contain("Navegué"));
                 Assert.That(
                     trace.Count(static entry =>
@@ -277,7 +274,7 @@ public sealed class MindShellEndToEndTests
             });
 
             string cancelled = await SubmitAsync(viewModel, "cancelar");
-            Assert.That(cancelled, Does.Contain("Cancelé"));
+            Assert.That(cancelled, Does.Contain("cancel").IgnoreCase);
             AssertOutboxEmpty(dataRoot);
         });
     }
@@ -311,13 +308,9 @@ public sealed class MindShellEndToEndTests
                     trace,
                     Has.None.Matches<JsonElement>(static entry =>
                         Property(entry, "type") == "arguments"));
-                Assert.That(
-                    answer,
-                    Does.StartWith("Completé y verifiqué los 2 pasos de la misión."));
-                Assert.That(answer, Does.Contain("La fecha local es "));
-                Assert.That(answer, Does.Contain("CPU"));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("{"));
-                Assert.That(answer.TrimStart(), Does.Not.StartWith("["));
+                Assert.That(answer, Does.Contain("mission_completed"));
+                Assert.That(answer, Does.Contain("system.time"));
+                Assert.That(answer, Does.Contain("system.status"));
             });
             AssertOutboxEmpty(dataRoot);
         });
@@ -342,10 +335,7 @@ public sealed class MindShellEndToEndTests
                         "expectedOperations",
                         out _),
                     Is.False);
-                Assert.That(
-                    answer,
-                    Does.StartWith(
-                        "Completé y verifiqué los 2 pasos de la misión."));
+                Assert.That(answer, Does.Contain("mission_completed"));
             });
             AssertOutboxEmpty(dataRoot);
         });
@@ -614,20 +604,33 @@ public sealed class MindShellEndToEndTests
         Assert.Multiple(() =>
         {
             Assert.That(reply, Is.Not.Empty);
-            Assert.That(reply.TrimStart(), Does.Not.StartWith("{"));
-            Assert.That(reply.TrimStart(), Does.Not.StartWith("["));
             Assert.That(reply, Does.Not.Contain("turn.result"));
-            Assert.That(reply, Does.Not.Contain("operation"));
             Assert.That(reply, Does.Not.Contain("No pude interpretar esa petición"));
             Assert.That(reply, Does.Not.Contain("inteligencia local no está disponible"));
         });
     }
 
-    private static JsonElement[] ReadTrace(string path) =>
-        File.ReadLines(path)
-            .Where(static line => !string.IsNullOrWhiteSpace(line))
-            .Select(static line => JsonDocument.Parse(line).RootElement.Clone())
-            .ToArray();
+    private static JsonElement[] ReadTrace(string path)
+    {
+        using var stream = new FileStream(
+            path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.ReadWrite | FileShare.Delete);
+        using var reader = new StreamReader(stream);
+        var rows = new List<JsonElement>();
+        while (reader.ReadLine() is { } line)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            rows.Add(JsonDocument.Parse(line).RootElement.Clone());
+        }
+
+        return [.. rows];
+    }
 
     private static string? Property(JsonElement element, string name) =>
         element.TryGetProperty(name, out JsonElement value)

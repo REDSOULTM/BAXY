@@ -68,7 +68,10 @@ def test_shipped_09511b_matrix_has_every_04_06_row_and_names_11c() -> None:
     assert report["deferred_to_goal10"] == []
     handoff = (REPO / HANDOFF_REL).read_text(encoding="utf-8")
     siguiente = handoff.split("## Siguiente accion recomendada", 1)[1]
-    assert "09.5.11C_REVALIDAR_07_09.md" in siguiente
+    assert (
+        "09.5.11C_REVALIDAR_07_09.md" in siguiente
+        or "09.5.12_INTEGRAR_Y_REPLANIFICAR.md" in siguiente
+    )
     assert "09.5.11B_REVALIDAR_04_06.md" not in siguiente
     assert "09.5.11A_REVALIDAR_01_03C.md" not in siguiente
     assert "10.0_BASE_VERDE.md" not in siguiente

@@ -69,10 +69,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # clarify, and a model-authored recovery question stays a question.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "0bf2340a6967bcdea4aad4ca5c27943fe4b174700a8a97f0aaa358bd7c04ac59"
+        "363a1cd91151ce4a2f2be5f93c37f809b2a462e997a338c3089ee28d7ece8402"
     ),
     "src/baxy_mind/llm.py": (
-        "558a9f5ab6af611c20acfa3b08f30da7e34cc45baf31d050250f8993a6299fc3"
+        "934a2f8cb82c39ae4edead01c27d1729e677e9ecb38a3b6d67315137dcfaff38"
     ),
 }
 

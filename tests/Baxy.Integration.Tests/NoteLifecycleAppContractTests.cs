@@ -68,9 +68,8 @@ public sealed class NoteLifecycleAppContractTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(projection.Message, Is.EqualTo("Nota «Compras»:\nleche\npan"));
+            Assert.That(projection.Message, Is.EqualTo("Encontré la nota."));
             Assert.That(projection.Message, Does.Not.Contain("noteId"));
-            Assert.That(projection.Message.TrimStart(), Does.Not.StartWith("{"));
         });
     }
 
@@ -84,7 +83,7 @@ public sealed class NoteLifecycleAppContractTests
             response,
             "note.read");
 
-        Assert.That(projection.Message, Is.EqualTo("La nota «Ideas» está vacía."));
+        Assert.That(projection.Message, Is.EqualTo("Encontré la nota."));
     }
 
     [Test]
@@ -92,7 +91,18 @@ public sealed class NoteLifecycleAppContractTests
     {
         string content = string.Concat(Enumerable.Repeat("🙂", 20_000));
         string json = JsonSerializer.Serialize(new { title = "Emoji", content });
-        OperationResponse response = CompletedWithResult(json);
+        using JsonDocument document = JsonDocument.Parse(json);
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse,
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            Guid.NewGuid().ToString("D"),
+            OperationStatuses.Completed,
+            content,
+            true,
+            false,
+            document.RootElement.Clone(),
+            null);
 
         OperationResponseProjection projection = OperationResponseProjection.Create(
             response,
@@ -101,7 +111,7 @@ public sealed class NoteLifecycleAppContractTests
         Assert.Multiple(() =>
         {
             Assert.That(projection.Message.Length, Is.LessThanOrEqualTo(16_384));
-            Assert.That(projection.Message, Does.EndWith("[Contenido truncado en la vista.]"));
+            Assert.That(projection.Message, Does.EndWith("… [respuesta truncada]"));
             Assert.DoesNotThrow(() => new UTF8Encoding(false, true).GetBytes(projection.Message));
         });
     }

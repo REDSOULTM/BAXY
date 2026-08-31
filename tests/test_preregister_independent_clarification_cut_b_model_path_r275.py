@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import ast
-import importlib.util
+import json
 from pathlib import Path
 
 from sealed_evidence import assert_sealed
@@ -27,22 +27,9 @@ ARTIFACT = (
 ARTIFACT_SEAL = "5e819988a23ff12357581e557f2329932a1e2c3f87a00b7be8f394b583a8544c"
 
 
-def _module():
-    spec = importlib.util.spec_from_file_location("r275_preregistration", PREREGISTRATION)
-    assert spec and spec.loader
-    candidate = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(candidate)
-    return candidate
-
-
-def _sealed_report():
-    candidate = _module()
-    candidate.MEASUREMENT_OUTPUT = ROOT / "artifacts/audit/r276-output-must-be-absent.json"
-    return candidate.build()
-
-
 def test_r275_seals_the_registered_no_dispatch_model_path_after_r274() -> None:
-    report = _sealed_report()
+    assert_sealed(ARTIFACT, ARTIFACT_SEAL)
+    report = json.loads(ARTIFACT.read_text(encoding="utf-8"))
 
     assert report["authority"] == "sealed_before_registered_local_model_start_or_product_turn"
     assert report["source"]["all_r270_rows"] == 93

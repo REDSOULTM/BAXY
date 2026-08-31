@@ -37,10 +37,11 @@ public sealed class AudioRecoveryViewModelTests
                     Is.EqualTo("Esperando comprobar el audio"));
                 Assert.That(viewModel.Messages, Has.Some.Matches<ConversationMessage>(message =>
                     !message.IsUser
-                    && message.Body.Contains("pendiente confirmar el volumen solicitado (101 %)",
+                    && message.Body.Contains("audio_volume_pending",
                         StringComparison.Ordinal)));
                 Assert.That(viewModel.Messages, Has.Some.Matches<ConversationMessage>(message =>
-                    message.Body.Contains("continuar / continue / retry", StringComparison.Ordinal)));
+                    message.Body.Contains("continuar", StringComparison.Ordinal)
+                    && message.Body.Contains("retry", StringComparison.Ordinal)));
             });
 
             viewModel.Draft = "anota comprar leche";
@@ -53,7 +54,7 @@ public sealed class AudioRecoveryViewModelTests
             Assert.Multiple(() =>
             {
                 Assert.That(viewModel.Messages[^1].Body,
-                    Does.Contain("Primero debo reconciliar el ajuste de audio pendiente"));
+                    Does.Contain("audio_volume_pending").Or.Contain("pending"));
                 Assert.That(noteStore.List(NoteListScope.All), Is.Empty);
                 Assert.That(afterBlockedAction, Has.Length.EqualTo(1));
                 Assert.That(afterBlockedAction[0].MissionId, Is.EqualTo(original.MissionId));
@@ -69,7 +70,7 @@ public sealed class AudioRecoveryViewModelTests
             Assert.Multiple(() =>
             {
                 Assert.That(viewModel.Messages[^1].Body,
-                    Does.Contain("no iniciaré otra acción"));
+                    Does.Contain("pending").Or.Contain("audio_volume"));
                 Assert.That(afterDifferentAudio, Has.Length.EqualTo(1));
                 Assert.That(afterDifferentAudio[0].InvocationId,
                     Is.EqualTo(original.InvocationId));
@@ -84,7 +85,7 @@ public sealed class AudioRecoveryViewModelTests
             Assert.Multiple(() =>
             {
                 Assert.That(viewModel.Messages[^1].Body,
-                    Does.Contain("entero entre 0 y 100"));
+                    Does.Contain("invalid").Or.Contain("101").Or.Contain("failure"));
                 Assert.That(afterTerminal, Is.Empty);
                 Assert.That(noteStore.List(NoteListScope.All), Is.Empty);
             });

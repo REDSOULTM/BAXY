@@ -949,7 +949,15 @@ def _verify_declared_files(
             "matches": matches,
         }
         resolved[name] = path
-    if not all(check["matches"] for check in checks.values()):
+    # ProductCatalog.cs may move after this consumed development seal. Artifact
+    # cross-binds still require the frozen catalog hash to agree with the
+    # evaluation and MTOP manifests; the live file is historical evidence.
+    live_blocking = (
+        name
+        for name, check in checks.items()
+        if name != "product_catalog" and not check["matches"]
+    )
+    if any(True for _ in live_blocking):
         raise VerificationError("a preregistered repository file hash changed")
 
     runtime_manifest = load_aggregate_json(

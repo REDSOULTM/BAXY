@@ -341,11 +341,17 @@ class SapiSpeechOutput:
 
 def _espeak_exe() -> Path | None:
     configured = (os.environ.get("BAXY_ESPEAK_EXE") or "").strip()
+    local_data = os.environ.get("LOCALAPPDATA")
     candidates = [
         Path(configured) if configured else None,
         Path(r"C:\Program Files\eSpeak NG\espeak-ng.exe"),
         Path(r"C:\Program Files (x86)\eSpeak NG\espeak-ng.exe"),
+        Path(r"D:\BAXYRuntime\assets\espeak-ng\espeak-ng.exe"),
     ]
+    if local_data:
+        candidates.append(
+            Path(local_data) / "BAXYRuntime" / "assets" / "espeak-ng" / "espeak-ng.exe"
+        )
     for candidate in candidates:
         if candidate is not None and candidate.is_file():
             return candidate
@@ -407,12 +413,17 @@ class _PiperOnnxEngine:
     def _phonemes(self, text: str) -> str:
         import subprocess
 
+        env = os.environ.copy()
+        data = _espeak_data_dir()
+        if data is not None:
+            env["ESPEAK_DATA_PATH"] = str(data)
         completed = subprocess.run(
             [str(self._exe), "-q", "-v", self._voice, "--ipa=3", text],
             check=True,
             capture_output=True,
             text=True,
             encoding="utf-8",
+            env=env,
         )
         return " ".join(completed.stdout.split())
 

@@ -83,6 +83,7 @@ def test_shipped_09511a_matrix_has_every_01_03c_row_and_names_11b() -> None:
     assert (
         "09.5.11B_REVALIDAR_04_06.md" in siguiente
         or "09.5.11C_REVALIDAR_07_09.md" in siguiente
+        or "09.5.12_INTEGRAR_Y_REPLANIFICAR.md" in siguiente
     )
 
 

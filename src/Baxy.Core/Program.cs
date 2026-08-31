@@ -77,7 +77,7 @@ internal static class Program
         }
         catch (Exception exception)
         {
-            Console.Error.WriteLine($"BAXY core stopped safely ({exception.GetType().Name}).");
+            Console.Error.WriteLine($"BAXY core stopped safely ({exception.GetType().Name}): {exception.Message}");
             return 70;
         }
         finally

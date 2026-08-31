@@ -150,15 +150,20 @@ def _merge_exhaustive_report(
     ):
         return None
     clauses = [clause for clause, _ in merged]
+    colon = first.find(":")
+    head_source = first if colon >= 0 else second
+    if colon < 0:
+        colon = second.find(":")
+    head = (head_source[: colon + 1].strip() + " ") if colon >= 0 else ""
     if language == "es":
         candidate = (
-            "sin omitir ninguno, mira en este orden: "
+            head
             + "; después, ".join(clauses)
             + ", devolviendo cada resultado por separado"
         )
     else:
         candidate = (
-            "without skipping any, inspect in this order: "
+            head
             + "; then, ".join(clauses)
             + ", returning each result separately"
         )

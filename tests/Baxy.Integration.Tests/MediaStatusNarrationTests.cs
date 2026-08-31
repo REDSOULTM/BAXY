@@ -7,11 +7,9 @@ namespace Baxy.Integration.Tests;
 [TestFixture]
 public sealed class MediaStatusNarrationTests
 {
-    [TestCase("playing", "Está sonando «Billie Jean» de Michael Jackson.")]
-    [TestCase("paused", "Está en pausa «Billie Jean» de Michael Jackson.")]
-    public void VerifiedMediaStatusNamesTheObservedTitleArtistAndState(
-        string status,
-        string expected)
+    [TestCase("playing")]
+    [TestCase("paused")]
+    public void VerifiedMediaStatusNamesTheObservedTitleArtistAndState(string status)
     {
         JsonElement result = JsonDocument.Parse($$"""
             {"version":1,"sourceAppUserModelId":"Spotify.exe","title":"Billie Jean","artist":"Michael Jackson","playbackStatus":"{{status}}","authority":"windows_smtc_current_session_read"}
@@ -21,33 +19,42 @@ public sealed class MediaStatusNarrationTests
             "media.status",
             OperationOutcome.Success(result));
 
-        Assert.That(narration, Is.EqualTo(expected));
+        Assert.That(narration, Does.Contain("Billie Jean"));
+        Assert.That(narration, Does.Contain("Michael Jackson"));
+        Assert.That(narration, Does.Contain(status));
+        Assert.That(
+            OperationOutcomeNarration.Facts("media.status", OperationOutcome.Success(result))["polarity"]
+                ?.GetValue<string>(),
+            Is.EqualTo("success"));
     }
 
     [Test]
     public void MissingMediaSessionIsReportedAsAnObservedAbsence()
     {
-        string narration = OperationOutcomeNarration.For(
+        var facts = OperationOutcomeNarration.Facts(
             "media.status",
             OperationOutcome.Failure("media_session_not_found"));
 
-        Assert.That(
-            narration,
-            Is.EqualTo("No hay ninguna reproducción visible para Windows en este momento."));
+        Assert.That(facts["polarity"]?.GetValue<string>(), Is.EqualTo("failure"));
+        Assert.That(facts["error"]?.GetValue<string>(), Is.EqualTo("media_session_not_found"));
     }
 
-    [TestCase(8, "Listo, adelanté 8 segundos y verifiqué la posición.")]
-    [TestCase(-12, "Listo, retrocedí 12 segundos y verifiqué la posición.")]
-    public void VerifiedRelativeSeekNamesTheObservedDirection(int seconds, string expected)
+    [TestCase(8)]
+    [TestCase(-12)]
+    public void VerifiedRelativeSeekNamesTheObservedDirection(int seconds)
     {
         JsonElement result = JsonDocument.Parse($$"""
             {"version":1,"requestedDeltaSeconds":{{seconds}},"previousPositionSeconds":20,"positionSeconds":28,"durationSeconds":180,"sourceAppUserModelId":"Browser","authority":"windows_smtc_timeline_postread"}
             """).RootElement.Clone();
 
+        string narration = OperationOutcomeNarration.For(
+            "media.seek.relative",
+            OperationOutcome.Success(result));
+
+        Assert.That(narration, Does.Contain($"\"requestedDeltaSeconds\":{seconds}"));
         Assert.That(
-            OperationOutcomeNarration.For(
-                "media.seek.relative",
-                OperationOutcome.Success(result)),
-            Is.EqualTo(expected));
+            OperationOutcomeNarration.Facts("media.seek.relative", OperationOutcome.Success(result))["polarity"]
+                ?.GetValue<string>(),
+            Is.EqualTo("success"));
     }
 }

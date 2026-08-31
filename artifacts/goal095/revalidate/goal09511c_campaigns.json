@@ -1,0 +1,41 @@
+{
+  "schema": "baxy.goal095.09511c-campaigns.v1",
+  "goal": "09.5.11C",
+  "runs": [
+    {
+      "name": "test_compound_missions",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "command": "pytest tests/test_compound_missions.py -q"
+    },
+    {
+      "name": "test_compound_execution_current_tree_r6",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "command": "pytest tests/test_compound_execution_current_tree_r6.py -q"
+    },
+    {
+      "name": "test_first_signal",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "command": "pytest tests/test_first_signal.py -q"
+    },
+    {
+      "name": "test_tts_cancel_after_dequeue_never_speaks_the_stale_item",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "command": "pytest tests/test_mind_voice_runtime.py::test_tts_cancel_after_dequeue_never_speaks_the_stale_item -q"
+    },
+    {
+      "name": "test_goal09_voice_engines",
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "command": "runtime-python pytest tests/test_goal09_voice_engines.py -q"
+    }
+  ]
+}

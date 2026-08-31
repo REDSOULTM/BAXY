@@ -12,6 +12,7 @@ namespace Baxy.Kernel.Operations;
 public static class OperationVisibleFacts
 {
     private const int MaximumObservedUtf8Bytes = 8_192;
+    private const int MaximumMessageChars = 4_096;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -65,10 +66,23 @@ public static class OperationVisibleFacts
                 {
                     // Observed payload stays omitted when it is not JSON.
                 }
+                catch (ArgumentException)
+                {
+                    // Duplicate keys or re-parented nodes stay omitted.
+                }
             }
         }
 
-        return payload.ToJsonString(JsonOptions);
+        string json = payload.ToJsonString(JsonOptions);
+        if (json.Length > MaximumMessageChars)
+        {
+            payload.Remove("observed");
+            json = payload.ToJsonString(JsonOptions);
+        }
+
+        return json.Length <= MaximumMessageChars
+            ? json
+            : json[..MaximumMessageChars];
     }
 
     public static string FromStatus(string operation, string status, string? errorCode)
@@ -105,13 +119,14 @@ public static class OperationVisibleFacts
             {
                 if (key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
                     or "hash" or "sha256" or "pid" or "processId" or "invocationId"
-                    or "requestId" or "missionId" or "token" or "recordId")
+                    or "requestId" or "missionId" or "token" or "recordId"
+                    or "deviceId")
                 {
                     continue;
                 }
 
                 JsonNode? sanitized = Sanitize(value, depth + 1);
-                if (sanitized is not null)
+                if (sanitized is not null && !clean.ContainsKey(key))
                 {
                     clean[key] = sanitized;
                 }

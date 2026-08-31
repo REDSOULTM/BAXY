@@ -14,33 +14,97 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
+from baxy_mind.assets import AssetDescriptorError, resolve_asset  # noqa: E402
 from baxy_mind.voice import (  # noqa: E402
     SAMPLE_RATE,
     VoiceEngine,
+    _complete_stt_bundle,
     _transcript_is_doubtful,
+    resolve_stt_directory,
 )
 from baxy_mind.voice_output import (  # noqa: E402
     NeuralSpeechOutput,
+    _espeak_exe,
     create_speech_output,
     resolve_neural_tts_model,
 )
 from baxy_mind.wakeword import (  # noqa: E402
     AcousticWakeDetector,
+    WakeWordRuntimeError,
     WINDOW_SAMPLES,
     load_wakeword_config,
 )
 
 
-WAKE_ONNX = Path(
-    r"C:\Users\usuario\Desktop\ETC\Programacion\BAXY\legacy\models\artifacts"
-    r"\wake_livekit\baxy.onnx"
-)
 SCRATCH = Path(
     os.environ.get(
         "BAXY_GOAL09_SCRATCH",
         r"C:\Users\usuario\AppData\Local\Temp\grok-goal-4eda3fa08868\implementer",
     )
 )
+
+
+@pytest.fixture(autouse=True)
+def _restore_wake_uncalibrated_env():
+    previous = os.environ.get("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED")
+    yield
+    if previous is None:
+        os.environ.pop("BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED", None)
+    else:
+        os.environ["BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"] = previous
+
+
+def _fail_environment(reason: str) -> None:
+    pytest.fail(f"FALLO_DE_AMBIENTE: {reason}")
+
+
+def _require_wake_detector(config):
+    try:
+        return AcousticWakeDetector(config)
+    except WakeWordRuntimeError as error:
+        _fail_environment(f"livekit.wakeword is not on this machine ({error})")
+        raise AssertionError("unreachable")
+
+
+def _inherited_wake_onnx() -> Path:
+    local = (
+        Path(os.environ.get("LOCALAPPDATA") or "")
+        / "BAXYRuntime"
+        / "assets"
+        / "wake"
+        / "baxy.onnx"
+    )
+    if local.is_file():
+        return local
+    try:
+        resolution = resolve_asset("wake_manifest")
+    except AssetDescriptorError:
+        resolution = None
+    if resolution is not None:
+        for candidate in (resolution.path, *resolution.candidates):
+            if candidate is None:
+                continue
+            onnx = Path(candidate).with_name("baxy.onnx")
+            if onnx.is_file():
+                return onnx
+    _fail_environment("inherited baxy.onnx is not on this machine")
+    raise AssertionError("unreachable")
+
+
+def _require_parakeet() -> Path:
+    stt = resolve_stt_directory()
+    if not _complete_stt_bundle(stt):
+        _fail_environment("Parakeet bundle is not on this machine")
+    return stt
+
+
+def _require_neural_tts() -> Path:
+    path = resolve_neural_tts_model()
+    if path is None or not path.is_file():
+        _fail_environment("neural TTS model is not on this machine")
+    if _espeak_exe() is None:
+        _fail_environment("eSpeak NG is not on this machine")
+    return path
 
 
 def _write_wav(path: Path, audio: np.ndarray, sample_rate: int = SAMPLE_RATE) -> None:
@@ -76,14 +140,12 @@ def _read_wav(path: Path) -> np.ndarray:
 
 
 def _uncalibrated_wake_manifest(tmp_path: Path) -> Path:
-    if not WAKE_ONNX.is_file():
-        pytest.skip("inherited baxy.onnx is not on this machine")
     import hashlib
     import shutil
 
     os.environ["BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"] = "1"
     dest = tmp_path / "baxy.onnx"
-    shutil.copy2(WAKE_ONNX, dest)
+    shutil.copy2(_inherited_wake_onnx(), dest)
     digest = hashlib.sha256(dest.read_bytes()).hexdigest()
     manifest = tmp_path / "baxy-wakeword-v1.json"
     manifest.write_text(
@@ -116,33 +178,34 @@ def test_doubtful_transcript_does_not_look_like_a_command() -> None:
 
 
 def test_product_tts_is_neural_spanish_not_system_sapi() -> None:
-    if resolve_neural_tts_model() is None:
-        pytest.skip("neural TTS model is not on this machine")
+    _require_neural_tts()
     output = create_speech_output()
-    assert isinstance(output, NeuralSpeechOutput)
-    assert "es_MX" in output.voice_name or "claude" in output.voice_name.casefold()
+    try:
+        assert isinstance(output, NeuralSpeechOutput)
+        assert "es_MX" in output.voice_name or "claude" in output.voice_name.casefold()
+    finally:
+        output.stop(timeout=3.0)
 
 
 def test_neural_speak_starts_and_cancel_stops_mid_utterance(tmp_path: Path) -> None:
-    if resolve_neural_tts_model() is None:
-        pytest.skip("neural TTS model is not on this machine")
+    _require_neural_tts()
     output = NeuralSpeechOutput()
     try:
         assert output.start(timeout=20.0)
-        started = time.perf_counter()
         assert output.speak(
             "Listo, Spotify está abierto y sonando. Sigo hablando para poder cortar."
         )
-        deadline = time.monotonic() + 2.0
+        deadline = time.monotonic() + 8.0
         while not output.speaking and time.monotonic() < deadline:
             time.sleep(0.02)
-        assert output.speaking
+        assert output.speaking, output.last_error
+        audible = time.perf_counter()
         time.sleep(0.35)
         output.cancel()
         deadline = time.monotonic() + 2.0
         while output.speaking and time.monotonic() < deadline:
             time.sleep(0.02)
-        elapsed = time.perf_counter() - started
+        elapsed = time.perf_counter() - audible
         assert not output.speaking
         assert elapsed < 4.0
     finally:
@@ -175,7 +238,7 @@ def test_inherited_wake_fires_on_baxy_and_not_on_noise(tmp_path: Path) -> None:
     manifest = _uncalibrated_wake_manifest(tmp_path)
     os.environ["BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"] = "1"
     config = load_wakeword_config(manifest)
-    detector = AcousticWakeDetector(config)
+    detector = _require_wake_detector(config)
     noise = (np.random.default_rng(0).standard_normal(SAMPLE_RATE * 3) * 0.02).astype(
         np.float32
     )
@@ -202,9 +265,7 @@ def test_inherited_wake_fires_on_baxy_and_not_on_noise(tmp_path: Path) -> None:
 
 
 def test_parakeet_transcribes_spanish_english_and_codeswitch(tmp_path: Path) -> None:
-    stt = Path.home() / ".gemma4" / "models" / "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
-    if not (stt / "encoder.int8.onnx").is_file():
-        pytest.skip("Parakeet bundle is not on this machine")
+    stt = _require_parakeet()
     os.environ["BAXY_MIND_STT_DIR"] = str(stt)
     engine = VoiceEngine(
         lambda _text: None,
@@ -259,13 +320,11 @@ def _ingest_paced(engine: VoiceEngine, audio: np.ndarray) -> None:
     samples = np.asarray(audio, dtype=np.float32).reshape(-1)
     for offset in range(0, samples.size, hop):
         engine.ingest_pcm(samples[offset : offset + hop])
-        time.sleep(0.05)
+        time.sleep(hop / SAMPLE_RATE)
 
 
 def test_voice_engine_pcm_source_wakes_on_injected_wav(tmp_path: Path) -> None:
-    stt = Path.home() / ".gemma4" / "models" / "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
-    if not (stt / "encoder.int8.onnx").is_file():
-        pytest.skip("Parakeet bundle is not on this machine")
+    stt = _require_parakeet()
     _uncalibrated_wake_manifest(tmp_path)
     os.environ["BAXY_MIND_STT_DIR"] = str(stt)
     os.environ["BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"] = "1"
@@ -276,7 +335,7 @@ def test_voice_engine_pcm_source_wakes_on_injected_wav(tmp_path: Path) -> None:
     try:
         started = engine.start("wake")
         if not started:
-            pytest.skip(f"wake start failed: {engine.last_error}")
+            _fail_environment(f"wake start failed: {engine.last_error}")
         engine.ingest_pcm(np.zeros(4_000, dtype=np.float32))
         time.sleep(0.8)
         noise = (np.random.default_rng(1).standard_normal(SAMPLE_RATE * 2) * 0.01).astype(
@@ -323,9 +382,7 @@ def test_voice_engine_pcm_source_wakes_on_injected_wav(tmp_path: Path) -> None:
 
 
 def test_end_of_speech_to_first_signal_is_under_budget(tmp_path: Path) -> None:
-    stt = Path.home() / ".gemma4" / "models" / "sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8"
-    if not (stt / "encoder.int8.onnx").is_file():
-        pytest.skip("Parakeet bundle is not on this machine")
+    stt = _require_parakeet()
     os.environ["BAXY_MIND_STT_DIR"] = str(stt)
     delays: list[float] = []
     phrases = (

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.App;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
@@ -16,10 +17,11 @@ public sealed class TaskNarrationTests
                 new TaskListResult([], 0, "tasks", 20),
                 CoreJsonContext.Default.TaskListResult));
 
-        string narration = OperationOutcomeNarration.For("task.list", outcome);
+        var facts = OperationOutcomeNarration.Facts("task.list", outcome);
 
-        Assert.That(narration, Is.EqualTo("No encontré tareas en esa lista."));
-        Assert.That(UserMessagePolicy.IsSafe(narration), Is.True);
+        Assert.That(facts["polarity"]?.GetValue<string>(), Is.EqualTo("success"));
+        Assert.That(facts["operation"]?.GetValue<string>(), Is.EqualTo("task.list"));
+        Assert.That(UserMessagePolicy.IsSafe(facts.ToJsonString()), Is.True);
     }
 
     [Test]
@@ -42,20 +44,21 @@ public sealed class TaskNarrationTests
 
         string narration = OperationOutcomeNarration.For("task.create", outcome);
 
-        Assert.That(narration, Is.EqualTo("Creé la tarea «Informe Q3»."));
+        Assert.That(narration, Does.Contain("Informe Q3"));
+        Assert.That(OperationOutcomeNarration.Facts("task.create", outcome)["polarity"]?.GetValue<string>(),
+            Is.EqualTo("success"));
         Assert.That(UserMessagePolicy.IsSafe(narration), Is.True);
     }
 
     [Test]
     public void TaskFailureHasNaturalNontechnicalNarration()
     {
-        string narration = OperationOutcomeNarration.For(
+        var facts = OperationOutcomeNarration.Facts(
             "task.list",
             OperationOutcome.Failure("invalid_arguments"));
 
-        Assert.That(
-            narration,
-            Is.EqualTo("Los datos de la tarea no tienen el formato esperado."));
-        Assert.That(UserMessagePolicy.IsSafe(narration), Is.True);
+        Assert.That(facts["polarity"]?.GetValue<string>(), Is.EqualTo("failure"));
+        Assert.That(facts["error"]?.GetValue<string>(), Is.EqualTo("invalid_arguments"));
+        Assert.That(UserMessagePolicy.IsSafe(facts.ToJsonString()), Is.True);
     }
 }

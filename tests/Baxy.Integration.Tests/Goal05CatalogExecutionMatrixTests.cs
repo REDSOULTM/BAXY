@@ -496,29 +496,6 @@ public sealed class Goal05CatalogExecutionMatrixTests
         string json = JsonSerializer.Serialize(report, JsonOptions) + Environment.NewLine;
         Goal05Scratch.Write("execution-matrix.json", json);
         Goal05Scratch.Write("matrix-run.log", log);
-        string? repo = FindRepoRoot();
-        if (repo is not null)
-        {
-            string published = Path.Combine(repo, "documentacion", "base", "05_MATRIZ_EJECUCION.json");
-            Directory.CreateDirectory(Path.GetDirectoryName(published)!);
-            File.WriteAllText(published, json);
-        }
-    }
-
-    private static string? FindRepoRoot()
-    {
-        string? directory = AppContext.BaseDirectory;
-        while (directory is not null)
-        {
-            if (File.Exists(Path.Combine(directory, "Baxy.slnx")))
-            {
-                return directory;
-            }
-
-            directory = Path.GetDirectoryName(directory);
-        }
-
-        return null;
     }
 
     private static OperationInvocation Invocation(string operation, string json) => new(

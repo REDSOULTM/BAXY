@@ -1,0 +1,740 @@
+{
+  "schema": "baxy.goal095.09511c-revalidate.v1",
+  "goal": "09.5.11C",
+  "closed_utc": "2026-08-31T15:13:06Z",
+  "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
+  "next_human_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
+  "required_human_launches": 1,
+  "transplant_pending": 0,
+  "transplant_claimed": 0,
+  "deferred_to_goal10": [],
+  "live_src_changed": true,
+  "src_change": {
+    "owner": "tests/test_goal09_voice_engines.py",
+    "reason": "Goal 09 tests resolved STT/wake/TTS via shipped resolvers and fail closed on missing assets instead of pytest.skip."
+  },
+  "estado_del_arte_added": false,
+  "corpus": {
+    "path": "artifacts/development/goal03_fresh_paraphrase_corpus.v1.jsonl",
+    "sha256": "761c1bc3b3facbf14a3aaafa09f24c0e5e0baaf8cebdd0edc7c2e648cb87413d",
+    "rows": 160,
+    "in_catalog": 124,
+    "out_of_catalog": 36,
+    "languages": {
+      "en": 47,
+      "es": 93,
+      "es_en": 20
+    }
+  },
+  "listons": {
+    "r6_passed": 6,
+    "r6_steps": 22,
+    "r6_orphan": 0,
+    "asserted_result": false,
+    "eou_p50_seconds": 1.5,
+    "silence_seconds": 3.0,
+    "deferred_to_goal10": [],
+    "in_scope_skips": 0
+  },
+  "holdouts": {
+    "missions": {
+      "chains": {
+        "chains": [
+          {
+            "language": "es",
+            "text": "Abre Steam y ve a la biblioteca",
+            "operations": [
+              "app.open",
+              "input.visible.click"
+            ],
+            "step_count": 2,
+            "open_args": {
+              "appId": "Steam"
+            },
+            "click_args": {
+              "label": "biblioteca"
+            },
+            "expected_click_label": "biblioteca",
+            "unresolved": false,
+            "holds": true
+          },
+          {
+            "language": "en",
+            "text": "Open Steam and go to Library",
+            "operations": [
+              "app.open",
+              "input.visible.click"
+            ],
+            "step_count": 2,
+            "open_args": {
+              "appId": "Steam"
+            },
+            "click_args": {
+              "label": "library"
+            },
+            "expected_click_label": "library",
+            "unresolved": false,
+            "holds": true
+          },
+          {
+            "language": "es_en",
+            "text": "Abre Steam and click Library",
+            "operations": [
+              "app.open",
+              "input.visible.click"
+            ],
+            "step_count": 2,
+            "open_args": {
+              "appId": "Steam"
+            },
+            "click_args": {
+              "label": "library"
+            },
+            "expected_click_label": "library",
+            "unresolved": false,
+            "holds": true
+          }
+        ],
+        "languages": [
+          "es",
+          "en",
+          "es_en"
+        ],
+        "all_hold": true,
+        "halt": {
+          "intent_is_none": true,
+          "minimum_effects": 2,
+          "veto_mode": "conversation",
+          "veto_effects": [],
+          "holds": true
+        },
+        "click_domain": {
+          "library": true,
+          "coat": false
+        }
+      },
+      "cascade": {
+        "banned_hits": [],
+        "ocr_before_vision": true,
+        "holds": true
+      },
+      "r6": {
+        "passed": 6,
+        "total": 6,
+        "verified_steps": 22,
+        "orphan": 0,
+        "orphans_recounted": 0,
+        "ambiguous_effects": 0,
+        "real_llm_plan_cases_passed": 6,
+        "unverified_successes": [],
+        "reuse_forbidden": true,
+        "blind_holdout": true,
+        "holds": true
+      },
+      "holds": true
+    },
+    "first_signal": {
+      "live": {
+        "recognizer_emits": false,
+        "closed_emits": false,
+        "model_emits": true,
+        "compound_recognizer_emits": true,
+        "early_es": "Sigo con Abre Steam y ve a la biblioteca.",
+        "early_en": "Still working on Open Steam and go to the library.",
+        "hito_es": "Sigo en el paso 2 de 3: Abre Steam y ve a la biblioteca.",
+        "hito_en": "Still working on step 2 of 3: Open Steam and go to the library.",
+        "languages_differ": true,
+        "asserted_result": false,
+        "payload_type": "turn.signal",
+        "correction": "No pude: Steam no responde.",
+        "milestone_at_budget": false,
+        "milestone_after_budget": true,
+        "listo_in_early": false,
+        "holds": true
+      },
+      "records": {
+        "p50": 0.009,
+        "p95": 0.161,
+        "max": 0.551,
+        "meets_p50": true,
+        "meets_p95": true,
+        "languages": [
+          "en",
+          "es",
+          "spanglish"
+        ],
+        "asserted_listo": [],
+        "holds": true
+      },
+      "holds": true
+    },
+    "voice": {
+      "engines": {
+        "stt_complete": true,
+        "tts_present": true,
+        "tts_neural": true,
+        "wake_onnx_present": true,
+        "noise_false_activation": false,
+        "doubtful_question": true,
+        "doubtful_command": false,
+        "holds": true
+      },
+      "artifacts": {
+        "stt_kinds": [
+          "codeswitch",
+          "english",
+          "spanish"
+        ],
+        "stt_all_hit": true,
+        "tts_cancelled": true,
+        "tts_voice": "es_MX-claude-high",
+        "eou_p50": 0.205,
+        "eou_max": 0.307,
+        "eou_never_claims": true,
+        "sidecar": true,
+        "not_dotnet": true,
+        "holds": true
+      },
+      "holds": true
+    },
+    "campaigns": {
+      "artifact": "artifacts/goal095/revalidate/goal09511c_campaigns.json",
+      "missing": false,
+      "runs": [
+        {
+          "name": "test_compound_missions",
+          "passed": 7,
+          "failed": 0,
+          "skipped": 0,
+          "command": "pytest tests/test_compound_missions.py -q"
+        },
+        {
+          "name": "test_compound_execution_current_tree_r6",
+          "passed": 2,
+          "failed": 0,
+          "skipped": 0,
+          "command": "pytest tests/test_compound_execution_current_tree_r6.py -q"
+        },
+        {
+          "name": "test_first_signal",
+          "passed": 6,
+          "failed": 0,
+          "skipped": 0,
+          "command": "pytest tests/test_first_signal.py -q"
+        },
+        {
+          "name": "test_tts_cancel_after_dequeue_never_speaks_the_stale_item",
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "command": "pytest tests/test_mind_voice_runtime.py::test_tts_cancel_after_dequeue_never_speaks_the_stale_item -q"
+        },
+        {
+          "name": "test_goal09_voice_engines",
+          "passed": 7,
+          "failed": 0,
+          "skipped": 0,
+          "command": "runtime-python pytest tests/test_goal09_voice_engines.py -q"
+        }
+      ],
+      "in_scope_failures_or_skips": [],
+      "holds": true
+    },
+    "provenance": {
+      "queue_evidence": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 132,
+        "total": 132
+      },
+      "docs": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 25,
+        "total": 25
+      },
+      "code_tests": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 477,
+        "total": 477
+      },
+      "evidence_assets": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 132,
+        "total": 132
+      },
+      "transplant": {
+        "pending": 0,
+        "claimed": 0,
+        "complete": 0,
+        "total": 0
+      },
+      "transplant_empty_reason": "09.5.5–09.5.8 no hallaron pieza histórica que gane al vivo en conducta, pruebas, recursos y arquitectura a la vez. Cero reusar_exacto, cero adaptar, cero medir_antes de herencia: unload-on-idle y arranque frío son mediciones de producto del Goal 10.2 sobre el keep-warm/process_lifecycle vigentes, no un vram_manager/Ollama/ui_field que transplantar. Los GGUF/datasets/checkpoints dispersos de Probando Gemma 4 no se nombran para reutilizar (hashes not invented). Cada lote de herencia habría tenido que retirar el mecanismo vivo en el mismo cambio; no hay tal lote. Rechazos protegidos (FunctionGemma en pesos, Qwen-VL R-023, Ollama/servicio Windows, AUTO_APPROVE, soak 24 h como requisito, Gemma-native-audio como oído) no reentran.",
+      "sparse_hashes": [
+        "not invented",
+        "not invented",
+        "not invented"
+      ],
+      "sparse_not_invented": true,
+      "protected_rejects_blocked": [
+        "functiongemma-270m-ft",
+        "qwen-vl",
+        "ollama-runtime",
+        "auto_approve",
+        "soak-24h-as-requirement",
+        "gemma-native-audio"
+      ],
+      "protected_rejects_in_lots": [],
+      "matrix_sparse_not_invented": true
+    },
+    "reproducibility": {
+      "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+      "result": "source_quality_gate_passed: mode=Full",
+      "passed": true
+    },
+    "not_rerun": [
+      {
+        "id": "r6-execution",
+        "reason": "sello reuse_for_promotion_forbidden; se revalida el sello y el planner vivo"
+      },
+      {
+        "id": "measure_first_signal_latency",
+        "reason": "runtime no trasplantado; contrato funcional reejecutado en test_first_signal"
+      },
+      {
+        "id": "steam-physical",
+        "reason": "cierre vigente fixture/sello; 11C no abre Steam ni convierte el fixture"
+      },
+      {
+        "id": "wake-far-tv",
+        "reason": "holdout FAR sellado; umbral 0,5 no se retoca"
+      },
+      {
+        "id": "idle-listen-60s",
+        "reason": "runtime de voz no trasplantado; artifacts/goal09/idle_listen.json"
+      }
+    ],
+    "in_scope_source_skips": []
+  },
+  "holdout_summary": {
+    "missions_hold": true,
+    "r6_orphan": 0,
+    "first_signal_hold": true,
+    "asserted_result": false,
+    "voice_hold": true,
+    "stt_complete": true,
+    "tts_neural": true,
+    "campaigns_hold": true
+  },
+  "criteria": [
+    {
+      "id": "07-90-completo-verificado",
+      "goal": "07",
+      "criterion": "≥ 90 % de misiones completas y verificadas, con cada paso verificado.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_compound_missions.py",
+        "artifacts/holdout/compound_execution_current_tree_r6.json",
+        "artifacts/holdout/compound_execution_current_tree_r6.preregistration.json",
+        "tests/test_compound_execution_current_tree_r6.py"
+      ],
+      "command": "py -m pytest tests/test_compound_missions.py tests/test_compound_execution_current_tree_r6.py -q",
+      "historical_result": "R6 sello 6/6 misiones, 22/22 pasos, 0 huérfanos. Planner vivo ES/EN/spanglish.",
+      "scored_kind": "missions",
+      "result": "R6 6/6 steps=22 orphan=0; chains_hold=True",
+      "status": "holds"
+    },
+    {
+      "id": "07-cero-huerfanos",
+      "goal": "07",
+      "criterion": "Cero pasos huérfanos: sin ejecutar, sin verificar, o ejecutados fuera del plan.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_compound_missions.py",
+        "artifacts/holdout/compound_execution_current_tree_r6.json",
+        "artifacts/holdout/compound_execution_current_tree_r6.preregistration.json",
+        "tests/test_compound_execution_current_tree_r6.py"
+      ],
+      "command": "count_orphans(R6) + veto de conservación",
+      "historical_result": "R6 orphan=0. Un segundo cláusula no reconocida no corre como subconjunto.",
+      "scored_kind": "missions",
+      "result": "R6 6/6 steps=22 orphan=0; chains_hold=True",
+      "status": "holds"
+    },
+    {
+      "id": "07-steam-biblioteca",
+      "goal": "07",
+      "criterion": "«Abre Steam y ve a la biblioteca» sobre el planner heredado (fixture; no sesión física).",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_compound_missions.py",
+        "artifacts/holdout/compound_execution_current_tree_r6.json",
+        "artifacts/holdout/compound_execution_current_tree_r6.preregistration.json",
+        "tests/test_compound_execution_current_tree_r6.py",
+        "tests/test_compound_missions.py"
+      ],
+      "command": "resolve_explicit_effects + _explicit_plan_skeleton",
+      "historical_result": "Cierre vigente fixture/sello. Click Steam 2026-08-23 no se reabre ni se convierte en efecto físico.",
+      "scored_kind": "missions",
+      "result": "R6 6/6 steps=22 orphan=0; chains_hold=True",
+      "status": "holds"
+    },
+    {
+      "id": "07-cascada-uia-ocr",
+      "goal": "07",
+      "criterion": "La cascada UIA → OCR → visión funciona sin una sola app codificada a mano.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1",
+        "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs",
+        "src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs",
+        "src/Baxy.Providers.Windows/External/WindowsVisibleVisionLocator.cs",
+        "src/Baxy.Providers.Windows/External/VisibleControlSurface.cs",
+        "tests/test_compound_missions.py"
+      ],
+      "command": null,
+      "historical_result": "VisibleClick sin steam/spotify/discord/chrome. OCR antes que visión.",
+      "scored_kind": "missions",
+      "result": "R6 6/6 steps=22 orphan=0; chains_hold=True",
+      "status": "holds"
+    },
+    {
+      "id": "07-tres-segundos",
+      "goal": "07",
+      "criterion": "Ninguna misión pasa más de 3 s sin salida visible.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_first_signal.py",
+        "documentacion/base/08_PRIMERA_SENAL.md",
+        "artifacts/product/first_signal_latency.json"
+      ],
+      "command": "should_emit_milestone / formulate_progress kind=hito",
+      "historical_result": "Hito a 3,01 s. Goal 08 cubre el silencio; 07 lo hereda.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "07-tres-ceros",
+      "goal": "07",
+      "criterion": "Los tres ceros intactos durante toda la misión.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "tests/test_compound_missions.py",
+        "artifacts/holdout/compound_execution_current_tree_r6.json",
+        "artifacts/holdout/compound_execution_current_tree_r6.preregistration.json",
+        "tests/test_compound_execution_current_tree_r6.py"
+      ],
+      "command": null,
+      "historical_result": "R6 ambiguous_effects=0. Veto de conservación impide el subconjunto silencioso.",
+      "scored_kind": "missions",
+      "result": "R6 6/6 steps=22 orphan=0; chains_hold=True",
+      "status": "holds"
+    },
+    {
+      "id": "07-publicado",
+      "goal": "07",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "tests/test_compound_missions.py",
+        "artifacts/holdout/compound_execution_current_tree_r6.json",
+        "artifacts/holdout/compound_execution_current_tree_r6.preregistration.json",
+        "tests/test_compound_execution_current_tree_r6.py"
+      ],
+      "command": null,
+      "historical_result": "Goal 07 sello R6 en origin/main. 11C no reabre el sello.",
+      "scored_kind": null,
+      "result": "Goal 07 sello R6 en origin/main. 11C no reabre el sello.",
+      "status": "holds"
+    },
+    {
+      "id": "08-numeros-poblacion-dificil",
+      "goal": "08",
+      "criterion": "Los números, sobre población que incluye lo difícil, con el perfil CPU aparte.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "tests/test_first_signal.py",
+        "documentacion/base/08_PRIMERA_SENAL.md",
+        "artifacts/product/first_signal_latency.json",
+        "artifacts/product/first_signal_latency_cpu.json",
+        "artifacts/product/simple_complete_latency.json"
+      ],
+      "command": null,
+      "historical_result": "GPU p50 0,009–0,011 s p95 0,146–0,161 s. CPU p50 0,026 s máx 2,973 s.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "08-cero-silencio-3s",
+      "goal": "08",
+      "criterion": "Ninguna tarea, de ninguna duración, pasa 3 s en silencio.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_first_signal.py",
+        "documentacion/base/08_PRIMERA_SENAL.md",
+        "artifacts/product/first_signal_latency.json"
+      ],
+      "command": "should_emit_early / should_emit_milestone",
+      "historical_result": "Camino modelo avisa; reconocedor calla. Hito > 3 s.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "08-senal-condicional-formulada",
+      "goal": "08",
+      "criterion": "La señal temprana es condicional y es prosa formulada, no una constante.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_first_signal.py",
+        "documentacion/base/08_PRIMERA_SENAL.md",
+        "artifacts/product/first_signal_latency.json"
+      ],
+      "command": "should_emit_early + formulate_progress",
+      "historical_result": "Reconocedor/conversación cerrada no emiten. ES ≠ EN.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "08-no-afirma-resultado",
+      "goal": "08",
+      "criterion": "Ninguna señal temprana afirma un resultado; la autocorrección sustituye el acuse.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_first_signal.py",
+        "documentacion/base/08_PRIMERA_SENAL.md",
+        "artifacts/product/first_signal_latency.json"
+      ],
+      "command": "turn_signal_payload / visible_after_verification",
+      "historical_result": "asserted_result=false. visible_after_verification reemplaza el acuse.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "08-llamadas-modelo",
+      "goal": "08",
+      "criterion": "Publicado cuántas llamadas por modelo quedan por turno y por qué cada una sigue.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "artifacts/development/turn_call_decomposition_goal08.json",
+        "documentacion/base/08_PRIMERA_SENAL.md"
+      ],
+      "command": null,
+      "historical_result": "5–8 llamadas, p50 pared 2,53 s. No se recortó el shortlist.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "08-sin-regresion-ceros",
+      "goal": "08",
+      "criterion": "Sin regresión en exactitud ni en los tres ceros.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "tests/test_first_signal.py",
+        "documentacion/base/08_PRIMERA_SENAL.md",
+        "artifacts/product/first_signal_latency.json",
+        "artifacts/goal095/synthesis/09.5.11B_revalidar_04_06.v1.json"
+      ],
+      "command": null,
+      "historical_result": "11B honesty 0/0/0. Señal temprana no es Listo ni constante.",
+      "scored_kind": "first_signal",
+      "result": "live_holds=True; asserted_result=False; p50=0.009",
+      "status": "holds"
+    },
+    {
+      "id": "08-publicado",
+      "goal": "08",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "documentacion/base/08_PRIMERA_SENAL.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 08 cerrado 2026-08-23 y en origin/main.",
+      "scored_kind": null,
+      "result": "Goal 08 cerrado 2026-08-23 y en origin/main.",
+      "status": "holds"
+    },
+    {
+      "id": "09-wake-stt-tts-maquina",
+      "goal": "09",
+      "criterion": "Wake, transcripción y habla funcionando en esta máquina, medidos ES/EN/spanglish.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "tests/test_goal09_voice_engines.py",
+        "documentacion/herencia/09_VOZ.md",
+        "documentacion/03_COSTURAS.md",
+        "artifacts/goal09/stt_holdout.json",
+        "artifacts/goal09/wake_holdout.json",
+        "artifacts/goal09/tts_measure.json"
+      ],
+      "command": "py -m pytest tests/test_goal09_voice_engines.py -q",
+      "historical_result": "WAV inyectado + motores registrados. No micrófono vivo.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-frontera-proceso-manifiesto",
+      "goal": "09",
+      "criterion": "Las tres detrás de la frontera de proceso, declaradas en el manifiesto con su hash.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "artifacts/goal09/runtime_voice_identity.json",
+        "documentacion/03_COSTURAS.md"
+      ],
+      "command": null,
+      "historical_result": "engines_in_python_sidecar=true. STT/TTS/wake SHA en runtime.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-falsas-activaciones",
+      "goal": "09",
+      "criterion": "Falsas activaciones medidas sobre audio que no le habla a BAXY.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "artifacts/goal09/wake_far.json",
+        "documentacion/03_COSTURAS.md"
+      ],
+      "command": null,
+      "historical_result": "FAR 2,00 h sellada. Umbral 0,5 no se retoca. No se reabre el holdout.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-eou-primera-senal",
+      "goal": "09",
+      "criterion": "De fin de habla a primera señal, p50 ≤ 1,5 s, y nunca 3 s en silencio.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal09/eou_first_signal.json",
+        "tests/test_goal09_voice_engines.py"
+      ],
+      "command": "test_end_of_speech_to_first_signal_is_under_budget",
+      "historical_result": "EOU p50 0,21 s, máx 0,31 s. Revalidado con PCM inyectado.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-interrupcion",
+      "goal": "09",
+      "criterion": "Se le puede interrumpir a media frase.",
+      "label": "fisica",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal09/tts_measure.json",
+        "tests/test_goal09_voice_engines.py"
+      ],
+      "command": "test_neural_speak_starts_and_cancel_stops_mid_utterance",
+      "historical_result": "NeuralSpeechOutput.cancel corta. Holdout físico de altavoz, no micrófono.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-accesibilidad-sin-pantalla",
+      "goal": "09",
+      "criterion": "Ninguna capacidad de BAXY exige ver la pantalla o usar el ratón.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/09_VOZ.md",
+        "documentacion/03_COSTURAS.md"
+      ],
+      "command": null,
+      "historical_result": "Toda respuesta se dice. Confirmaciones sí/no por MissionInput. Interruptor de escucha por voz.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-herencia-publicada",
+      "goal": "09",
+      "criterion": "Publicado qué se heredó, de dónde, qué cambió y qué se descartó.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/09_VOZ.md"
+      ],
+      "command": null,
+      "historical_result": "documentacion/herencia/09_VOZ.md. SAPI no es voz de producto.",
+      "scored_kind": null,
+      "result": "documentacion/herencia/09_VOZ.md. SAPI no es voz de producto.",
+      "status": "holds"
+    },
+    {
+      "id": "09-consumo-reposo",
+      "goal": "09",
+      "criterion": "Consumo en reposo medido, con la escucha permanente encendida.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "artifacts/goal09/idle_listen.json"
+      ],
+      "command": null,
+      "historical_result": "idle_listen.json 60 s, STT/TTS en CPU, VRAM del decisor intacta.",
+      "scored_kind": "voice",
+      "result": "stt=True tts_neural=True wake=True noise_fa=False",
+      "status": "holds"
+    },
+    {
+      "id": "09-publicado",
+      "goal": "09",
+      "criterion": "Publicado. git status --short vacío y git rev-list --count origin/main..main en 0.",
+      "label": "fixture",
+      "holdout": false,
+      "evidence": [
+        "documentacion/herencia/09_VOZ.md"
+      ],
+      "command": null,
+      "historical_result": "Goal 09 cerrado 2026-08-24 y en origin/main.",
+      "scored_kind": null,
+      "result": "Goal 09 cerrado 2026-08-24 y en origin/main.",
+      "status": "holds"
+    },
+    {
+      "id": "095-transplant-vacio",
+      "goal": "09.5",
+      "criterion": "Cola transplant vacía: 09.5.10 no aportó lotes; 07–09 se revalidan igual.",
+      "label": "fixture",
+      "holdout": true,
+      "evidence": [
+        "artifacts/goal095/campaigns/transplant.json"
+      ],
+      "command": "provenance_snapshot()",
+      "historical_result": "pending=0 claimed=0. Empty queue does not skip 07–09 holdouts.",
+      "scored_kind": "provenance",
+      "result": "transplant {'pending': 0, 'claimed': 0, 'complete': 0, 'total': 0}; sparse_not_invented=True",
+      "status": "holds"
+    }
+  ]
+}

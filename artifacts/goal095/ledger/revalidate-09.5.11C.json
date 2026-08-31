@@ -1,0 +1,47 @@
+{
+  "schema": "baxy.goal095.09511c-ledger.v1",
+  "batch_id": "revalidate-09.5.11C",
+  "kind": "revalidate",
+  "status": "complete",
+  "goal": "09.5.11C",
+  "closed_utc": "2026-08-31T15:13:06Z",
+  "report_ref": "artifacts/goal095/synthesis/09.5.11C_revalidar_07_09.v1.json",
+  "markdown_ref": "documentacion/herencia/09_5_11C_REVALIDAR.md",
+  "owner_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
+  "next_prompt": "documentacion/sprints/09.5.12_INTEGRAR_Y_REPLANIFICAR.md",
+  "required_human_launches": 1,
+  "deferred_to_goal10": [],
+  "live_src_changed": true,
+  "errors": [],
+  "holdout_summary": {
+    "missions_hold": true,
+    "r6_orphan": 0,
+    "first_signal_hold": true,
+    "asserted_result": false,
+    "voice_hold": true,
+    "stt_complete": true,
+    "tts_neural": true,
+    "campaigns_hold": true
+  },
+  "missions": {
+    "holds": true,
+    "r6_orphan": 0
+  },
+  "first_signal": {
+    "holds": true,
+    "asserted_result": false
+  },
+  "voice": {
+    "holds": true,
+    "stt_complete": true,
+    "tts_neural": true
+  },
+  "provenance": {
+    "transplant": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 0,
+      "total": 0
+    }
+  }
+}

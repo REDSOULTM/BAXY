@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Core.Operations;
 using Baxy.Kernel.Operations;
 using Baxy.Providers.Windows.SystemStatus;
@@ -38,7 +39,11 @@ public sealed class ProcessListHandlerTests
             Assert.That(provider.LastLimit, Is.EqualTo(10));
             Assert.That(
                 OperationOutcomeNarration.For("system.process.list", outcome),
-                Does.Contain("alpha (PID 101)"));
+                Does.Contain("alpha"));
+            Assert.That(
+                OperationOutcomeNarration.Facts("system.process.list", outcome)["polarity"]
+                    ?.GetValue<string>(),
+                Is.EqualTo("success"));
         });
     }
 
