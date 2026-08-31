@@ -1,0 +1,706 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-001-carter",
+  "kind": "code_tests",
+  "status": "complete",
+  "claimed_utc": "2026-08-31T00:53:14Z",
+  "closed_utc": "2026-08-31T00:53:32Z",
+  "estimated_tokens": 293211,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "source_id": "carter",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "source_root": "Programacion/Carter OS AI",
+  "file_count": 32,
+  "subsystem": "carter_docs",
+  "subsystems": [
+    "carter_docs",
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/audio_full.py",
+      "sha256": "2eebfb6a0390f37fe3097e33441ec9123e411dcac0f7806915c824e3588bfdd9",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-112"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/audio_probes.py",
+      "sha256": "0018dbc9765a44977fa839669706d71e8c9b5e00cdd7302a3ef785c21d525874",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-100"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/bench_all.ps1",
+      "sha256": "b59f8f2d9acde31527b243f515fe1810e52ab244aa19a12203e51017fae4e401",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-98"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/judge.py",
+      "sha256": "4fe4de0c7d298d6ac3b1d873fed81fec88dfe79ef0a123d9c5c5a8ae33bfc74e",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80",
+        "76-150",
+        "158-252",
+        "255-297"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/probe_ollama_audio.py",
+      "sha256": "541f0ec0841ef7e7275e1d7c777b2168e0f508b70c0d1638687725c12028357b",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-97"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/run_baseline_qwen.py",
+      "sha256": "c0447ae18f140fdefd3156f3e2caa80d28a69b80f9b2a86b2feef6e8b9718142",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-131"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/run_bench.py",
+      "sha256": "5c0a8dc698bf2d31d67663a28af59bb679c0bcf903494586e68fa113c12fcabc",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-121"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/run_bench_extended.py",
+      "sha256": "a29ca2a8f697af05b86a8d3260fa1ea1509a36078676358573504da62557e59d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-125"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tests.py",
+      "sha256": "6a354ffe09ef8030329c296dd35200170e5b5e9dd097da769543a48f8d38a5d7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-79"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tests_extended.py",
+      "sha256": "a9e0d22c5559c702dcef42752d69719f7aef2b39edcf84675ff149e4a862431a",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-192"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tools.py",
+      "sha256": "c56e6c0d066642ba7b4b0733196bd8cff1b8a1bf0046e042634bc743155d2ff7",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-115"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tools_extended.py",
+      "sha256": "65d03467d18e2dfc7e719f415fd4b836342b94153c616ccbb46c98b763624b86",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-187"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/samples/generate_audio.ps1",
+      "sha256": "63ac1717cb0976dc3ddcadc2e32840061d5806ef16ff9c68c74c4ea618a0a270",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-29"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/02_full_matrix_runner.py",
+      "sha256": "4eb721f3d35f7d524df2a6e155814c7037f7c6ff2757d4b311936542ea108918",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80",
+        "209-318",
+        "363-441",
+        "582-655",
+        "767-930"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py",
+      "sha256": "bfdd90864323afc4836212e497874168ce9f4c45d7bf9dadbbe8b08f07cc93a5",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-92",
+        "95-181",
+        "188-274"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/04_agent.py",
+      "sha256": "e864ae5d4e52cdcd9bc85e4fb5af9e379f7c0f247981ec8fd8116aff90c4bd03",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-120",
+        "430-510"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/05_tool_retrieval.py",
+      "sha256": "fd88d8f0231badba603b33200b49a949d05170579b8b6bc752ee37ff242d6f06",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-185"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/06_adapter_llamacpp.py",
+      "sha256": "05638ca88c257b1f084ae14abaabce42df03f0f5b4b44b8e36c75217b4cdf101",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/07_verifier_orchestrator.py",
+      "sha256": "1407770ebcac092f7abbb8fbf29dc0dbb28b9f4277520d318d1eb5aedbd9a4d2",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/08_reply_checks.py",
+      "sha256": "a7ae4570ce896e1b41507a70cf4c9bff8aa9523028035a90a92902abd3b4913d",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80"
+      ]
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/09_tools_init.py",
+      "sha256": "a36ceb508a095ac35e67eed9232b3cd7ff2692b7237efeeb4121e40a90d57364",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-117"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/.env.example",
+      "sha256": "66bcfa34ef6438636316dd85387066c59babd947e9acb5c82e103917275fdd64",
+      "source_id": "carter",
+      "terminal": "leido",
+      "ranges": [
+        "1-80",
+        "84-158"
+      ]
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_memory.db",
+      "sha256": "5103382d28b32bfb858cfc2e2d65401e776a5eda8a8771bf9f8b6abc59c8789d",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ],
+      "parse_note": "11 tables; facts=6; conversation_turns=0; FTS vacio"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db",
+      "sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ],
+      "parse_note": "skills=0"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db-shm",
+      "sha256": "ff5e2424194d41f900caefd38a68de51acde59801412b9a35e51bf2b02440078",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "sidecar"
+      ],
+      "exclusion_rule": "sqlite_runtime_shm"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db-wal",
+      "sha256": "04b8c440efd2b7826c9be6d637887550d1a44d686ff510b528166d7dc0246e14",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:applied-with-parent-db"
+      ],
+      "parse_note": "WAL aplicado al abrir skills.db en copia temporal"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt2_memory.db",
+      "sha256": "c43f30ab00ca2014430d092fe46fe6128bdec49fe747e84e2dfdae7c69efa9d0",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ],
+      "parse_note": "mismo esquema; facts=6; turns=0"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt_memory.db",
+      "sha256": "63ad84af4e94e554179f0a3f7c395fecab686de390fa4792713649e5771c58fb",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ],
+      "parse_note": "mismo esquema; facts=6; turns=0; hash disco=cola, distinto de git HEAD"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt_skills.db-shm",
+      "sha256": "170c83d9c2b053d1ae7799febbc2f8234b438ce0318ce677e2d8406ac8677832",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "sidecar"
+      ],
+      "exclusion_rule": "sqlite_runtime_shm"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt_skills.db-wal",
+      "sha256": "89f061eb103808f2955a6324a9d4d5afcdde84cab95d5d2c57e59a29dee3e19c",
+      "source_id": "carter",
+      "terminal": "binario_inventariado",
+      "ranges": [
+        "sqlite-wal"
+      ],
+      "binary_format": "sqlite-wal",
+      "parse_note": "el .db padre no esta en este lote"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_ultra_final_memory.db",
+      "sha256": "268916cc4b8b801f09a78c49306ccec52f91a09732506e35ef3bd1c8450488b6",
+      "source_id": "carter",
+      "terminal": "parseado_completo",
+      "ranges": [
+        "sqlite:schema+counts"
+      ],
+      "parse_note": "mismo esquema; facts=6; turns=0"
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_ultra_final_skills.db-shm",
+      "sha256": "bafe20cd04f35e67426923094e496af47ff99cf38419f15827dd90ae72d449af",
+      "source_id": "carter",
+      "terminal": "excluido_razonado",
+      "ranges": [
+        "sidecar"
+      ],
+      "exclusion_rule": "sqlite_runtime_shm"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "harness-openai-tools-stubs",
+      "disposition": "evidence_only",
+      "component": "Banco Gemma4 OpenAI-tools con stubs deterministas (10+60 tests)",
+      "contract": "Entrada: prompt + SYSTEM_PROMPT + TOOL_SCHEMAS. Salida: JSON de turnos con tool_calls y texto. execute_tool devuelve cadenas fijas (hora 2026-05-09T14:32:11, list_apps de 6 exe, titulo YouTube - Google Chrome). judge_one(tid) PASS/FAIL por if/elif sobre el id del test.",
+      "dependencies": "llama-server :8080 o Ollama :11434; tools.py + tools_extended.py; tests.py + tests_extended.py. No toca el SO.",
+      "historical_test": "Los 10 tests de tests.py y 60 de tests_extended.py SON el contrato. Resultados citados en docs-001 (9/10 y 55-57/60). No reejecutado aqui.",
+      "limitations": "El juez K3/N2/HEAVY-2 exige que type_text contenga 'youtube' o 'chrome' porque eso es el stub, no una ventana real. steam_search es tool por app. C09-04 y C18-10 duplican el mismo prompt. temperature=0.7 en el runner vs T=1.0 del modulo Gemma4.",
+      "current_owner": "tests/test_catalog_* y scorer Goals 03/04; no ProductCatalog",
+      "source_files": [
+        "docs/investigaciones/evidencia pruebas gemma4/harness/tools.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/tools_extended.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/tests.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/tests_extended.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/run_bench.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/run_bench_extended.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/run_baseline_qwen.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/judge.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/bench_all.ps1"
+      ],
+      "failure_mechanism": "Mide al modelo contra un catalogo inventado de 9+ extras, no contra providers. Un PASS no prueba efecto en Windows. Capas: este harness y el matrix 540 contra el agente vivo son dos bancos incompatibles.",
+      "readme_vs_real": "El codigo existe y escribe results/*.json. Lo que promete 'honesty by construction' es un if por tid acoplado al stub. bench_all.ps1 mata llama-server y asume un arbol Probando Gemma 4 distinto de este snapshot.",
+      "invariant_risk": "Transplantar schemas OpenAI o steam_search romperia el catalogo tipado. Frases fijas del SYSTEM_PROMPT ('You are Carter') rompen invariante 5 y el nombre BAXY.",
+      "duplicate_layers": "Harness stubs vs matrix 540 live vs catalogo Kernel actual. Tres caminos de 'test de tools'.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/evidencia pruebas gemma4/harness/judge.py",
+        "ranges": [
+          "51-150",
+          "158-252"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "torneo Gemma 4 E2B/E4B/26B/31B",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "harness-gemma-native-audio",
+      "disposition": "reject_candidate",
+      "component": "Probes de audio nativo Gemma 4 (Ollama input_audio vs llama-mtmd-cli)",
+      "contract": "Entrada: 5 WAV 16 kHz. Dos prompts (transcribir / que tool). Salida: JSON con texto y latencia. audio_probes documenta llama.cpp#21868: llama-server no rutea input_audio. generate_audio.ps1 sintetiza con System.Speech, no voz humana.",
+      "dependencies": "Ollama gemma4:e4b o llama-mtmd-cli + mmproj; samples WAV (fuera de este lote).",
+      "historical_test": "Cinco clips (hora, negation, multistep, phonetic stim, codeswitch). Este lote no contiene los WAV ni results/audio_E4B.json.",
+      "limitations": "Audio sintetico. Dos binarios distintos de mtmd-cli hardcodeados. Goal 01 ya midio Parakeet STT en CPU y rechazo Gemma nativo como oido de producto.",
+      "current_owner": "src/baxy_mind/asr_fusion.py; scripts/setup_mind_voice.ps1",
+      "source_files": [
+        "docs/investigaciones/evidencia pruebas gemma4/harness/audio_full.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/audio_probes.py",
+        "docs/investigaciones/evidencia pruebas gemma4/harness/probe_ollama_audio.py",
+        "docs/investigaciones/evidencia pruebas gemma4/samples/generate_audio.ps1"
+      ],
+      "failure_mechanism": "El runner HTTP de Gemma no transporta audio; el workaround recarga el modelo por clip (frio). Tres caminos (Ollama, mtmd-cli, server) se apilan en vez de sustituirse.",
+      "readme_vs_real": "El probe demuestra que las APIs de audio no estan listas; no demuestra STT de producto. La voz 'Sabina' no es el usuario.",
+      "invariant_risk": "Ninguno si no se hereda. Un STT nativo Gemma pondria el oido en el LLM y duplicaria Parakeet.",
+      "duplicate_layers": "Gemma audio nativo vs Whisper vs Parakeet (este ultimo es el activo Goal 01).",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/evidencia pruebas gemma4/harness/audio_probes.py",
+        "ranges": [
+          "1-32",
+          "34-54"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "gemma-4-E4B + mmproj",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-gemma4-core-prompt",
+      "disposition": "reject_candidate",
+      "component": "CORE_PROMPT Gemma 4 (~900 tokens) con saludos fijos y few-shots por app",
+      "contract": "System prompt hibrido EN reglas / ES few-shots. Identidad 'soy Carter'. Saludo fijo. Few-shots Steam/Spotify/MercadoLibre/YouTube. Fallback vision+click si falta tool. Tablas de error enlatadas.",
+      "dependencies": "carter_v4.models.gemma4; agent.from_gemma; llama-server --jinja.",
+      "historical_test": "Ningun test unitario en este lote. El bench 55/60 es del harness de stubs, no de este prompt en el agente.",
+      "limitations": "Copia de investigacion (prefijo 03_), no el modulo vivo de Carter_v4. Canonical vendra en lotes code_tests de carter_legacy_Carter_v4.",
+      "current_owner": "src/baxy_mind/ (prosa por modelo); nunca App/FieldUi",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py"
+      ],
+      "failure_mechanism": "Respuestas fijas y diccionario por app. La cadena 'si no hay tool, screenshot+vision+click' elude el catalogo cerrado. Regla 9 responde 'que necesitas?' sin pasar por el modelo de producto BAXY.",
+      "readme_vs_real": "El modulo existe y documenta T=1.0 / flash-attn / KV f16 (eso va a otra tarjeta). El prompt contradice Identidad (nombre, invariante 5, sin per-app).",
+      "invariant_risk": "Rompe prosa por modelo, catalogo tipado y modularidad si se pega encima del system prompt actual.",
+      "duplicate_layers": "SYSTEM_PROMPT del harness (ingles, 9 reglas) vs CORE_PROMPT (~12 reglas + few-shots) vs prompt.py de v4.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py",
+        "ranges": [
+          "95-181"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "gemma-4-E4B-it-UD-IQ2_M",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-gemma4-sampling-flags",
+      "disposition": "adapt_candidate",
+      "component": "Sampling Google T=1.0 y flags llama-server (flash-attn, KV f16, no-context-shift)",
+      "contract": "LLAMACPP_DEFAULTS temperature=1.0 top_p=0.95 top_k=64 repeat_penalty=1.0 num_predict=768. Flags: --jinja -ngl 99 -c 16384 --flash-attn on --cache-type-k/v f16 --no-context-shift --reasoning off. Perfiles trivial/tool/mission/destructive_strict.",
+      "dependencies": "llama.cpp CUDA b9090 (historico); carter_v4.turn_profile.detect_destructive_intent (import tardio).",
+      "historical_test": "Citado como 'bench externo 55/60, multi-step p99 7.58s' — no esta en este lote. Goal 01 re-midio E2B QAT en el runtime BAXY: 6.3-11.4 s/turno.",
+      "limitations": "E4B IQ2_M no es el default vigente (Goal 01 eligio E2B y lo marco 'funciona y no sirve' por thinking). Flags de imagen 280-1120 tokens son vision, no texto. Perfil destructive usa T=0.6 contra la propia advertencia de no bajar T.",
+      "current_owner": "src/baxy_mind/llm_transport.py y runtime llama-server del mind",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py",
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/06_adapter_llamacpp.py"
+      ],
+      "failure_mechanism": "El runner del harness manda temperature=0.7; el modulo Gemma manda 1.0. Dos calibraciones en el mismo linaje. Adapter HTTP OpenAI-compat ya existe en BAXY; no apilar otro.",
+      "readme_vs_real": "Los flags estan en codigo. El 55/60 es del banco de stubs. El adapter no parsea special tokens: delega en --jinja.",
+      "invariant_risk": "Adaptar flags no rompe invariantes si no se trae el CORE_PROMPT. No abrir un segundo transporte HTTP.",
+      "duplicate_layers": "Ollama adapter + LlamaCppAdapter + llm_transport actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py",
+        "ranges": [
+          "31-82"
+        ],
+        "date": "2026-05-09",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "gemma-4-E4B-it-UD-IQ2_M",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-agent-loop",
+      "disposition": "reject_candidate",
+      "component": "Agent loop ReAct v4 (911 lineas vs objetivo 400)",
+      "contract": "Entrada user_text. Un LLM call, safety gate, dispatch, verify, loop detector, follow-up, possible _chain_more_tools, nudge anti-rendicion. Config: planner OFF (-3.52 pts), skill registry OFF, tool retrieval ON k=12, turn_budget 25s, max_history 10.",
+      "dependencies": "pick_adapter, Memory sqlite, SkillStore, tools.dispatch, verify, verifier_orchestrator, safety.evaluate_tool_call, ToolRetriever.",
+      "historical_test": "Ningun test_*.py en este lote. El matrix 540 importa este Agent. Esta copia de investigacion puede diferir del Carter_v4 vivo.",
+      "limitations": "Snapshot numerado 04_agent.py bajo docs/investigaciones, no en src/. Git HEAD no lo tiene (untracked). Identidad SHA-256 de 09.5.1.",
+      "current_owner": "src/baxy_mind/ + src/Baxy.Kernel/Mission/MissionEngine.cs",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/04_agent.py"
+      ],
+      "failure_mechanism": "Acumulacion: flags que apagan capas en vez de retirarlas. El LLM elige tools; el kernel BAXY autoriza. Confirmacion pending_action no esta ligada a invocacion exacta del catalogo tipado.",
+      "readme_vs_real": "El header promete <400 LoC y 0 classifiers. El archivo tiene 911 lineas y engancha planner, skills, retrieval, reflection, loop v2.",
+      "invariant_risk": "Copiar el loop entero duplicaria mente+kernel y romperia catalogo, confirmacion exacta y modularidad.",
+      "duplicate_layers": "Tres adapters, planner muerto, skill registry muerto, retrieval vivo — mismas ocho capas del autodiagnostico v5.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/04_agent.py",
+        "ranges": [
+          "1-12",
+          "56-82",
+          "430-510"
+        ],
+        "date": "2026-05",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen3:4b default; from_gemma E4B",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-openai-tool-registry",
+      "disposition": "reject_candidate",
+      "component": "Registro @tool y dispatch por nombre (catalogo OpenAI al LLM)",
+      "contract": "Decorator registra handler+JSONSchema. get_catalog() emite tools=[]. dispatch(name, args) filtra kwargs por signature e invoca. Autoload de 16 modulos de tools.",
+      "dependencies": "system, apps, files, memory_tool, web, gui, media, terminal, office, clipboard, registry, gui_universal, deeplink, skill, vision_tools.",
+      "historical_test": "clear_registry() 'solo para tests'; los tests no estan en este lote.",
+      "limitations": "Filosofia 'el LLM decide, cero classifiers' es el inverso del invariante 1 de BAXY.",
+      "current_owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/09_tools_init.py"
+      ],
+      "failure_mechanism": "El universo de operaciones vive en el prompt del modelo. No hay autorizacion kernel. Autoload de 16 paquetes es acumulacion.",
+      "readme_vs_real": "El dispatch es un dict lookup de verdad. El catalogo no es el ProductCatalog tipado.",
+      "invariant_risk": "Rompe catalogo tipado si se expone como tools OpenAI del mind.",
+      "duplicate_layers": "Catalogo OpenAI v4 vs stubs del harness vs ProductCatalog .NET.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/09_tools_init.py",
+        "ranges": [
+          "1-9",
+          "63-100",
+          "112-117"
+        ],
+        "date": "2026-05",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a (registro)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-tool-retrieval-e5",
+      "disposition": "reject_candidate",
+      "component": "Retriever top-K multilingual-e5-small + anchors (57 tools)",
+      "contract": "Boot: embed descriptions. Turn: embed query, cosine, top-K=8 (docstring) / 12 (AgentConfig). Union con 23 anchors (memory, skill, gui, vision, web, terminal, app_open/close). Fallback: catalogo entero si el embedder falla.",
+      "dependencies": "sentence-transformers + intfloat/multilingual-e5-small; mismo encoder que Memory.",
+      "historical_test": "Ninguno en el lote. RAG-MCP citado 13.62%->43.13% es paper, no medicion Carter.",
+      "limitations": "Baxy ya rechazo R209 cross-encoder 16/77. El catalogo vigente son operaciones tipadas, no 57 tools OpenAI. Anchors ~23 de 57 anulan el recorte.",
+      "current_owner": "src/baxy_mind/router.py, family_classifier.py, semantic_family_arbiter.py",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/05_tool_retrieval.py"
+      ],
+      "failure_mechanism": "Decision fatigue se 'arregla' recortando el catalogo que el LLM ve, no separando mente/kernel. Fallback silencioso a todo el catalogo. Anchors incluyen vision y deeplink — el retriever no puede excluir el camino GUI.",
+      "readme_vs_real": "El cosine en Python puro existe. No hay evidencia en este lote de +5-10 pts en Carter.",
+      "invariant_risk": "Un retriever que oculta operaciones al kernel rompe el catalogo como unica fuente.",
+      "duplicate_layers": "Tool RAG vs family classifier vs aliases vs R209 rechazado.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/05_tool_retrieval.py",
+        "ranges": [
+          "1-18",
+          "33-64",
+          "134-176"
+        ],
+        "date": "2026-05",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "multilingual-e5-small",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-verifier-orchestrator",
+      "disposition": "adapt_candidate",
+      "component": "Outcomes de turno COMPLETED/PARTIAL/FAILED/UNVERIFIED + TOOL_OK_VERIFIER_INCONCLUSIVE + INTENT_NOT_FULFILLED",
+      "contract": "Agrega VerifierOutcome de la cadena. Separa 'deeplink despachado' (inconclusive) de 'read-only legitimo'. Heuristica _intent_not_fulfilled por keywords. Evita FALSE_PASS C09 (30/30 nominal con ~11 falsos).",
+      "dependencies": "verify.py (no en este lote), planner Plan opcional.",
+      "historical_test": "Mecanismo documentado contra C09 del matrix 540. No hay asercion pytest aqui.",
+      "limitations": "Scoring por keywords en espanol ('despachada', 'uri '). No sustituye postlectura de provider. BAXY Core ya verifica efecto.",
+      "current_owner": "src/Baxy.Core/Operations/ + postlectura en src/Baxy.Providers.Windows/",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/07_verifier_orchestrator.py"
+      ],
+      "failure_mechanism": "verify.py 'tool ok' era el falso exito. Este orchestrator anade estados pero sigue heuristico. No medimos Windows; leemos razones de texto.",
+      "readme_vs_real": "Los estados extras existen en codigo. C09 FALSE_PASS es el hallazgo reusable. No copiar como capa paralela a Core.",
+      "invariant_risk": "Adaptar el estado 'inconclusive' al outcome de Core no rompe invariantes. Apilar un segundo orchestrator si.",
+      "duplicate_layers": "verify.py inline + orchestrator + honesty Goal 04 + Core handlers.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/07_verifier_orchestrator.py",
+        "ranges": [
+          "1-48",
+          "63-76"
+        ],
+        "date": "2026-05",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a (estructural)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-reply-checks",
+      "disposition": "reject_candidate",
+      "component": "Anti-echo / anti-generic / anti-unverified post-LLM",
+      "contract": "Jaccard >0.7 = eco. GENERIC_REPLIES frozenset (ok, listo, done, accion ejecutada, ...). Regex de afirmaciones factuales sin read tool. Cero LLM. unknown si no decide.",
+      "dependencies": "Se llama desde agent o bench. Snowball mencionado en el docstring; el fragmento leido usa regex y un frozenset de frases.",
+      "historical_test": "Casos canonicos citados C15-29, C13-04, C14-26. Tests no en este lote.",
+      "limitations": "GENERIC_REPLIES es tabla de respuestas fijas — exactamente lo que invariante 5 prohibe en producto. Jaccard de eco es estructural y reusable como idea, no como modulo extra.",
+      "current_owner": "Goal 04 cerrado (honestidad); no anadir guard de prosa en App",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/08_reply_checks.py"
+      ],
+      "failure_mechanism": "Post-filtros de texto para tapar un loop que ya mintio. Goal 04 exige cero frases fijas y cero exitos no verificados en el nucleo, no un regex despues.",
+      "readme_vs_real": "El docstring promete 'cero hardcoded keywords por idioma'. GENERIC_REPLIES es una lista ES/EN de acuses.",
+      "invariant_risk": "Si se activa en runtime, viola invariante 5. El eco Jaccard podria vivir solo en el scorer de tests.",
+      "duplicate_layers": "reply_checks + SYSTEM_PROMPT reglas 1-2 + judge.py + matrix _is_canned_greeting.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/08_reply_checks.py",
+        "ranges": [
+          "1-31",
+          "43-57"
+        ],
+        "date": "2026-05",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a (regex)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v4-matrix-540",
+      "disposition": "evidence_only",
+      "component": "full_matrix_runner 18x30=540 contra el Agent vivo",
+      "contract": "Parsea la guia markdown 18 categorias. Corre Agent. audit_case: latency budgets, reply vacio, fake denial, vocativo Carter, canned greeting, tool requerida, fake success. Fuerza CARTER_V4_BLOCK_SHUTDOWN=1.",
+      "dependencies": "carter_v4.agent (arbol src/, no esta copia 04_). Guia Extras/Carter_v3_tests/...md (otro lote).",
+      "historical_test": "540 casos oficiales. Este archivo es el runner, no los resultados JSON (van a evidence_assets).",
+      "limitations": "Copia bajo investigacionnecesaria_v1; import path asume src/carter_v4. El propio auditor usa listas de saludos canned. No es el scorer congelado de BAXY 03C/04.",
+      "current_owner": "tests/Baxy.Integration.Tests y artifacts/development/goal03*",
+      "source_files": [
+        "docs/investigaciones/investigacionnecesaria_v1/02_full_matrix_runner.py"
+      ],
+      "failure_mechanism": "Banco live vs banco stub: el mismo linaje declara dos verdades. El runner puede ejecutar tools reales (por eso el hard-lock de shutdown).",
+      "readme_vs_real": "El parser de 540 y los budgets existen. 'sin keyword hardcodes' queda desmentido por valid_short_replies y _is_canned_greeting.",
+      "invariant_risk": "No ejecutar este runner contra el PC de trabajo. No sustituir el scorer 03C.",
+      "duplicate_layers": "harness 60 vs matrix 540 vs corpus BAXY 124.",
+      "provisional": true,
+      "provenance": {
+        "path": "docs/investigaciones/investigacionnecesaria_v1/02_full_matrix_runner.py",
+        "ranges": [
+          "1-35",
+          "582-635"
+        ],
+        "date": "2026-05",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "Carter v4 Agent (qwen3 o Gemma)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v2-runtime-env",
+      "disposition": "reject_candidate",
+      "component": "Carter v2 .env.example (backends ollama/llamacpp/openai + knobs GUI/policy)",
+      "contract": "CARTER_BACKEND=ollama|llamacpp|openai. Compact tools, ctx margin, UIA min elements, auto-approve high/critical, POLICY_ALLOW_DANGEROUS, preload, model profile, TEXT/VISION/GROUNDING/STT/TTS.",
+      "dependencies": "run_carter_gpu.ps1, config.py v2 (siguientes lotes).",
+      "historical_test": "Ninguno. Es plantilla.",
+      "limitations": "Default TEXT_MODEL qwen2.5:7b y llava:7b caducados por Goal 01. openai + API_KEY es cloud. AUTO_APPROVE contradice confirmacion exacta.",
+      "current_owner": "src/Baxy.Setup/ y scripts de mind runtime",
+      "source_files": [
+        "legacy/Carter_v2/.env.example"
+      ],
+      "failure_mechanism": "Tres backends conviviendo (ollama, in-process llamacpp, OpenAI HTTP). Vision/grounding como modelos aparte. Flags de peligro para 'que el bench pase'.",
+      "readme_vs_real": "El archivo es real y no trae secretos (API_KEY=ollama local). Los defaults no son el stack BAXY.",
+      "invariant_risk": "openai backend rompe privacidad (invariante 6). auto-approve rompe confirmacion (invariante 4).",
+      "duplicate_layers": "v2 env vs v4 AgentConfig vs mind-runtime-v1.json actual.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v2/.env.example",
+        "ranges": [
+          "9-22",
+          "70-80",
+          "137-153"
+        ],
+        "date": "2026-04",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "qwen2.5:7b-instruct (default escrito)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    },
+    {
+      "card_id": "carter-v2-matrix-sqlite-state",
+      "disposition": "evidence_only",
+      "component": "SQLite memory/skills de corridas matrix LIVE_SAFE / postopt / ultra_final",
+      "contract": "memory.db: conversation_turns(user_text, reply_text), entities, facts(entity,attribute,value,source), memory_candidates, memory_recalls, FTS5 turns_fts. skills.db: tabla skills vacia. Cuatro memory.db con facts=6 y turns=0. Sidecars shm/wal.",
+      "dependencies": "memory.py v2 (lote posterior). Packer 09.5.1: suffix_of('') en dotfiles => .db no marcado binary y entro en code_tests.",
+      "historical_test": "Estado residual de benches, no una suite. skills=0 implica que enable_skill_store no persistio recetas en estas corridas, o se uso otro path.",
+      "limitations": "No se vuelcan valores de facts (posible PII de corrida). Tres memory.db coinciden con la cola en disco y no con git HEAD (worktree sucio; se audita el hash 09.5.1). postopt/ultra skills.db padre no esta en este lote.",
+      "current_owner": "src/Baxy.Providers.Windows/Memory/LocalMemoryStore.cs (current.bin cifrado, no SQLite)",
+      "source_files": [
+        "legacy/Carter_v2/.matrix_LIVE_SAFE_memory.db",
+        "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db",
+        "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db-wal",
+        "legacy/Carter_v2/.matrix_live_safe_postopt2_memory.db",
+        "legacy/Carter_v2/.matrix_live_safe_postopt_memory.db",
+        "legacy/Carter_v2/.matrix_live_safe_postopt_skills.db-wal",
+        "legacy/Carter_v2/.matrix_live_safe_ultra_final_memory.db"
+      ],
+      "failure_mechanism": "Memoria de producto mezclada con artefactos de bench (.matrix_*). WAL/SHM versionados. El clasificador de 09.5.1 no ve .db si el filename empieza por punto.",
+      "readme_vs_real": "El esquema SQLite existe y esta casi vacio de turnos. BAXY ya sustituyo esto por un store binario con tope y redactado.",
+      "invariant_risk": "No copiar blobs de memoria. No reabrir SQLite al lado de LocalMemoryStore.",
+      "duplicate_layers": "v2 sqlite vs v4 data/carter_v4_memory.db vs LocalMemoryStore.",
+      "provisional": true,
+      "provenance": {
+        "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_memory.db",
+        "ranges": [
+          "sqlite:schema+counts"
+        ],
+        "date": "2026-04",
+        "hardware": "RTX 4060 Ti 16 GB · Windows · Carter OS AI snapshot 09.5.0",
+        "model": "n/a (estado)",
+        "commit": "9cf62d236cdef08012897d3c8c680b8afef0d62e"
+      }
+    }
+  ],
+  "missing": 0,
+  "overlaps": 0,
+  "hash_check": "32/32 disco=cola 09.5.1; 0 en biblioteca por hash; docs/investigaciones untracked en git",
+  "next_code_tests_batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
+  "next_prompt": "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md"
+}

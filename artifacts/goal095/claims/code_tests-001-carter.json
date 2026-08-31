@@ -1,0 +1,15 @@
+{
+  "schema": "baxy.goal095.code-ledger.v1",
+  "batch_id": "code_tests-001-carter",
+  "kind": "code_tests",
+  "status": "claimed",
+  "claimed_utc": "2026-08-31T00:53:14Z",
+  "estimated_tokens": 293211,
+  "token_limit": 350000,
+  "token_target": 300000,
+  "file_count": 32,
+  "source_id": "carter",
+  "source_root": "Carter OS AI",
+  "source_head": "9cf62d236cdef08012897d3c8c680b8afef0d62e",
+  "output": "artifacts/goal095/ledger/code_tests-001-carter.json"
+}

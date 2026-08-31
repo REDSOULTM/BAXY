@@ -1,0 +1,1264 @@
+{
+  "batch_id": "code_tests-001-carter",
+  "source_head_cmd": "git rev-parse HEAD",
+  "file_count": 32,
+  "hash_ok": 32,
+  "hash_drift": 0,
+  "hash_missing": 0,
+  "subsystem": "carter_docs",
+  "subsystems": [
+    "carter_docs",
+    "carter_legacy_Carter_v2"
+  ],
+  "files": [
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/audio_full.py",
+      "queued_sha256": "2eebfb6a0390f37fe3097e33441ec9123e411dcac0f7806915c824e3588bfdd9",
+      "size_queued": 4577,
+      "exists": true,
+      "disk_sha256": "2eebfb6a0390f37fe3097e33441ec9123e411dcac0f7806915c824e3588bfdd9",
+      "disk_size": 4577,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/audio_full.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 112,
+        "bytes": 4577,
+        "imports": [
+          "7:import base64",
+          "8:import json",
+          "9:import subprocess",
+          "10:import time",
+          "11:from pathlib import Path",
+          "12:from urllib import request as urlrequest"
+        ],
+        "defs": [
+          "42:def call_ollama(audio_b64, prompt):",
+          "64:def call_mtmd_cli(audio_path, prompt):",
+          "78:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/audio_probes.py",
+      "queued_sha256": "0018dbc9765a44977fa839669706d71e8c9b5e00cdd7302a3ef785c21d525874",
+      "size_queued": 4291,
+      "exists": true,
+      "disk_sha256": "0018dbc9765a44977fa839669706d71e8c9b5e00cdd7302a3ef785c21d525874",
+      "disk_size": 4291,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/audio_probes.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 100,
+        "bytes": 4291,
+        "imports": [
+          "6:import json",
+          "7:import subprocess",
+          "8:import sys",
+          "9:import time",
+          "10:from pathlib import Path"
+        ],
+        "defs": [
+          "34:def run_one(model_path, mmproj, audio_path, prompt):",
+          "57:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/bench_all.ps1",
+      "queued_sha256": "b59f8f2d9acde31527b243f515fe1810e52ab244aa19a12203e51017fae4e401",
+      "size_queued": 5498,
+      "exists": true,
+      "disk_sha256": "b59f8f2d9acde31527b243f515fe1810e52ab244aa19a12203e51017fae4e401",
+      "disk_size": 5498,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/bench_all.ps1' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 98,
+        "bytes": 5498,
+        "imports": [],
+        "defs": []
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/judge.py",
+      "queued_sha256": "4fe4de0c7d298d6ac3b1d873fed81fec88dfe79ef0a123d9c5c5a8ae33bfc74e",
+      "size_queued": 19755,
+      "exists": true,
+      "disk_sha256": "4fe4de0c7d298d6ac3b1d873fed81fec88dfe79ef0a123d9c5c5a8ae33bfc74e",
+      "disk_size": 19755,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/judge.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 375,
+        "bytes": 19755,
+        "imports": [
+          "11:import json",
+          "12:import re",
+          "13:from pathlib import Path"
+        ],
+        "defs": [
+          "19:def all_tool_names(test):",
+          "26:def all_tool_calls(test):",
+          "33:def final_text(test):",
+          "43:def any_text(test):",
+          "51:def judge_one(test):",
+          "61:def has(name): return name in tools",
+          "62:def url_arg(name):",
+          "66:def name_arg(toolname):",
+          "71:def text_invented_window_title():",
+          "255:def percentiles(values):",
+          "258:def p(k): return s[min(int(k * (len(s)-1)), len(s)-1)]",
+          "262:def judge_file(path):",
+          "275:def stats(judged):",
+          "305:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/probe_ollama_audio.py",
+      "queued_sha256": "541f0ec0841ef7e7275e1d7c777b2168e0f508b70c0d1638687725c12028357b",
+      "size_queued": 3283,
+      "exists": true,
+      "disk_sha256": "541f0ec0841ef7e7275e1d7c777b2168e0f508b70c0d1638687725c12028357b",
+      "disk_size": 3283,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/probe_ollama_audio.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 97,
+        "bytes": 3283,
+        "imports": [
+          "6:import base64",
+          "7:import json",
+          "8:from pathlib import Path",
+          "9:from urllib import request as urlrequest, error as urlerror"
+        ],
+        "defs": [
+          "15:def encode_wav():",
+          "18:def post(url, body, timeout=120):",
+          "29:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/run_baseline_qwen.py",
+      "queued_sha256": "c0447ae18f140fdefd3156f3e2caa80d28a69b80f9b2a86b2feef6e8b9718142",
+      "size_queued": 4360,
+      "exists": true,
+      "disk_sha256": "c0447ae18f140fdefd3156f3e2caa80d28a69b80f9b2a86b2feef6e8b9718142",
+      "disk_size": 4360,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/run_baseline_qwen.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 131,
+        "bytes": 4360,
+        "imports": [
+          "8:import json",
+          "9:import sys",
+          "10:import time",
+          "11:from pathlib import Path",
+          "12:from urllib import request as urlrequest",
+          "14:from tools_extended import ALL_SCHEMAS, execute_tool_extended",
+          "15:from tests_extended import ALL_TESTS",
+          "16:from tests import SYSTEM_PROMPT"
+        ],
+        "defs": [
+          "24:def call_ollama(messages, tools):",
+          "39:def _parse_args(raw):",
+          "48:def run_test(test):",
+          "112:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/run_bench.py",
+      "queued_sha256": "5c0a8dc698bf2d31d67663a28af59bb679c0bcf903494586e68fa113c12fcabc",
+      "size_queued": 4057,
+      "exists": true,
+      "disk_sha256": "5c0a8dc698bf2d31d67663a28af59bb679c0bcf903494586e68fa113c12fcabc",
+      "disk_size": 4057,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/run_bench.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 121,
+        "bytes": 4057,
+        "imports": [
+          "10:import json",
+          "11:import sys",
+          "12:import time",
+          "13:from pathlib import Path",
+          "14:from urllib import request as urlrequest",
+          "16:from tools import TOOL_SCHEMAS, execute_tool",
+          "17:from tests import SYSTEM_PROMPT, TESTS"
+        ],
+        "defs": [
+          "24:def call_server(messages, tools):",
+          "38:def run_test(test):",
+          "91:def _parse_args(raw):",
+          "100:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/run_bench_extended.py",
+      "queued_sha256": "a29ca2a8f697af05b86a8d3260fa1ea1509a36078676358573504da62557e59d",
+      "size_queued": 4097,
+      "exists": true,
+      "disk_sha256": "a29ca2a8f697af05b86a8d3260fa1ea1509a36078676358573504da62557e59d",
+      "disk_size": 4097,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/run_bench_extended.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 125,
+        "bytes": 4097,
+        "imports": [
+          "2:import json",
+          "3:import sys",
+          "4:import time",
+          "5:from pathlib import Path",
+          "6:from urllib import request as urlrequest",
+          "8:from tools_extended import ALL_SCHEMAS, execute_tool_extended",
+          "9:from tests_extended import ALL_TESTS",
+          "10:from tests import SYSTEM_PROMPT"
+        ],
+        "defs": [
+          "17:def call_server(messages, tools):",
+          "31:def _parse_args(raw):",
+          "40:def run_test(test):",
+          "102:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tests.py",
+      "queued_sha256": "6a354ffe09ef8030329c296dd35200170e5b5e9dd097da769543a48f8d38a5d7",
+      "size_queued": 3245,
+      "exists": true,
+      "disk_sha256": "6a354ffe09ef8030329c296dd35200170e5b5e9dd097da769543a48f8d38a5d7",
+      "disk_size": 3245,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/tests.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 79,
+        "bytes": 3245,
+        "imports": [],
+        "defs": []
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tests_extended.py",
+      "queued_sha256": "a9e0d22c5559c702dcef42752d69719f7aef2b39edcf84675ff149e4a862431a",
+      "size_queued": 12886,
+      "exists": true,
+      "disk_sha256": "a9e0d22c5559c702dcef42752d69719f7aef2b39edcf84675ff149e4a862431a",
+      "disk_size": 12886,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/tests_extended.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 192,
+        "bytes": 12886,
+        "imports": [
+          "2:from tests import SYSTEM_PROMPT  # mismo system prompt, no se cambia"
+        ],
+        "defs": []
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tools.py",
+      "queued_sha256": "c56e6c0d066642ba7b4b0733196bd8cff1b8a1bf0046e042634bc743155d2ff7",
+      "size_queued": 4311,
+      "exists": true,
+      "disk_sha256": "c56e6c0d066642ba7b4b0733196bd8cff1b8a1bf0046e042634bc743155d2ff7",
+      "disk_size": 4311,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/tools.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 115,
+        "bytes": 4311,
+        "imports": [],
+        "defs": [
+          "95:def execute_tool(name: str, args: dict) -> str:"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/harness/tools_extended.py",
+      "queued_sha256": "65d03467d18e2dfc7e719f415fd4b836342b94153c616ccbb46c98b763624b86",
+      "size_queued": 6616,
+      "exists": true,
+      "disk_sha256": "65d03467d18e2dfc7e719f415fd4b836342b94153c616ccbb46c98b763624b86",
+      "disk_size": 6616,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/harness/tools_extended.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 187,
+        "bytes": 6616,
+        "imports": [
+          "2:from tools import TOOL_SCHEMAS as BASE_SCHEMAS",
+          "156:from tools import execute_tool as base_exec"
+        ],
+        "defs": [
+          "154:def execute_tool_extended(name, args):"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/evidencia pruebas gemma4/samples/generate_audio.ps1",
+      "queued_sha256": "63ac1717cb0976dc3ddcadc2e32840061d5806ef16ff9c68c74c4ea618a0a270",
+      "size_queued": 1261,
+      "exists": true,
+      "disk_sha256": "63ac1717cb0976dc3ddcadc2e32840061d5806ef16ff9c68c74c4ea618a0a270",
+      "disk_size": 1261,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/evidencia pruebas gemma4/samples/generate_audio.ps1' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 29,
+        "bytes": 1261,
+        "imports": [],
+        "defs": []
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/02_full_matrix_runner.py",
+      "queued_sha256": "4eb721f3d35f7d524df2a6e155814c7037f7c6ff2757d4b311936542ea108918",
+      "size_queued": 39249,
+      "exists": true,
+      "disk_sha256": "4eb721f3d35f7d524df2a6e155814c7037f7c6ff2757d4b311936542ea108918",
+      "disk_size": 39249,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/02_full_matrix_runner.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 957,
+        "bytes": 39249,
+        "imports": [
+          "12:from __future__ import annotations",
+          "14:import argparse",
+          "15:import io",
+          "16:import json",
+          "17:import os",
+          "18:import re",
+          "19:import sys",
+          "20:import time",
+          "21:import unicodedata",
+          "22:from dataclasses import dataclass, field, asdict",
+          "23:from pathlib import Path",
+          "41:from carter_v4.agent import Agent, AgentConfig",
+          "42:from carter_v4 import profiles as profiles_mod",
+          "271:import re as _re"
+        ],
+        "defs": [
+          "50:class Case:",
+          "61:def category_name(self) -> str:",
+          "72:def _split_row(line: str) -> list[str]:",
+          "76:def load_cases() -> list[Case]:",
+          "113:def _fold(text: str) -> str:",
+          "119:def _expects_no_tools(case: Case) -> bool:",
+          "125:def _expects_destructive_confirm(case: Case) -> bool:",
+          "134:def _required_tool_kind(case: Case) -> str | None:",
+          "189:def _has_no_action_footer(reply: str) -> bool:",
+          "193:def _has_unverified_marker(reply: str) -> bool:",
+          "200:def _claims_action(reply: str, prompt: str) -> bool:",
+          "209:def _latency_budget_ms(category: int) -> int:",
+          "267:def _per_tool_budget_for_call(tool_name: str, tool_args: dict) -> int | None:",
+          "281:def _effective_latency_budget_ms(",
+          "305:def _is_trivial_input(prompt: str) -> bool:",
+          "318:def _is_canned_greeting(reply: str) -> bool:",
+          "363:def _has_canned_filler(reply: str) -> bool:",
+          "395:def _prompt_is_pure_greeting(prompt: str) -> bool:",
+          "404:def _reply_seems_irrelevant(prompt: str, reply: str) -> bool:",
+          "423:def _is_fake_capability_denial(prompt: str, reply: str) -> bool:",
+          "435:def _is_only_name(reply: str) -> bool:",
+          "441:def _calls_user_carter(reply: str) -> bool:",
+          "461:def _invents_action_from_yes_no(prompt: str, reply: str) -> bool:",
+          "476:def _claims_done_without_proof(reply: str, tool_calls: list[dict],",
+          "513:def _has_excessive_questions(reply: str) -> bool:",
+          "526:def _is_too_long_for_trivial(prompt: str, reply: str, category: int) -> bool:",
+          "565:def _is_too_short_for_question(prompt: str, reply: str) -> bool:",
+          "582:def audit_case(case: Case, reply: str, tool_calls: list[dict],",
+          "767:def run_matrix(",
+          "930:def main():"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py",
+      "queued_sha256": "bfdd90864323afc4836212e497874168ce9f4c45d7bf9dadbbe8b08f07cc93a5",
+      "size_queued": 15532,
+      "exists": true,
+      "disk_sha256": "bfdd90864323afc4836212e497874168ce9f4c45d7bf9dadbbe8b08f07cc93a5",
+      "disk_size": 15532,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/03_models_gemma4.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 274,
+        "bytes": 15532,
+        "imports": [
+          "22:from __future__ import annotations",
+          "24:from dataclasses import dataclass",
+          "248:from carter_v4.turn_profile import detect_destructive_intent  # noqa: F401, E402"
+        ],
+        "defs": [
+          "189:class GemmaTurnProfile:",
+          "229:def build_turn_profiles() -> dict:",
+          "251:def select_profile(user_text: str, *, multi_step: bool = False) -> \"GemmaTurnProfile\":",
+          "263:def profile_to_chat_kwargs(profile: GemmaTurnProfile) -> dict:"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/04_agent.py",
+      "queued_sha256": "e864ae5d4e52cdcd9bc85e4fb5af9e379f7c0f247981ec8fd8116aff90c4bd03",
+      "size_queued": 43480,
+      "exists": true,
+      "disk_sha256": "e864ae5d4e52cdcd9bc85e4fb5af9e379f7c0f247981ec8fd8116aff90c4bd03",
+      "disk_size": 43480,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/04_agent.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 911,
+        "bytes": 43480,
+        "imports": [
+          "15:from __future__ import annotations",
+          "17:import json",
+          "18:import os",
+          "19:from dataclasses import dataclass, field",
+          "20:from pathlib import Path",
+          "21:from typing import Optional",
+          "23:from .adapters import pick_adapter",
+          "24:from .adapters.ollama import LLMResponse, OllamaConfig",
+          "25:from .loop_detection import LoopState",
+          "26:from .memory import Memory",
+          "27:from .mission_detector import detect_mission",
+          "28:from .planner import plan as plan_mission, Plan",
+          "29:from .prompt import build_system_message, _detect_input_archetype",
+          "30:from . import safety",
+          "31:from .skill_store import SkillStore, maybe_record_skill",
+          "32:from .skills import SkillRegistry",
+          "33:from . import tools",
+          "34:from .tools import memory_tool",
+          "35:from .tools import skill as skill_tool",
+          "36:from .turn_profile import select_profile, profile_to_chat_kwargs, detect_destructive_intent",
+          "37:from .tool_retrieval import ToolRetriever",
+          "38:from . import verify",
+          "39:from . import verifier_orchestrator",
+          "98:from .models import gemma4 as gm",
+          "159:import os",
+          "189:from .turn_profile import PRINCIPAL as _PRINCIPAL",
+          "213:import os as _os_skills",
+          "219:from pathlib import Path as _P",
+          "231:import time as _time",
+          "550:import time as _time",
+          "890:from .models import get_module_for_model"
+        ],
+        "defs": [
+          "42:def _json_default(obj):",
+          "56:class AgentConfig:",
+          "85:def from_gemma(cls, *, db_path: str | None = None,",
+          "117:def from_profile(cls, profile, *, db_path: str | None = None,",
+          "144:class TurnResult:",
+          "153:class Agent:",
+          "154:def __init__(self, config: AgentConfig | None = None):",
+          "230:def run_turn(self, user_text: str) -> TurnResult:",
+          "336:def _handle_pending_confirmation(self, user_text: str) -> TurnResult:",
+          "392:def _execute_tool_calls(",
+          "544:def _chain_more_tools(",
+          "706:def _looks_like_surrender(self, reply_text: str) -> bool:",
+          "723:def _mission_pending(self, executed: list[dict]) -> bool:",
+          "736:def _continuation_nudge(self, executed: list[dict]) -> dict:",
+          "767:def _finalize_turn(",
+          "807:def _tool_message(self, tool_name: str, result: dict) -> dict:",
+          "816:def _tool_signature(self, name: str, args: dict) -> str:",
+          "823:def _reflection_message(self, tool_name: str, outcome: verify.VerifierOutcome) -> dict:",
+          "840:def _append_history(self, role: str, content: str):",
+          "847:def _maybe_compact_history(self):",
+          "875:def _recent_history(self) -> list[dict]:",
+          "878:def _get_core_prompt_override(self) -> str | None:",
+          "900:def reset(self):",
+          "905:def close(self):"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/05_tool_retrieval.py",
+      "queued_sha256": "fd88d8f0231badba603b33200b49a949d05170579b8b6bc752ee37ff242d6f06",
+      "size_queued": 6683,
+      "exists": true,
+      "disk_sha256": "fd88d8f0231badba603b33200b49a949d05170579b8b6bc752ee37ff242d6f06",
+      "disk_size": 6683,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/05_tool_retrieval.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 185,
+        "bytes": 6683,
+        "imports": [
+          "21:from __future__ import annotations",
+          "23:import math",
+          "24:from dataclasses import dataclass",
+          "25:from typing import Optional",
+          "119:from sentence_transformers import SentenceTransformer  # type: ignore"
+        ],
+        "defs": [
+          "68:class ToolEntry:",
+          "75:def _cosine(a: list[float], b: list[float]) -> float:",
+          "87:class ToolRetriever:",
+          "94:def __init__(self, catalog: list[dict]):",
+          "100:def _build_index(self, catalog: list[dict]) -> None:",
+          "113:def _ensure_embedder(self) -> bool:",
+          "134:def select(self, query: str, k: int = 8) -> list[dict]:",
+          "179:def enabled(self) -> bool:",
+          "184:def total_tools(self) -> int:"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/06_adapter_llamacpp.py",
+      "queued_sha256": "05638ca88c257b1f084ae14abaabce42df03f0f5b4b44b8e36c75217b4cdf101",
+      "size_queued": 12561,
+      "exists": true,
+      "disk_sha256": "05638ca88c257b1f084ae14abaabce42df03f0f5b4b44b8e36c75217b4cdf101",
+      "disk_size": 12561,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/06_adapter_llamacpp.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 312,
+        "bytes": 12561,
+        "imports": [
+          "21:from __future__ import annotations",
+          "23:import json",
+          "24:import urllib.error",
+          "25:import urllib.request",
+          "26:from dataclasses import dataclass, field",
+          "28:from .ollama import LLMResponse, ToolCall  # reuse types",
+          "120:import os as _os",
+          "123:import sys as _sys",
+          "175:import json as _json",
+          "227:import re as _re",
+          "284:import base64 as _b64",
+          "285:import io as _io",
+          "286:from PIL import Image as _Image"
+        ],
+        "defs": [
+          "32:class LlamaCppConfig:",
+          "57:class LlamaCppAdapter:",
+          "65:def __init__(self, config: LlamaCppConfig | None = None):",
+          "68:def chat(",
+          "164:def _normalize_message(msg: dict) -> dict:",
+          "213:def _strip_thought_leakage(text: str) -> str:",
+          "259:def build_image_followup_message(",
+          "304:def server_alive(host: str = \"http://127.0.0.1:8080\", timeout: float = 5.0) -> bool:"
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/07_verifier_orchestrator.py",
+      "queued_sha256": "1407770ebcac092f7abbb8fbf29dc0dbb28b9f4277520d318d1eb5aedbd9a4d2",
+      "size_queued": 13514,
+      "exists": true,
+      "disk_sha256": "1407770ebcac092f7abbb8fbf29dc0dbb28b9f4277520d318d1eb5aedbd9a4d2",
+      "disk_size": 13514,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/07_verifier_orchestrator.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 325,
+        "bytes": 13514,
+        "imports": [
+          "22:from __future__ import annotations",
+          "24:from dataclasses import dataclass, field",
+          "25:from typing import Optional, TYPE_CHECKING",
+          "28:from .verify import VerifierOutcome",
+          "29:from .planner import Plan"
+        ],
+        "defs": [
+          "52:class TurnOutcome:",
+          "79:def _is_dispatch_inconclusive(reason: str) -> bool:",
+          "94:def _intent_not_fulfilled(",
+          "144:def declare_outcome("
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/08_reply_checks.py",
+      "queued_sha256": "a7ae4570ce896e1b41507a70cf4c9bff8aa9523028035a90a92902abd3b4913d",
+      "size_queued": 10204,
+      "exists": true,
+      "disk_sha256": "a7ae4570ce896e1b41507a70cf4c9bff8aa9523028035a90a92902abd3b4913d",
+      "disk_size": 10204,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/08_reply_checks.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 284,
+        "bytes": 10204,
+        "imports": [
+          "33:from __future__ import annotations",
+          "35:import re",
+          "36:from dataclasses import dataclass"
+        ],
+        "defs": [
+          "108:class CheckResult:",
+          "128:def _tokenize(text: str) -> set[str]:",
+          "133:def check_anti_echo(user_prompt: str, reply: str) -> CheckResult:",
+          "168:def check_anti_generic(reply: str, *, prompt_was_substantive: bool = True) -> CheckResult:",
+          "209:def check_anti_unverified_claim(",
+          "259:class AllChecksResult:",
+          "266:def run_all_checks("
+        ]
+      }
+    },
+    {
+      "path": "docs/investigaciones/investigacionnecesaria_v1/codigo_carter/09_tools_init.py",
+      "queued_sha256": "a36ceb508a095ac35e67eed9232b3cd7ff2692b7237efeeb4121e40a90d57364",
+      "size_queued": 3040,
+      "exists": true,
+      "disk_sha256": "a36ceb508a095ac35e67eed9232b3cd7ff2692b7237efeeb4121e40a90d57364",
+      "disk_size": 3040,
+      "hash_match": true,
+      "head_sha256": null,
+      "head_error": "fatal: path 'docs/investigaciones/investigacionnecesaria_v1/codigo_carter/09_tools_init.py' exists on disk, but not in 'HEAD'\n",
+      "outline": {
+        "lines": 117,
+        "bytes": 3040,
+        "imports": [
+          "12:from __future__ import annotations",
+          "14:import inspect",
+          "15:from dataclasses import dataclass, field",
+          "16:from typing import Any, Callable",
+          "114:from . import system, apps, files, memory_tool, web, gui, media, terminal, office, clipboard, registry, gui_universal, d"
+        ],
+        "defs": [
+          "20:class ToolSpec:",
+          "32:def tool(",
+          "49:def decorator(fn: Callable[..., dict]):",
+          "63:def get_catalog() -> list[dict]:",
+          "78:def get_spec(name: str) -> ToolSpec | None:",
+          "82:def dispatch(name: str, args: dict) -> dict:",
+          "103:def all_names() -> list[str]:",
+          "107:def clear_registry():",
+          "113:def _autoload():"
+        ]
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.env.example",
+      "queued_sha256": "66bcfa34ef6438636316dd85387066c59babd947e9acb5c82e103917275fdd64",
+      "size_queued": 7278,
+      "exists": true,
+      "disk_sha256": "66bcfa34ef6438636316dd85387066c59babd947e9acb5c82e103917275fdd64",
+      "disk_size": 7278,
+      "hash_match": true,
+      "head_sha256": "66bcfa34ef6438636316dd85387066c59babd947e9acb5c82e103917275fdd64",
+      "head_error": null,
+      "head_matches_queue": true,
+      "outline": {
+        "lines": 158
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_memory.db",
+      "queued_sha256": "5103382d28b32bfb858cfc2e2d65401e776a5eda8a8771bf9f8b6abc59c8789d",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "5103382d28b32bfb858cfc2e2d65401e776a5eda8a8771bf9f8b6abc59c8789d",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "head_error": null,
+      "head_matches_queue": false,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 6,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db",
+      "queued_sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "size_queued": 4096,
+      "exists": true,
+      "disk_sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "disk_size": 4096,
+      "hash_match": true,
+      "head_sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "head_error": null,
+      "head_matches_queue": true,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "skills",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "intent_kind",
+              "slots_json",
+              "capability",
+              "action",
+              "params_json",
+              "score",
+              "use_count",
+              "last_used"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 0,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          }
+        ],
+        "table_count": 2
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db-shm",
+      "queued_sha256": "ff5e2424194d41f900caefd38a68de51acde59801412b9a35e51bf2b02440078",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "ff5e2424194d41f900caefd38a68de51acde59801412b9a35e51bf2b02440078",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "ff5e2424194d41f900caefd38a68de51acde59801412b9a35e51bf2b02440078",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_LIVE_SAFE_skills.db-wal",
+      "queued_sha256": "04b8c440efd2b7826c9be6d637887550d1a44d686ff510b528166d7dc0246e14",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "04b8c440efd2b7826c9be6d637887550d1a44d686ff510b528166d7dc0246e14",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "04b8c440efd2b7826c9be6d637887550d1a44d686ff510b528166d7dc0246e14",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt2_memory.db",
+      "queued_sha256": "c43f30ab00ca2014430d092fe46fe6128bdec49fe747e84e2dfdae7c69efa9d0",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "c43f30ab00ca2014430d092fe46fe6128bdec49fe747e84e2dfdae7c69efa9d0",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "c43f30ab00ca2014430d092fe46fe6128bdec49fe747e84e2dfdae7c69efa9d0",
+      "head_error": null,
+      "head_matches_queue": true,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 6,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt_memory.db",
+      "queued_sha256": "63ad84af4e94e554179f0a3f7c395fecab686de390fa4792713649e5771c58fb",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "63ad84af4e94e554179f0a3f7c395fecab686de390fa4792713649e5771c58fb",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "head_error": null,
+      "head_matches_queue": false,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 6,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt_skills.db-shm",
+      "queued_sha256": "170c83d9c2b053d1ae7799febbc2f8234b438ce0318ce677e2d8406ac8677832",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "170c83d9c2b053d1ae7799febbc2f8234b438ce0318ce677e2d8406ac8677832",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "170c83d9c2b053d1ae7799febbc2f8234b438ce0318ce677e2d8406ac8677832",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_postopt_skills.db-wal",
+      "queued_sha256": "89f061eb103808f2955a6324a9d4d5afcdde84cab95d5d2c57e59a29dee3e19c",
+      "size_queued": 20632,
+      "exists": true,
+      "disk_sha256": "89f061eb103808f2955a6324a9d4d5afcdde84cab95d5d2c57e59a29dee3e19c",
+      "disk_size": 20632,
+      "hash_match": true,
+      "head_sha256": "89f061eb103808f2955a6324a9d4d5afcdde84cab95d5d2c57e59a29dee3e19c",
+      "head_error": null,
+      "head_matches_queue": true
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_ultra_final_memory.db",
+      "queued_sha256": "268916cc4b8b801f09a78c49306ccec52f91a09732506e35ef3bd1c8450488b6",
+      "size_queued": 53248,
+      "exists": true,
+      "disk_sha256": "268916cc4b8b801f09a78c49306ccec52f91a09732506e35ef3bd1c8450488b6",
+      "disk_size": 53248,
+      "hash_match": true,
+      "head_sha256": "44e9b382070d7cf97c2d422aaa250eee7edbe9a9fa39516c42c54ccea43cae81",
+      "head_error": null,
+      "head_matches_queue": false,
+      "sqlite": {
+        "tables": [
+          {
+            "name": "conversation_turns",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "entities",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "kind",
+              "name",
+              "data_json"
+            ]
+          },
+          {
+            "name": "facts",
+            "rows": 6,
+            "columns": [
+              "id",
+              "ts",
+              "entity",
+              "attribute",
+              "value",
+              "source"
+            ]
+          },
+          {
+            "name": "memory_candidates",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "text",
+              "source",
+              "score",
+              "promoted_ts"
+            ]
+          },
+          {
+            "name": "memory_recalls",
+            "rows": 0,
+            "columns": [
+              "id",
+              "ts",
+              "query",
+              "source",
+              "snippet"
+            ]
+          },
+          {
+            "name": "sqlite_sequence",
+            "rows": 1,
+            "columns": [
+              "name",
+              "seq"
+            ]
+          },
+          {
+            "name": "turns_fts",
+            "rows": 0,
+            "columns": [
+              "user_text",
+              "reply_text"
+            ]
+          },
+          {
+            "name": "turns_fts_config",
+            "rows": 1,
+            "columns": [
+              "k",
+              "v"
+            ]
+          },
+          {
+            "name": "turns_fts_data",
+            "rows": 2,
+            "columns": [
+              "id",
+              "block"
+            ]
+          },
+          {
+            "name": "turns_fts_docsize",
+            "rows": 0,
+            "columns": [
+              "id",
+              "sz"
+            ]
+          },
+          {
+            "name": "turns_fts_idx",
+            "rows": 0,
+            "columns": [
+              "segid",
+              "term",
+              "pgno"
+            ]
+          }
+        ],
+        "table_count": 11
+      }
+    },
+    {
+      "path": "legacy/Carter_v2/.matrix_live_safe_ultra_final_skills.db-shm",
+      "queued_sha256": "bafe20cd04f35e67426923094e496af47ff99cf38419f15827dd90ae72d449af",
+      "size_queued": 32768,
+      "exists": true,
+      "disk_sha256": "bafe20cd04f35e67426923094e496af47ff99cf38419f15827dd90ae72d449af",
+      "disk_size": 32768,
+      "hash_match": true,
+      "head_sha256": "bafe20cd04f35e67426923094e496af47ff99cf38419f15827dd90ae72d449af",
+      "head_error": null,
+      "head_matches_queue": true
+    }
+  ]
+}

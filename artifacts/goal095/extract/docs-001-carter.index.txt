@@ -1,0 +1,588 @@
+SAME	  112	docs/investigaciones/La razon de carter/00_RESUMEN_EJECUTIVO.md
+  title: 00 - Resumen ejecutivo
+  L7: ## Veredicto brutalmente honesto
+  L19: ## Tesis de Carter
+  L27: ## Evidencia usada
+  L38: ## Nota sobre evidencia conflictiva
+  L42: ## Top 5 razones por las que Carter final si tiene sentido
+  L50: ## Top 5 razones por las que Carter podria no tener sentido
+  L58: ## Top 5 riesgos que pueden matar la tesis
+SAME	  135	docs/investigaciones/La razon de carter/01_TESIS_DE_CARTER.md
+  title: 01 - Tesis de Carter
+  L5: ## Que es Carter realmente
+  L16: ## Que NO es Carter
+  L28: ## Contra que categoria compite
+  L42: ## Nicho real
+  L56: ## Por que "asistente local Windows-first privado y verificable" puede ser tesis valida
+  L69: ## Innovacion, integracion e ingenieria de producto
+  L81: ## Carter actual vs Carter final vs Carter ideal exagerado
+SAME	   78	docs/investigaciones/La razon de carter/02_MAPA_DE_COMPETIDORES.md
+  title: 02 - Mapa de competidores
+  L5: ## Competidores encontrados
+  L20: ## Matriz comparativa
+  L35: ## Priorizacion
+  L43: ## Evidencia por competidor
+  L56: ## Clasificación de afirmaciones
+  L68: ## Limitaciones de este análisis
+  L72: ## Qué falta verificar
+SAME	  153	docs/investigaciones/La razon de carter/03_COMPARACION_TECNICA_PROFUNDA.md
+  title: 03 - Comparacion tecnica profunda
+  L5: ## Arquitectura actual de Carter
+  L22: ## Agent loop y planning
+  L32: ## Tool registry y tool calling
+  L46: ## Function calling y formato
+  L52: ## Verificacion de acciones
+  L63: ## Manejo de errores y replanning
+  L69: ## GUI automation
+SAME	   71	docs/investigaciones/La razon de carter/04_POR_QUE_CARTER_FUNCIONA_COMO_PRODUCTO_FINAL.md
+  title: 04 - Por que Carter funciona como producto final
+  L5: ## Premisa
+  L9: ## Argumentos por eje
+  L27: ## Valor para usuario normal
+  L33: ## Valor para developer
+  L37: ## Valor para tesis
+  L41: ## Diferencia contra competidores
+  L49: ## Clasificación de afirmaciones
+SAME	   96	docs/investigaciones/La razon de carter/05_POR_QUE_CARTER_PODRIA_FRACASAR.md
+  title: 05 - Por que Carter podria fracasar
+  L5: ## Veredicto critico
+  L9: ## Riesgos duros
+  L27: ## Donde Carter pierde claramente hoy
+  L39: ## Debilidad mas peligrosa: fake success
+  L43: ## Debilidad tecnica: verifiers superficiales
+  L54: ## Debilidad de producto: demasiada amplitud
+  L58: ## Debilidad academica: contribucion mal formulada
+SAME	  146	docs/investigaciones/La razon de carter/06_DEFENSA_COMO_TESIS.md
+  title: 06 - Defensa como tesis
+  L5: ## Pregunta de investigacion posible
+  L9: ## Hipotesis central
+  L13: ## Contribucion principal
+  L24: ## Metodologia
+  L34: ## Metricas
+  L47: ## Experimentos
+  L58: ## Baselines
+SAME	  120	docs/investigaciones/La razon de carter/07_ARGUMENTO_CONTRA_COMPETIDORES.md
+  title: 07 - Argumento contra competidores
+  L5: ## Punto central
+  L11: ## El eje donde Carter debe ganar
+  L25: ## El eje donde Carter NO debe intentar ganar
+  L39: ## Contra quien pierde y por que no invalida la tesis
+  L51: ## Contra quien puede ganar y por que importa
+  L61: ## Comparacion por ejes importantes
+  L71: ## Donde Carter es mas practico para usuario real
+SAME	  189	docs/investigaciones/La razon de carter/08_ROADMAP_PARA_HACERLO_INDISCUTIBLE.md
+  title: 08 - Roadmap para hacerlo indiscutible
+  L5: ## Prioridad estrategica
+  L9: ## Alto impacto / bajo esfuerzo
+  L22: ## Alto impacto / alto esfuerzo
+  L34: ## Riesgos que deben cerrarse antes de presentar
+  L44: ## Benchmarks necesarios
+  L53: ## Demos necesarias
+  L64: ## Documentacion necesaria
+SAME	  107	docs/investigaciones/La razon de carter/09_VEREDICTO_FINAL.md
+  title: 09 - Veredicto final
+  L5: ## Respuesta directa
+  L13: ## Veredicto final en una frase
+  L17: ## Veredicto como producto
+  L21: ## Veredicto como tesis
+  L25: ## Veredicto como investigacion
+  L29: ## Veredicto frente a competidores
+  L43: ## Claim mas fuerte y verdadero
+SAME	  185	docs/investigaciones/La razon de carter/GUIA_ORADOR_DEFENSA_CARTER.md
+  title: Guía de orador - Defensa de Carter como producto final
+  L11: ## Tesis central
+  L24: ## Guion por slide
+  L26: ### 1. Carter como producto final
+  L30: ### 2. La competencia ya existe
+  L34: ### 3. Agent-S
+  L38: ### 4. Agentes code-first
+  L42: ### 5. Frameworks y plataformas
+SAME	   68	docs/investigaciones/La razon de carter/README.md
+  title: Veredicto resumido
+  L15: ## Orden recomendado de lectura
+  L28: ## Contenido
+  L43: ## Fuentes locales principales
+  L54: ## Advertencia
+  L58: ## Limitaciones de este análisis
+  L62: ## Qué falta verificar
+  L66: ## Conclusión honesta
+DELTA	  138	docs/investigaciones/evidencia pruebas gemma4/Contrato.md
+  title: Prompt	Comportamiento esperado	Patrón validado
+SAME	  537	docs/investigaciones/evidencia pruebas gemma4/GEMMA4_VALIDACION_COMPLETA.md
+  title: Validación extendida de Gemma 4 para Carter v4
+  L9: ## 0. Contexto del proyecto Carter
+  L24: ## 1. Contrato que Gemma 4 debe cumplir (innegociable)
+  L26: ### 1.1 Capacidades del modelo
+  L28: #### A. Function calling confiable
+  L34: #### B. Honestidad por construcción (Valor 3 de Carter)
+  L40: #### C. Negation following (Valor 20)
+  L44: #### D. Multi-step planning (Valor 16)
+SAME	  167	docs/investigaciones/evidencia pruebas gemma4/README.md
+  title: Evidencia validación Gemma 4 para Carter v4
+  L7: ## Léeme primero
+  L21: ## Veredicto
+  L31: ## Contenido de esta carpeta
+  L83: ## Cómo reproducir el bench
+  L96: # 1. Levantar llama-server con el modelo ganador
+  L102: # 2. En otra terminal, correr el bench extendido sobre ese modelo
+  L105: # 3. Para baseline
+SAME	  127	docs/investigaciones/evidencia pruebas gemma4/REPORTE.md
+  title: Reporte Gemma 4 — Evaluación contra el Contrato
+  L13: ## Tabla de resultados (PASS/FAIL por test, por modelo)
+  L38: ## Análisis por test
+  L40: ### Test 1 — `hola` (latencia trivial, target <5s)
+  L43: ### Test 2 — `qué hora es` (tool simple)
+  L46: ### Test 3 — `qué es Steam` (no overuse)
+  L49: ### Test 4 — `abre Notepad y escribí hola` (multi-step)
+  L53: ### Test 5 — `no abras Spotify, solo dime si está instalado` (negation)
+DELTA	  260	legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_AUDIT.md
+  title: Auto Model Stack Final Audit
+  L14: ## 1. Veredicto brutal
+  L20: ### What is already done (do not redo)
+  L42: ### What is genuinely missing for "auto-adapt to any PC"
+  L64: ## 2. Estado por perfil VRAM
+  L92: ## 3. Plan S1–S12
+  L94: ### S1 — Consolidated fair-protocol leaderboard (no new live runs needed)
+  L114: ### S2 — Per-VRAM ranking tables
+DELTA	  154	legacy/Carter_v2/AUTO_MODEL_STACK_FINAL_REPORT.md
+  title: Carter Auto Model Stack — FINAL REPORT (Opus 4.7)
+  L7: ## 1. Executive summary
+  L21: ### Why hermes3:8b became the cross-profile winner
+  L25: ## 2. External research (S1.1–S1.3)
+  L38: ## 3. Text / tools / missions ranking
+  L57: ## 4. Vision / screen / camera
+  L61: ## 5. STT / transcription
+  L65: ## 6. TTS / voz
+DELTA	  385	legacy/Carter_v2/CARTER_MODEL_LAB_REPORT.md
+  title: CARTER MODEL LAB REPORT (M14)
+  L8: ## 1. Mission summary
+  L17: ## 2. Hardware baseline (probed live)
+  L28: ## 3. Local models evaluated
+  L41: ## 4. External models researched
+  L48: ## 5. External models discarded — and why
+  L59: ## 6. Mejor stack por VRAM (M9 + M11 reconciled)
+  L73: ## 7. Adaptive selector (M10)
+DELTA	   94	legacy/Carter_v2/CARTER_MODEL_RECOMMENDATION.md
+  title: CARTER MODEL RECOMMENDATION (M10)
+  L5: ## Hardware detected
+  L12: ## Profile chosen: **16gb**
+  L20: ## Selected stack
+  L27: ## Fallback chains (in order)
+  L34: ## Load policy
+  L42: ## Suggested .env block (copy MANUALLY — selector never writes env)
+  L55: ## Warnings
+DELTA	   85	legacy/Carter_v2/CARTER_TEXT_CORE_RC_AUDIT.md
+  title: Carter Text Core — Release Candidate Audit (RC0)
+  L7: ## 1. Veredicto brutal
+  L28: ## 2. Estado por subsistema
+  L53: ## 3. Release blockers
+  L68: ## 4. Plan RC1–RC12
+DELTA	   78	legacy/Carter_v2/CARTER_TEXT_CORE_RELEASE_NOTES.md
+  title: CARTER_TEXT_CORE_RELEASE_NOTES — v2 RC
+  L12: ## What is closed in this RC
+  L46: ## What is explicitly OUT of scope (future layers)
+  L57: ## Known non-blocking limitations
+  L66: ## Rollback plan
+  L74: ## Sign-off
+DELTA	   78	legacy/Carter_v2/CODEBASE_DIET_PLAN.md
+  title: Codebase Diet Plan — Carter v2
+  L7: ## Resumen ejecutivo
+  L13: ## 1. Código eliminado / archivado en FASE 2
+  L25: ## 2. Análisis de `src/carter_v2/` (módulo por módulo)
+  L47: ## 3. Deprecaciones controladas vivas
+  L56: ## 4. Lo que NO se borra (con justificación)
+  L68: ## 5. Riesgos restantes
+  L74: ## 6. Decisión final
+DELTA	  153	legacy/Carter_v2/FULL_LIVE_LLM_TEST_AUDIT.md
+  title: Full Live LLM Test Audit — Carter v2
+  L8: ## 1. Veredicto brutal
+  L24: ## 2. Prompts extraídos desde tests
+  L55: ## 3. Categorías finales de validación
+  L82: ## 4. Criterios de aceptación por categoría (resumen)
+  L109: ## 5. Plan de implementación
+  L111: ### Modos del runner
+  L118: ### Hardware safety en el runner
+DELTA	   81	legacy/Carter_v2/LLM_AUTONOMY_BOUNDARY.md
+  title: LLM Autonomy Boundary — Carter v2
+  L8: ## What the LLM decides
+  L30: ## What the code decides
+  L50: ## What must NEVER move into the code
+  L59: ## What must NEVER move into the LLM
+  L67: ## Guardrails added in this round
+DELTA	  146	legacy/Carter_v2/LLM_CONTEXT_MEMORY_AUDIT.md
+  title: LLM Context & Memory Audit — Carter v2
+  L7: ## 1. Veredicto brutal
+  L26: ## 2. Flujo actual de contexto
+  L52: ## 3. Diagnóstico de user_ref
+  L65: ## 4. Diagnóstico de historial repetido
+  L76: ## 5. Diagnóstico de active app context
+  L89: ## 6. Diagnóstico del placeholder `////////////////////////////////////////`
+  L105: ## 7. Diagnóstico de latencia 140–154 s
+DELTA	  193	legacy/Carter_v2/LLM_CONTEXT_MEMORY_REPORT.md
+  title: LLM Context & Memory Hardening — Final Report
+  L9: ## 1. Root cause (Phase 0 audit)
+  L25: ## 2. Fixes applied (L1–L8)
+  L27: ### L1 — Universal user-reference resolver
+  L37: ### L2 — Memory write & cleanup hardening
+  L41: ### L3 — Active-app context gating
+  L44: ### L4 — Prior-turn dedup + suppression
+  L47: ### L5 — Prompt hygiene trace
+DELTA	  149	legacy/Carter_v2/MODEL_CANDIDATES_BY_VRAM.md
+  title: MODEL CANDIDATES BY VRAM (S1.2 — Auto Model Stack)
+  L11: ## Selection rule
+  L28: ## Per-profile candidates
+  L30: ### `cpu_only` (RAM-only, no GPU)
+  L41: ### `6gb` (RTX 3050/4050, GTX 1660)
+  L54: ### `8gb` (RTX 3060/3070/4060, GTX 1080)
+  L68: ### `10gb` (RTX 3080 10GB)
+  L81: ### `12gb` (RTX 3060 12GB / 4070)
+DELTA	  210	legacy/Carter_v2/MODEL_COMPATIBILITY_BIAS_AUDIT.md
+  title: Model Compatibility Bias Audit (Carter v2)
+  L18: ## 1. Veredicto brutal
+  L36: ### Lo que NO es Qwen-bias (ya universal)
+  L47: ### Cambios necesarios para una prueba justa
+  L63: ## 2. Flujo actual de tool calling
+  L98: ### Dónde puede fallar cada modelo *no-Qwen* hoy
+  L108: ### Qué formatos rechaza (de facto) el runtime
+  L117: ### Qwen-specific assumptions detectadas
+DELTA	   76	legacy/Carter_v2/MODEL_DOWNLOAD_LOG.md
+  title: MODEL DOWNLOAD LOG (M1 / M11)
+  L7: ## Session: 2026-05-02 — Carter Model Lab tournament wave 1
+  L28: ## Pre-existing local inventory (not pulled in this session)
+  L51: ## Cleanup queue
+  L58: ## What was NOT pulled (intentionally)
+  L67: ## Session: 2026-05-02 — Auto Model Stack S1.3 external candidates
+DELTA	   59	legacy/Carter_v2/MODEL_DOWNLOAD_PLAN.md
+  title: Carter Model Download Plan (M1 extra)
+  L12: ## Decisión maestra
+  L48: ### Comandos de descarga (autorizados, ejecutar uno a la vez)
+  L51: # Solo dos descargas autorizadas en este pase (≈ 7.5 GB combinados)
+  L56: ### Política de borrado preventivo (para liberar disco antes de DEFER → PULL)
+DELTA	  149	legacy/Carter_v2/MODEL_HARDWARE_PROFILES.md
+  title: Carter Hardware Profiles (M2)
+  L7: ## Reglas comunes a todos los perfiles
+  L18: ## PROFILE_CPU_ONLY
+  L35: ## PROFILE_6GB_COMMON
+  L53: ## PROFILE_8GB_GAMER
+  L70: ## PROFILE_10GB_BALANCED
+  L85: ## PROFILE_12GB_POWER
+  L100: ## PROFILE_16GB_CREATOR (RTX 4060 Ti — usuario actual)
+DELTA	  151	legacy/Carter_v2/MODEL_LAB_AUDIT.md
+  title: Carter Model Lab Audit (M0)
+  L10: ## 1. Estado actual
+  L34: ### Modelos Ollama ya instalados (inventario local, listo para tournament sin descarga)
+  L54: ## 2. Dónde el modelo limita a Carter (análisis conceptual)
+  L56: ### 2.1 Tool calling y JSON
+  L67: ### 2.2 Misiones compuestas
+  L75: ### 2.3 Visión
+  L80: ### 2.4 Latencia de salida
+DELTA	  122	legacy/Carter_v2/MODEL_LAB_WAVE2_AUDIT.md
+  title: MODEL_LAB_WAVE2_AUDIT.md
+  L5: ## Wave 1 (closed)
+  L20: ## Pulled-but-not-benched (Wave 2 queue)
+  L35: ## Pulled-but-SKIP_WITH_REASON
+  L43: ## External candidates considered but NOT pulled
+  L56: ## Vision (Wave 3 queue)
+  L69: ## Voice (Wave 4 status)
+  L85: ## Profiles still missing a live winner
+DELTA	  103	legacy/Carter_v2/MODEL_RESEARCH_MATRIX.md
+  title: Carter Model Research Matrix (M1)
+  L21: ## 1. LLM texto general / razonamiento / tool-calling
+  L41: ## 2. VLM / Visión
+  L54: ## 3. OCR / document understanding (no LLM)
+  L63: ## 4. STT / transcripción
+  L76: ## 5. TTS
+  L85: ## 6. Modelos pequeños CPU / iGPU
+  L96: ## 7. Decisiones derivadas (input para M2 / M9 / M11)
+DELTA	   98	legacy/Carter_v2/MODEL_STACK_BY_VRAM.md
+  title: Carter Model Stack by VRAM (M9)
+  L12: ## Tabla maestra
+  L24: ## Notas operativas (alimenta `src/carter_v2/model_selection/load_policy.py`)
+  L41: ## Rollback
+  L47: ## Wave-2 update (2026-05-02)
+  L74: # Opt-in al ganador Wave-2 (Ollama backend):
+  L84: ## Auto Model Stack S9 update (fair-leaderboard)
+DELTA	   79	legacy/Carter_v2/MODEL_STORAGE_CLEANUP_PLAN.md
+  title: Carter Model Storage Cleanup Plan
+  L6: ## Modelos a mantener (stack ganador post-tournament — see `MODEL_TOURNAMENT_REPORT.md`)
+  L25: ## Modelos candidatos a borrar
+  L35: ### Plan de limpieza por fases
+  L52: ### Verificación
+  L55: # Antes
+  L59: # Tras Fase A
+  L62: # Después
+DELTA	   86	legacy/Carter_v2/MODEL_STT_TOURNAMENT_REPORT.md
+  title: MODEL_STT_TOURNAMENT_REPORT (Auto Model Stack S4)
+  L7: ## 1. Status
+  L16: ## 2. Live backend probe (this rig)
+  L29: ## 3. Per-profile recommendation
+  L45: ## 4. Multilingual coverage
+  L53: ## 5. Scaffold tournament command
+  L68: ## 6. Carter integration
+  L76: ## 7. Acceptance for closure
+DELTA	  136	legacy/Carter_v2/MODEL_TOURNAMENT_REPORT.md
+  title: CARTER MODEL TOURNAMENT REPORT (M11)
+  L15: ## Profile **cpu_only** — VRAM 0-1 MiB, text budget ≤ 0 MiB
+  L19: ## Profile **6gb** — VRAM 1-7000 MiB, text budget ≤ 4096 MiB
+  L28: ## Profile **8gb** — VRAM 7000-9216 MiB, text budget ≤ 5632 MiB
+  L42: ## Profile **10gb** — VRAM 9216-11264 MiB, text budget ≤ 7168 MiB
+  L56: ## Profile **12gb** — VRAM 11264-14336 MiB, text budget ≤ 7680 MiB
+  L70: ## Profile **16gb** — VRAM 14336-20480 MiB, text budget ≤ 8192 MiB
+  L84: ## Profile **24gb** — VRAM 20480-1000000000 MiB, text budget ≤ 12288 MiB
+DELTA	   83	legacy/Carter_v2/MODEL_TTS_TOURNAMENT_REPORT.md
+  title: MODEL_TTS_TOURNAMENT_REPORT (Auto Model Stack S5)
+  L7: ## 1. Status
+  L14: ## 2. Live backend probe (this rig)
+  L22: ## 3. Per-profile recommendation
+  L37: ## 4. Latency budget
+  L46: ## 5. Scaffold tournament command
+  L59: ## 6. Carter integration
+  L67: ## 7. Multilingual caveat
+DELTA	   97	legacy/Carter_v2/MODEL_VISION_TOURNAMENT_REPORT.md
+  title: MODEL_VISION_TOURNAMENT_REPORT.md (M7 / Wave 3)
+  L5: ## Live results
+  L19: ## What the smoke discriminates and what it does NOT
+  L38: ## Per-profile vision recommendation
+  L57: ## Carter integration (current state)
+  L70: # To opt into the Wave-3 vision recommendation:
+  L75: ## VRAM observation worth recording
+  L87: ## Acceptance for closure
+DELTA	  117	legacy/Carter_v2/MODEL_VOICE_TOURNAMENT_REPORT.md
+  title: MODEL_VOICE_TOURNAMENT_REPORT.md (M8 / Wave 4)
+  L5: ## Status: NOT_EXECUTED_FULL_ENV_LIMITATION
+  L21: ## Live backend probe (this rig)
+  L35: ## Per-profile recommendation
+  L50: ## Scaffold roundtrip (post-Wave-2 smoke)
+  L57: # (real audio fixture roundtrip will be appended here once Carter ships a mic capability)
+  L69: ## Install commands (verified)
+  L81: ## Acceptance for closure
+DELTA	  147	legacy/Carter_v2/PRE_LLM_LATENCY_REPORT.md
+  title: PRE_LLM_LATENCY_REPORT — RUNTIME-9
+  L10: ## 1. What the user reported
+  L26: ## 2. Tracing infrastructure already present
+  L39: ### Schema of `turn_trace["timing"]`
+  L70: ## 3. Structural fast-path applied for trivial inputs (RUNTIME-2/3)
+  L99: ## 4. How to measure on the live rig
+  L123: ## 5. Remaining pre-LLM hot spots (not blockers, candidates for next pass)
+  L141: ## 6. Verdict
+DELTA	  123	legacy/Carter_v2/README.md
+  title: Carter v2
+  L5: ## What is Carter
+  L14: ## Run
+  L17: # from repo root (parent of Carter_v2/)
+  L23: ## Layout
+  L72: ## Tests
+  L87: ## Audit / gates
+  L96: ## Profiles / what is OFF by default
+DELTA	  164	legacy/Carter_v2/REAL_RUNTIME_FAILURE_AUDIT.md
+  title: REAL_RUNTIME_FAILURE_AUDIT — Carter v2
+  L6: ## 1. Real transcript (provided by user)
+  L27: ## 2. Root-cause map
+  L29: ### 2.1 LATENCY_BLOCKER on trivial input ("a" → 78.4 s, 32.5 s)
+  L45: ### 2.2 FAKE_SUCCESS on mute (#6)
+  L63: ### 2.3 WRONG_ROUTE on volume-set (#5)
+  L74: ### 2.4 WRONG_TOOL on screenshot (#4)
+  L82: ### 2.5 TARGET_RESOLVER_BAD on close/maximize (#7, #8)
+DELTA	   99	legacy/Carter_v2/REAL_RUNTIME_LIVE_REPRO_REPORT.md
+  title: REAL RUNTIME — LIVE REPRO REPORT
+  L9: ## Environment
+  L18: ## Runner
+  L38: ## Results — 3 / 13 PASS
+  L59: ### What the live run actually proves
+  L77: ## Next exact fixes
+  L87: ## Regression gates (still green)
+  L93: ## Honest verdict
+DELTA	  260	legacy/Carter_v2/REPO_CLEANUP_AUDIT.md
+  title: Repo Cleanup Audit — Carter v2
+  L10: ## 1. Veredicto brutal
+  L58: ## 2. Inventario raíz `Carter_v2/`
+  L107: ## 3. Inventario `src/carter_v2/`
+  L140: ## 4. Inventario tests actuales (98 archivos, 1667 tests)
+  L144: ### CORE_CONTRACT
+  L147: ### SAFETY_CONTRACT
+  L150: ### MISSION_CONTRACT
+DELTA	  177	legacy/Carter_v2/RESIDUAL_BACKLOG_AFTER_BLOCK.md
+  title: RESIDUAL_BACKLOG_AFTER_BLOCK
+  L13: ## B-1. Cases 7 & 8 — close-app / maximize-window have no structural router
+  L50: ## B-2. Case 11 — declarative-fact memory route has no structural detector
+  L89: ## B-3. Case 1 — `a` baseline floor still above 8.0s
+  L123: ## B-4. Case 2 — `que?` low-information path
+  L144: ## B-5. recovery/classifier.py regex/keyword hardcodes
+  L157: ## B-6. dry-run mode is router-only, not "live evidence"
+  L168: ## Summary table
+DELTA	  145	legacy/Carter_v2/RESIDUAL_BACKLOG_V2.md
+  title: RESIDUAL_BACKLOG_V2
+  L14: ## B-1.v2  Case 8 — model hallucinates declarative tool execution
+  L54: ## B-2.v2  Case 11 — declarative-fact memory route still LLM-only
+  L64: ## B-3.v2  Case 1 — last 2-3 s above the 5 s Jarvis budget
+  L85: ## B-4  Case 2 — `que?` low-information path
+  L94: ## B-5  recovery/classifier.py lexical hardcodes
+  L102: ## B-6  dry-run is router-only
+  L109: ## V2-NEW  lingua wheel size
+DELTA	  160	legacy/Carter_v2/RUNTIME_TOOL_PROTOCOL_WIRING_AUDIT.md
+  title: RUNTIME TOOL PROTOCOL WIRING AUDIT
+  L13: ## 1. Veredicto brutal
+  L50: ## 2. Flujo actual
+  L91: ## 3. Diseño nuevo
+  L131: ## 4. Riesgos
+  L145: ## 5. Plan R1–R9
+DELTA	  108	legacy/Carter_v2/TEXT_CORE_ARCHITECTURE.md
+  title: TEXT_CORE_ARCHITECTURE — Carter v2 (Release Candidate)
+  L9: ## 1. Turn flow (single user message → single user-visible reply)
+  L40: ## 2. MissionState
+  L50: ## 3. Tools (text-only surface)
+  L65: ## 4. Model protocol
+  L77: ## 5. Memory & context
+  L84: ## 6. GUI / vision-from-text
+  L90: ## 7. Safety
+DELTA	   94	legacy/Carter_v2/TEXT_CORE_CLEANUP_PLAN.md
+  title: TEXT_CORE_CLEANUP_PLAN — Carter v2 (Release Candidate)
+  L19: ## Carter_v2/
+  L21: ### keep
+  L29: ### archive (move to `documentacion/archive/` if cleanup is approved)
+  L39: ### generated_results (safe to regenerate; keep latest, prune older)
+  L52: ### candidate_delete (only after user OK)
+  L57: ## Carter_v1/
+  L59: ### obsolete (kept for reference only)
+DELTA	   27	legacy/Carter_v2/TEXT_CORE_INVARIANTS.md
+  title: TEXT_CORE_INVARIANTS — Carter v2 (Release Candidate)
+DELTA	   69	legacy/Carter_v2/TEXT_CORE_MODEL_DECISION.md
+  title: Text Core Model Decision (RC1)
+  L5: ## Decision
+  L15: ## Why qwen3:8b stays as the real default
+  L28: ## How to test both
+  L31: # Run with the default (qwen3:8b) — no change required:
+  L34: # Try the recommended candidate (hermes3:8b):
+  L39: # Try the fast candidate (llama3.2:3b):
+  L45: ## How to change without breaking
+DELTA	   77	legacy/Carter_v2/TEXT_CORE_PERFORMANCE_FINAL.md
+  title: TEXT_CORE_PERFORMANCE_FINAL — Carter v2 (Release Candidate)
+  L19: ## 1. Latency budgets (text-only)
+  L34: ## 2. Memory & resource budgets
+  L45: ## 3. Hardcode / placeholder / hack counters
+  L54: ## 4. Tool protocol counters
+  L63: ## 5. Open performance limitations (non-blocking)
+  L73: ## 6. Verdict
+DELTA	   27	legacy/Carter_v2/TEXT_CORE_SOAK_TEST_REPORT.md
+  title: Text Core Soak Test Report (RC3)
+  L5: ## Verdict: **SOAK_PASSED**
+  L11: ## Invariants
+  L21: ## Blockers
+  L25: ## Notes
+DELTA	  310	legacy/Carter_v2/TOOL_CALL_COMPATIBILITY_AUDIT.md
+  title: Tool Call Compatibility Audit — Carter v2
+  L32: ## 1. Root cause (verbatim evidence)
+  L59: ## 2. The harness bias, in two lines
+  L74: ## 3. Multi-protocol probe — design
+  L102: ## 4. Protocol matrix (pass rate per cell)
+  L126: ## 5. Per-model classification (10 cases × 5 protocols = 50 graded calls each)
+  L137: ### `qwen3:8b`  (best protocol = `openai_tools`, pass-rate = 1.00)
+  L147: ### `hermes3:8b`  (best protocol = `openai_tools`, pass-rate = 0.90)
+DELTA	  177	legacy/Carter_v2/ULTRA_LATENCY_AUDIT.md
+  title: ULTRA LATENCY AUDIT — Carter v2 (OPUS 4.7)
+  L14: ## §1. Veredicto brutal
+  L29: ## §2. Top slow cases (live_safe_postopt2)
+  L45: ## §3. Latencia por categoría (baseline vs target)
+  L59: ## §4. Latencia por etapa (faltan métricas; las inferimos de código + outliers)
+  L81: ## §5. Causas raíz mapeadas
+  L100: ## §6. Plan L1–L12 (prioridad por impacto / riesgo)
+  L102: ### Prioridad 1 — Impacto alto, riesgo bajo
+DELTA	   70	legacy/Carter_v2/VOICE_CAMERA_HANDOFF_PLAN.md
+  title: VOICE_CAMERA_HANDOFF_PLAN — Carter v2 (post-text RC)
+  L9: ## 1. Hard rules for the future layers
+  L21: ## 2. Required interfaces (to be implemented later)
+  L27: # Speech-to-text (push-to-talk only, NOT continuous).
+  L30: # Text-to-speech (synchronous, returns wav bytes; no autoplay in core).
+  L33: # One-shot screen / camera observation (NOT a stream).
+  L46: ## 3. Lifecycle
+  L54: ## 4. Safety additions for future layers
+DELTA	   99	legacy/Carter_v2/VOICE_MODEL_RESEARCH.md
+  title: Carter Voice Model Research (M8)
+  L11: ## 1. STT — Speech-to-Text candidates
+  L32: ## 2. TTS — Text-to-Speech candidates
+  L50: ## 3. OCR (no LLM)
+  L59: ## 4. Cámara
+  L65: ## 5. Plan de adopción (out of scope para M11 numérico)
+  L69: # Install Piper (Windows binary)
+  L70: # https://github.com/rhasspy/piper/releases
+DELTA	  143	legacy/Carter_v2/audit/baselines/historical/F0_prompt_template.txt
+  title: You are Carter, {user_ref}'s personal AI assistant on this Windows PC.
+DELTA	   13	legacy/Carter_v2/audit/logs/historical/f8_test_summary.txt
+  title: ﻿
+DELTA	  142	legacy/Carter_v2/audit/results/CARTER_DEFAULT_SWITCH_AUDIT.md
+  title: CARTER DEFAULT SWITCH HONESTY REPAIR - AUDIT (Round 8, cleanup pass)
+  L3: ## 0. Why this audit exists
+  L14: ## 1. Case 11 contract-data fix
+  L16: ### Before (contradictory)
+  L31: ### After (consistent)
+  L45: ### Why
+  L49: ### Run-level evidence
+  L56: ## 2. Audit md integrity
+DELTA	  433	legacy/Carter_v2/audit/results/CARTER_GLOBAL_RUNTIME_AUDIT.md
+  title: CARTER GLOBAL RUNTIME AUDIT — Round 4 (case 9 false-pass repair, pass taxonomy, honest score)
+  L12: ## Round 4 — what was wrong with round 3's "10/13"
+  L20: ## Round 4 structural fixes
+  L22: ### Tightened clarifying-question detector ([src/carter_v2/turn/agent.py](Carter_v2/src/carter_v2/turn/agent.py))
+  L32: ### Case 9 contract: `must_answer_directly` ([audit/runners/real_runtime_transcript_repro.py](Carter_v2/audit/runners/real_r
+  L36: ### Pass taxonomy in runner
+  L53: ## Live full repro — round 4 honest score
+  L79: ## Case 9 — before / after
+DELTA	  176	legacy/Carter_v2/audit/results/CARTER_MODEL_REBASELINE_AUDIT.md
+  title: CARTER MODEL REBASELINE AUDIT
+  L15: ## 1. Harness frozen — runs executed
+  L32: ## 2. Jarvis-grade budgets (per case)
+  L56: ## 3. qwen2.5:7b-instruct repeatability matrix (3 warm runs)
+  L78: ## 4. Semantic score vs Jarvis-budget score (best run)
+  L97: ## 5. Cross-model residual table (the central question)
+  L121: ## 6. Candidate default verdict
+  L136: ## 7. Are further core changes still justified?
+DELTA	  138	legacy/Carter_v2/audit/results/CARTER_RUNTIME_STABILITY_AUDIT.md
+  title: CARTER RUNTIME STABILITY AUDIT
+  L14: ## 1. Harness frozen
+  L28: ## 2. Per-case outcome stability across qwen3:8b warm runs
+  L50: ## 3. Failure bucket classification
+  L72: ## 4. Cross-model comparison (single warm run each)
+  L94: ## 5. Successful vs Honest degraded vs Fail (best run per model)
+  L103: ## 6. Model suitability verdict
+  L120: ## 7. Are further core changes still justified?
+DELTA	  168	legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_AUDIT.md
+  title: CARTER_TEXT_BLOCK_LANDING_AUDIT
+  L9: ## WHAT WAS WRONG (entering the block)
+  L47: ## WHAT THIS BLOCK CHANGED
+  L61: ## LIVE EVIDENCE
+  L91: ## BEFORE / AFTER LATENCY
+  L106: ## STILL OPEN (after this block)
+  L121: ## ITEM CLOSURE LABELS (re-stated for the gate)
+  L139: ## REGRESSION GATES
+DELTA	  340	legacy/Carter_v2/audit/results/CARTER_TEXT_BLOCK_LANDING_V2_AUDIT.md
+  title: CARTER_TEXT_BLOCK_LANDING_V2_AUDIT
+  L14: ## 1. WHAT WAS WRONG (entry state)
+  L33: ## 2. WHAT CHANGED (code-level, this block)
+  L38: ### 2.1 Item 3 — probe priming (B-3) — LANDED
+  L61: ### 2.2 Item 4 — structural language directive (J5) — LANDED
+  L94: ### 2.3 Item 1 — structural action-route resolver (B-1) — LANDED, partially live-verified
+  L143: ### 2.4 Test fixups
+  L155: ## 3. LIVE EVIDENCE (3 safe-live runs, model qwen2.5:7b-instruct, warm)
+DELTA	   76	legacy/Carter_v2/audit/results/FULL_LIVE_LLM_VALIDATION_SUMMARY.md
+  title: Full Live LLM Validation -- Summary
+  L3: ## mode = `scripted` (model: scripted)
+  L28: ## mode = `dry-run` (model: scripted)
+  L53: ## mode = `live-safe` (model: qwen3:8b)
+DELTA	   46	legacy/Carter_v2/audit/results/SKIPPED_LIVE_VALIDATION_SUMMARY.md
+  title: Skipped Live Validation -- Summary
+  L3: ## mode = `web-live` (model: scripted)
+  L12: ## mode = `compound-live` (model: scripted)
+  L21: ## mode = `gui-vision-live` (model: scripted)
+  L30: ## mode = `steam-live` (model: scripted)
+  L39: ## mode = `dry-run` (model: scripted)
+DELTA	   88	legacy/Carter_v2/audit/results/model_benchmarks_fair_runtime/CONSOLIDATED.md
+  title: Carter Fair Tournament — consolidated leaderboard
+  L4: ## Global ranking (fair composite)
+  L29: ## Per-profile ranking (VRAM-budget-filtered)
+  L31: ### Profile `cpu_only` — top picks (VRAM ≤ budget)
+  L36: ### Profile `6gb` — top picks (VRAM ≤ budget)
+  L45: ### Profile `8gb` — top picks (VRAM ≤ budget)
+  L54: ### Profile `10gb` — top picks (VRAM ≤ budget)
+  L63: ### Profile `12gb` — top picks (VRAM ≤ budget)
+DELTA	   11	legacy/Carter_v2/audit/results/post_model_lab_gates_20260502-092159.txt
+  title: ﻿=== Carter Model Lab — M13 post-gates ===

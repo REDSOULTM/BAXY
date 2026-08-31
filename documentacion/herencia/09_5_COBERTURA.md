@@ -68,6 +68,24 @@ Proximo lote docs pendiente:
 - tokens estimados: 299425
 - salida: `artifacts/goal095/ledger/docs-002-carter.json`
 
+Primer lote code_tests:
+
+- `batch_id`: `code_tests-001-carter` — **completo** (09.5.3, 2026-08-30)
+- archivos: 32 (22 `leido`, 6 `parseado_completo`, 1 `binario_inventariado`, 3 `excluido_razonado`)
+- tokens estimados: 293211 (limite 350000)
+- tarjetas: 12 en `artifacts/goal095/ledger/code_tests-001-carter.json`
+- hashes disco=cola 32/32; 0 identicos a biblioteca
+- subsistemas: `carter_docs` + `carter_legacy_Carter_v2`
+- faltantes/solapes globales: 0 / 0 (sin cambio)
+
+Proximo lote code_tests pendiente:
+
+- `batch_id`: `code_tests-002-carter-carter_legacy_Carter_v2`
+- archivos: 43
+- tokens estimados: 291016
+- salida: `artifacts/goal095/ledger/code_tests-002-carter-carter_legacy_Carter_v2.json`
+
 ## Siguiente
 
-Primer lote docs pendiente: `docs-002-carter` — prompt `documentacion/sprints/09.5.2_LEER_DOCUMENTACION_LOTE.md`.
+Primer lote code_tests pendiente: `code_tests-002-carter-carter_legacy_Carter_v2` — prompt `documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md`.
+Docs sigue pendiente en `docs-002-carter` (prompt 09.5.2).

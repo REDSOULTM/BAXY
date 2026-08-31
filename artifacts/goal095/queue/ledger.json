@@ -234,7 +234,9 @@
       "kind": "code_tests",
       "output": "artifacts/goal095/ledger/code_tests-001-carter.json",
       "owner": "documentacion/sprints/09.5.3_AUDITAR_CODIGO_LOTE.md",
-      "status": "pending"
+      "status": "complete",
+      "claimed_utc": "2026-08-31T00:53:14Z",
+      "closed_utc": "2026-08-31T00:53:32Z"
     },
     {
       "batch_id": "code_tests-002-carter-carter_legacy_Carter_v2",
@@ -5711,5 +5713,6 @@
   ],
   "first_docs_batch_id": "docs-002-carter",
   "goal": "09.5.1",
-  "status": "queues_ready"
+  "status": "queues_ready",
+  "first_code_tests_batch_id": "code_tests-002-carter-carter_legacy_Carter_v2"
 }
