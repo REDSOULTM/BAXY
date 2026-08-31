@@ -176,3 +176,4 @@ goal.
 - **AUTO_APPROVE no reentra** — confirmación ligada a `invocationId`. Guard `auto_approve`. *Goal 09.5.9.*
 - **Soak 24 h no es requisito** — 10.2 mide idle 15 min. Guard `soak-24h-as-requirement`. *Goal 09.5.9.*
 - **Gemma-native-audio no es el oído** — llama-server no rutea `input_audio`; Parakeet se conserva. Guard `gemma-native-audio`. *Goal 09.5.9.*
+- **`MainWindowViewModel.HandlePendingNoteChoiceAsync`** — tres `AddMessage` con prosa de paginación/cancelación y un interpolate de «Esa opción no está visible». El censo no las cuenta (no disparan `PALABRAS_ES`). No bloquean 09.5.11B. *Goal 09.5.11B.*

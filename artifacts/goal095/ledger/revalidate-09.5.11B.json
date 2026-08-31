@@ -1,0 +1,53 @@
+{
+  "schema": "baxy.goal095.09511b-ledger.v1",
+  "batch_id": "revalidate-09.5.11B",
+  "kind": "revalidate",
+  "status": "complete",
+  "goal": "09.5.11B",
+  "closed_utc": "2026-08-31T10:26:48Z",
+  "report_ref": "artifacts/goal095/synthesis/09.5.11B_revalidar_04_06.v1.json",
+  "markdown_ref": "documentacion/herencia/09_5_11B_REVALIDAR.md",
+  "owner_prompt": "documentacion/sprints/09.5.11B_REVALIDAR_04_06.md",
+  "next_prompt": "documentacion/sprints/09.5.11C_REVALIDAR_07_09.md",
+  "required_human_launches": 1,
+  "deferred_to_goal10": [],
+  "live_src_changed": true,
+  "errors": [],
+  "holdout_summary": {
+    "honesty_zeros": {
+      "unsolicited_effects": 0,
+      "unverified_successes": 0,
+      "fixed_visible_replies": 0
+    },
+    "honesty_zeros_hold": true,
+    "census_literals": 0,
+    "census_files": 0,
+    "voice_bad": 0,
+    "goal05_observed": 82,
+    "goal05_unverifiable": 88,
+    "goal05_live_runs": 42
+  },
+  "honesty_zeros": {
+    "unsolicited_effects": 0,
+    "unverified_successes": 0,
+    "fixed_visible_replies": 0
+  },
+  "census": {
+    "literals": 0,
+    "files": 0
+  },
+  "voice_bad": 0,
+  "goal05": {
+    "observed": 82,
+    "unverifiable": 88,
+    "live_runs": 42
+  },
+  "provenance": {
+    "transplant": {
+      "pending": 0,
+      "claimed": 0,
+      "complete": 0,
+      "total": 0
+    }
+  }
+}

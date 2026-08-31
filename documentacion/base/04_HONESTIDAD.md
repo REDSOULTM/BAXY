@@ -73,3 +73,16 @@ Lo que se vio y no se persiguió (una línea en `APLAZADOS.md`): cap-01 nombró
 `.\scripts\test_source_quality.ps1 -Mode Full` verde el 2026-08-21
 (`source_quality_gate_passed: mode=Full`; python 8636 passed, 3 skipped).
 `py main.py` no se arrancó aquí (producto de escritorio, sin browser).
+
+## 5. Revalidación 09.5.11B (el cierre de arriba no se borra)
+
+Las cifras de las dos corridas de cierre (0/0/0, 41 y 39 conversation) siguen
+siendo el cierre del 04. El scorer congelado no se tocó:
+`score_goal04_honesty.py` `3e565f606cd9c222…`, `run_goal04_honesty.py`
+`ea7458b9e987be77…`.
+
+Holdout 09.5.11B sobre los mismos 160 bytes del corpus fresco, sidecar vivo,
+providers off: dos corridas `goal09511b_r1` / `goal09511b_r2` en
+`artifacts/goal095/revalidate/`. Ceros **0/0/0**, cero vacíos en
+conversation/clarify, conversation 42 y 38. Cola transplant vacía: se midió
+igual.

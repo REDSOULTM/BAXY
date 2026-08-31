@@ -113,3 +113,14 @@ goal.**
 - Python: 8636 passed, 3 skipped, 446 subtests.
 
 `py main.py` no se arrancó (producto de escritorio, sin browser).
+
+## 8. Revalidación 09.5.11B (el cierre de arriba no se borra)
+
+Las cifras de cierre (170/82/88, lying executor, terminales) siguen siendo el
+cierre del 05. Holdout 09.5.11B reejecutó las suites dueñas dos veces
+(Kernel 10/10, Integration Goal05+VoiceListen 46/46, 0 omitidas) y publicó
+la matriz contemporánea en
+`artifacts/goal095/revalidate/goal05_execution_matrix_goal09511b.json`:
+**170** operaciones, **82** observadas, **88** no verificables (todas con
+razón), 41 filas live, 40 completed+verified. El token de confirmación no
+autoriza otro `invocationId`. Un ejecutor que miente no publica «Listo».

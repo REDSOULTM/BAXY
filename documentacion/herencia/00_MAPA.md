@@ -350,6 +350,16 @@ publicado. La constante no se subió.
 **Efecto:** el rechazo de «subir la constante al hash de 35» se conserva. El
 árbol correcto era el de 38, y ya está versionado.
 
+### Actualización 09.5.11B — prosa de escucha (el hallazgo de Goal 06 no se borra)
+
+**Antes (Goal 06, 2026-08-23):** censo 0 literales / 0 ficheros. Toda prosa
+visible sale de hechos JSON + `message.compose`.
+
+**Evidencia nueva:** Goal 09 (`273a321`) reintrodujo cuatro constantes en
+`MainWindowViewModel` para el interruptor de escucha. El censo vivo las
+contaba. 09.5.11B las sustituye por `TurnVisibleFacts`; el censo vuelve a 0/0.
+No se relajó el censo ni se aplazó al Goal 10.
+
 Y un hallazgo de entorno que **sí** se arregló: 8 pruebas de
 `MindShellEndToEndTests` fallaban por `FileNotFoundException: The deterministic
 mind contract test requires Python`, porque `FindPython` busca

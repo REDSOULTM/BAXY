@@ -73,3 +73,15 @@ Quedan acting fino («Sigo.»), horas sueltas y un tuteo perdido. Anotado.
 - [x] Guarda de infinitivos inventados en compose
 - [x] Cien respuestas leídas a mano (`artifacts/development/goal06_cien_respuestas.jsonl`)
 - [x] Publicado en `origin/main`
+
+## 7. Revalidación 09.5.11B (el cierre de arriba no se borra)
+
+El censo de cierre (0/0 el 2026-08-23) sigue siendo el del 06. Goal 09 había
+vuelto a publicar cuatro frases de escucha en `MainWindowViewModel` (`Listo,
+te escucho…` / `No pude: la escucha permanente…` / `Listo, ya no te escucho.`
+/ `No pude apagar la escucha.`). 09.5.11B las sustituye por
+`TurnVisibleFacts` (`wake_listen_on` / `wake_listen_unavailable` /
+`wake_listen_off` / `wake_listen_stop_failed`); el censo vivo vuelve a
+**0 literales / 0 ficheros**. La muestra de 100 se re-puntuó con
+`scripts/goal06_voice_sample._score`: n=100, bad=0. `narrate` sigue siendo
+`compose_user_message`.

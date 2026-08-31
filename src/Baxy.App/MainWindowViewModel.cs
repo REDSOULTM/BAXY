@@ -423,14 +423,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             bool changed = await SetWakeVoiceAsync(listenEnabled, cancellationToken);
             AddMessage(
                 "BAXY",
-                listenEnabled
-                    ? (changed
-                        ? "Listo, te escucho. Dime «Baxy» cuando me necesites."
-                        : "No pude: la escucha permanente no está disponible.")
-                    : (changed
-                        ? "Listo, ya no te escucho."
-                        : "No pude apagar la escucha."),
-                isUser: false);
+                VoiceListenVisibleFacts(listenEnabled, changed),
+                isUser: false,
+                messageEvent: changed
+                    ? UserMessageEvent.Status
+                    : UserMessageEvent.Error(
+                        listenEnabled
+                            ? UserMessageDiagnosticCodes.LocalService
+                            : UserMessageDiagnosticCodes.ActionNotCompleted));
             return;
         }
 
@@ -1467,6 +1467,37 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             IsWakeListening = false;
             StatusDescription = "wake_inactive";
         }
+    }
+
+    internal static string VoiceListenVisibleFacts(bool listenEnabled, bool changed)
+    {
+        if (listenEnabled)
+        {
+            return changed
+                ? TurnVisibleFacts.Status(
+                    "wake_listen_on",
+                    new JsonObject
+                    {
+                        ["observed"] = new JsonObject
+                        {
+                            ["listening"] = true,
+                            ["wakeWord"] = "Baxy",
+                        },
+                    })
+                : TurnVisibleFacts.Failure("wake_listen_unavailable");
+        }
+
+        return changed
+            ? TurnVisibleFacts.Status(
+                "wake_listen_off",
+                new JsonObject
+                {
+                    ["observed"] = new JsonObject
+                    {
+                        ["listening"] = false,
+                    },
+                })
+            : TurnVisibleFacts.Failure("wake_listen_stop_failed");
     }
 
     internal async Task<bool> SetWakeVoiceAsync(
