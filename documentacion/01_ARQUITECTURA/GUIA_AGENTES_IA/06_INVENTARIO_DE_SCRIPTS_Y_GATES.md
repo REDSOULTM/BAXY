@@ -118,6 +118,7 @@ casos antes.
 |---|---|---|
 | `freeze_historical_sources.py` | Output/privado | fija frontera de fuentes por commit/hash sin copiar contenido |
 | `build_historical_corpus.py` | Output/privado | extrae corpus trazable de mensajes y procedencia |
+| `freeze_goal10_corpus.py` | Output/privado | congela N10/M10/C10 y la cola 10.7–10.16; JSONL de texto no se versiona |
 | `build_exhaustive_message_ledger.py` | Output/privado/alto costo | inventario completo de ocurrencias históricas |
 | `build_exhaustive_runtime_oracle.py` | Output/privado | oráculo independiente de resultados esperados |
 | `build_exhaustive_runtime_language_scope.py` | Output/privado | separa scope ES/EN/spanglish |

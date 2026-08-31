@@ -1,59 +1,44 @@
-# Handoff — Goal 10.0 base verde — 2026-08-31
+# Handoff — Goal 10.1 corpus y cola — 2026-08-31
 
 ## Objetivo
-Confirmar —y sólo si todavía hace falta, reparar— que Full es coherente con el
-contrato estructurado de prosa heredado, sin cambiar conducta de producto ni
-reintroducir respuestas visibles fijas.
+Congelar N10/M10 reproducibles (≥1.947/808, suelo 1.947/626 y 808/281 exactos), C10 (≥74) y la cola 10.7–10.16 sin solapes.
 
 ## Estado
-Hecho: Full vivo verde; los 85 históricos ausentes (reparados en 09.5.11C);
-`OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations` clasificado
-opt-in / fuera de Full, nunca contado como pass.
+Hecho: freeze `scripts/freeze_goal10_corpus.py`; N10=1947/626, M10=808/281, C10=74; delta 09.5 de turnos=0; residual_evidence no reparseado; dos reconstrucciones byte-idénticas; tests dueño 10/10 dos veces.
 En curso: nada.
-Sin empezar: `10.1_CORPUS_Y_COLA.md`.
+Sin empezar: `10.2_PRESENCIA_Y_RECURSOS.md`.
 
 ## Decisiones tomadas
-- Preflight verde: no se edita producto ni tests. El cluster frase-vs-JSON ya
-  lo cerró `c28cd62` (09.5.11C) con `OperationOutcomeNarration.Facts`.
-- El caso `[Explicit]` `PhysicalMindShellGate` no es aceptación in-scope de
-  Full ni de esta meta. Owner: `scripts/run_mind_shell_e2e_gate.ps1` (nivel 4).
-  No es `FALLO_DE_AMBIENTE`.
-- VSTest Integration `Omitido: 1` es
-  `EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline` (`Assert.Ignore`
-  por jsonl en `.gitignore`), documentado en `00_COMPUERTA.md` §8–9. Tampoco
-  es pass.
+- Selección = `origin=observed_user` y no `codex/`; en esta autoridad coincide con el suelo `a6cd673` (prefijos `probando_gemma4/`, `gemma4_local/`) sin copiar ese filtro como regla.
+- Partición por operaciones, cadenas y semántica de turno cero-op (hechos locales / web / conversación), no por etiqueta `language`.
+- C10 = `possible_chain` o >1 operación; son subset de M10, owner único `10.16`.
+- Familias 10.3–10.6 por frecuencia observada y partición distinta: `conversation`, `media.play`, `audio.volume`, `system.status`, `system.settings`.
+- Delta 09.5 de turnos de usuario = 0 (fuentes 09.5 listadas; `residual_evidence` no se reparsea).
 
 ## Archivos tocados
-- `artifacts/goal10/HANDOFF.md` — este fichero
-- `artifacts/goal10/full-verdict.md` — contadores Full
-- `artifacts/goal10/integration-fail-inventory.md` — 85 por causa
-- `artifacts/goal10/skip-classification.md` — frontera Explicit / Full
-- `documentacion/sprints/00_ORDEN_DESDE_09_5.md` — 10.0 cerrado; siguiente 10.1
+- `scripts/freeze_goal10_corpus.py` — builder N10/M10/C10 y cola
+- `tests/test_freeze_goal10_corpus.py` — identidad, suelos, unión, C10, env, familias, privacidad
+- `tests/data/goal10_corpus_freeze.v1.json` — conteos/hashes/schema
+- `tests/data/goal10_partition_index.v1.jsonl` — message_id → owner, sin texto
+- `tests/data/GOAL10_CORPUS_NOTICE.md`, `.gitignore` — JSONL privado ignorado
+- `documentacion/sprints/00_ORDEN_DESDE_09_5.md` — 10.1 cerrado; siguiente 10.2
 
 ## Archivos relevantes aún sin tocar
-- `documentacion/sprints/10.1_CORPUS_Y_COLA.md` — siguiente prompt
-- `src/Baxy.Kernel/Operations/OperationVisibleFacts.cs` — contrato JSON vivo
-- `scripts/run_mind_shell_e2e_gate.ps1` — dueño del opt-in físico
+- `documentacion/sprints/10.2_PRESENCIA_Y_RECURSOS.md` — siguiente prompt
+- `tests/data/historical_messages.jsonl` — autoridad (no editar)
 
 ## Hipótesis
-Confirmadas: 09.5.11C/09.5.12 Full verde sigue siendo el baseline;
-`2377b69` no se usó. Live Full = inherited Full (2828/1 Integration,
-8760/10 Python, EXIT=0).
-Descartadas: «hay que reescribir los 85 otra vez»; «el skip Explicit de
-shell/mind es aceptación in-scope de Full».
+Confirmadas: autoridades SHA256 `9d8b2d09…` / `b5e9c75c…` = ledger; suelo 1947/626 y 808/281 intacto; observed_user no-codex no añade filas.
+Descartadas: reparsear 09.5.4; restaurar el filtro de prefijos de `a6cd673` como regla; particionar por etiqueta `other`.
 
 ## Comandos ejecutados y resultado
-- `.\scripts\test_source_quality.ps1 -Mode Full` →
-  `source_quality_gate_passed: mode=Full`; EXIT=0;
-  Contracts 60; Integration 2828 pass / 1 skip; Kernel 137;
-  Providers 451; Setup 477; python 8760 passed, 10 skipped, 446 subtests.
-  Log SHA256 `d2b9e7936089771bde5bc6f2a701df90b5790ff2be279cabc89b03f1ec05a7ad`.
-- Dueño Integration (segunda corrida Release `--no-build`):
-  `Correctas! Superado: 2828, Omitido: 1, Total: 2829`; EXIT=0.
-  Coincide con Full. Ningún fail→skip.
+- `py -3.12 -m pytest tests/test_freeze_goal10_corpus.py -q` → `10 passed in 4.96s`; segunda `10 passed in 4.52s`. 0 fail, 0 skip.
+- `py -3.12 -X utf8 scripts/freeze_goal10_corpus.py` ×2 dirs vacíos → N10 SHA256 `ec44e32e0d3ec5653e52c337d86fefd836078f8c97505784809cfedcb45fec2e`; M10 `76a8f2f651a343d23864dc1a64abceceb499434d65c8fb3ec8dda59f4866f5fa`; C10=74; hashes = publicación versionada.
+- Occupancy 10.7–10.16: 1083, 94, 31, 81, 166, 178, 80, 127, 33, 74 (suma 1947).
+- No ejecutado: Full — no es gate de 10.1.
 
 ## Problemas pendientes
-Ninguno de 10.0. No ejecutar 10.1 en esta meta.
+Ninguno de 10.1. Filas in-scope con app/cuenta/contenido ausente siguen en cola con `required_environment`; 10.2 no las ejecuta.
 
 ## Siguiente acción recomendada
-`documentacion/sprints/10.1_CORPUS_Y_COLA.md` (sesión nueva, un pegado).
+`documentacion/sprints/10.2_PRESENCIA_Y_RECURSOS.md` (sesión nueva, un pegado).

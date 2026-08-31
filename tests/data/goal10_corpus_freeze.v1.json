@@ -1,0 +1,871 @@
+{
+  "authority": {
+    "cutoff_state_sha256": "85929373646040f54771a7e3543a5ac3d022dbce688c55d17615ae35b7eb3fbd",
+    "cutoff_utc": "2026-07-14T10:51:49.1612548Z",
+    "mapping_file_sha256": "b5e9c75cf095fc417e0f2b75e36b2d5e63bdded6634e6f5fbb835f2b24794f5b",
+    "mapping_path": "tests/data/historical_message_mapping.jsonl",
+    "messages_file_sha256": "9d8b2d095dcd0bafb9d2a7bb616876b34b6b0321d53597211c37a26473ac436e",
+    "messages_path": "tests/data/historical_messages.jsonl"
+  },
+  "c10": {
+    "bytes": 163290,
+    "class_counts": {
+      "user_mission": 74
+    },
+    "excluded_from_direct_families": true,
+    "family_counts": {
+      "compound:app.close+window.manage": 5,
+      "compound:audio.mute+peripheral.manage": 3,
+      "compound:audio.volume+media.play": 2,
+      "compound:audio.volume+system.settings": 2,
+      "compound:browser.navigate+streaming.navigate": 1,
+      "compound:media.control+media.play": 15,
+      "compound:media.play+message.send": 5,
+      "compound:media.play+notification.manage": 9,
+      "compound:media.play+streaming.navigate": 27,
+      "compound:media.play+task.manage": 2,
+      "compound:memory.recall+memory.save": 1,
+      "compound:system.settings+vision.describe": 2
+    },
+    "file_sha256": "5b576ad74bf505f0f33de101a297de5a403d09bbe792cdda987cbfc463f58ba9",
+    "language_label_counts": {
+      "en": 1,
+      "es": 47,
+      "other": 26
+    },
+    "message_ids_sha256": "f40afe9bc58ee6b8fdccbf0f2a439596393dd961d75f2d0827424c6afb30ee2a",
+    "owner_goal": "10.16",
+    "path": "tests/data/goal10_c10.v1.jsonl",
+    "required_environment_counts": {
+      "active_media_session": 15,
+      "audio_output": 7,
+      "browser": 1,
+      "media_app": 60,
+      "messaging_app": 5,
+      "notification_scheduler": 9,
+      "playable_content": 60,
+      "requested_title": 28,
+      "signed_in_account": 6,
+      "streaming_account": 28,
+      "streaming_service": 28,
+      "target_application": 5,
+      "target_peripheral": 3,
+      "target_window": 5,
+      "task_store": 2,
+      "test_recipient_account": 5,
+      "visible_window_or_image": 2
+    },
+    "risk_class_counts": {
+      "external_communication": 5,
+      "low_reversible": 64,
+      "work_loss": 5
+    },
+    "row_count": 74,
+    "security_fixture_counts": {
+      "test_recipient_or_draft_fixture": 5,
+      "unsaved_work_confirmation_no_personal_data": 5
+    },
+    "source_family_counts": {
+      "gemma4_local": 2,
+      "probando_gemma4": 72
+    },
+    "subset_of_m10": true,
+    "unique_message_ids": 74,
+    "unique_text_sha256": 31
+  },
+  "evidence_builder_commit": "a6cd673",
+  "floors": {
+    "c10_historical_chains": 74,
+    "delta_c10_chains": 0,
+    "delta_m10_rows": 0,
+    "delta_n10_rows": 0,
+    "delta_n10_unique_texts": 0,
+    "floor_c10_chains": 74,
+    "floor_m10_rows": 808,
+    "floor_m10_unique_texts": 281,
+    "floor_n10_rows": 1947,
+    "floor_n10_unique_texts": 626,
+    "m10_occurrences": 808,
+    "m10_unique_texts": 281,
+    "n10_occurrences": 1947,
+    "n10_unique_texts": 626
+  },
+  "goal": "10.1",
+  "goal095": {
+    "residual_evidence": "not_reparsed",
+    "sources": [
+      {
+        "authority_family": "baxy",
+        "logical": "Programacion/BAXY",
+        "role": "generation_5"
+      },
+      {
+        "authority_family": "carter_os_ai",
+        "logical": "Programacion/Carter OS AI",
+        "role": "generation_1_2"
+      },
+      {
+        "authority_family": "functiongemma",
+        "logical": "Programacion/FunctionGemma",
+        "role": "generation_4"
+      },
+      {
+        "authority_family": "probando_gemma4",
+        "logical": "Programacion/Probando Gemma 4",
+        "role": "generation_3"
+      },
+      {
+        "authority_family": "gemma4_local",
+        "logical": "gemma4_local",
+        "role": "local_gemma_session_store"
+      }
+    ],
+    "user_turn_delta_chains": 0,
+    "user_turn_delta_missions": 0,
+    "user_turn_delta_rows": 0,
+    "user_turn_delta_unique_texts": 0
+  },
+  "m10": {
+    "bytes": 1539268,
+    "class_counts": {
+      "user_mission": 808
+    },
+    "family_counts": {
+      "app.close": 4,
+      "app.open": 18,
+      "audio.mute": 64,
+      "audio.status": 14,
+      "audio.volume": 88,
+      "backup.manage": 1,
+      "bluetooth.manage": 10,
+      "browser.navigate": 2,
+      "calendar.manage": 5,
+      "capture.screenshot": 4,
+      "clipboard.manage": 8,
+      "compound:app.close+window.manage": 5,
+      "compound:audio.mute+peripheral.manage": 3,
+      "compound:audio.volume+media.play": 2,
+      "compound:audio.volume+system.settings": 2,
+      "compound:browser.navigate+streaming.navigate": 1,
+      "compound:media.control+media.play": 15,
+      "compound:media.play+message.send": 5,
+      "compound:media.play+notification.manage": 9,
+      "compound:media.play+streaming.navigate": 27,
+      "compound:media.play+task.manage": 2,
+      "compound:memory.recall+memory.save": 1,
+      "compound:system.settings+vision.describe": 2,
+      "game.install": 4,
+      "game.launch": 4,
+      "game.manage": 1,
+      "media.control": 2,
+      "media.play": 121,
+      "memory.save": 4,
+      "message.send": 22,
+      "note.manage": 32,
+      "notification.manage": 36,
+      "office.document": 1,
+      "peripheral.manage": 1,
+      "reminder.create": 38,
+      "streaming.navigate": 46,
+      "system.settings": 41,
+      "system.status": 57,
+      "task.manage": 11,
+      "vision.describe": 29,
+      "web.search": 13,
+      "wifi.manage": 27,
+      "window.manage": 26
+    },
+    "file_sha256": "76a8f2f651a343d23864dc1a64abceceb499434d65c8fb3ec8dda59f4866f5fa",
+    "language_label_counts": {
+      "en": 15,
+      "es": 441,
+      "other": 352
+    },
+    "message_ids_sha256": "a551b14c7fe9f9d1df6b9418efda07e2c061ab35fe140a5d4240494d8cebcff0",
+    "path": "tests/data/goal10_m10.v1.jsonl",
+    "required_environment_counts": {
+      "active_media_session": 17,
+      "audio_output": 173,
+      "backup_target": 1,
+      "bluetooth_adapter": 10,
+      "browser": 3,
+      "calendar_store": 5,
+      "game_client": 9,
+      "game_library": 4,
+      "installed_game": 4,
+      "media_app": 181,
+      "messaging_app": 27,
+      "network": 13,
+      "note_store": 32,
+      "notification_scheduler": 45,
+      "office_application": 1,
+      "pairable_device": 10,
+      "playable_content": 181,
+      "reminder_store": 38,
+      "requested_title": 74,
+      "signed_in_account": 104,
+      "streaming_account": 74,
+      "streaming_service": 74,
+      "target_application": 27,
+      "target_peripheral": 4,
+      "target_window": 31,
+      "task_store": 13,
+      "test_recipient_account": 27,
+      "visible_desktop": 4,
+      "visible_window_or_image": 35,
+      "wifi_adapter": 27
+    },
+    "risk_class_counts": {
+      "external_communication": 27,
+      "installation": 4,
+      "low_reversible": 753,
+      "read_only": 14,
+      "work_loss": 10
+    },
+    "row_count": 808,
+    "security_fixture_counts": {
+      "disposable_backup_target_fixture": 1,
+      "test_recipient_or_draft_fixture": 27,
+      "unsaved_work_confirmation_no_personal_data": 10
+    },
+    "source_family_counts": {
+      "gemma4_local": 23,
+      "probando_gemma4": 785
+    },
+    "unique_message_ids": 808,
+    "unique_text_sha256": 281
+  },
+  "n10": {
+    "bytes": 3674250,
+    "class_counts": {
+      "conversation_question": 1078,
+      "feedback_failure": 2,
+      "no_action_constraint": 56,
+      "preference": 3,
+      "user_mission": 808
+    },
+    "family_counts": {
+      "app.close": 4,
+      "app.open": 18,
+      "audio.mute": 64,
+      "audio.status": 14,
+      "audio.volume": 88,
+      "backup.manage": 1,
+      "bluetooth.manage": 10,
+      "browser.navigate": 2,
+      "calendar.manage": 5,
+      "capture.screenshot": 4,
+      "clipboard.manage": 8,
+      "compound:app.close+window.manage": 5,
+      "compound:audio.mute+peripheral.manage": 3,
+      "compound:audio.volume+media.play": 2,
+      "compound:audio.volume+system.settings": 2,
+      "compound:browser.navigate+streaming.navigate": 1,
+      "compound:media.control+media.play": 15,
+      "compound:media.play+message.send": 5,
+      "compound:media.play+notification.manage": 9,
+      "compound:media.play+streaming.navigate": 27,
+      "compound:media.play+task.manage": 2,
+      "compound:memory.recall+memory.save": 1,
+      "compound:system.settings+vision.describe": 2,
+      "conversation": 1082,
+      "game.install": 4,
+      "game.launch": 4,
+      "game.manage": 1,
+      "local_facts": 37,
+      "media.control": 2,
+      "media.play": 121,
+      "memory.recall": 1,
+      "memory.save": 4,
+      "message.send": 22,
+      "note.manage": 32,
+      "notification.manage": 36,
+      "office.document": 1,
+      "peripheral.manage": 1,
+      "reminder.create": 38,
+      "streaming.navigate": 46,
+      "system.settings": 41,
+      "system.status": 57,
+      "task.manage": 11,
+      "vision.describe": 29,
+      "web.search": 14,
+      "web_current": 18,
+      "wifi.manage": 27,
+      "window.manage": 26
+    },
+    "file_sha256": "ec44e32e0d3ec5653e52c337d86fefd836078f8c97505784809cfedcb45fec2e",
+    "language_label_counts": {
+      "en": 47,
+      "es": 1053,
+      "other": 846,
+      "spanglish": 1
+    },
+    "message_ids_sha256": "8ad97576852530231d830690b9a6234f280c544c905eeed2f839ffc41e880357",
+    "path": "tests/data/goal10_n10.v1.jsonl",
+    "required_environment_counts": {
+      "active_media_session": 17,
+      "audio_output": 173,
+      "backup_target": 1,
+      "bluetooth_adapter": 10,
+      "browser": 3,
+      "calendar_store": 5,
+      "game_client": 9,
+      "game_library": 4,
+      "installed_game": 4,
+      "media_app": 181,
+      "messaging_app": 27,
+      "network": 14,
+      "note_store": 32,
+      "notification_scheduler": 45,
+      "office_application": 1,
+      "pairable_device": 10,
+      "playable_content": 181,
+      "reminder_store": 38,
+      "requested_title": 74,
+      "signed_in_account": 104,
+      "streaming_account": 74,
+      "streaming_service": 74,
+      "target_application": 27,
+      "target_peripheral": 4,
+      "target_window": 31,
+      "task_store": 13,
+      "test_recipient_account": 27,
+      "visible_desktop": 4,
+      "visible_window_or_image": 35,
+      "wifi_adapter": 27
+    },
+    "risk_class_counts": {
+      "external_communication": 27,
+      "installation": 4,
+      "low_reversible": 1836,
+      "no_effect": 56,
+      "read_only": 14,
+      "work_loss": 10
+    },
+    "row_count": 1947,
+    "security_fixture_counts": {
+      "disposable_backup_target_fixture": 1,
+      "test_recipient_or_draft_fixture": 27,
+      "unsaved_work_confirmation_no_personal_data": 10
+    },
+    "source_family_counts": {
+      "gemma4_local": 90,
+      "probando_gemma4": 1857
+    },
+    "unique_message_ids": 1947,
+    "unique_text_sha256": 626
+  },
+  "partition_index": {
+    "bytes": 729222,
+    "file_sha256": "af79c6c4ae671841b4d1dec3b1a0b7a783a121e211567a5e564a2a6cdd75916e",
+    "path": "tests/data/goal10_partition_index.v1.jsonl",
+    "user_text_payload": false
+  },
+  "partitions": {
+    "10.10": {
+      "class_counts": {
+        "user_mission": 81
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "app.close": 4,
+        "app.open": 18,
+        "capture.screenshot": 4,
+        "vision.describe": 29,
+        "window.manage": 26
+      },
+      "language_label_counts": {
+        "en": 1,
+        "es": 68,
+        "other": 12
+      },
+      "message_ids_sha256": "5f6c20fb69e83546412481d798d89475d7ae72381058326aa337957478c3993f",
+      "mission_count": 81,
+      "owner_goal": "10.10",
+      "required_environment_counts": {
+        "target_application": 22,
+        "target_window": 26,
+        "visible_desktop": 4,
+        "visible_window_or_image": 33
+      },
+      "risk_class_counts": {
+        "low_reversible": 77,
+        "work_loss": 4
+      },
+      "row_count": 81,
+      "security_fixture_counts": {
+        "unsaved_work_confirmation_no_personal_data": 4
+      },
+      "source_family_counts": {
+        "gemma4_local": 6,
+        "probando_gemma4": 75
+      },
+      "unique_message_ids": 81,
+      "unique_text_sha256": 36
+    },
+    "10.11": {
+      "class_counts": {
+        "user_mission": 166
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "audio.mute": 64,
+        "audio.status": 14,
+        "audio.volume": 88
+      },
+      "language_label_counts": {
+        "en": 5,
+        "es": 91,
+        "other": 70
+      },
+      "message_ids_sha256": "9e7f9b3780455dc9c8a33da2476e0aede06a13085db66a678cf219a6d37aba2c",
+      "mission_count": 166,
+      "owner_goal": "10.11",
+      "required_environment_counts": {
+        "audio_output": 166
+      },
+      "risk_class_counts": {
+        "low_reversible": 152,
+        "read_only": 14
+      },
+      "row_count": 166,
+      "security_fixture_counts": {},
+      "source_family_counts": {
+        "gemma4_local": 2,
+        "probando_gemma4": 164
+      },
+      "unique_message_ids": 166,
+      "unique_text_sha256": 38
+    },
+    "10.12": {
+      "class_counts": {
+        "user_mission": 178
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "game.install": 4,
+        "game.launch": 4,
+        "game.manage": 1,
+        "media.control": 2,
+        "media.play": 121,
+        "streaming.navigate": 46
+      },
+      "language_label_counts": {
+        "en": 2,
+        "es": 77,
+        "other": 99
+      },
+      "message_ids_sha256": "6b880c7714312b340bc91421820892f131de0063ed148679d2e2bde3aa9fd1db",
+      "mission_count": 178,
+      "owner_goal": "10.12",
+      "required_environment_counts": {
+        "active_media_session": 2,
+        "game_client": 9,
+        "game_library": 4,
+        "installed_game": 4,
+        "media_app": 121,
+        "playable_content": 121,
+        "requested_title": 46,
+        "signed_in_account": 78,
+        "streaming_account": 46,
+        "streaming_service": 46
+      },
+      "risk_class_counts": {
+        "installation": 4,
+        "low_reversible": 174
+      },
+      "row_count": 178,
+      "security_fixture_counts": {},
+      "source_family_counts": {
+        "gemma4_local": 4,
+        "probando_gemma4": 174
+      },
+      "unique_message_ids": 178,
+      "unique_text_sha256": 67
+    },
+    "10.13": {
+      "class_counts": {
+        "user_mission": 80
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "backup.manage": 1,
+        "bluetooth.manage": 10,
+        "peripheral.manage": 1,
+        "system.settings": 41,
+        "wifi.manage": 27
+      },
+      "language_label_counts": {
+        "en": 2,
+        "es": 78
+      },
+      "message_ids_sha256": "07ae7277a695c701c6a6c7fa4c559e08b3bc7a69186fe30703da6bb4071697c5",
+      "mission_count": 80,
+      "owner_goal": "10.13",
+      "required_environment_counts": {
+        "backup_target": 1,
+        "bluetooth_adapter": 10,
+        "pairable_device": 10,
+        "target_peripheral": 1,
+        "wifi_adapter": 27
+      },
+      "risk_class_counts": {
+        "low_reversible": 80
+      },
+      "row_count": 80,
+      "security_fixture_counts": {
+        "disposable_backup_target_fixture": 1
+      },
+      "source_family_counts": {
+        "probando_gemma4": 80
+      },
+      "unique_message_ids": 80,
+      "unique_text_sha256": 31
+    },
+    "10.14": {
+      "class_counts": {
+        "preference": 1,
+        "user_mission": 126
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "calendar.manage": 5,
+        "memory.recall": 1,
+        "memory.save": 4,
+        "note.manage": 32,
+        "notification.manage": 36,
+        "reminder.create": 38,
+        "task.manage": 11
+      },
+      "language_label_counts": {
+        "es": 47,
+        "other": 80
+      },
+      "message_ids_sha256": "b3a27de7fe9716d632bb0ab76c495724eb9e774e1a62b7d9ea4b0b950876411d",
+      "mission_count": 126,
+      "owner_goal": "10.14",
+      "required_environment_counts": {
+        "calendar_store": 5,
+        "note_store": 32,
+        "notification_scheduler": 36,
+        "reminder_store": 38,
+        "task_store": 11
+      },
+      "risk_class_counts": {
+        "low_reversible": 127
+      },
+      "row_count": 127,
+      "security_fixture_counts": {},
+      "source_family_counts": {
+        "gemma4_local": 6,
+        "probando_gemma4": 121
+      },
+      "unique_message_ids": 127,
+      "unique_text_sha256": 43
+    },
+    "10.15": {
+      "class_counts": {
+        "user_mission": 33
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "browser.navigate": 2,
+        "clipboard.manage": 8,
+        "message.send": 22,
+        "office.document": 1
+      },
+      "language_label_counts": {
+        "en": 1,
+        "es": 9,
+        "other": 23
+      },
+      "message_ids_sha256": "0ce41f6fba4b8ce89b06ad31d2ea1eb553e693ddfebcffcba20072c6031d4952",
+      "mission_count": 33,
+      "owner_goal": "10.15",
+      "required_environment_counts": {
+        "browser": 2,
+        "messaging_app": 22,
+        "office_application": 1,
+        "signed_in_account": 20,
+        "test_recipient_account": 22
+      },
+      "risk_class_counts": {
+        "external_communication": 22,
+        "low_reversible": 10,
+        "work_loss": 1
+      },
+      "row_count": 33,
+      "security_fixture_counts": {
+        "test_recipient_or_draft_fixture": 22,
+        "unsaved_work_confirmation_no_personal_data": 1
+      },
+      "source_family_counts": {
+        "gemma4_local": 1,
+        "probando_gemma4": 32
+      },
+      "unique_message_ids": 33,
+      "unique_text_sha256": 12
+    },
+    "10.16": {
+      "class_counts": {
+        "user_mission": 74
+      },
+      "compound_count": 74,
+      "family_counts": {
+        "compound:app.close+window.manage": 5,
+        "compound:audio.mute+peripheral.manage": 3,
+        "compound:audio.volume+media.play": 2,
+        "compound:audio.volume+system.settings": 2,
+        "compound:browser.navigate+streaming.navigate": 1,
+        "compound:media.control+media.play": 15,
+        "compound:media.play+message.send": 5,
+        "compound:media.play+notification.manage": 9,
+        "compound:media.play+streaming.navigate": 27,
+        "compound:media.play+task.manage": 2,
+        "compound:memory.recall+memory.save": 1,
+        "compound:system.settings+vision.describe": 2
+      },
+      "language_label_counts": {
+        "en": 1,
+        "es": 47,
+        "other": 26
+      },
+      "message_ids_sha256": "f40afe9bc58ee6b8fdccbf0f2a439596393dd961d75f2d0827424c6afb30ee2a",
+      "mission_count": 74,
+      "owner_goal": "10.16",
+      "required_environment_counts": {
+        "active_media_session": 15,
+        "audio_output": 7,
+        "browser": 1,
+        "media_app": 60,
+        "messaging_app": 5,
+        "notification_scheduler": 9,
+        "playable_content": 60,
+        "requested_title": 28,
+        "signed_in_account": 6,
+        "streaming_account": 28,
+        "streaming_service": 28,
+        "target_application": 5,
+        "target_peripheral": 3,
+        "target_window": 5,
+        "task_store": 2,
+        "test_recipient_account": 5,
+        "visible_window_or_image": 2
+      },
+      "risk_class_counts": {
+        "external_communication": 5,
+        "low_reversible": 64,
+        "work_loss": 5
+      },
+      "row_count": 74,
+      "security_fixture_counts": {
+        "test_recipient_or_draft_fixture": 5,
+        "unsaved_work_confirmation_no_personal_data": 5
+      },
+      "source_family_counts": {
+        "gemma4_local": 2,
+        "probando_gemma4": 72
+      },
+      "unique_message_ids": 74,
+      "unique_text_sha256": 31
+    },
+    "10.7": {
+      "class_counts": {
+        "conversation_question": 1023,
+        "feedback_failure": 2,
+        "no_action_constraint": 56,
+        "preference": 2
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "conversation": 1082,
+        "web.search": 1
+      },
+      "language_label_counts": {
+        "en": 29,
+        "es": 567,
+        "other": 486,
+        "spanglish": 1
+      },
+      "message_ids_sha256": "c88429c8aebbdeb50d3fbd4a8bec920688ebc4c8ee4446af140e47e6c1609417",
+      "mission_count": 0,
+      "owner_goal": "10.7",
+      "required_environment_counts": {
+        "network": 1
+      },
+      "risk_class_counts": {
+        "low_reversible": 1027,
+        "no_effect": 56
+      },
+      "row_count": 1083,
+      "security_fixture_counts": {},
+      "source_family_counts": {
+        "gemma4_local": 67,
+        "probando_gemma4": 1016
+      },
+      "unique_message_ids": 1083,
+      "unique_text_sha256": 321
+    },
+    "10.8": {
+      "class_counts": {
+        "conversation_question": 37,
+        "user_mission": 57
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "local_facts": 37,
+        "system.status": 57
+      },
+      "language_label_counts": {
+        "en": 6,
+        "es": 39,
+        "other": 49
+      },
+      "message_ids_sha256": "30ed7fe1f0c345b33574aa7ecc8702a92e7ea0ced2d9239b25d6a7d3362a54e7",
+      "mission_count": 57,
+      "owner_goal": "10.8",
+      "required_environment_counts": {},
+      "risk_class_counts": {
+        "low_reversible": 94
+      },
+      "row_count": 94,
+      "security_fixture_counts": {},
+      "source_family_counts": {
+        "probando_gemma4": 94
+      },
+      "unique_message_ids": 94,
+      "unique_text_sha256": 30
+    },
+    "10.9": {
+      "class_counts": {
+        "conversation_question": 18,
+        "user_mission": 13
+      },
+      "compound_count": 0,
+      "family_counts": {
+        "web.search": 13,
+        "web_current": 18
+      },
+      "language_label_counts": {
+        "es": 30,
+        "other": 1
+      },
+      "message_ids_sha256": "365f632c8930f482d4084d2520bdbe43a4b34ba90fdf12b06a1e101a9368652e",
+      "mission_count": 13,
+      "owner_goal": "10.9",
+      "required_environment_counts": {
+        "network": 13
+      },
+      "risk_class_counts": {
+        "low_reversible": 31
+      },
+      "row_count": 31,
+      "security_fixture_counts": {},
+      "source_family_counts": {
+        "gemma4_local": 2,
+        "probando_gemma4": 29
+      },
+      "unique_message_ids": 31,
+      "unique_text_sha256": 17
+    }
+  },
+  "privacy": {
+    "classification": "private_local_project_data",
+    "generated_jsonl_versioned": false,
+    "publish_as_dataset": false,
+    "versioned_index_has_user_text": false
+  },
+  "repetition_families": {
+    "count": 5,
+    "families": [
+      {
+        "family_key": "conversation",
+        "frozen_for": [
+          "10.3",
+          "10.4",
+          "10.5",
+          "10.6"
+        ],
+        "name": "conversation",
+        "observed_occurrences": 1082,
+        "owner_goal": "10.7",
+        "rank": 1,
+        "unique_texts": 320
+      },
+      {
+        "family_key": "media.play",
+        "frozen_for": [
+          "10.3",
+          "10.4",
+          "10.5",
+          "10.6"
+        ],
+        "name": "media.play",
+        "observed_occurrences": 121,
+        "owner_goal": "10.12",
+        "rank": 2,
+        "unique_texts": 46
+      },
+      {
+        "family_key": "audio.volume",
+        "frozen_for": [
+          "10.3",
+          "10.4",
+          "10.5",
+          "10.6"
+        ],
+        "name": "audio.volume",
+        "observed_occurrences": 88,
+        "owner_goal": "10.11",
+        "rank": 3,
+        "unique_texts": 35
+      },
+      {
+        "family_key": "system.status",
+        "frozen_for": [
+          "10.3",
+          "10.4",
+          "10.5",
+          "10.6"
+        ],
+        "name": "system.status",
+        "observed_occurrences": 57,
+        "owner_goal": "10.8",
+        "rank": 4,
+        "unique_texts": 16
+      },
+      {
+        "family_key": "system.settings",
+        "frozen_for": [
+          "10.3",
+          "10.4",
+          "10.5",
+          "10.6"
+        ],
+        "name": "system.settings",
+        "observed_occurrences": 41,
+        "owner_goal": "10.13",
+        "rank": 5,
+        "unique_texts": 14
+      }
+    ],
+    "frozen_for": [
+      "10.3",
+      "10.4",
+      "10.5",
+      "10.6"
+    ],
+    "selection_rule": "Among non-C10 N10 rows, rank family_key by observed occurrence count (duplicates kept), then name. Pick five keys whose owner partitions are distinct so the 10.3–10.6 dose covers general use, not a single area."
+  },
+  "schema": "baxy.goal10.corpus_freeze.v1",
+  "schema_version": 1,
+  "selection": {
+    "c10": "possible_chain_or_multiple_operations",
+    "duplicates": "preserved_as_real_occurrences",
+    "excluded_source_prefix": "codex/",
+    "language_partition": "semantics_not_heuristic_label",
+    "level_2_class": "user_mission",
+    "origin": "observed_user",
+    "residual_evidence": "not_reparsed"
+  }
+}
