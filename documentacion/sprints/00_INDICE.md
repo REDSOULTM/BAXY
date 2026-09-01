@@ -7,7 +7,9 @@ Once goals de producto. Cada uno se lanza en una sesión nueva, se pega entero, 
 campaña se lanza una vez y puede consumir muchos checkpoints internos sin devolver
 al dueño un bucle manual.
 
-Acceso directo en orden a todos los prompts ejecutables:
+Acceso directo **sólo a los prompts pendientes**, listo para copiar y pegar:
+[`00_LANZAR_DESDE_10_7.md`](00_LANZAR_DESDE_10_7.md). La trazabilidad completa,
+incluidos los ya cerrados, permanece en
 [`00_ORDEN_DESDE_09_5.md`](00_ORDEN_DESDE_09_5.md).
 10.2.5 cerró el 2026-09-01 con medición del árbol completo. Ese mismo día el dueño
 retiró las tandas humanas 10.3–10.6 y movió la certificación transversal detrás de

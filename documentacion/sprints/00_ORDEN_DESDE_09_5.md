@@ -17,6 +17,9 @@ capacidades keep-warm (`artifacts/goal1025/HANDOFF.md`). El dueño retiró el
 `0/50` no es deuda. Siguiente lanzamiento: `10.7_CONVERSACION.md`. Los `09.5.x`,
 `10.0`–`10.2.5` y los retirados 10.3–10.6 no se relanzan.
 
+Para lanzar sin atravesar entradas históricas, usa el mapa pendiente
+[`00_LANZAR_DESDE_10_7.md`](00_LANZAR_DESDE_10_7.md).
+
 ## Fase 09.5 — cerrada (no se relanza)
 
 1. [09.5.0 — Fuentes y ambiente](09.5.0_FUENTES_Y_AMBIENTE.md)
