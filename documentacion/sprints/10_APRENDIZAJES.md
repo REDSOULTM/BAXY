@@ -34,8 +34,20 @@ se relaja la suite.
 
 La conclusión no es abandonar ninguna obligación. Es separar:
 
-- Goal 10: uso real + aceptación de los mensajes reales observados;
+- Goal 10: capacidades por owner + aceptación autónoma de los mensajes reales observados;
 - Goal 11: contratos históricos adicionales + deuda + errores + cierre.
+
+## Decisión posterior del dueño — 2026-09-01
+
+El preflight 10.3 demostró que pedir uso humano antes de cerrar las familias
+invertía el orden de calidad: el dueño encontraba un hijack de recuperación de
+memoria que una campaña automatizada debía haber detectado. Por eso 10.3–10.6 se
+retiran y 10.7–10.17 pasan delante.
+
+No se rebaja la cobertura. Los 200 turnos se conservan como cuatro checkpoints
+internos de 10.18, pero los generan agentes sobre holdouts frescos y los envían por
+la entrada pública del producto. El dueño deja de ser generador y juez. Esto hace
+la prueba reproducible y obliga a corregir antes del uso cotidiano.
 
 ## Datos recuperables
 

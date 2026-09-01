@@ -12,8 +12,10 @@ unidades internas, compactan y continúan solos: una unidad no exige volver a pe
 el enlace.
 
 **10.2.5 cerró.** El árbol completo quedó bajo presupuesto sin descargar
-capacidades keep-warm (`artifacts/goal1025/HANDOFF.md`). Siguiente lanzamiento:
-`10.3_USO_REAL_A.md`. Los `09.5.x` y `10.0`–`10.2.5` no se relanzan.
+capacidades keep-warm (`artifacts/goal1025/HANDOFF.md`). El dueño retiró el
+2026-09-01 las cuatro tandas humanas 10.3–10.6: su preflight queda histórico y
+`0/50` no es deuda. Siguiente lanzamiento: `10.7_CONVERSACION.md`. Los `09.5.x`,
+`10.0`–`10.2.5` y los retirados 10.3–10.6 no se relanzan.
 
 ## Fase 09.5 — cerrada (no se relanza)
 
@@ -35,46 +37,43 @@ capacidades keep-warm (`artifacts/goal1025/HANDOFF.md`). Siguiente lanzamiento:
 
 ## Prompts ejecutables restantes
 
-La secuencia completa permanece aquí para que el contrato 09.5 siga siendo
+La secuencia ejecutable permanece aquí para que el contrato 09.5 siga siendo
 verificable. Los cuatro primeros ya cerraron y no se relanzan; el siguiente es
-10.3.
+10.7. La replanificación vinculante está en
+[`10_REPLANIFICACION_AUTONOMA.md`](10_REPLANIFICACION_AUTONOMA.md).
 
 1. [10.0 — Base verde](10.0_BASE_VERDE.md)
 2. [10.1 — Corpus y cola](10.1_CORPUS_Y_COLA.md)
 3. [10.2 — Presencia y recursos](10.2_PRESENCIA_Y_RECURSOS.md)
 4. [10.2.5 — Recursos en reposo](10.2.5_RECURSOS_EN_REPOSO.md)
-5. [10.3 — Uso real A](10.3_USO_REAL_A.md)
-6. [10.4 — Uso real B](10.4_USO_REAL_B.md)
-7. [10.5 — Uso real C](10.5_USO_REAL_C.md)
-8. [10.6 — Uso real D](10.6_USO_REAL_D.md)
-9. [10.7 — Conversación](10.7_CONVERSACION.md)
-10. [10.8 — Hechos locales](10.8_HECHOS_LOCALES.md)
-11. [10.9 — Web y actualidad](10.9_WEB_Y_ACTUALIDAD.md)
-12. [10.10 — Apps, ventanas y visión](10.10_APPS_VENTANAS_VISION.md)
-13. [10.11 — Audio](10.11_AUDIO.md)
-14. [10.12 — Media, streaming y juegos](10.12_MEDIA_STREAMING_JUEGOS.md)
-15. [10.13 — Sistema y conectividad](10.13_SISTEMA_CONECTIVIDAD.md)
-16. [10.14 — Productividad y memoria](10.14_PRODUCTIVIDAD_MEMORIA.md)
-17. [10.15 — Comunicación y navegación](10.15_COMUNICACION_NAVEGACION.md)
-18. [10.16 — Misiones compuestas](10.16_MISIONES_COMPUESTAS.md)
-19. [10.17 — Identidad viva](10.17_IDENTIDAD_VIVA.md)
-20. [10.18 — Integración del Goal 10](10.18_INTEGRACION.md)
-21. [11.1 — Cola de cierre](11.1_COLA_DE_CIERRE.md)
-22. [11.2 — Contratos runtime](11.2_CONTRATOS_RUNTIME.md)
-23. [11.3 — Requisitos A](11.3_REQUISITOS_A.md)
-24. [11.4 — Requisitos B](11.4_REQUISITOS_B.md)
-25. [11.5 — Requisitos C](11.5_REQUISITOS_C.md)
-26. [11.6 — Requisitos D](11.6_REQUISITOS_D.md)
-27. [11.7 — Requisitos E](11.7_REQUISITOS_E.md)
-28. [11.8 — Requisitos F](11.8_REQUISITOS_F.md)
-29. [11.9 — No-runtime A](11.9_NO_RUNTIME_A.md)
-30. [11.10 — No-runtime B](11.10_NO_RUNTIME_B.md)
-31. [11.11 — Errores de mente y kernel](11.11_ERRORES_MENTE_KERNEL.md)
-32. [11.12 — Errores de providers y estado](11.12_ERRORES_PROVIDERS_ESTADO.md)
-33. [11.13 — Regresión Goals 01–06](11.13_REGRESION_01_06.md)
-34. [11.14 — Regresión Goals 07–10](11.14_REGRESION_07_10.md)
-35. [11.15 — Higiene e identidad](11.15_HIGIENE_IDENTIDAD.md)
-36. [11.16 — Full y cierre final](11.16_FULL_Y_CIERRE.md)
+5. [10.7 — Conversación](10.7_CONVERSACION.md)
+6. [10.8 — Hechos locales](10.8_HECHOS_LOCALES.md)
+7. [10.9 — Web y actualidad](10.9_WEB_Y_ACTUALIDAD.md)
+8. [10.10 — Apps, ventanas y visión](10.10_APPS_VENTANAS_VISION.md)
+9. [10.11 — Audio](10.11_AUDIO.md)
+10. [10.12 — Media, streaming y juegos](10.12_MEDIA_STREAMING_JUEGOS.md)
+11. [10.13 — Sistema y conectividad](10.13_SISTEMA_CONECTIVIDAD.md)
+12. [10.14 — Productividad y memoria](10.14_PRODUCTIVIDAD_MEMORIA.md)
+13. [10.15 — Comunicación y navegación](10.15_COMUNICACION_NAVEGACION.md)
+14. [10.16 — Misiones compuestas](10.16_MISIONES_COMPUESTAS.md)
+15. [10.17 — Identidad viva](10.17_IDENTIDAD_VIVA.md)
+16. [10.18 — Certificación autónoma e integración](10.18_INTEGRACION.md)
+17. [11.1 — Cola de cierre](11.1_COLA_DE_CIERRE.md)
+18. [11.2 — Contratos runtime](11.2_CONTRATOS_RUNTIME.md)
+19. [11.3 — Requisitos A](11.3_REQUISITOS_A.md)
+20. [11.4 — Requisitos B](11.4_REQUISITOS_B.md)
+21. [11.5 — Requisitos C](11.5_REQUISITOS_C.md)
+22. [11.6 — Requisitos D](11.6_REQUISITOS_D.md)
+23. [11.7 — Requisitos E](11.7_REQUISITOS_E.md)
+24. [11.8 — Requisitos F](11.8_REQUISITOS_F.md)
+25. [11.9 — No-runtime A](11.9_NO_RUNTIME_A.md)
+26. [11.10 — No-runtime B](11.10_NO_RUNTIME_B.md)
+27. [11.11 — Errores de mente y kernel](11.11_ERRORES_MENTE_KERNEL.md)
+28. [11.12 — Errores de providers y estado](11.12_ERRORES_PROVIDERS_ESTADO.md)
+29. [11.13 — Regresión Goals 01–06](11.13_REGRESION_01_06.md)
+30. [11.14 — Regresión Goals 07–10](11.14_REGRESION_07_10.md)
+31. [11.15 — Higiene e identidad](11.15_HIGIENE_IDENTIDAD.md)
+32. [11.16 — Full y cierre final](11.16_FULL_Y_CIERRE.md)
 
 Cuando 11.16 cierra todos sus criterios, **BAXY está listo para uso diario**. No
 queda un goal oculto, una repetición del 11 ni una validación manual posterior para

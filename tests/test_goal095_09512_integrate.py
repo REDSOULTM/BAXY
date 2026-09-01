@@ -18,6 +18,7 @@ from scripts.goal095_09512_integrate import (
     NEXT_PROMPT,
     ORDEN_REL,
     OWNER_PROMPT,
+    RETIRED_PROMPTS,
     SCHEMA,
     SYNTHESIS_REL,
     VERSION,
@@ -129,7 +130,11 @@ def test_prompts_10_11_inherit_keep_bars_and_have_no_extra_slices() -> None:
         and path.name[2:3] == "."
         and path.name[3].isdigit()
     ]
-    assert sorted(numbered) == sorted(EXECUTABLE_PROMPTS)
+    assert sorted(numbered) == sorted((*EXECUTABLE_PROMPTS, *RETIRED_PROMPTS))
+    for name in RETIRED_PROMPTS:
+        text = (sprints / name).read_text(encoding="utf-8")
+        assert "NO LANZAR" in text
+        assert "10_REPLANIFICACION_AUTONOMA.md" in text
 
 
 def test_orden_matches_remaining_executable_and_names_10_0() -> None:
@@ -149,5 +154,8 @@ def test_orden_matches_remaining_executable_and_names_10_0() -> None:
     assert "10.0_BASE_VERDE.md" in siguiente
     assert "09.5.12_INTEGRAR_Y_REPLANIFICAR.md" not in siguiente
     report = load_report(REPO)
-    assert report["orden"] == files
+    # The shipped 09.5.12 report is immutable historical evidence. The live order
+    # may change later by an explicit owner decision, as happened on 2026-09-01.
     assert report["enabled_next"] == NEXT_PROMPT
+    assert set(RETIRED_PROMPTS).issubset(set(report["orden"]))
+    assert not set(RETIRED_PROMPTS).intersection(files)

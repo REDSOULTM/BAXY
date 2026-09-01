@@ -111,16 +111,13 @@ CONTRATO_HEADING = "## Contrato de sesión"
 OBJETIVO_HEADING = "## Objetivo único"
 CRITERIOS_HEADING = "## Criterios de cierre"
 EXECUTABLE_MARK = "## Prompts ejecutables restantes"
+GROK46_CONTRACT_MARK = "<!-- grok46-goal-contract:begin -->"
 
 EXECUTABLE_PROMPTS: tuple[str, ...] = (
     "10.0_BASE_VERDE.md",
     "10.1_CORPUS_Y_COLA.md",
     "10.2_PRESENCIA_Y_RECURSOS.md",
     "10.2.5_RECURSOS_EN_REPOSO.md",
-    "10.3_USO_REAL_A.md",
-    "10.4_USO_REAL_B.md",
-    "10.5_USO_REAL_C.md",
-    "10.6_USO_REAL_D.md",
     "10.7_CONVERSACION.md",
     "10.8_HECHOS_LOCALES.md",
     "10.9_WEB_Y_ACTUALIDAD.md",
@@ -149,6 +146,13 @@ EXECUTABLE_PROMPTS: tuple[str, ...] = (
     "11.14_REGRESION_07_10.md",
     "11.15_HIGIENE_IDENTIDAD.md",
     "11.16_FULL_Y_CIERRE.md",
+)
+
+RETIRED_PROMPTS: tuple[str, ...] = (
+    "10.3_USO_REAL_A.md",
+    "10.4_USO_REAL_B.md",
+    "10.5_USO_REAL_C.md",
+    "10.6_USO_REAL_D.md",
 )
 
 CLOSED_095_PROMPTS: tuple[str, ...] = (
@@ -195,41 +199,13 @@ PROMPT_SPECS: tuple[dict[str, str], ...] = (
     {
         "file": "10.2.5_RECURSOS_EN_REPOSO.md",
         "prev": "10.2_PRESENCIA_Y_RECURSOS.md",
-        "next": "10.3_USO_REAL_A.md",
+        "next": "10.7_CONVERSACION.md",
         "citation": "09.5.8:runtime_ui_recursos; 09.5.9:carga_descarga_modelos, arranque, process_lifecycle",
         "hueco": "el cierre 10.2 midió sólo Baxy.exe y no atribuyó el spin de ONNX/WebView2 al árbol vivo completo",
     },
     {
-        "file": "10.3_USO_REAL_A.md",
-        "prev": "10.2.5_RECURSOS_EN_REPOSO.md",
-        "next": "10.4_USO_REAL_B.md",
-        "citation": "09.5.11B tres ceros; 09.5.9:soak-24h-as-requirement rechazado",
-        "hueco": "",
-    },
-    {
-        "file": "10.4_USO_REAL_B.md",
-        "prev": "10.3_USO_REAL_A.md",
-        "next": "10.5_USO_REAL_C.md",
-        "citation": "09.5.11B tres ceros; 09.5.9:soak-24h-as-requirement rechazado",
-        "hueco": "",
-    },
-    {
-        "file": "10.5_USO_REAL_C.md",
-        "prev": "10.4_USO_REAL_B.md",
-        "next": "10.6_USO_REAL_D.md",
-        "citation": "09.5.11B tres ceros; 09.5.9:barge_in conservar_actual",
-        "hueco": "",
-    },
-    {
-        "file": "10.6_USO_REAL_D.md",
-        "prev": "10.5_USO_REAL_C.md",
-        "next": "10.7_CONVERSACION.md",
-        "citation": "09.5.11B tres ceros; 09.5.9:soak-24h-as-requirement rechazado",
-        "hueco": "",
-    },
-    {
         "file": "10.7_CONVERSACION.md",
-        "prev": "10.6_USO_REAL_D.md",
+        "prev": "10.2.5_RECURSOS_EN_REPOSO.md",
         "next": "10.8_HECHOS_LOCALES.md",
         "citation": "09.5.9:llm_decisor, encoder_recuperador, puerta_abstencion, verificador_identidad",
         "hueco": "",
@@ -776,7 +752,7 @@ def validate_prompts(repo: Path = REPO) -> list[str]:
     sprints = repo / "documentacion" / "sprints"
     seen: list[str] = []
     numbered = numbered_prompt_files(repo)
-    expected = list(EXECUTABLE_PROMPTS)
+    expected = sorted((*EXECUTABLE_PROMPTS, *RETIRED_PROMPTS))
     if numbered != sorted(expected):
         extra = sorted(set(numbered) - set(expected))
         missing = sorted(set(expected) - set(numbered))
@@ -792,6 +768,15 @@ def validate_prompts(repo: Path = REPO) -> list[str]:
             errors.append(f"missing prompt {rel}")
             continue
         text = path.read_text(encoding="utf-8")
+        if rel.startswith("10.") and rel not in {
+            "10.0_BASE_VERDE.md",
+            "10.1_CORPUS_Y_COLA.md",
+            "10.2_PRESENCIA_Y_RECURSOS.md",
+            "10.2.5_RECURSOS_EN_REPOSO.md",
+        } and GROK46_CONTRACT_MARK not in text:
+            errors.append(f"{rel} missing embedded Grok 4.6 goal contract")
+        if rel.startswith("11.") and GROK46_CONTRACT_MARK not in text:
+            errors.append(f"{rel} missing embedded Grok 4.6 goal contract")
         if OBJETIVO_HEADING not in text:
             errors.append(f"{rel} missing {OBJETIVO_HEADING}")
         if CRITERIOS_HEADING not in text:
@@ -827,6 +812,10 @@ def validate_prompts(repo: Path = REPO) -> list[str]:
         errors.append("PROMPT_SPECS order drifted")
     if len(seen) != len(set(seen)):
         errors.append("duplicate prompt specs")
+    for rel in RETIRED_PROMPTS:
+        text = (sprints / rel).read_text(encoding="utf-8")
+        if "NO LANZAR" not in text or "10_REPLANIFICACION_AUTONOMA.md" not in text:
+            errors.append(f"{rel} is not an explicit retired tombstone")
     return errors
 
 

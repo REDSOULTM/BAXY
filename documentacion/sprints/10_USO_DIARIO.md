@@ -1,4 +1,4 @@
-# Goal 10 — Uso diario y aceptación del producto
+# Goal 10 — Certificación autónoma para uso diario
 
 > **Mapa: no se lanza entero.** El Goal 10 se ejecuta en orden mediante
 > `10.0`–`10.18`. Cada fichero es un goal autónomo para **Grok 4.6 High**, se
@@ -22,15 +22,21 @@ y rechazos. Por eso el 10 consume `documentacion/herencia/00_MAPA.md` y el ledge
 resolvió. El delta 09.5 va a checkpoints internos de `10.0`–`10.18`; no hay
 prompts 10.x nuevos.
 
-El Goal 10 conserva las dos obligaciones de sus versiones anteriores:
+El Goal 10 conserva la cobertura de sus versiones anteriores, pero cambia quién
+produce la evidencia y cuándo se produce. La decisión del dueño del 2026-09-01
+está en `10_REPLANIFICACION_AUTONOMA.md`:
 
-1. **Uso diario real:** 200 turnos del dueño en cuatro sesiones, con las cinco
-   familias más frecuentes repetidas 20 veces cada una; modos, narración, memoria,
-   privacidad y presencia se prueban usándolos.
-2. **Aceptación integral:** los 1.947 turnos y 808 misiones ya conocidos son mínimos
+1. **Capacidades antes de aceptación:** conversación, hechos locales, web,
+   aplicaciones, audio, media, sistema, productividad, comunicación y misiones
+   compuestas cierran primero sus particiones y holdouts.
+2. **Aceptación integral autónoma:** los 1.947 turnos y 808 misiones ya conocidos son mínimos
    de no-regresión. 09.5 añade cualquier mensaje/misión de las fuentes nuevas y
    10.1 congela los totales `N10/M10`; todos reciben resultado individual, sin confundir
    corpus, fixture ni simulación con efecto físico.
+3. **Dosis transversal:** después de 10.7–10.17, agentes conducen cuatro bloques
+   frescos de 50 turnos por la misma entrada pública de usuario. El dueño no aporta
+   prompts ni veredictos. El oráculo independiente verifica salida, plan, efecto,
+   postcondición y terminal.
 
 La decisión posterior del dueño sigue vigente: **no hay soak, espera de 24 horas
 ni prueba que bloquee por calendario**. La estabilidad que esa espera pretendía
@@ -53,11 +59,8 @@ propia aceptación.
 | 10.1 | Congelar corpus, alcance y cola | 10.0 | `N10/M10` reproducibles, ≥1.947/808, y partición sin solapes |
 | 10.2 | Presencia y recursos | 10.1 | bandeja, arranque, readiness e idle corto medidos |
 | 10.2.5 | Recursos en reposo | 10.2 | árbol completo bajo presupuesto sin perder disponibilidad |
-| 10.3 | Uso real A | 10.2.5 | 50 turnos: 25 espontáneos + 25 repetidos |
-| 10.4 | Uso real B | 10.3 | segundo bloque de 50 |
-| 10.5 | Uso real C | 10.4 | tercer bloque de 50 |
-| 10.6 | Uso real D | 10.5 | 200 totales y cinco familias ×20 |
-| 10.7 | Conversación y no-efecto | 10.6 | su partición de `N10` verde |
+| 10.3–10.6 | **Retirados; no se lanzan** | — | el preflight 10.3 queda histórico; `0/50` no es deuda |
+| 10.7 | Conversación y no-efecto | 10.2.5 | su partición de `N10` verde por la entrada pública |
 | 10.8 | Hechos locales | 10.7 | hechos dinámicos locales contemporáneos |
 | 10.9 | Web y actualidad | 10.8 | búsqueda pertinente sin salida de datos del usuario |
 | 10.10 | Apps, ventanas y visión | 10.9 | efectos y postcondiciones físicos de esa familia |
@@ -68,7 +71,7 @@ propia aceptación.
 | 10.15 | Comunicación y navegación | 10.14 | navegador, mensajería, portapapeles y Office |
 | 10.16 | Misiones compuestas | 10.15 | `C10` candidatas (mínimo 74) encadenadas, sin pasos huérfanos |
 | 10.17 | Identidad viva | 10.16 | cada decisión de Identidad con evidencia de producto |
-| 10.18 | Integración del 10 | 10.17 | 200 + `N10` + `M10` cerrados sobre el mismo árbol |
+| 10.18 | Certificación autónoma e integración | 10.17 | cuatro bloques ×50 + `N10/M10/C10` sobre el mismo árbol |
 
 Las filas de corpus se asignan una sola vez. Una misión compuesta se diagnostica
 en 10.16, pero su `message_id` no se suma dos veces a `N10/M10`. La cola
@@ -76,8 +79,10 @@ congelada del 10.1 es la autoridad de pertenencia.
 
 ## Criterios agregados
 
-- [ ] 200 turnos reales en cuatro sesiones; 100 espontáneos y 100 de repetición,
-      con cinco familias ×20, y cero fallo de honestidad sin corregir y repetir.
+- [ ] 200 turnos autónomos y frescos en cuatro bloques, conducidos por agentes a
+      través de la entrada pública del producto después de 10.7–10.17; cero bypass
+      directo a componentes internos y cero fallo de honestidad sin corregir y
+      repetir.
 - [ ] `N10/N10` turnos observados (mínimo 1.947 + delta 09.5) contabilizados exactamente una vez, con
       respuesta, contrato, hechos del turno, evidencia y `pass`/`fail` razonado.
 - [ ] `M10/M10` misiones (mínimo 808 + delta 09.5) atraviesan la tubería; fixture
@@ -85,6 +90,8 @@ congelada del 10.1 es la autoridad de pertenencia.
 - [ ] Cero petición in-scope omitida por ambiente. Si falta una app, cuenta,
       contenido, permiso o dispositivo, la meta se pausa en `FALLO_DE_AMBIENTE`,
       publica cómo preparar el PC y reanuda desde el cursor antes de avanzar.
+- [ ] La ausencia del dueño nunca es `FALLO_DE_AMBIENTE`: ningún cierre depende
+      de que proporcione entradas, observe una salida o juzgue un resultado.
 - [ ] Cada fichero 10.x se lanzó una vez; fallos corregibles y regresiones se
       resolvieron dentro de su meta, sin volver a un goal anterior.
 - [ ] Cada decisión de `00_IDENTIDAD.md` tiene evidencia viva en el mismo árbol.
@@ -97,6 +104,11 @@ congelada del 10.1 es la autoridad de pertenencia.
 - [ ] Los tres ceros siguen intactos: efecto no pedido, éxito no verificado y
       respuesta visible fija.
 - [ ] Full verde y todo el Goal 10 publicado antes de abrir el 11.
+
+El cierre significa cero fallos reproducibles conocidos dentro del alcance sobre
+el commit y ambiente certificados. No formula la promesa imposible de que ningún
+software fallará jamás; hace que cualquier fallo observado en campaña bloquee,
+se corrija en su owner y se revalide antes del uso cotidiano.
 
 La evidencia que explica el corte está en
 [`10_APRENDIZAJES.md`](10_APRENDIZAJES.md). El protocolo de ejecución está en

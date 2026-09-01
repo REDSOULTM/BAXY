@@ -1,61 +1,51 @@
-# Handoff — Goal 10.3 uso real A — 2026-08-31 — preparación (0/50)
+# Handoff — Goal 10 replanificado — 2026-09-01
 
-## Objetivo
-Cerrar el primer bloque limpio de 50 turnos reales: 25 pedidos espontáneos del dueño y cinco repeticiones de cada familia congelada. Esta sesión no lo cierra.
+## Objetivo vigente
+
+Certificar BAXY antes de pedir uso cotidiano: cerrar primero 10.7–10.17 y ejecutar
+después, dentro de 10.18, cuatro bloques autónomos de 50 turnos por la entrada
+pública del producto.
 
 ## Estado
-Hecho: preflight técnico 10.3; causa del hijack de arranque (`memory_recovery_pending` tragaba el primer turno y `cancelar` no retiraba el outbox) corregida en App; regresión dueño verde dos veces; evidencia privada de la tanda fallida ignorada por git.
-En curso: Goal 10.3. Contador **0/50**. Cero espontáneos del dueño. Cero repeticiones de familia contadas.
-Sin empezar: las 25 interacciones espontáneas del dueño; las 25 repeticiones (5× `conversation`, `media.play`, `audio.volume`, `system.status`, `system.settings`); cierre 10.3; `10.4_USO_REAL_B.md`.
 
-## Decisiones tomadas
-- 0/50 se declara, no se finge. La regla de la dosis prohíbe guionizar los 25 espontáneos o sustituirlos por corpus. Sin el dueño no hay bloque.
-- El lote vivo de arranque quedó como evidencia fallida, no como parte de los 50. Reinicio del bloque desde 0 tras el arreglo.
-- No se repite la prueba viva de cancelación: dos sesiones se atascaron ahí. La prueba dueño `RecoveredPersistentMemoryCanBeCancelledWithoutExecuting` cubre el defecto.
-- `ContinueCancel` ya existía; no se añade un array gemelo. Cancelar recovery que no puede retirarse usa `cannot_withdraw_pending`, igual que la confirmación hermana.
-- Mute del endpoint Realtek no es `FALLO_DE_AMBIENTE`: pycaw lee scalar=1.0. El JSON original mintió `FALLO_DE_AMBIENTE` por un `Read` COM de PowerShell; revalidado.
-- `artifacts/goal10/private/` queda gitignored. `owner-tests-1.log` / `2.log` siguen siendo la evidencia 10.2 (commit `b12f64e`).
+- Cerrados y publicados: `10.0`, `10.1`, `10.2`, `10.2.5`.
+- Evidencia histórica conservada: preflight antiguo de 10.3 y corrección del hijack
+  de recuperación de memoria. El contador `0/50` no es deuda.
+- Retirados, no ejecutables: `10.3_USO_REAL_A.md`–`10.6_USO_REAL_D.md`.
+- Siguiente prompt: `documentacion/sprints/10.7_CONVERSACION.md`.
+- Después: 10.8 → 10.9 → 10.10 → 10.11 → 10.12 → 10.13 → 10.14 →
+  10.15 → 10.16 → 10.17 → 10.18 → 11.1.
 
-## Archivos tocados
-- `src/Baxy.App/MainWindowViewModel.cs` — `HandlePendingMemoryOperationAsync` acepta `cancelar` y vacía el outbox
-- `src/Baxy.App/PrivateOperationNarration.cs` — recovery ofrece continuar/cancelar
-- `src/Baxy.App/TurnVisibleFacts.cs` — sin array duplicado
-- `tests/Baxy.Integration.Tests/MemoryAppFlowTests.cs` — `RecoveredPersistentMemoryCanBeCancelledWithoutExecuting`
-- `.gitignore` — `/artifacts/goal10/private/`
-- `artifacts/goal10/preflight-10.3.md` + `.json` — preflight + revalidación pycaw
-- `artifacts/goal10/owner-tests-10.3-1.log` + `-2.log`
+## Decisión del dueño
 
-## Archivos relevantes aún sin tocar
-- `%LOCALAPPDATA%\BAXY\dev-mente-v2\shell\retry-outbox.v1.json` — 1 entrada `memory.forget` (no versionada)
-- `documentacion/sprints/10.3_USO_REAL_A.md` — criterios de cierre siguen abiertos
-- `documentacion/sprints/10.4_USO_REAL_B.md` — no abrir
+El dueño no participa como generador de prompts, voz, observador ni juez. La
+ausencia humana no es `FALLO_DE_AMBIENTE`. Los agentes conducen cada fila por la
+misma entrada pública de texto o voz que usa una persona; el oráculo independiente
+verifica intención, salida, operación/plan, hechos, postcondición y terminal.
 
-## Hipótesis
-Confirmadas: recovery persistente al arrancar interceptaba conversación y no se podía cancelar → tests dueño 3/3 dos veces; lote fallido `artifacts/goal10/private/failed-batches/10.3-batch0-launch1-memory-recovery-hijack.jsonl`.
-Descartadas: inventar 50 turnos; prueba viva de cancelación; `FALLO_DE_AMBIENTE` por mute o por el `Read` de PowerShell; avanzar a 10.4.
+La cobertura de 200 turnos se mantiene, pero ocurre al final de Goal 10, cuando
+todas las familias ya están endurecidas. 10.18 es una sola meta persistente con
+cuatro checkpoints internos A–D de 50; no exige cuatro lanzamientos.
 
-## Comandos ejecutados y resultado
-- `dotnet test tests\Baxy.Integration.Tests -c Release --filter "FullyQualifiedName~MemoryAppFlowTests.RecoveredPersistentMemory|FullyQualifiedName~MemoryAppFlowTests.ViewModelRecovery|FullyQualifiedName~MemoryAppFlowTests.ReconciliationChallenge" --nologo -v:minimal` → `3 passed, 0 fail, 0 skip` dos veces (41 s / 40 s)
-- pycaw `GetSpeakers().EndpointVolume` → device `Altavoces (Realtek(R) Audio)`, scalar 1.0, muted true
-- No ejecutado: Full; soak; 50 turnos reales; prueba viva de cancelación; `10.4`
+## Autoridades
 
-## Problemas pendientes
-- 25 espontáneos del dueño — sin ellos el bloque no arranca.
-- Outbox leftover `memory.forget` en `dev-mente-v2`: el próximo `py main.py` ofrecerá recovery. `cancelar` es preparación, no turno 1.
-- `status.v1.json` de 22:46Z puede estar stale; no reutilizar esa sesión para los 50.
-- Endpoint de salida muteado; no bloquea `audio.volume`, pero hay que tenerlo en cuenta al verificar playback.
+- `documentacion/sprints/10_REPLANIFICACION_AUTONOMA.md`
+- `documentacion/sprints/00_ORDEN_DESDE_09_5.md`
+- `documentacion/sprints/10_USO_DIARIO.md`
+- `documentacion/sprints/10_PROTOCOLO_GROK46.md`
+- `documentacion/sprints/10.7_CONVERSACION.md`
 
-## Siguiente acción recomendada
-Misma meta `documentacion/sprints/10.3_USO_REAL_A.md`, receta abajo. No pegar `10.4`. No relanzar el fichero. No inventar espontáneos.
+## Baseline publicado
 
-### Receta exacta para continuar
-1. Sesión nueva, **sin** `/goal` nuevo y **sin** pegar `10.4_USO_REAL_B.md`. Continuar 10.3 desde este handoff.
-2. No repetir la prueba viva de cancelación. No guionizar los 25 espontáneos. No copiar corpus.
-3. El dueño aporta 25 pedidos espontáneos reales (ES/EN/spanglish). Hasta que existan, el contador sigue 0/50.
-4. Arranque de campaña: `py main.py` (Release `Baxy.exe`), data root `%LOCALAPPDATA%\BAXY\dev-mente-v2`. Si aparece `memory_recovery_pending`, enviar `cancelar` como prep de ambiente (no cuenta). Entonces turno 1.
-5. 25 repeticiones: 5 de cada familia congelada en `tests/data/goal10_corpus_freeze.v1.json` → `conversation`, `media.play`, `audio.volume`, `system.status`, `system.settings`. Acciones reversibles en físico; Spotify está instalado; brillo WMI 100; volumen scalar 1.0 muted true.
-6. Cada turno: entrada, salida visible, operación/plan, hechos contemporáneos, postcondición, terminal, veredicto. Privado en `artifacts/goal10/private/turns-10.3.jsonl` (gitignored). Resumen versionable sin texto de usuario.
-7. El lote `private/failed-batches/10.3-batch0-launch1-memory-recovery-hijack.jsonl` y las 2 líneas actuales de `turns-10.3.jsonl` **no** son de los 50. El bloque arranca en 0.
-8. Afirmación falsa, efecto no pedido o prosa fija → corregir causa mínima, test dueño dos veces, **reiniciar este bloque desde 0**.
-9. Petición in-scope imposible por ambiente → `FALLO_DE_AMBIENTE` en `artifacts/goal10/environment/10.3.md`, pausa, no skip, no 10.4.
-10. Cierre 10.3 sólo con 50/50 pass individuales, cero invariantes duros rotos, artefacto privado + resumen, handoff, commit y push. Entonces, y sólo entonces, `10.4_USO_REAL_B.md`.
+`192051f` cerró 10.2.5 y dejó `main == origin/main`, con el árbol completo bajo
+presupuesto y entrada desbloqueada. Los commits `632a66b` y sus artefactos de
+preflight 10.3 permanecen como historia; no autorizan relanzar el uso humano.
+
+## Receta de continuación
+
+1. Confirma raíz, `main`, `HEAD == origin/main` y árbol limpio.
+2. Lee las cinco autoridades anteriores y el prompt completo 10.7.
+3. Lanza una sola vez `/goal ` + contenido completo de
+   `10.7_CONVERSACION.md` en Grok 4.6 High.
+4. No pegues 10.3–10.6 y no solicites interacciones al dueño.
+5. Verifica independientemente los criterios, commit y push antes de abrir 10.8.

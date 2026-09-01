@@ -11,6 +11,13 @@ El objetivo de `/goal` es el objetivo único escrito en el fichero, no «avanza�
 «continúa» ni «cierra rápido». El intento anterior perdió frontera cuando el goal
 activo quedó reducido a una frase de ese tipo.
 
+Los prompts pendientes conservan una estructura fija y en segunda persona: rol y
+autoridad, contrato operativo, leyes e invariantes, objetivo, método, frontera y
+criterios de cierre. El contenido estable va delante de la evidencia específica;
+no reordenes ni reescribas mensajes anteriores durante una meta. Esta forma aprovecha
+el contexto de 500k y la compactación de Grok 4.6 sin convertir el handoff en una
+nueva instrucción ambigua.
+
 ## Contrato de ejecución
 
 Antes de actuar, lee `AGENTS.md`, `00_INDICE.md`, `../00_IDENTIDAD.md`,
@@ -26,6 +33,10 @@ del subsistema y el handoff del tramo anterior. Después:
 7. si un criterio falla, corrige su owner mínimo y repite la validación dentro de
    esta misma meta hasta dejarlo verde;
 8. escribe evidencia y handoff, revisa el diff, commitea y publica.
+
+La respuesta final de una prueba o de Grok no es el oráculo. Reproduce el cierre
+desde el árbol, el artefacto y la postcondición. Si el agente conductor afirma que
+algo pasó, otra pieza debe observarlo sin depender de esa afirmación.
 
 No pauses para pedir aprobación de un plan. Pregunta sólo ante daño irreversible a
 datos personales o a otro proyecto. No trabajes en el siguiente `10.x`, no vuelvas
@@ -69,6 +80,24 @@ contemporáneos, postcondición, terminal y veredicto. `review`, `unresolved`, t
 oculto, skip o exclusión automática no son pass. Las repeticiones se contabilizan;
 los textos únicos sólo sirven para diagnosticar.
 
+Desde la decisión del dueño del 2026-09-01, **ninguna campaña necesita turnos
+humanos**. Cuando el goal valida una conducta visible o una misión:
+
+1. el agente genera o selecciona una entrada desde el contrato congelado y un
+   holdout que el runtime no conoce;
+2. la envía por la misma superficie pública de texto que usa la UI, o por la ruta
+   pública de voz con audio de prueba; llamar directamente a mente, Core, Kernel o
+   provider no cuenta como turno end-to-end;
+3. conserva entrada, salida visible, operación/plan, hechos contemporáneos,
+   postcondición y terminal;
+4. un adjudicador independiente compara intención, conducta y mundo observado;
+5. cualquier fail in-scope corrige el owner mínimo y reinicia sólo el bloque
+   afectado sobre entradas frescas.
+
+Las cuatro dosis transversales de 50 viven dentro de la única meta 10.18, después
+de 10.7–10.17. El agente persiste cursor y continúa automáticamente entre bloques;
+no solicita que el dueño escriba, hable, mire la pantalla ni emita veredictos.
+
 Las acciones seguras y reversibles se prueban físicamente. Compras, mensajes a
 terceros, borrados personales, energía y otros efectos peligrosos usan ámbito
 desechable o fixture fiel y se publican como no físicos. Nunca se toca un dato
@@ -97,6 +126,10 @@ Si una petición in-scope no puede ejecutarse porque el PC no está preparado:
 5. después de que el dueño prepare el PC, comprueba readiness y reanuda **la misma
    meta desde su cursor**, sin volver a pegar el fichero.
 
+La ausencia del dueño no es un requisito ambiental. Sólo una acción física o
+credencial imposible de sustituir puede pedir preparación; producir prompts,
+conducir misiones y juzgar resultados siempre pertenece a los agentes.
+
 «Pon la serie X» sin servicio, cuenta o contenido disponible es un fallo de
 ambiente de esa sesión, no una limitación aceptada del producto. Sólo idioma fuera
 del compromiso ES/EN/spanglish o efecto explícitamente fuera del producto puede
@@ -104,7 +137,7 @@ quedar fuera de alcance; el manifiesto lo justifica fila por fila.
 
 ## Prohibiciones específicas
 
-No soak, no espera de 24 h, no enseñar el examen al runtime, no regex por fallo, no
+No uso humano obligatorio, no soak, no espera de 24 h, no enseñar el examen al runtime, no regex por fallo, no
 overlay parcial, no remake con tests rojos, no convertir ambiente/idioma en pass,
 no avanzar después de `FALLO_DE_AMBIENTE` hasta que readiness permita reanudar, no
 saltarse el ledger 09.5 y no usar el código del intento fallido como autoridad.

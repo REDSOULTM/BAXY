@@ -9,8 +9,11 @@ al dueño un bucle manual.
 
 Acceso directo en orden a todos los prompts ejecutables:
 [`00_ORDEN_DESDE_09_5.md`](00_ORDEN_DESDE_09_5.md).
-10.2.5 cerró el 2026-09-01 con medición del árbol completo; el siguiente
-lanzamiento es [`10.3_USO_REAL_A.md`](10.3_USO_REAL_A.md).
+10.2.5 cerró el 2026-09-01 con medición del árbol completo. Ese mismo día el dueño
+retiró las tandas humanas 10.3–10.6 y movió la certificación transversal detrás de
+las familias funcionales. El siguiente lanzamiento es
+[`10.7_CONVERSACION.md`](10.7_CONVERSACION.md); decisión completa en
+[`10_REPLANIFICACION_AUTONOMA.md`](10_REPLANIFICACION_AUTONOMA.md).
 
 ## Con qué modelo se lanza cada uno
 
@@ -71,7 +74,7 @@ aquí» de cada goal. Detalle de las versiones anteriores en
 | 08 | La primera señal | Nunca hay silencio muerto |
 | 09 | La voz y el oído | Oye su nombre, entiende y contesta hablando |
 | 09.5 | **Herencia total** ([mapa](09.5_HERENCIA_TOTAL.md)) | Todas las versiones presentes conciliadas, mejores piezas trasplantadas y 01–09 revalidados; se pegan los `09.5.x` |
-| 10 | **Uso diario + aceptación** ([mapa](10_USO_DIARIO.md)) | Base verde, 200 turnos y cinco×20 **sin 24 h**, más `N10/M10` (mínimos 1.947/808 + delta 09.5) e Identidad |
+| 10 | **Certificación para uso diario** ([mapa](10_USO_DIARIO.md)) | Familias 10.7–10.17 primero; después 200 turnos autónomos por la entrada pública, `N10/M10` (mínimos 1.947/808 + delta 09.5) e Identidad |
 | 11 | **Validación y cierre** ([mapa](11_VALIDACION.md)) | `K11` contratos (mínimo 2.036 + delta 09.5), deuda, errores, regresión e higiene |
 
 El 01 va primero porque cambia el trabajo de los otros diez: hay asistentes
@@ -84,10 +87,12 @@ que *podría* fallar: van rápido a propósito. El 11 invierte esa regla y se de
 exactamente a eso — los caminos de error, las fragilidades, la regresión completa
 sobre el árbol final. Es donde se cobra la deuda que los diez fueron dejando.
 
-**Ambiente no es aprobación.** Desde 09.5.0, una fuente histórica requerida que
+**Ambiente no es aprobación ni disponibilidad del dueño.** Desde 09.5.0, una fuente histórica requerida que
 falte o siga copiándose pausa la meta en `FALLO_DE_AMBIENTE`. Desde 10.1, una
 misión in-scope que necesita una app, cuenta, serie, contenido, permiso o dispositivo
-ausente hace lo mismo. El prompt deja al dueño la preparación y readiness exactos;
+ausente hace lo mismo. Ningún prompt puede pedir al dueño que actúe como generador
+de entradas, juez o probador. Si una preparación física irremplazable falta, el
+prompt deja al dueño únicamente la preparación y readiness exactos;
 después la misma tarea reanuda desde su cursor, sin volver a pegar el subgoal. No se
 omite la fila ni se avanza.
 
