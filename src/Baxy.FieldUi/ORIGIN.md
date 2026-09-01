@@ -30,3 +30,16 @@ SHA-256
 `0F6C38D1E3C377012BD7231372363334DB7ADD51845578074E59EFB1195E8122`.
 La aplicación actual adapta el contrato HTTP/WS histórico mediante el puente
 nativo separado en `Baxy.App`.
+
+## Reapertura de recursos de 2026-08-31
+
+Goal 10.2.5 sustituyó los dos RAF permanentes por schedulers que duermen sin
+cambiar composición, estado, velocidades temporales, bridge ni acceso de red:
+4 Hz en reposo, 30 Hz en conversación y 1 Hz sin render oculto (además de la
+suspensión nativa). El build fue deliberado con el grafo
+fijado por `pnpm-lock.yaml`.
+
+- `dist/index.html`: `72C4FAC55D36BD9976755FBC4B1B480B1FDFF1E8D8863ACEDB6543EDC5C5DF86`
+- `dist/assets/index-vrrSGhE0.js`: `240A887D548C2BA1DDB88B32183BC13986F8160F22E95BAB5B431D3696631743`
+- `dist/assets/index-CjozYCnU.css`: `201D80C4A2F1FFD6E52367C0C130F6373F1A2C217C46C51789017F5F9327AAA2`
+- sello conjunto source + payload: `0F6DCDA5DCF7DFA8A89C64763EF4E75067967977C5673121197825F8EB0E1C71`

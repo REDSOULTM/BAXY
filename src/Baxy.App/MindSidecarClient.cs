@@ -1100,6 +1100,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             Process? process = sidecar?.Process;
             if (sidecar is null || process is null || process.HasExited)
             {
+                _ready = false;
                 return null;
             }
 
@@ -1125,6 +1126,11 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         catch (Exception exception) when (exception is not OperationCanceledException
             || !cancellationToken.IsCancellationRequested)
         {
+            // A timed-out request is no longer correlatable: its eventual reply
+            // is discarded below. Keeping IsReady=true would send every retry
+            // into the same wedged sidecar forever. The owner will dispose and
+            // recreate it through WaitForMindReadyAsync.
+            _ready = false;
             return null;
         }
         finally

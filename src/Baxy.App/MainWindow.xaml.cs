@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     private readonly PresenceHost? _presence;
     private FieldUiBridge? _bridge;
     private AppSurfaceSession? _fieldNavigationLoadingSession;
+    private int _fieldActivityRevision;
     private bool _closing;
     private bool _disposed;
 
@@ -45,6 +46,8 @@ public partial class MainWindow : Window
         _surfaceNavigator = new AppSurfaceNavigator(
             AppSurfaceCatalog.CreateDefault(),
             new MainWindowSurfacePresenter(FieldWebView, AppSurfaceLayer));
+        StateChanged += OnWindowPresentationChanged;
+        IsVisibleChanged += OnWindowVisibilityChanged;
         _presence?.Attach(this, _viewModel);
     }
 
@@ -186,6 +189,59 @@ public partial class MainWindow : Window
             new FieldTelemetrySampler(),
             _lifetimeCancellation.Token);
         core.Navigate(HistoricalFieldOriginPolicy.EntryPoint);
+        await UpdateFieldActivityAsync();
+    }
+
+    internal static bool ShouldKeepFieldActive(bool isVisible, WindowState state) =>
+        isVisible && state != WindowState.Minimized;
+
+    private async void OnWindowPresentationChanged(object? sender, EventArgs eventArgs) =>
+        await UpdateFieldActivityAsync();
+
+    private async void OnWindowVisibilityChanged(
+        object sender,
+        DependencyPropertyChangedEventArgs eventArgs) =>
+        await UpdateFieldActivityAsync();
+
+    private async Task UpdateFieldActivityAsync()
+    {
+        CoreWebView2? core = FieldWebView.CoreWebView2;
+        if (core is null || _closing || _disposed)
+        {
+            return;
+        }
+
+        int revision = ++_fieldActivityRevision;
+        bool active = ShouldKeepFieldActive(IsVisible, WindowState);
+        try
+        {
+            if (active)
+            {
+                if (core.IsSuspended)
+                {
+                    core.Resume();
+                }
+
+                FieldWebView.Visibility = Visibility.Visible;
+                return;
+            }
+
+            FieldWebView.Visibility = Visibility.Collapsed;
+            _ = await core.TrySuspendAsync();
+            if (revision != _fieldActivityRevision
+                && ShouldKeepFieldActive(IsVisible, WindowState))
+            {
+                if (core.IsSuspended)
+                {
+                    core.Resume();
+                }
+
+                FieldWebView.Visibility = Visibility.Visible;
+            }
+        }
+        catch (InvalidOperationException) when (_closing || _disposed)
+        {
+        }
     }
 
     /// <summary>
@@ -442,6 +498,8 @@ public partial class MainWindow : Window
         }
 
         _closing = true;
+        StateChanged -= OnWindowPresentationChanged;
+        IsVisibleChanged -= OnWindowVisibilityChanged;
         IsEnabled = false;
         _lifetimeCancellation.Cancel();
         try

@@ -2943,6 +2943,73 @@ class PlannerLlmBoundaryTests(unittest.TestCase):
         self.assertEqual(result, "¿Confirmas o cancelas?")
         self.assertGreaterEqual(len(seen), 1)
 
+    def test_visible_confirmation_collapses_bilingual_aliases_by_language(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {
+                "choices": [
+                    {"message": {"content": "¿Quieres confirmar o cancelar?"}}
+                ]
+            }
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "",
+            "confirmation",
+            {
+                "situation": '{"kind":"confirmation","polarity":"pending"}',
+                "requiredResponseWords": [
+                    "confirmar",
+                    "confirm",
+                    "cancelar",
+                    "cancel",
+                ],
+            },
+        )
+
+        self.assertEqual(result, "¿Quieres confirmar o cancelar?")
+        self.assertEqual(len(seen), 1)
+        contract = seen[0]["messages"][1]["content"]
+        self.assertIn("Palabras: confirmar, cancelar", contract)
+        self.assertNotIn("confirmar, confirm", contract)
+
+    def test_visible_confirmation_uses_the_typed_continue_cancel_choices(self):
+        runtime = object.__new__(LlmRuntime)
+        seen = []
+
+        def fake_post(payload):
+            seen.append(payload)
+            return {
+                "choices": [
+                    {"message": {"content": "¿Quieres continuar o cancelar?"}}
+                ]
+            }
+
+        runtime._post = fake_post
+        result = runtime.compose_user_message(
+            "",
+            "confirmation",
+            {
+                "situation": '{"kind":"confirmation","polarity":"pending"}',
+                "requiredResponseWords": [
+                    "continuar",
+                    "continue",
+                    "cancelar",
+                    "cancel",
+                ],
+            },
+        )
+
+        self.assertEqual(result, "¿Quieres continuar o cancelar?")
+        self.assertEqual(len(seen), 1)
+        self.assertIn(
+            "opciones literales: continuar, cancelar",
+            seen[0]["messages"][1]["content"],
+        )
+
     def test_visible_message_retries_and_rejects_dropped_verified_facts(self):
         runtime = object.__new__(LlmRuntime)
         replies = iter(

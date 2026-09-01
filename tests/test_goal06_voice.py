@@ -362,7 +362,7 @@ def test_compose_visible_defect_rejects_polarity_codes_and_copied_names() -> Non
         "confirmation",
         "delete the note Ideas",
         {"situation": '{"kind":"confirmation","polarity":"pending","choices":["confirm","cancel"]}'},
-    ) == ""
+    ) == "missing_confirmation_choice"
     assert compose_visible_defect(
         "No la encontré.",
         "error",

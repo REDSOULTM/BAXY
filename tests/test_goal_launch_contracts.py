@@ -35,7 +35,7 @@ def executable_prompts() -> list[str]:
 
 def test_order_is_complete_unique_and_chained() -> None:
     prompts = executable_prompts()
-    assert len(prompts) == 50
+    assert len(prompts) == 51
     assert len(set(prompts)) == len(prompts)
 
     for index, name in enumerate(prompts):

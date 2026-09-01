@@ -494,36 +494,55 @@ export default function App() {
   const voiceOn = micMode !== 'off';
   const poweredRef = useRef(online);
   useEffect(() => { poweredRef.current = online; }, [online]);
+  const visualStateRef = useRef(effectiveState);
+  useEffect(() => { visualStateRef.current = effectiveState; }, [effectiveState]);
 
-  // Drive the traveling border light. Ramps speed UP when powered and decelerates
-  // smoothly to a stop on standby (prototype app.jsx border loop, verbatim params).
+  // Drive the traveling border without forcing a style/layout update at display
+  // refresh rate while BAXY is resting. Active conversation remains at 30 Hz.
   useEffect(() => {
     const frame = document.querySelector<HTMLElement>('.app-frame');
     if (!frame) return;
-    let raf = 0;
+    let timer = 0;
     let last = performance.now();
     let angle = 0;
     let speed = 1; // 0..1 fraction of full speed
     const FULL = 360 / 3.4; // deg/s at full speed
+    const schedule = () => {
+      const state = visualStateRef.current;
+      const active = state === 'listening' || state === 'thinking' || state === 'speaking';
+      const interval = document.hidden ? 1000 : 1000 / (active ? 30 : 4);
+      timer = window.setTimeout(() => loop(performance.now()), interval);
+    };
     const loop = (now: number) => {
-      // Skip the repaint while the window is hidden (minimised) — no point
-      // animating a border nobody sees, and it spares the CPU while gaming.
-      if (typeof document !== 'undefined' && document.hidden) {
+      if (document.hidden) {
         last = now;
-        raf = requestAnimationFrame(loop);
+        schedule();
         return;
       }
-      const dt = Math.min(0.05, (now - last) / 1000);
+      const state = visualStateRef.current;
+      const active = state === 'listening' || state === 'thinking' || state === 'speaking';
+      // Four paints per second keep the slow idle border visibly alive without
+      // making WebView the dominant process while nobody is interacting.
+      const dt = Math.min(active ? 0.05 : 0.25, (now - last) / 1000);
       last = now;
       const target = poweredRef.current ? 1 : 0;
       speed += (target - speed) * Math.min(1, dt * 2.6);
       if (target === 0 && speed < 0.012) speed = 0;
       angle = (angle + speed * FULL * dt) % 360;
       frame.style.setProperty('--bd-angle', angle.toFixed(2) + 'deg');
-      raf = requestAnimationFrame(loop);
+      schedule();
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    const onVisibilityChange = () => {
+      window.clearTimeout(timer);
+      last = performance.now();
+      schedule();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    schedule();
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.clearTimeout(timer);
+    };
   }, []);
 
   // Recolor the border, the chrome accent (--carmine) and the metric bars

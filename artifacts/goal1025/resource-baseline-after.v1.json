@@ -1,0 +1,157 @@
+{
+  "schema": "baxy-goal1025-resource-baseline-after-v1",
+  "measured_utc_date": "2026-09-01",
+  "host": {
+    "logical_processors": 16,
+    "measurement": "delta de TotalProcessorTime del árbol estable por PID / reloj / 16; memoria, hilos, handles e I/O desde Process + Win32_Process"
+  },
+  "baseline_visible": {
+    "duration_seconds": 10.0,
+    "listening": true,
+    "cpu_machine_percent": 42.70,
+    "working_set_mib": 5034.2,
+    "private_mib": 6999.5,
+    "threads": 335,
+    "handles": 6075,
+    "read_bytes_delta": null,
+    "write_bytes_delta": null,
+    "io_note": "la sonda inicial no capturó I/O; null evita inventarlo",
+    "process_cpu_machine_percent": {
+      "python": 29.29,
+      "msedgewebview2_renderers": 12.42,
+      "llama-server": 0.78,
+      "Baxy": 0.20
+    }
+  },
+  "wakeword_ab": {
+    "model": "baxy.onnx",
+    "window_seconds": 2.0,
+    "hop_milliseconds": 250,
+    "default": {
+      "cpu_machine_percent": 28.4989,
+      "p50_milliseconds": 24.741,
+      "p95_milliseconds": 62.758,
+      "score": 0.005929499864578247
+    },
+    "power_efficient_onnx": {
+      "cpu_machine_percent": 0.65325,
+      "p50_milliseconds": 22.8898,
+      "p95_milliseconds": 28.4914,
+      "score": 0.005929499864578247
+    },
+    "detector_cpu_reduction_percent": 97.7
+  },
+  "after_visible_4hz": {
+    "scheduler": "sleeping timer; no permanent requestAnimationFrame tick",
+    "utc_start": "2026-09-01T13:57:28.6171381Z",
+    "duration_seconds": 60.686,
+    "listening": true,
+    "mind_ready": true,
+    "cpu_machine_percent": 1.8538,
+    "working_set_bytes": 5596463104,
+    "private_bytes": 6968528896,
+    "threads": 309,
+    "handles": 5854,
+    "read_bytes_delta": 47222304,
+    "write_bytes_delta": 47265897,
+    "process_cpu_machine_percent": {
+      "Baxy": 0.1030,
+      "msedgewebview2": 1.0299,
+      "python": 0.7209,
+      "llama-server": 0.0,
+      "baxy-core": 0.0
+    }
+  },
+  "after_minimized": {
+    "utc_start": "2026-09-01T13:59:03.7290617Z",
+    "duration_seconds": 60.527,
+    "listening": true,
+    "mind_ready": true,
+    "cpu_machine_percent": 0.7228,
+    "working_set_bytes": 5184974848,
+    "private_bytes": 6838476800,
+    "threads": 306,
+    "handles": 5844,
+    "read_bytes_delta": 2336,
+    "write_bytes_delta": 31754,
+    "process_cpu_machine_percent": {
+      "Baxy": 0.0,
+      "msedgewebview2": 0.0,
+      "python": 0.7228,
+      "llama-server": 0.0,
+      "baxy-core": 0.0
+    }
+  },
+  "physical_turn": {
+    "isolated_data_root": true,
+    "startup_ready": true,
+    "listening": true,
+    "wake_listening": true,
+    "mic_available": true,
+    "sidecar_recovery_observed": true,
+    "input_enabled_after_recovery": true,
+    "final_prompt": "Hola",
+    "final_visible_response": "Hola. ¿Qué tal?",
+    "submit_to_response_final_milliseconds": 750.3,
+    "terminal": "ready"
+  },
+  "minimized_soak_15m": {
+    "utc_start": "2026-09-01T14:00:27.9352072Z",
+    "utc_end": "2026-09-01T14:15:31.7778628Z",
+    "cpu_machine_percent_average": 0.7537,
+    "cpu_machine_percent_peak": 0.9337,
+    "monotonic_working_set": false,
+    "working_set_delta_bytes": -10289152,
+    "monotonic_private_bytes": false,
+    "private_bytes_delta": 7507968,
+    "monotonic_handles": false,
+    "handle_delta": -44,
+    "read_bytes_total": 22146,
+    "write_bytes_total": 463088,
+    "samples": [
+      {"minute": 0, "working_set_bytes": 5185429504, "private_bytes": 6838403072, "threads": 304, "handles": 5842},
+      {"minute": 1, "cpu": 0.7290, "working_set_bytes": 5201661952, "private_bytes": 6840102912, "threads": 317, "handles": 5824},
+      {"minute": 2, "cpu": 0.7243, "working_set_bytes": 5204676608, "private_bytes": 6840262656, "threads": 318, "handles": 5840},
+      {"minute": 3, "cpu": 0.7248, "working_set_bytes": 5206683648, "private_bytes": 6839787520, "threads": 308, "handles": 5838},
+      {"minute": 4, "cpu": 0.7263, "working_set_bytes": 5204848640, "private_bytes": 6837223424, "threads": 301, "handles": 5818},
+      {"minute": 5, "cpu": 0.7263, "working_set_bytes": 5208453120, "private_bytes": 6837264384, "threads": 300, "handles": 5817},
+      {"minute": 6, "cpu": 0.9337, "working_set_bytes": 5168279552, "private_bytes": 6841638912, "threads": 324, "handles": 5821},
+      {"minute": 7, "cpu": 0.7261, "working_set_bytes": 5167271936, "private_bytes": 6840348672, "threads": 300, "handles": 5808},
+      {"minute": 8, "cpu": 0.7263, "working_set_bytes": 5167456256, "private_bytes": 6840250368, "threads": 298, "handles": 5812},
+      {"minute": 9, "cpu": 0.7260, "working_set_bytes": 5165428736, "private_bytes": 6837555200, "threads": 298, "handles": 5807},
+      {"minute": 10, "cpu": 0.8299, "working_set_bytes": 5165420544, "private_bytes": 6837547008, "threads": 298, "handles": 5811},
+      {"minute": 11, "cpu": 0.7260, "working_set_bytes": 5173927936, "private_bytes": 6845067264, "threads": 301, "handles": 5797},
+      {"minute": 12, "cpu": 0.8299, "working_set_bytes": 5174067200, "private_bytes": 6844960768, "threads": 299, "handles": 5797},
+      {"minute": 13, "cpu": 0.7260, "working_set_bytes": 5176389632, "private_bytes": 6847197184, "threads": 299, "handles": 5802},
+      {"minute": 14, "cpu": 0.7254, "working_set_bytes": 5174734848, "private_bytes": 6845505536, "threads": 299, "handles": 5795},
+      {"minute": 15, "cpu": 0.7259, "working_set_bytes": 5175140352, "private_bytes": 6845911040, "threads": 298, "handles": 5798}
+    ]
+  },
+  "minimized_gpu_wddm": {
+    "duration_seconds": 20,
+    "owned_pid_count": 16,
+    "average_engine_percent": 0.0,
+    "peak_engine_percent": 0.0,
+    "samples_with_activity": 0,
+    "peak_local_bytes": 3222347776,
+    "peak_dedicated_bytes": 3345674240,
+    "dedicated_ceiling_bytes": 4294967296
+  },
+  "validation": {
+    "owner_python_twice": "221 passed, 101 subtests passed per run",
+    "owner_dotnet_twice": "107 passed, 0 skipped per run",
+    "field_ui": "eslint, tsc and production build passed",
+    "full_exit_code": 0,
+    "full_dotnet": {
+      "contracts_passed": 60,
+      "integration_passed": 2853,
+      "integration_skipped_environmental": 1,
+      "kernel_passed": 137,
+      "providers_passed": 451,
+      "setup_passed": 477
+    },
+    "full_python_passed": 8775,
+    "full_python_skipped_environmental": 10,
+    "full_python_subtests_passed": 446
+  }
+}

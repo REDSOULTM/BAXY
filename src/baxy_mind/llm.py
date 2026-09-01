@@ -312,6 +312,31 @@ def _message_response_language(text: str) -> str:
     return "en" if english > spanish else "es"
 
 
+def _localized_confirmation_words(words: list[str], language: str) -> list[str]:
+    """Collapse bilingual aliases without dropping a confirmation decision."""
+
+    aliases = {
+        "confirmar": ("confirmar", "confirm"),
+        "confirm": ("confirmar", "confirm"),
+        "cancelar": ("cancelar", "cancel"),
+        "cancel": ("cancelar", "cancel"),
+        "continuar": ("continuar", "continue"),
+        "continue": ("continuar", "continue"),
+    }
+    localized: list[str] = []
+    seen_aliases: set[tuple[str, str]] = set()
+    for word in words:
+        pair = aliases.get(word.casefold())
+        if pair is None:
+            localized.append(word)
+            continue
+        if pair in seen_aliases:
+            continue
+        seen_aliases.add(pair)
+        localized.append(pair[1] if language == "en" else pair[0])
+    return localized
+
+
 def _starts_with_request_imperative(text: str) -> bool:
     folded = unicodedata.normalize("NFKD", text.casefold())
     folded = "".join(
@@ -2933,7 +2958,25 @@ def compose_visible_defect(
             return "confirmation_asserted"
         if "?" not in stripped and "¿" not in stripped:
             return "confirmation_not_a_question"
-        if not re.search(r"confirm", folded) and not re.search(r"cancel", folded):
+        required_choices = _localized_confirmation_words(
+            [
+                str(value).strip()
+                for value in (facts.get("requiredResponseWords") or [])
+                if str(value).strip()
+            ],
+            language,
+        )
+        if required_choices and any(
+            not re.search(
+                rf"(?<!\w){re.escape(choice.casefold())}(?!\w)",
+                folded,
+            )
+            for choice in required_choices
+        ):
+            return "missing_confirmation_choice"
+        if not required_choices and (
+            not re.search(r"confirm", folded) or not re.search(r"cancel", folded)
+        ):
             return "missing_confirmation_choice"
         if stripped.count("¿") > 1 or stripped.count("?") > 1:
             return "too_many_sentences"
@@ -7354,13 +7397,18 @@ class LlmRuntime:
         cause = str(situation.get("cause") or "").strip()
         kind = str(situation.get("kind") or intent).strip().lower()
         polarity = str(situation.get("polarity") or "").strip().lower()
+        if intent == "confirmation" or kind == "confirmation":
+            required_words = _localized_confirmation_words(
+                required_words, response_language
+            )
         if intent == "welcome" or kind == "welcome":
             payload["messages"][1]["content"] += (
                 "\nGreet briefly, masculine, no apps."
             )
         elif intent == "confirmation" or kind == "confirmation":
             payload["messages"][1]["content"] += (
-                "\nOne question with confirm and cancel. Do not assert."
+                "\nUna sola pregunta con estas opciones literales: "
+                f"{', '.join(required_words) or 'confirmar, cancelar'}. No afirmes."
             )
         elif intent == "clarification" or kind == "clarification":
             payload["messages"][1]["content"] += (
@@ -7663,6 +7711,33 @@ class LlmRuntime:
         def publishable(candidate: str) -> bool:
             return bool(candidate) and preserves_contract(candidate) and not blocked(candidate)
 
+        def rejection_reason(candidate: str) -> str:
+            defect = compose_visible_defect(candidate, intent, user_text, facts)
+            if defect:
+                return defect
+            folded_candidate = candidate.casefold()
+            if any(term.casefold() in folded_candidate for term in forbidden_terms):
+                return "forbidden_term"
+            if any(
+                not re.search(
+                    rf"(?<!\w){re.escape(action.casefold())}(?!\w)",
+                    folded_candidate,
+                )
+                for action in required_actions
+            ):
+                return "missing_action"
+            if any(fact.casefold() not in folded_candidate for fact in required_facts):
+                return "missing_fact"
+            if any(
+                not re.search(
+                    rf"(?<!\w){re.escape(word.casefold())}(?!\w)",
+                    folded_candidate,
+                )
+                for word in required_words
+            ):
+                return "missing_word"
+            return "contract"
+
         def acting_clip(candidate: str) -> str:
             if cause != "acting" or publishable(candidate):
                 return candidate
@@ -7778,6 +7853,14 @@ class LlmRuntime:
         text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(text)))))
         if publishable(text):
             return text
+        _capture_message_compose_diagnostic(
+            f"first_candidate_rejected:{rejection_reason(text)}",
+            text,
+            required_fact_count=len(required_facts),
+            required_fact_characters=sum(len(fact) for fact in required_facts),
+            required_actions=required_actions,
+            required_words=required_words,
+        )
         if (
             not required_actions
             and not required_words
@@ -7792,7 +7875,8 @@ class LlmRuntime:
         defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
         retry_hint = {
             "missing_confirmation_choice": (
-                "Pregunta con confirmar/confirm y cancelar/cancel."
+                "Pregunta con todas estas opciones literales: "
+                f"{', '.join(required_words) or 'confirmar, cancelar'}."
             ),
             "wrong_language": "Same language as the request.",
             "extra_claim": "Only facts in seen.",
@@ -7867,6 +7951,14 @@ class LlmRuntime:
         retry_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(retry_text)))))
         if publishable(retry_text):
             return retry_text
+        _capture_message_compose_diagnostic(
+            f"retry_candidate_rejected:{rejection_reason(retry_text)}",
+            retry_text,
+            required_fact_count=len(required_facts),
+            required_fact_characters=sum(len(fact) for fact in required_facts),
+            required_actions=required_actions,
+            required_words=required_words,
+        )
         third_payload = dict(payload)
         third_payload["temperature"] = 0.0
         third_system = (
@@ -7892,4 +7984,14 @@ class LlmRuntime:
             (third["choices"][0]["message"].get("content") or "").strip()
         )
         third_text = close_clip(drop_request_verb(time_clip(title_clip(acting_clip(third_text)))))
-        return third_text if publishable(third_text) else ""
+        if publishable(third_text):
+            return third_text
+        _capture_message_compose_diagnostic(
+            f"final_candidate_rejected:{rejection_reason(third_text)}",
+            third_text,
+            required_fact_count=len(required_facts),
+            required_fact_characters=sum(len(fact) for fact in required_facts),
+            required_actions=required_actions,
+            required_words=required_words,
+        )
+        return ""

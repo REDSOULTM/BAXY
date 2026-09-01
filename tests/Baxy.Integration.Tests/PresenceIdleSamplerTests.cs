@@ -38,7 +38,7 @@ public sealed class PresenceIdleSamplerTests
             Assert.That(PresenceIdleSampler.ExceedsVramCeiling(end), Is.False);
             Assert.That(workingDelta, Is.EqualTo(0));
             Assert.That(sampler.HasMonotonicWorkingSetGrowth(), Is.False);
-            Assert.That(sampler.HasAvoidableShellSpin(), Is.False);
+            Assert.That(sampler.HasAvoidableProcessTreeSpin(logicalProcessorCount: 16), Is.False);
             Assert.That((end.Utc - start.Utc).TotalMinutes, Is.EqualTo(15));
         });
     }
@@ -61,7 +61,7 @@ public sealed class PresenceIdleSamplerTests
     }
 
     [Test]
-    public void ShellSpinIsAttributedToBaxyNotToKeepWarm()
+    public void ProcessTreeSpinIncludesMindAndKeepWarmChildren()
     {
         var clock = new FakeClock(new DateTimeOffset(2026, 8, 31, 12, 0, 0, TimeSpan.Zero));
         var reader = new ScriptedProcessReader(
@@ -80,7 +80,28 @@ public sealed class PresenceIdleSamplerTests
         clock.Advance(TimeSpan.FromSeconds(10));
         sampler.Capture(true, true, true, null, "ready");
 
-        Assert.That(sampler.HasAvoidableShellSpin(), Is.True);
+        Assert.That(
+            sampler.HasAvoidableProcessTreeSpin(logicalProcessorCount: 16),
+            Is.True);
+    }
+
+    [Test]
+    public void ReusedPidWithADifferentExecutableIsNotChargedToTheOldProcess()
+    {
+        var clock = new FakeClock(new DateTimeOffset(2026, 8, 31, 12, 0, 0, TimeSpan.Zero));
+        var reader = new ScriptedProcessReader(
+        [
+            [new PresenceProcessSample(2, "python", @"C:\BAXY\old.exe", 1, 1, 1, 0)],
+            [new PresenceProcessSample(2, "python", @"C:\BAXY\new.exe", 1, 1, 500, 0)],
+        ]);
+        var sampler = new PresenceIdleSampler(reader, clock);
+        sampler.Capture(true, true, true, null, "ready");
+        clock.Advance(TimeSpan.FromSeconds(10));
+        sampler.Capture(true, true, true, null, "ready");
+
+        Assert.That(
+            sampler.HasAvoidableProcessTreeSpin(logicalProcessorCount: 16),
+            Is.False);
     }
 
     [Test]

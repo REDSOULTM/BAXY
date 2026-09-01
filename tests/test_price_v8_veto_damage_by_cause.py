@@ -67,12 +67,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # as intent_operations after the curated gate withdraws it.
 # Goal 04 moved it once more: protocol_fallback cannot publish an empty
 # clarify, and a model-authored recovery question stays a question.
+# Goal 10.2.5 later made confirmation choice validation derive from the typed
+# choices and bounded rejected composition retries; V8 remains historical.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "363a1cd91151ce4a2f2be5f93c37f809b2a462e997a338c3089ee28d7ece8402"
     ),
     "src/baxy_mind/llm.py": (
-        "934a2f8cb82c39ae4edead01c27d1729e677e9ecb38a3b6d67315137dcfaff38"
+        "aa5e99a37daf79a7d46336fb37c2c0807bdfcbb704197ca9da49d3e73f3ca609"
     ),
 }
 

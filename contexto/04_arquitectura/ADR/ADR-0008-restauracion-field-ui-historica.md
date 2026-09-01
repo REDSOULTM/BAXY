@@ -83,3 +83,13 @@ histórico. El layout, el aislamiento de WebView2, el contrato `baxy.field.v1` y
 las autoridades permanecen intactos. El build deliberado conservó los bundles
 JS/CSS y sólo normalizó el formato de `dist/index.html`; la procedencia y el
 nuevo digest están en `src/Baxy.FieldUi/ORIGIN.md`.
+
+## Reapertura de recursos — 2026-08-31
+
+Goal 10.2.5 demostró que dos bucles visuales reconciliaban o escribían estilos a
+la frecuencia completa del monitor durante el reposo. Se conserva toda la
+semántica visual y sus velocidades temporales, pero los RAF permanentes se
+sustituyen por schedulers que duermen: 4 Hz en reposo, 30 Hz durante conversación
+y 1 Hz sin render oculto, además de la suspensión nativa. No cambian
+layout, bridge, autoridad, red ni navegación. `dist/` se regeneró de forma
+deliberada con el grafo fijado; los hashes vigentes quedan en `ORIGIN.md`.

@@ -12,12 +12,18 @@ namespace Baxy.App;
 /// </summary>
 internal sealed class PendingModelMessageQueue
 {
+    internal const int MaximumCompositionAttempts = 3;
+
     private readonly object _lock = new();
     private readonly Queue<PendingModelMessage> _pending = new();
     private readonly Func<CancellationToken, Task<MindSidecarClient?>> _waitForMind;
     private readonly Func<string, string?, Task> _publishAsync;
     private readonly Func<string?, Task> _reportFailureAsync;
     private readonly Action _onQueued;
+    private readonly Func<Task> _onSettledAsync;
+    private readonly Func<PendingModelMessage, MindSidecarClient, CancellationToken,
+        Task<ModelMessageCompositionOutcome>> _composeAsync;
+    private readonly Func<TimeSpan, CancellationToken, Task> _delayAsync;
     private Task? _worker;
     private bool _isClosed;
 
@@ -25,16 +31,24 @@ internal sealed class PendingModelMessageQueue
         Func<CancellationToken, Task<MindSidecarClient?>> waitForMind,
         Func<string, string?, Task> publishAsync,
         Func<string?, Task> reportFailureAsync,
-        Action onQueued)
+        Action onQueued,
+        Func<Task> onSettledAsync,
+        Func<PendingModelMessage, MindSidecarClient, CancellationToken,
+            Task<ModelMessageCompositionOutcome>>? composeAsync = null,
+        Func<TimeSpan, CancellationToken, Task>? delayAsync = null)
     {
         ArgumentNullException.ThrowIfNull(waitForMind);
         ArgumentNullException.ThrowIfNull(publishAsync);
         ArgumentNullException.ThrowIfNull(reportFailureAsync);
         ArgumentNullException.ThrowIfNull(onQueued);
+        ArgumentNullException.ThrowIfNull(onSettledAsync);
         _waitForMind = waitForMind;
         _publishAsync = publishAsync;
         _reportFailureAsync = reportFailureAsync;
         _onQueued = onQueued;
+        _onSettledAsync = onSettledAsync;
+        _composeAsync = composeAsync ?? ComposeAsync;
+        _delayAsync = delayAsync ?? Task.Delay;
     }
 
     internal int Count
@@ -111,35 +125,49 @@ internal sealed class PendingModelMessageQueue
             MindSidecarClient? mind = await _waitForMind(cancellationToken).ConfigureAwait(false);
             if (mind is null)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).ConfigureAwait(false);
+                await _delayAsync(TimeSpan.FromSeconds(1), cancellationToken)
+                    .ConfigureAwait(false);
                 continue;
             }
 
             if (pending.Attempts > 0)
             {
                 int delaySeconds = Math.Min(10, 1 << Math.Min(3, pending.Attempts - 1));
-                await Task.Delay(TimeSpan.FromSeconds(delaySeconds), cancellationToken)
+                await _delayAsync(TimeSpan.FromSeconds(delaySeconds), cancellationToken)
                     .ConfigureAwait(false);
             }
 
             ModelMessageCompositionOutcome outcome =
-                await ComposeAsync(pending, mind, cancellationToken).ConfigureAwait(false);
+                await _composeAsync(pending, mind, cancellationToken).ConfigureAwait(false);
             if (outcome.Text is null)
             {
                 pending.Attempts++;
                 await _reportFailureAsync(outcome.Failure).ConfigureAwait(false);
+                if (pending.Attempts >= MaximumCompositionAttempts)
+                {
+                    RemoveHead(pending);
+                    await _reportFailureAsync(
+                            $"{outcome.Failure ?? "model_response_rejected"};retry_exhausted")
+                        .ConfigureAwait(false);
+                    await _onSettledAsync().ConfigureAwait(false);
+                }
                 continue;
             }
 
-            lock (_lock)
-            {
-                if (_pending.Count > 0 && ReferenceEquals(_pending.Peek(), pending))
-                {
-                    _pending.Dequeue();
-                }
-            }
+            RemoveHead(pending);
 
             await _publishAsync(outcome.Text, outcome.Failure).ConfigureAwait(false);
+        }
+    }
+
+    private void RemoveHead(PendingModelMessage pending)
+    {
+        lock (_lock)
+        {
+            if (_pending.Count > 0 && ReferenceEquals(_pending.Peek(), pending))
+            {
+                _pending.Dequeue();
+            }
         }
     }
 

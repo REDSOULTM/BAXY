@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using Baxy.App;
 using NUnit.Framework;
 
@@ -71,6 +72,27 @@ public sealed class PresenceReadinessGateTests
         Assert.That(viewModel.Messages, Is.Empty);
         Assert.That(viewModel.Draft, Is.EqualTo("abre notepad"));
         Assert.That(viewModel.HasStartupError, Is.False);
+    }
+
+    [Test]
+    public async Task PendingNarrationDoesNotBlockAReadyInput()
+    {
+        await using var viewModel = new MainWindowViewModel();
+        PropertyInfo ready = typeof(MainWindowViewModel).GetProperty(
+            nameof(MainWindowViewModel.IsReady))!;
+        ready.SetValue(viewModel, true);
+        MethodInfo queued = typeof(MainWindowViewModel).GetMethod(
+            "OnModelMessageQueued",
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        queued.Invoke(viewModel, null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(viewModel.IsBusy, Is.False);
+            Assert.That(viewModel.IsInputEnabled, Is.True);
+            Assert.That(viewModel.StatusText, Is.EqualTo("Trabajando"));
+        });
     }
 
     [Test]

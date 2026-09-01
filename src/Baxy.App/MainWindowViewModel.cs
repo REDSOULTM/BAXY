@@ -80,12 +80,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             WaitForMindReadyAsync,
             PublishComposedMessageAsync,
             failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
-            OnModelMessageQueued);
+            OnModelMessageQueued,
+            () => InvokeOnUiAsync(RestorePresentationState));
     }
 
     private void OnModelMessageQueued()
     {
-        IsBusy = true;
+        // Composition is presentation work, not an executing mission. A slow or
+        // recovering narrator must not lock text and voice input indefinitely.
+        IsBusy = _turnExecutionActive;
         StatusText = "Trabajando";
         // The Field UI already renders a non-linguistic thinking animation.
         // Leave prose empty until a policy-checked model response is available.
@@ -3321,7 +3324,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private void RestorePresentationState()
     {
         bool hasPendingModelMessage = PendingModelMessageCount > 0;
-        IsBusy = _turnExecutionActive || hasPendingModelMessage;
+        IsBusy = _turnExecutionActive;
         if (hasPendingModelMessage)
         {
             StatusText = "Trabajando";

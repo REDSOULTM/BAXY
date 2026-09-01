@@ -52,7 +52,8 @@ propia aceptación.
 | 10.0 | Restaurar la base verde | Goal 09.5 | contrato estructurado y pruebas coherentes; Full verde |
 | 10.1 | Congelar corpus, alcance y cola | 10.0 | `N10/M10` reproducibles, ≥1.947/808, y partición sin solapes |
 | 10.2 | Presencia y recursos | 10.1 | bandeja, arranque, readiness e idle corto medidos |
-| 10.3 | Uso real A | 10.2 | 50 turnos: 25 espontáneos + 25 repetidos |
+| 10.2.5 | Recursos en reposo | 10.2 | árbol completo bajo presupuesto sin perder disponibilidad |
+| 10.3 | Uso real A | 10.2.5 | 50 turnos: 25 espontáneos + 25 repetidos |
 | 10.4 | Uso real B | 10.3 | segundo bloque de 50 |
 | 10.5 | Uso real C | 10.4 | tercer bloque de 50 |
 | 10.6 | Uso real D | 10.5 | 200 totales y cinco familias ×20 |

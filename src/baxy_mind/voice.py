@@ -389,8 +389,12 @@ class SileroVad:
         import torch
         from silero_vad import load_silero_vad
 
+        from .onnx_runtime import create_with_power_efficient_onnx
+
         self._torch = torch
-        self._model = load_silero_vad(onnx=True)
+        self._model = create_with_power_efficient_onnx(
+            lambda: load_silero_vad(onnx=True)
+        )
 
     def process(self, frame: np.ndarray) -> float:
         tensor = self._torch.from_numpy(np.asarray(frame, dtype=np.float32))

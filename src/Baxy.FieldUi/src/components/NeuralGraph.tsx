@@ -282,7 +282,6 @@ export function NeuralGraph({ state }: Props) {
   const lastTurnRef = useRef<LastTurn>({ endedAt: 0, tags: new Set() });
   const tracerRef = useRef<Tracer>({ active: false, t: 0, startedAt: 0, path: [] });
   const lastSpawnRef = useRef(0);
-  const rafRef = useRef(0);
   // stateRef mirrors `state` so the RAF tick reads the latest value without
   // forcing the effect to re-subscribe on every transition (which would
   // restart the loop, lose `prev` time, and stutter for one frame).
@@ -326,21 +325,28 @@ export function NeuralGraph({ state }: Props) {
     prevStateRef.current = state;
   }, [state]);
 
-  // single RAF loop — mounted ONCE per component lifetime. state transitions
-  // are read via stateRef, not as a dep, so the loop keeps its `prev` baseline
-  // and doesn't stutter on every chip click.
-  //
-  // we do NOT honour `prefers-reduced-motion` here on purpose: the animation
-  // IS the information (state of pulses, tracer path, orbit speed all encode
-  // what the agent is doing). freezing it strips the panel of its meaning.
-  // a future refinement could halve spawn rates under reduce-motion, but
-  // keep the RAF running unconditionally.
+  // A sleeping scheduler replaces the permanent RAF loop: idle breathes at
+  // 4 Hz, active states remain fluid at 30 Hz, and hidden work drops to 1 Hz. State
+  // transitions are read through stateRef so changing chips never restarts it.
   useEffect(() => {
+    let timer = 0;
     let prev = performance.now();
-    const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - prev) / 1000);
-      prev = now;
+    const schedule = () => {
       const s = stateRef.current;
+      const active = s === 'listening' || s === 'thinking' || s === 'speaking';
+      const interval = document.hidden ? 1000 : 1000 / (active ? 30 : 4);
+      timer = window.setTimeout(() => tick(performance.now()), interval);
+    };
+    const tick = (now: number) => {
+      const s = stateRef.current;
+      const active = s === 'listening' || s === 'thinking' || s === 'speaking';
+      if (document.hidden) {
+        prev = now;
+        schedule();
+        return;
+      }
+      const dt = Math.min(active ? 0.05 : 0.25, (now - prev) / 1000);
+      prev = now;
 
       // pulses
       const next: Pulse[] = [];
@@ -395,10 +401,19 @@ export function NeuralGraph({ state }: Props) {
       corePulseRef.current = now / 1000;
 
       force();
-      rafRef.current = requestAnimationFrame(tick);
+      schedule();
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    const onVisibilityChange = () => {
+      window.clearTimeout(timer);
+      prev = performance.now();
+      schedule();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    schedule();
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.clearTimeout(timer);
+    };
   }, []);
 
   const { w, h } = size;

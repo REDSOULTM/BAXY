@@ -23,7 +23,11 @@ No remite a 09.5.12 ni a 09.5.11C.
 
 Cero prompts o slices nuevos. Delta 09.5 va a checkpoints internos. Barras intactas: 200 turnos, 1.947/808, 2.036 contratos, ambiente, Identidad, Full. Ventana <500k. Sólo ES/EN/spanglish.
 
-`00_ORDEN_DESDE_09_5.md` ejecutable restante: 35 ficheros, 10.0 primero.
+Extensión posterior aprobada por el dueño: `10.2.5_RECURSOS_EN_REPOSO.md`
+se insertó entre 10.2 y 10.3 al demostrarse consumo no atribuido por el cierre
+original. No reabre ni altera las decisiones históricas 09.5.
+
+`00_ORDEN_DESDE_09_5.md` conserva 36 ficheros de producto en orden, 10.0 primero.
 
 ## Reproducibilidad
 

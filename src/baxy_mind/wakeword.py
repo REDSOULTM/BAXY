@@ -29,6 +29,7 @@ from typing import Any
 import numpy as np
 
 from .assets import AssetDescriptorError, resolve_asset
+from .onnx_runtime import create_with_power_efficient_onnx
 
 SAMPLE_RATE = 16_000
 WINDOW_SAMPLES = SAMPLE_RATE * 2
@@ -543,8 +544,12 @@ class AcousticWakeDetector:
             try:
                 from livekit.wakeword import WakeWordModel
 
-                predictor = WakeWordModel()
-                predictor.load_model(config.model_path, config.model_name)
+                def load_predictor() -> Any:
+                    loaded = WakeWordModel()
+                    loaded.load_model(config.model_path, config.model_name)
+                    return loaded
+
+                predictor = create_with_power_efficient_onnx(load_predictor)
             except ModuleNotFoundError as error:
                 raise WakeWordRuntimeError("wake_word_runtime_missing") from error
             except Exception as error:  # noqa: BLE001 - backend errors stay contained

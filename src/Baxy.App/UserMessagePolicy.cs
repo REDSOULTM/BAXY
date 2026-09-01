@@ -252,17 +252,7 @@ internal static class UserMessagePolicy
             }
         }
         if (draft.Intent == "confirmation"
-            && (!PreservesChoicePair(draft.Source, modelText, "confirm", "cancel")
-                || !PreservesChoicePair(
-                    draft.Source,
-                    modelText,
-                    "continuar",
-                    "cancel")
-                || !PreservesChoicePair(
-                    draft.Source,
-                    modelText,
-                    "siguiente",
-                    "anterior")))
+            && !PreservesRequiredConfirmationChoices(draft.Source, modelText))
         {
             return "missing_confirmation_choice";
         }
@@ -719,4 +709,54 @@ internal static class UserMessagePolicy
             || result.Contains(first, StringComparison.OrdinalIgnoreCase)
                 && result.Contains(second, StringComparison.OrdinalIgnoreCase);
     }
+
+    private static bool PreservesRequiredConfirmationChoices(string source, string result)
+    {
+        if (!IsStructuredFacts(source)
+            || !TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("choices", out JsonElement choices)
+            || choices.ValueKind != JsonValueKind.Array)
+        {
+            return PreservesChoicePair(source, result, "confirm", "cancel")
+                && PreservesChoicePair(source, result, "continuar", "cancel")
+                && PreservesChoicePair(source, result, "siguiente", "anterior");
+        }
+
+        string foldedResult = FoldForPolicy(result);
+        return choices
+            .EnumerateArray()
+            .Select(static item => item.GetString()?.Trim())
+            .Where(static item => !string.IsNullOrWhiteSpace(item))
+            .Select(static item => ConfirmationChoiceKey(item!))
+            .Distinct(StringComparer.Ordinal)
+            .All(choice => ConfirmationChoiceIsPresent(choice, foldedResult));
+    }
+
+    private static string ConfirmationChoiceKey(string choice) =>
+        FoldForPolicy(choice) switch
+        {
+            "confirmar" or "confirm" => "confirm",
+            "cancelar" or "cancel" => "cancel",
+            "continuar" or "continue" => "continue",
+            "siguiente" or "next" => "next",
+            "anterior" or "previous" => "previous",
+            "reintentar" or "retry" => "retry",
+            string other => other,
+        };
+
+    private static bool ConfirmationChoiceIsPresent(string choice, string foldedResult) =>
+        choice switch
+        {
+            "confirm" => foldedResult.Contains("confirm", StringComparison.Ordinal),
+            "cancel" => foldedResult.Contains("cancel", StringComparison.Ordinal),
+            "continue" => foldedResult.Contains("continuar", StringComparison.Ordinal)
+                || foldedResult.Contains("continue", StringComparison.Ordinal),
+            "next" => foldedResult.Contains("siguiente", StringComparison.Ordinal)
+                || foldedResult.Contains("next", StringComparison.Ordinal),
+            "previous" => foldedResult.Contains("anterior", StringComparison.Ordinal)
+                || foldedResult.Contains("previous", StringComparison.Ordinal),
+            "retry" => foldedResult.Contains("reintentar", StringComparison.Ordinal)
+                || foldedResult.Contains("retry", StringComparison.Ordinal),
+            _ => foldedResult.Contains(choice, StringComparison.Ordinal),
+        };
 }

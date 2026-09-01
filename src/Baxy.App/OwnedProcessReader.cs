@@ -133,8 +133,9 @@ internal sealed class OwnedProcessReader : IPresenceProcessReader
             return true;
         }
 
-        return name.Equals("python", StringComparison.OrdinalIgnoreCase)
-            && path.Contains("BAXYRuntime", StringComparison.OrdinalIgnoreCase);
+        // A venv launcher delegates to the base interpreter installed outside
+        // BAXYRuntime. Parentage and start time already prove ownership here.
+        return name.Equals("python", StringComparison.OrdinalIgnoreCase);
     }
 
     private static DateTime? StartTimeUtc(int processId)

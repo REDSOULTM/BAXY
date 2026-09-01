@@ -447,6 +447,84 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [Test]
+    public void StructuredContinueCancelDoesNotAcquireConfirmFromItsKindName()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Confirmation(
+                "memory_reconcile_only",
+                TurnVisibleFacts.ContinueCancel),
+            UserMessageEvent.Confirmation);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(
+                UserMessagePolicy.IsSafe("¿Quieres continuar o cancelar?", draft),
+                Is.True);
+            Assert.That(
+                UserMessagePolicy.IsSafe("¿Quieres confirmar o cancelar?", draft),
+                Is.False);
+            Assert.That(draft.Source, Does.Contain("\"kind\":\"confirmation\""));
+        });
+    }
+
+    [Test]
+    public async Task RejectedModelMessageStopsAfterTheBoundedRetryBudget()
+    {
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            TurnVisibleFacts.Confirmation(
+                "memory_confirm_or_cancel",
+                TurnVisibleFacts.ConfirmCancel),
+            UserMessageEvent.Confirmation);
+        var pending = new PendingModelMessage(
+            draft,
+            string.Empty,
+            ModelMessageComposer.CreateFacts(draft),
+            "bounded-composition-test");
+        var failures = new List<string?>();
+        var settled = new TaskCompletionSource<bool>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        int compositions = 0;
+        await using var mind = new MindSidecarClient();
+        var queue = new PendingModelMessageQueue(
+            _ => Task.FromResult<MindSidecarClient?>(mind),
+            (_, _) => throw new AssertionException("A rejected draft must not publish."),
+            failure =>
+            {
+                failures.Add(failure);
+                return Task.CompletedTask;
+            },
+            () => { },
+            () =>
+            {
+                settled.TrySetResult(true);
+                return Task.CompletedTask;
+            },
+            (_, _, _) =>
+            {
+                compositions++;
+                return Task.FromResult(
+                    new ModelMessageCompositionOutcome(
+                        null,
+                        "missing_confirmation_choice",
+                        UsedRecovery: false));
+            },
+            (_, _) => Task.CompletedTask);
+
+        queue.Enqueue(pending, CancellationToken.None);
+        await settled.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(compositions, Is.EqualTo(PendingModelMessageQueue.MaximumCompositionAttempts));
+            Assert.That(queue.Count, Is.Zero);
+            Assert.That(
+                failures[^1],
+                Is.EqualTo("missing_confirmation_choice;retry_exhausted"));
+        });
+        await queue.CloseAsync();
+    }
+
+    [Test]
     public void WelcomeGetsAColdStartBudgetWithoutShowingAnErrorFallback()
     {
         const string welcome = "Hola. Estoy lista para ayudarte con este equipo.";

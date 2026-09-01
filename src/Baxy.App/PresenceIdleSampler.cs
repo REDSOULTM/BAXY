@@ -8,7 +8,7 @@ internal sealed class PresenceIdleSampler
 {
     internal const long DefaultWorkingSetGrowthBytes = 8L * 1024 * 1024;
     internal const long DefaultHandleGrowth = 100;
-    internal const double ShellSpinCpuPercent = 50;
+    internal const double DefaultProcessTreeCpuPercent = 5;
 
     private readonly IPresenceProcessReader _reader;
     private readonly IPresenceClock _clock;
@@ -114,24 +114,45 @@ internal sealed class PresenceIdleSampler
         return true;
     }
 
-    internal bool HasAvoidableShellSpin()
+    internal bool HasAvoidableProcessTreeSpin(
+        double thresholdPercent = DefaultProcessTreeCpuPercent,
+        int logicalProcessorCount = 0)
     {
         if (_samples.Count < 2)
         {
             return false;
         }
 
-        PresenceIdleSnapshot first = _samples[0];
-        PresenceIdleSnapshot last = _samples[^1];
-        double wallSeconds = (last.Utc - first.Utc).TotalSeconds;
-        if (wallSeconds <= 0)
+        int processors = logicalProcessorCount > 0
+            ? logicalProcessorCount
+            : Environment.ProcessorCount;
+        double peakPercent = 0;
+        for (int index = 1; index < _samples.Count; index++)
         {
-            return false;
+            PresenceIdleSnapshot before = _samples[index - 1];
+            PresenceIdleSnapshot after = _samples[index];
+            double wallSeconds = (after.Utc - before.Utc).TotalSeconds;
+            if (wallSeconds <= 0)
+            {
+                continue;
+            }
+
+            Dictionary<(int ProcessId, string Path), double> beforeCpu =
+                before.Processes.ToDictionary(
+                    static process => (process.ProcessId, process.Path),
+                    static process => process.CpuSeconds);
+            double cpuDelta = after.Processes.Sum(process =>
+                beforeCpu.TryGetValue(
+                    (process.ProcessId, process.Path),
+                    out double previous)
+                    ? Math.Max(0, process.CpuSeconds - previous)
+                    : 0);
+            peakPercent = Math.Max(
+                peakPercent,
+                cpuDelta / wallSeconds / processors * 100.0);
         }
 
-        double shellCpu = ShellCpuSeconds(last) - ShellCpuSeconds(first);
-        double percent = shellCpu / wallSeconds * 100.0;
-        return percent > ShellSpinCpuPercent;
+        return peakPercent > thresholdPercent;
     }
 
     internal static IReadOnlyDictionary<string, long> WorkingSetByProcess(
@@ -146,17 +167,4 @@ internal sealed class PresenceIdleSampler
         return totals;
     }
 
-    private static double ShellCpuSeconds(PresenceIdleSnapshot snapshot)
-    {
-        double total = 0;
-        foreach (PresenceProcessSample process in snapshot.Processes)
-        {
-            if (string.Equals(process.Name, "Baxy", StringComparison.OrdinalIgnoreCase))
-            {
-                total += process.CpuSeconds;
-            }
-        }
-
-        return total;
-    }
 }

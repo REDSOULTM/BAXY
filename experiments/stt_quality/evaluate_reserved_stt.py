@@ -43,9 +43,11 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # Re-sealed against the tree this evaluator will actually measure. See
 # audit_fresh_postweight_stt_sources.py for the full lineage: the previous
 # value belonged to the consumed and rejected wake v17 campaign, and the tree
-# had already drifted past it before the request-completion repair landed.
+# had already drifted past it before the request-completion repair landed. Goal
+# 10.2.5 re-sealed this unmeasured expectation after changing only the ONNX
+# scheduling policy; model, hop, score and reserved corpora remain unchanged.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "7e148e76f58b5250f4f4d2c82f307928ef4551f1893c8a6c5add3f4aa95be628"
+    "08300d7cec3ef1d770fb1a10c9a6de7e9d8fdf64e69c7a3be9c4bf4221a5fc7b"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

@@ -13,9 +13,21 @@ public sealed class MainWindowShellContractTests
 {
     private const string HistoricalCommit = "4a83f2d082d6b0fec8297e801b96a0da620b059e";
     private const string CurrentFieldTreeSha256 =
-        "51F678F7D4834B071CABFA7E2FA2B5A7682B8CE8E1E6402A49227C2C93A75487";
+        "0F6DCDA5DCF7DFA8A89C64763EF4E75067967977C5673121197825F8EB0E1C71";
     private static readonly XNamespace XamlNamespace =
         "http://schemas.microsoft.com/winfx/2006/xaml";
+
+    [TestCase(true, WindowState.Normal, true)]
+    [TestCase(true, WindowState.Maximized, true)]
+    [TestCase(true, WindowState.Minimized, false)]
+    [TestCase(false, WindowState.Normal, false)]
+    public void FieldActivityFollowsNativeWindowVisibility(
+        bool visible,
+        WindowState state,
+        bool expected)
+    {
+        Assert.That(MainWindow.ShouldKeepFieldActive(visible, state), Is.EqualTo(expected));
+    }
 
     [Test]
     public void FieldSourceAndRebuiltPayloadMatchTheCurrentSeal()
@@ -28,6 +40,8 @@ public sealed class MainWindowShellContractTests
         string app = File.ReadAllText(Path.Combine(root, "src", "App.tsx"));
         string field = File.ReadAllText(
             Path.Combine(root, "src", "components", "FieldCenter.tsx"));
+        string neuralGraph = File.ReadAllText(
+            Path.Combine(root, "src", "components", "NeuralGraph.tsx"));
         string activity = File.ReadAllText(
             Path.Combine(root, "src", "components", "ActivityPanel.tsx"));
         string substrate = File.ReadAllText(
@@ -47,6 +61,16 @@ public sealed class MainWindowShellContractTests
             Assert.That(activity, Does.Contain("label: 'sessions'"));
             Assert.That(activity, Does.Contain("label: 'memory'"));
             Assert.That(activity, Does.Not.Contain("label: 'docs'"));
+            Assert.That(app, Does.Contain("1000 / (active ? 30 : 4)"));
+            Assert.That(neuralGraph, Does.Contain("1000 / (active ? 30 : 4)"));
+            Assert.That(
+                app,
+                Does.Contain("window.setTimeout(() => loop(performance.now()), interval)"));
+            Assert.That(
+                neuralGraph,
+                Does.Contain("window.setTimeout(() => tick(performance.now()), interval)"));
+            Assert.That(app, Does.Not.Contain("requestAnimationFrame(loop)"));
+            Assert.That(neuralGraph, Does.Not.Contain("requestAnimationFrame(tick)"));
         });
     }
 
