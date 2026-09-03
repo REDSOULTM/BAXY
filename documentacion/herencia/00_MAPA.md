@@ -36,12 +36,13 @@ siguiente.
 `JRVS` no entra: es otro producto (operaciones self-hosted para equipos) y no
 comparte linaje.
 
-**Dónde viven los activos.** Esto sorprende y conviene saberlo antes de tocar
-nada: el runtime del BAXY actual **no tiene sus modelos dentro del repositorio**.
-`%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` apunta a
-`Programacion\BAXY\legacy\models\artifacts\`, es decir al repositorio del cuarto
-intento. Borrar `BAXY` deja a `BAXY Definitivo` sin modelo, sin llama-server y sin
-wake word.
+**Dónde viven los activos.** El runtime **no tiene sus modelos dentro del
+repositorio**. C02 (2026-09-03) registra `llama-server` en
+`%LOCALAPPDATA%\BAXYRuntime\assets\llama-b9980-cuda12.4` (copia atestada, mismo
+SHA-256 `38a9d28e…`); GGUF en `D:\BAXYRuntime\assets\models\`; Python en
+`%LOCALAPPDATA%\BAXYRuntime\python\`. El manifiesto vivo ya no apunta a
+`Programacion\BAXY`. El hallazgo de 2026-08-16 (runtime colgado del hermano) no
+se borra: era cierto entonces.
 
 ---
 
@@ -313,6 +314,20 @@ flujo de confirmación de memoria, unas 1.050 líneas— porque comparten
 `_pendingMindPlan`, `_planStore` y `AddMessage`, y separarlas exige un colaborador
 con estado, no una extracción. Está anotado en `APLAZADOS.md` con su borde
 nombrado.
+
+### Actualización C02 — 2026-09-03 (el hallazgo de arriba no se borra)
+
+C02 extrae las dos responsabilidades restantes a colaboradores con estado, sin
+pasar el ViewModel:
+
+| Fichero nuevo | Una responsabilidad |
+|---|---|
+| `MindPlanSession.cs` | Plan multipaso: persistir, ejecutar, confirmar, replanear |
+| `MemoryTurnSession.cs` | Confirmación y recuperación de memoria privada |
+
+`MissionEngine` sigue con un solo constructor (`MissionEngineOptions`). El
+runtime registrado ya no carga `llama-server` desde `Programacion\BAXY`. El
+ViewModel queda ~2.450 líneas; no se persiguió el recuento 3.865 de 2026-08-16.
 
 ### La compuerta, dicha como está
 

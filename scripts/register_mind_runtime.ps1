@@ -73,6 +73,12 @@ function Resolve-RequiredDirectory {
     return [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $Path).Path)
 }
 
+function Test-BaxyForeignWorktreePath {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    $full = [IO.Path]::GetFullPath($Path)
+    return $full -match '(?i)[\\/]BAXY[\\/]'
+}
+
 $pythonFull = Resolve-BaxyRuntimePython `
     -Candidate $Python `
     -ManifestPath $manifestPath `
@@ -81,6 +87,12 @@ $pythonPathFull = Resolve-RequiredDirectory -Path $PythonPath -Description 'baxy
 $ggufFull = Resolve-RequiredFile -Path $Gguf -Description 'GGUF conversacional'
 $serverFull = Resolve-RequiredFile -Path $LlamaServer -Description 'llama-server'
 $sttFull = Resolve-RequiredDirectory -Path $SttDirectory -Description 'Parakeet STT bundle'
+foreach ($candidate in @($pythonFull, $ggufFull, $serverFull, $sttFull)) {
+    if (Test-BaxyForeignWorktreePath -Path $candidate) {
+        throw ("mind_runtime_registration_failed: foreign_baxy_worktree: " +
+            $candidate)
+    }
+}
 
 if (-not [string]::Equals(
         [IO.Path]::GetFileName($pythonFull),

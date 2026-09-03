@@ -18,7 +18,7 @@ MIND_RUNTIME_DISCOVERY = ROOT / "src" / "Baxy.App" / "MindRuntimeDiscovery.cs"
 MAIN_WINDOW_VIEW_MODEL = ROOT / "src" / "Baxy.App" / "MainWindowViewModel.cs"
 
 
-def test_descriptor_declares_repository_legacy_assets_without_copying_them(
+def test_descriptor_does_not_depend_on_the_sibling_baxy_worktree(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv("BAXY_ASSETS_ROOT", raising=False)
@@ -26,10 +26,17 @@ def test_descriptor_declares_repository_legacy_assets_without_copying_them(
     monkeypatch.delenv("BAXY_MIND_LLM_GGUF", raising=False)
 
     descriptor, _ = load_asset_descriptor()
-    assert any(
-        "\\legacy\\models\\artifacts\\" in candidate
-        for candidate in descriptor["assets"]["conversation_model"]["candidates"]
-    )
+    offenders: list[str] = []
+    for name, definition in descriptor["assets"].items():
+        for candidate in definition["candidates"]:
+            if "${REPOSITORY_ROOT}\\legacy\\" in candidate:
+                offenders.append(f"{name}: {candidate}")
+            if "\\Programacion\\BAXY\\" in candidate:
+                offenders.append(f"{name}: {candidate}")
+    assert offenders == []
+    llama = descriptor["assets"]["llama_server"]["candidates"]
+    assert any("${LOCALAPPDATA}\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\" in item for item in llama)
+    assert any("D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\" in item for item in llama)
 
 
 def test_machine_local_override_wins_and_stays_outside_repository(
@@ -176,3 +183,28 @@ def test_development_launcher_delegates_runtime_hash_verification_to_app() -> No
     assert "MindRuntimeDiscovery.ApplyVerified(discovery)" in view_model
     assert "MatchesSttHash" in discovery
     assert "SHA256.HashData(stream)" in discovery
+    assert "IsForeignBaxyWorktree" in discovery
+    register = (ROOT / "scripts" / "register_mind_runtime.ps1").read_text(encoding="utf-8")
+    assert "foreign_baxy_worktree" in register
+    assert "private async Task HandlePendingMindPlanAsync(" not in view_model
+    assert "private async Task HandlePendingMemoryConfirmationAsync(" not in view_model
+    session_plan = (ROOT / "src" / "Baxy.App" / "MindPlanSession.cs").read_text(encoding="utf-8")
+    session_memory = (ROOT / "src" / "Baxy.App" / "MemoryTurnSession.cs").read_text(encoding="utf-8")
+    assert "internal async Task HandlePendingAsync(" in session_plan
+    assert "internal async Task HandleConfirmationAsync(" in session_memory
+
+
+def test_llama_server_resolution_does_not_select_the_sibling_baxy_worktree(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("BAXY_ASSETS_OVERRIDE", raising=False)
+    monkeypatch.delenv("BAXY_MIND_LLAMA_SERVER", raising=False)
+    monkeypatch.delenv("BAXY_ASSETS_ROOT", raising=False)
+    resolution = resolve_asset("llama_server")
+    sibling = Path(r"C:\Users\usuario\Desktop\ETC\Programacion\BAXY").resolve()
+    if resolution.path is None:
+        return
+    resolved = resolution.path.resolve()
+    assert not (
+        resolved == sibling or sibling in resolved.parents
+    ), f"llama-server resolved under sibling BAXY: {resolved}"

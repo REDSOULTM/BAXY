@@ -32,6 +32,30 @@ def test_stt_evaluator_freezes_final_contract_and_blind_engines() -> None:
         evaluator._program_tree(ROOT)["sha256"]
         == evaluator.EXPECTED_PROGRAM_TREE_SHA256
     )
+    audit = load_module(
+        "baxy_stt_audit_fresh",
+        "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+    )
+    assert (
+        audit._program_tree(ROOT)["sha256"] == audit.EXPECTED_PROGRAM_TREE_SHA256
+    )
+    assert audit.EXPECTED_PROGRAM_TREE_SHA256 == evaluator.EXPECTED_PROGRAM_TREE_SHA256
+    historical = load_module(
+        "baxy_stt_minds14_preregister",
+        "experiments/stt_quality/preregister_minds14_stt_holdout.py",
+    )
+    # Campaign contracts keep their own tree pin. C02 must not rewrite them to
+    # the current evaluator seal (1d3a69df…, lineage of goal095_09512_integrate.py).
+    assert historical.EXPECTED_PROGRAM_TREE_SHA256 != evaluator.EXPECTED_PROGRAM_TREE_SHA256
+    diagnostic = json.loads(
+        (ROOT / "artifacts/audit/goals_01_10_20260903/program-tree-diagnostic.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert diagnostic["expectedSeal"] == (
+        "08300d7cec3ef1d770fb1a10c9a6de7e9d8fdf64e69c7a3be9c4bf4221a5fc7b"
+    )
+    assert diagnostic["expectedSeal"] != evaluator.EXPECTED_PROGRAM_TREE_SHA256
 
 
 def test_bounded_streaming_completion_selector_is_conservative() -> None:

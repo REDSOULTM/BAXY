@@ -21,7 +21,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private readonly CancellationTokenSource _mindLifetimeCancellation = new();
     private readonly PendingModelMessageQueue _modelMessages;
     private RetryableOperationRegistry? _retryableOperations;
-    private DurablePlanStore? _planStore;
     private CoreProcessClient? _coreClient;
     private MindSidecarClient? _mindClient;
     private Task? _mindInitializationTask;
@@ -33,15 +32,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     private bool _resumeWakeAfterDirect;
     private bool _isMicAvailable;
     private MemoryOperationProtector? _memoryProtector;
-    private PendingMemoryConfirmation? _pendingMemoryConfirmation;
-    private bool _pendingMemoryConfirmationIsDurable;
-    private bool _pendingMemoryConfirmationRequiresReconciliation;
-    private PreparedOperation? _pendingMemoryOperation;
-    private PendingPublicAfterMemory? _pendingPublicAfterMemory;
-    private bool _pendingMemoryRecoveryAnnounced;
+    private readonly MemoryTurnSession _memoryTurns;
+    private readonly MindPlanSession _mindPlans;
     private readonly PendingNoteInteractionState _pendingNoteInteraction = new();
     private PreparedOperation? _pendingAudioOperation;
-    private PendingMindPlanExecution? _pendingMindPlan;
     private string? _pendingMindClarificationObjective;
     private Action? _coreDisconnectedHandler;
     private int _coreDisconnectObserved;
@@ -82,7 +76,31 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             failure => InvokeOnUiAsync(() => LastMessageCompositionFailure = failure),
             OnModelMessageQueued,
             () => InvokeOnUiAsync(RestorePresentationState));
+        _mindPlans = new MindPlanSession(
+            new MindPlanSession.Host
+            {
+                Core = () => _coreClient,
+                Mind = () => _mindClient,
+                Publish = PublishBaxy,
+                SetStatus = text => StatusDescription = text,
+                TryMarkResolved = TryMarkResolved,
+            });
+        _memoryTurns = new MemoryTurnSession(
+            new MemoryTurnSession.Host
+            {
+                Core = () => _coreClient,
+                Protector = () => _memoryProtector,
+                Publish = PublishBaxy,
+                SetStatus = text => StatusDescription = text,
+                HasPendingAudio = () => _pendingAudioOperation is not null,
+                RecoverNotes = RecoverPendingNoteInteraction,
+                ContinuePublic = (route, registry, token) =>
+                    TryExecuteWithMindAsync(route, registry, token),
+            });
     }
+
+    private void PublishBaxy(string body, UserMessageEvent? messageEvent) =>
+        AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent);
 
     private void OnModelMessageQueued()
     {
@@ -180,7 +198,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             ?? string.Empty;
         int step = 0;
         int total = 0;
-        if (_pendingMindPlan is { } plan && plan.Steps.Count > 1)
+        if (_mindPlans.Current is { } plan && plan.Steps.Count > 1)
         {
             step = Math.Min(plan.NextIndex + 1, plan.Steps.Count);
             total = plan.Steps.Count;
@@ -265,10 +283,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         IsReady = false;
         StatusText = "Iniciando";
         StatusDescription = "Comprobando BAXY";
-        ClearVolatileMemoryConfirmation();
+        _memoryTurns.ClearConfirmation();
         _pendingMindClarificationObjective = null;
-        _pendingMemoryOperation = null;
-        _pendingMemoryRecoveryAnnounced = false;
+        _memoryTurns.ResetOperation();
 
         if (_coreClient is not null)
         {
@@ -286,9 +303,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         try
         {
             _memoryProtector ??= MemoryOperationProtector.CreateDefault(_memorySessionId);
-            _retryableOperations ??= RetryableOperationRegistry.CreateDefault(_memoryProtector);
-            _planStore ??= DurablePlanStore.CreateDefault();
-            _pendingMindPlan ??= _planStore.Load(_retryableOperations);
+            RetryableOperationRegistry registry = _retryableOperations
+                ??= RetryableOperationRegistry.CreateDefault(_memoryProtector);
+            _mindPlans.EnsureStore();
+            _mindPlans.TryRestore(registry);
             Task<MindRuntimeDiscoveryResult>? mindDiscovery = null;
             if (_testTurnResolver is null)
             {
@@ -342,16 +360,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 TurnVisibleFacts.Welcome(),
                 isUser: false,
                 messageEvent: UserMessageEvent.Welcome);
-            if (_pendingMindPlan is not null)
+            if (_mindPlans.Current is { } restoredPlan)
             {
                 AddMessage(
                     "BAXY",
-                    MissionNarration.CreateRecoveryPrompt(_pendingMindPlan),
+                    MissionNarration.CreateRecoveryPrompt(restoredPlan),
                     isUser: false,
                     messageEvent: UserMessageEvent.Confirmation);
             }
             RecoverPendingAudioOperation(announce: true);
-            RecoverPendingMemoryOperation(announce: true);
+            _memoryTurns.RecoverFrom(registry, announce: true);
             RecoverPendingNoteInteraction(announce: true);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -398,7 +416,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             messageEvent: UserMessageEvent.Clarification);
     }
 
-    internal bool HasPendingPlan => _pendingMindPlan is not null;
+    internal bool HasPendingPlan => _mindPlans.HasPending;
 
     internal async Task SubmitAsync(
         MissionInput input,
@@ -469,9 +487,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             RetryableOperationRegistry registry = _retryableOperations
                 ?? throw new InvalidOperationException("La cola durable no está disponible.");
-            if (_pendingMindPlan is not null)
+            if (_mindPlans.HasPending)
             {
-                await HandlePendingMindPlanAsync(text, registry, cancellationToken);
+                await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
                 return;
             }
 
@@ -501,9 +519,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
-            if (_pendingMemoryConfirmation is not null)
+            if (_memoryTurns.HasConfirmation)
             {
-                await HandlePendingMemoryConfirmationAsync(text, registry, cancellationToken);
+                await _memoryTurns.HandleConfirmationAsync(text, registry, cancellationToken);
                 return;
             }
 
@@ -513,9 +531,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 return;
             }
 
-            if (_pendingMemoryOperation is not null)
+            if (_memoryTurns.HasPendingOperation)
             {
-                await HandlePendingMemoryOperationAsync(text, registry, cancellationToken);
+                await _memoryTurns.HandlePendingOperationAsync(text, registry, cancellationToken);
                 return;
             }
 
@@ -547,7 +565,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             switch (memory.Outcome)
             {
                 case MemoryParseOutcome.Route when memory.Operation is not null:
-                    await ExecuteMemoryRouteAsync(
+                    await _memoryTurns.ExecuteRouteAsync(
                         memory.Operation,
                         registry,
                         durableBeforeSend: true,
@@ -556,7 +574,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         route.Source);
                     return;
                 case MemoryParseOutcome.ConfirmSensitiveSave when memory.Operation is not null:
-                    await ExecuteMemoryRouteAsync(
+                    await _memoryTurns.ExecuteRouteAsync(
                         memory.Operation,
                         registry,
                         durableBeforeSend: false,
@@ -732,400 +750,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             throw new InvalidDataException("El estado privado inicial no tiene una forma válida.");
         }
     }
-
-    private async Task HandlePendingMemoryConfirmationAsync(
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PendingMemoryConfirmation pending = _pendingMemoryConfirmation
-            ?? throw new InvalidOperationException("No hay una confirmación de memoria activa.");
-        switch (ConfirmationReplyParser.Parse(text))
-        {
-            case ConfirmationReplyKind.Invalid:
-                AddMessage(
-                    "BAXY",
-                    _pendingMemoryConfirmationRequiresReconciliation
-                        ? TurnVisibleFacts.Confirmation(
-                            "memory_reconcile_only",
-                            TurnVisibleFacts.ConfirmCancel)
-                        : TurnVisibleFacts.Confirmation(
-                            "memory_confirm_or_cancel",
-                            TurnVisibleFacts.ConfirmCancel),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Confirmation);
-                return;
-            case ConfirmationReplyKind.Cancel:
-                if (_pendingMemoryConfirmationRequiresReconciliation)
-                {
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Confirmation(
-                            "cannot_withdraw_uncertain",
-                            TurnVisibleFacts.ConfirmCancel),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Confirmation);
-                    return;
-                }
-
-                if (!TryRemoveMemoryOperation(registry, pending.Prepared))
-                {
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Failure("cannot_withdraw_pending"),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Error(
-                            UserMessageDiagnosticCodes.ActionNotCompleted));
-                    return;
-                }
-
-                ClearPendingPublicAfterMemory(pending.Prepared);
-                ClearVolatileMemoryConfirmation();
-                AddMessage("BAXY", TurnVisibleFacts.Status("memory_cancelled"), isUser: false);
-                ContinueMemoryRecovery(registry);
-                return;
-            case ConfirmationReplyKind.Confirm:
-                PreparedOperation prepared = pending.Prepared;
-                if (!_pendingMemoryConfirmationIsDurable)
-                {
-                    MemoryOperationProtector protector = _memoryProtector
-                        ?? throw new InvalidOperationException("La protección de memoria no está disponible.");
-                    prepared = registry.GetOrAdd(protector.AuthenticateForOutbox(prepared));
-                    _pendingMemoryConfirmationIsDurable = true;
-                }
-
-                // Once a grant leaves the shell, an effect may occur even if
-                // the response is lost. Cancellation must remain conservative.
-                _pendingMemoryConfirmationRequiresReconciliation = true;
-
-                await SendMemoryPreparedOperationAsync(
-                    prepared,
-                    registry,
-                    isDurable: true,
-                    pending.Token,
-                    cancellationToken);
-                return;
-            default:
-                throw new InvalidDataException("La respuesta de confirmación no es válida.");
-        }
-    }
-
-    private async Task HandlePendingMemoryOperationAsync(
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PreparedOperation pending = _pendingMemoryOperation
-            ?? throw new InvalidOperationException("No hay una operación de memoria por reconciliar.");
-        NoteChoiceReply reply = NoteChoiceReplyParser.Parse(text);
-        if (reply.Kind == NoteChoiceReplyKind.Cancel)
-        {
-            if (!TryRemoveMemoryOperation(registry, pending))
-            {
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Failure("cannot_withdraw_pending"),
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(
-                        UserMessageDiagnosticCodes.ActionNotCompleted));
-                return;
-            }
-
-            _pendingMemoryOperation = null;
-            _pendingMemoryRecoveryAnnounced = false;
-            AddMessage("BAXY", TurnVisibleFacts.Status("memory_cancelled"), isUser: false);
-            ContinueMemoryRecovery(registry);
-            return;
-        }
-
-        if (reply.Kind != NoteChoiceReplyKind.Continue)
-        {
-            AddMessage(
-                "BAXY",
-                PrivateOperationNarration.CreateMemoryRecoveryPrompt(pending),
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-            return;
-        }
-
-        await SendMemoryPreparedOperationAsync(
-            pending,
-            registry,
-            isDurable: true,
-            confirmationToken: null,
-            cancellationToken);
-    }
-
-    private async Task ExecuteMemoryRouteAsync(
-        MemoryRoutedOperation routed,
-        RetryableOperationRegistry registry,
-        bool durableBeforeSend,
-        CancellationToken cancellationToken,
-        string? publicObjective = null,
-        MissionInputSource publicSource = MissionInputSource.Text)
-    {
-        MemoryOperationProtector protector = _memoryProtector
-            ?? throw new InvalidOperationException("La protección de memoria no está disponible.");
-        ProtectedMemoryOperation protectedOperation = protector.Prepare(routed);
-        PreparedOperation prepared = durableBeforeSend
-            ? registry.GetOrAdd(protectedOperation)
-            : protectedOperation.Prepared;
-        if (!string.IsNullOrWhiteSpace(publicObjective))
-        {
-            _pendingPublicAfterMemory = new PendingPublicAfterMemory(
-                prepared,
-                publicObjective,
-                publicSource);
-        }
-        await SendMemoryPreparedOperationAsync(
-            prepared,
-            registry,
-            durableBeforeSend,
-            confirmationToken: null,
-            cancellationToken);
-    }
-
-    private async Task SendMemoryPreparedOperationAsync(
-        PreparedOperation prepared,
-        RetryableOperationRegistry registry,
-        bool isDurable,
-        string? confirmationToken,
-        CancellationToken cancellationToken)
-    {
-        CoreProcessClient client = _coreClient
-            ?? throw new InvalidOperationException("El motor local no está disponible.");
-        MemoryOperationProtector protector = _memoryProtector
-            ?? throw new InvalidOperationException("La protección de memoria no está disponible.");
-        OperationResponse response = await client.SendOperationAsync(
-            prepared,
-            TimeSpan.FromSeconds(20),
-            cancellationToken,
-            confirmationToken);
-
-        if (PendingMemoryConfirmation.TryCreate(
-                response,
-                prepared,
-                TimeProvider.System,
-                out PendingMemoryConfirmation? challenge)
-            && challenge is not null)
-        {
-            _pendingMemoryConfirmation = challenge;
-            _pendingMemoryConfirmationIsDurable = isDurable;
-            _pendingMemoryConfirmationRequiresReconciliation =
-                challenge.ReconciliationRequired;
-            if (IsSameMemoryOperation(_pendingMemoryOperation, prepared))
-            {
-                _pendingMemoryOperation = null;
-                _pendingMemoryRecoveryAnnounced = false;
-            }
-
-            AddMessage(
-                "BAXY",
-                PrivateOperationNarration.CreateMemoryConfirmationPrompt(
-                    prepared,
-                    challenge.ReconciliationRequired),
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-            return;
-        }
-
-        // A sensitive draft is deliberately non-durable. The only acceptable
-        // first response is a validated challenge; no other response may turn
-        // the RAM-only draft into a success claim or an outbox entry.
-        if (!isDurable)
-        {
-            ClearPendingPublicAfterMemory(prepared);
-            AddMessage(
-                "BAXY",
-                "No recibí una confirmación segura para guardar ese dato sensible. No lo añadí a la cola de recuperación.",
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
-            return;
-        }
-
-        if (string.Equals(response.Status, OperationStatuses.Completed, StringComparison.Ordinal))
-        {
-            try
-            {
-                using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
-                if (!MemoryOperationResponseProjection.TryCreateCompleted(
-                        prepared.OperationName,
-                        opened.Payload,
-                        out MemoryOperationResponseProjection? projection,
-                        response.Replayed)
-                    || projection is null)
-                {
-                    throw new InvalidDataException("La respuesta privada no admite una proyección segura.");
-                }
-
-                AddMessage("BAXY", projection.Message, isUser: false);
-            }
-            catch
-            {
-                ClearMemoryConfirmationFor(prepared);
-                SetPendingMemoryOperation(registry, prepared);
-                throw;
-            }
-
-            ClearMemoryConfirmationFor(prepared);
-            ResolveMemoryOperation(registry, prepared);
-            await ContinuePendingPublicAfterMemoryAsync(
-                prepared,
-                registry,
-                cancellationToken);
-            return;
-        }
-
-        AddMessage(
-            "BAXY",
-            PrivateOperationNarration.CreateMemoryFailureMessage(prepared.OperationName, response),
-            isUser: false,
-            messageEvent: UserMessageEvent.Error(
-                UserMessageDiagnosticCodes.ActionNotCompleted));
-        if (ShouldRetainRetryIdentity(response))
-        {
-            if (confirmationToken is null || _pendingMemoryConfirmation is null)
-            {
-                SetPendingMemoryOperation(registry, prepared);
-            }
-
-            return;
-        }
-
-        ClearPendingPublicAfterMemory(prepared);
-        ClearMemoryConfirmationFor(prepared);
-        ResolveMemoryOperation(registry, prepared);
-    }
-
-    private async Task ContinuePendingPublicAfterMemoryAsync(
-        PreparedOperation predecessor,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PendingPublicAfterMemory? continuation = _pendingPublicAfterMemory;
-        if (continuation is null
-            || !IsSameMemoryOperation(continuation.Predecessor, predecessor))
-        {
-            return;
-        }
-
-        _pendingPublicAfterMemory = null;
-        var publicRoute = new MissionInputRoute(
-            continuation.Objective,
-            continuation.Source,
-            MemoryParseResult.NoRoute());
-        if (!await TryExecuteWithMindAsync(publicRoute, registry, cancellationToken))
-        {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure("ambiguous_request"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
-        }
-    }
-
-    private void ClearPendingPublicAfterMemory(PreparedOperation predecessor)
-    {
-        if (_pendingPublicAfterMemory is { } continuation
-            && IsSameMemoryOperation(continuation.Predecessor, predecessor))
-        {
-            _pendingPublicAfterMemory = null;
-        }
-    }
-
-    private void ResolveMemoryOperation(
-        RetryableOperationRegistry registry,
-        PreparedOperation prepared)
-    {
-        if (!TryRemoveMemoryOperation(registry, prepared))
-        {
-            SetPendingMemoryOperation(registry, prepared);
-            return;
-        }
-
-        if (IsSameMemoryOperation(_pendingMemoryOperation, prepared))
-        {
-            _pendingMemoryOperation = null;
-            _pendingMemoryRecoveryAnnounced = false;
-        }
-
-        ContinueMemoryRecovery(registry);
-    }
-
-    private bool TryRemoveMemoryOperation(
-        RetryableOperationRegistry registry,
-        PreparedOperation prepared)
-    {
-        try
-        {
-            PreparedOperation? registered = registry
-                .SnapshotPendingOperations()
-                .FirstOrDefault(candidate => IsSameMemoryOperation(candidate, prepared));
-            if (registered is null)
-            {
-                return true;
-            }
-
-            registry.MarkResolved(registered);
-            return !registry
-                .SnapshotPendingOperations()
-                .Any(candidate => IsSameMemoryOperation(candidate, prepared));
-        }
-        catch (Exception exception) when (IsDurableStoreFailure(exception))
-        {
-            AddMessage(
-                "BAXY",
-                TurnVisibleFacts.Failure("recovery_journal_unclosed"),
-                isUser: false,
-                messageEvent: UserMessageEvent.Error(
-                    UserMessageDiagnosticCodes.ActionNotCompleted));
-            return false;
-        }
-    }
-
-    private void SetPendingMemoryOperation(
-        RetryableOperationRegistry registry,
-        PreparedOperation prepared)
-    {
-        _pendingMemoryOperation = registry
-            .SnapshotPendingOperations()
-            .FirstOrDefault(candidate => IsSameMemoryOperation(candidate, prepared))
-            ?? prepared;
-        _pendingMemoryRecoveryAnnounced = false;
-        AnnouncePendingMemoryRecoveryIfReady();
-    }
-
-    private void ContinueMemoryRecovery(RetryableOperationRegistry registry)
-    {
-        RecoverPendingMemoryOperation(announce: true);
-        RecoverPendingNoteInteraction(announce: true);
-    }
-
-    private void ClearMemoryConfirmationFor(PreparedOperation prepared)
-    {
-        if (_pendingMemoryConfirmation is not null
-            && IsSameMemoryOperation(_pendingMemoryConfirmation.Prepared, prepared))
-        {
-            ClearVolatileMemoryConfirmation();
-        }
-    }
-
-    private void ClearVolatileMemoryConfirmation()
-    {
-        _pendingMemoryConfirmation = null;
-        _pendingMemoryConfirmationIsDurable = false;
-        _pendingMemoryConfirmationRequiresReconciliation = false;
-    }
-
-    private static bool IsSameMemoryOperation(
-        PreparedOperation? left,
-        PreparedOperation right) =>
-        left is not null
-        && string.Equals(left.IdentityKey, right.IdentityKey, StringComparison.Ordinal)
-        && string.Equals(left.MissionId, right.MissionId, StringComparison.Ordinal)
-        && string.Equals(left.InvocationId, right.InvocationId, StringComparison.Ordinal);
 
     private async Task HandlePendingAudioOperationAsync(
         string text,
@@ -2180,9 +1804,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     return true;
                 }
                 var execution = new PendingMindPlanExecution(route.Text, plan.Steps);
-                _pendingMindPlan = execution;
-                PersistMindPlan(execution);
-                await ExecuteMindPlanAsync(execution, registry, cancellationToken);
+                _mindPlans.Begin(execution);
+                await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
                 return true;
             }
 
@@ -2270,516 +1893,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             "literal",
             groundedArguments);
         var execution = new PendingMindPlanExecution(route.Text, [step]);
-        _pendingMindPlan = execution;
-        PersistMindPlan(execution);
-        await ExecuteMindPlanAsync(execution, registry, cancellationToken);
+        _mindPlans.Begin(execution);
+        await _mindPlans.ExecuteAsync(execution, registry, cancellationToken);
         return true;
-    }
-
-    private async Task ExecuteMindPlanAsync(
-        PendingMindPlanExecution execution,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        CoreProcessClient client = _coreClient
-            ?? throw new InvalidOperationException("El motor local no está disponible.");
-        MindSidecarClient mind = _mindClient
-            ?? throw new InvalidOperationException("La mente local no está disponible.");
-
-        while (execution.NextIndex < execution.Steps.Count)
-        {
-            MindPlanStep step = execution.CurrentStep;
-            StatusDescription = execution.Steps.Count == 1
-                ? "acting"
-                : $"Ejecutando paso {execution.NextIndex + 1} de {execution.Steps.Count}";
-            JsonObject? arguments = step.Arguments?.DeepClone() as JsonObject;
-            JsonObject? identityArguments = null;
-            JsonArray groundingObservations = [];
-            if (string.Equals(
-                    step.ArgumentsMode,
-                    "after_dependencies",
-                    StringComparison.Ordinal))
-            {
-                if (!PlanObservationProjector.TrySelectVerifiedDependencies(
-                        step,
-                        execution.Observations,
-                        out groundingObservations))
-                {
-                    FinishMindPlanWithFailure(
-                        execution,
-                        TurnVisibleFacts.Failure("step_unverified"));
-                    return;
-                }
-
-                if (PlanObservationProjector.TryGroundIdentityArguments(
-                        step,
-                        groundingObservations,
-                        out identityArguments)
-                    && identityArguments is not null)
-                {
-                    arguments ??= new JsonObject();
-                    foreach ((string key, JsonNode? value) in identityArguments)
-                    {
-                        arguments[key] = value?.DeepClone();
-                    }
-                }
-            }
-            if (arguments is null
-                || !MindPlanBoundary.ArgumentsSatisfyExactSchema(
-                    step.Operation,
-                    arguments))
-            {
-                arguments = await mind.GroundPlanStepAsync(
-                    execution.Objective,
-                    step,
-                    groundingObservations,
-                    TimeSpan.FromSeconds(30),
-                    cancellationToken);
-
-                if (arguments is null)
-                {
-                    FinishMindPlanWithFailure(
-                        execution,
-                        TurnVisibleFacts.Failure("step_data_missing"));
-                    return;
-                }
-
-                // Opaque identities come only from verified dependency
-                // observations. The mind may fill remaining literals, but it
-                // cannot replace that authority with another value.
-                if (identityArguments is not null)
-                {
-                    foreach ((string key, JsonNode? value) in identityArguments)
-                    {
-                        arguments[key] = value?.DeepClone();
-                    }
-                }
-            }
-
-            arguments = MindArgumentNormalization.Normalize(
-                step.Operation,
-                execution.Objective,
-                arguments);
-            if (string.Equals(
-                    step.ArgumentsMode,
-                    "after_dependencies",
-                    StringComparison.Ordinal)
-                && !PlanObservationProjector
-                    .ArgumentsUseVerifiedDependencyAuthority(
-                        step.Operation,
-                        arguments,
-                        groundingObservations))
-            {
-                FinishMindPlanWithFailure(
-                    execution,
-                    TurnVisibleFacts.Failure("step_unlinkable"));
-                return;
-            }
-
-            MindPlanBoundary.ValidateGroundedArguments(step.Operation, arguments);
-            var routed = new RoutedOperation(step.Operation, arguments);
-            PreparedOperation prepared = execution.PendingOperation
-                ?? registry.GetOrAdd(routed);
-            execution.PendingOperation = prepared;
-            PersistMindPlan(execution);
-            OperationResponse response = await client.SendOperationAsync(
-                prepared,
-                TimeSpan.FromSeconds(20),
-                cancellationToken);
-            if (PendingOperationConfirmation.TryCreate(
-                    response,
-                    prepared,
-                    TimeProvider.System,
-                    out PendingOperationConfirmation? confirmation)
-                && confirmation is not null)
-            {
-                StageMindPlanConfirmation(execution, confirmation);
-                return;
-            }
-
-            if (response.Status == OperationStatuses.Pending)
-            {
-                execution.PendingEffectMayHaveOccurred |= response.EffectMayHaveOccurred;
-                _pendingMindPlan = execution;
-                PersistMindPlan(execution);
-                AddMessage(
-                    "BAXY",
-                    response.EffectMayHaveOccurred
-                        ? TurnVisibleFacts.Failure(
-                            "step_uncertain",
-                            new JsonObject { ["step"] = execution.NextIndex + 1 })
-                        : TurnVisibleFacts.Confirmation(
-                            "step_pending_retry",
-                            TurnVisibleFacts.ContinueCancel,
-                            new JsonObject { ["step"] = execution.NextIndex + 1 }),
-                    isUser: false,
-                    messageEvent: response.EffectMayHaveOccurred
-                        ? UserMessageEvent.Error(
-                            UserMessageDiagnosticCodes.ActionNotCompleted)
-                        : UserMessageEvent.Confirmation);
-                return;
-            }
-
-            if (response.Status == OperationStatuses.Completed && response.Verified)
-            {
-                CompleteMindPlanStep(execution, registry, prepared, step, response);
-                continue;
-            }
-
-            if (MindPlanBoundary.MustRetainAmbiguousEffect(response))
-            {
-                execution.PendingOperation = prepared;
-                execution.PendingEffectMayHaveOccurred = true;
-                _pendingMindPlan = execution;
-                PersistMindPlan(execution);
-                AddMessage(
-                    "BAXY",
-                    $"El paso {execution.NextIndex + 1} no pudo verificarse y el efecto puede haber ocurrido. Conservé su identidad durable; no continuaré, replanearé ni lo repetiré hasta reconciliarlo.",
-                    isUser: false,
-                    messageEvent: UserMessageEvent.Error(
-                        UserMessageDiagnosticCodes.ActionNotCompleted));
-                return;
-            }
-
-            _ = TryMarkResolved(registry, prepared);
-            execution.PendingOperation = null;
-            PersistMindPlan(execution);
-
-            if (!response.EffectMayHaveOccurred && execution.ReplanCount < 2)
-            {
-                MindPlanResult? replacement = await TryReplanMindMissionAsync(
-                    execution,
-                    step,
-                    response,
-                    cancellationToken);
-                if (replacement is { Kind: "plan" }
-                    && MindPlanBoundary.IsSafeReplanSuffix(execution, replacement))
-                {
-                    try
-                    {
-                        _ = MindPlanBoundary.ValidateAndConvert(execution.Objective, replacement);
-                    }
-                    catch (Baxy.Kernel.Planning.MissionPlanValidationException)
-                    {
-                        FinishMindPlanWithFailure(
-                            execution,
-                            TurnVisibleFacts.Failure("continue_unsafe"));
-                        return;
-                    }
-                    var replanned = new PendingMindPlanExecution(
-                        execution.Objective,
-                        replacement.Steps,
-                        execution.ReplanCount + 1);
-                    foreach (JsonNode? observation in execution.Observations)
-                    {
-                        replanned.Observations.Add(observation?.DeepClone());
-                    }
-
-                    replanned.CompletedMessages.AddRange(execution.CompletedMessages);
-                    _pendingMindPlan = replanned;
-                    PersistMindPlan(replanned);
-                    execution = replanned;
-                    continue;
-                }
-            }
-
-            FinishMindPlanWithFailure(
-                execution,
-                TurnVisibleFacts.Failure(
-                    "step_failed",
-                    new JsonObject { ["step"] = execution.NextIndex + 1 }));
-            return;
-        }
-
-        ClearMindPlan();
-        AddMessage(
-            "BAXY",
-            MissionNarration.CreateCompletionMessage(execution.CompletedMessages),
-            isUser: false);
-    }
-
-    private void StageMindPlanConfirmation(
-        PendingMindPlanExecution execution,
-        PendingOperationConfirmation confirmation)
-    {
-        execution.RequireConfirmation(confirmation);
-        _pendingMindPlan = execution;
-        PersistMindPlan(execution);
-        AddMessage(
-            "BAXY",
-            confirmation.ReconciliationRequired
-                ? TurnVisibleFacts.Confirmation(
-                    "step_interrupted_uncertain",
-                    TurnVisibleFacts.ConfirmCancel,
-                    new JsonObject { ["step"] = execution.NextIndex + 1 })
-                : TurnVisibleFacts.Confirmation(
-                    "step_needs_confirmation",
-                    TurnVisibleFacts.ConfirmCancel,
-                    new JsonObject { ["step"] = execution.NextIndex + 1 }),
-            isUser: false,
-            messageEvent: UserMessageEvent.Confirmation);
-    }
-
-    private async Task HandlePendingMindPlanAsync(
-        string text,
-        RetryableOperationRegistry registry,
-        CancellationToken cancellationToken)
-    {
-        PendingMindPlanExecution execution = _pendingMindPlan
-            ?? throw new InvalidOperationException("No hay un plan pendiente.");
-        if (execution.Confirmation is { } confirmation)
-        {
-            switch (ConfirmationReplyParser.Parse(text))
-            {
-                case ConfirmationReplyKind.Invalid:
-                    AddMessage(
-                        "BAXY",
-                        confirmation.ReconciliationRequired
-                            ? TurnVisibleFacts.Confirmation(
-                                "step_started_needs_check",
-                                TurnVisibleFacts.ConfirmCancel)
-                            : TurnVisibleFacts.Confirmation(
-                                "step_confirm_or_cancel",
-                                TurnVisibleFacts.ConfirmCancel),
-                        isUser: false,
-                        messageEvent: UserMessageEvent.Confirmation);
-                    return;
-                case ConfirmationReplyKind.Cancel:
-                    if (!execution.CanAbandonConfirmation)
-                    {
-                        PersistMindPlan(execution);
-                        AddMessage(
-                            "BAXY",
-                            TurnVisibleFacts.Confirmation(
-                                "cannot_cancel_started_step",
-                                TurnVisibleFacts.ConfirmCancel),
-                            isUser: false,
-                            messageEvent: UserMessageEvent.Confirmation);
-                        return;
-                    }
-
-                    registry.MarkResolved(confirmation.Prepared);
-                    ClearMindPlan();
-                    AddMessage(
-                        "BAXY",
-                        TurnVisibleFacts.Status(
-                            "mission_cancelled_partial",
-                            new JsonObject
-                            {
-                                ["step"] = execution.NextIndex + 1,
-                                ["completed"] = execution.CompletedMessages.Count,
-                            }),
-                        isUser: false);
-                    return;
-                case ConfirmationReplyKind.Confirm:
-                    CoreProcessClient client = _coreClient
-                        ?? throw new InvalidOperationException("El motor local no está disponible.");
-                    OperationResponse response = await client.SendOperationAsync(
-                        confirmation.Prepared,
-                        TimeSpan.FromSeconds(20),
-                        cancellationToken,
-                        confirmation.Token);
-                    execution.Confirmation = null;
-                    if (response.Status == OperationStatuses.Completed && response.Verified)
-                    {
-                        CompleteMindPlanStep(
-                            execution,
-                            registry,
-                            confirmation.Prepared,
-                            execution.CurrentStep,
-                            response);
-                        await ExecuteMindPlanAsync(execution, registry, cancellationToken);
-                        return;
-                    }
-
-                    if (PendingOperationConfirmation.TryCreate(
-                            response,
-                            confirmation.Prepared,
-                            TimeProvider.System,
-                            out PendingOperationConfirmation? refreshed)
-                        && refreshed is not null)
-                    {
-                        StageMindPlanConfirmation(execution, refreshed);
-                        return;
-                    }
-
-                    if (ShouldRetainRetryIdentity(response))
-                    {
-                        execution.PendingOperation = confirmation.Prepared;
-                        execution.PendingEffectMayHaveOccurred |=
-                            response.EffectMayHaveOccurred;
-                        _pendingMindPlan = execution;
-                        PersistMindPlan(execution);
-                        AddMessage(
-                            "BAXY",
-                            response.EffectMayHaveOccurred
-                                ? TurnVisibleFacts.Status("confirmed_uncertain")
-                                : TurnVisibleFacts.Confirmation(
-                                    "confirmed_pending",
-                                    TurnVisibleFacts.ContinueCancel),
-                            isUser: false);
-                        return;
-                    }
-
-                    _ = TryMarkResolved(registry, confirmation.Prepared);
-                    execution.PendingOperation = null;
-                    FinishMindPlanWithFailure(
-                        execution,
-                        TurnVisibleFacts.Failure("confirmed_no_effect"));
-                    return;
-                default:
-                    throw new InvalidDataException("La respuesta de confirmación no es válida.");
-            }
-        }
-
-        ConfirmationReplyKind reply = ConfirmationReplyParser.Parse(text);
-        if (reply == ConfirmationReplyKind.Cancel)
-        {
-            if (execution.PendingEffectMayHaveOccurred)
-            {
-                PersistMindPlan(execution);
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Status("stopped_keeping_evidence"),
-                    isUser: false);
-            }
-            else
-            {
-                if (execution.PendingOperation is not null)
-                {
-                    registry.MarkResolved(execution.PendingOperation);
-                }
-
-                ClearMindPlan();
-                AddMessage(
-                    "BAXY",
-                    TurnVisibleFacts.Status("remaining_steps_cancelled"),
-                    isUser: false);
-            }
-
-            return;
-        }
-
-        if (execution.PendingEffectMayHaveOccurred)
-        {
-            if ((reply == ConfirmationReplyKind.Confirm
-                    || string.Equals(
-                        text.Trim(),
-                        "continuar",
-                        StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(
-                        text.Trim(),
-                        "continue",
-                        StringComparison.OrdinalIgnoreCase))
-                && MindPlanBoundary.CanRefreshConfirmationChallenge(execution))
-            {
-                await ExecuteMindPlanAsync(execution, registry, cancellationToken);
-                return;
-            }
-
-            AddMessage(
-                "BAXY",
-                MindPlanBoundary.CanRefreshConfirmationChallenge(execution)
-                    ? TurnVisibleFacts.Confirmation(
-                        "keep_recovery_evidence",
-                        TurnVisibleFacts.ConfirmCancel)
-                    : "No repetiré este paso porque el efecto anterior puede haber ocurrido. Debe reconciliarse con el estado real antes de continuar.",
-                isUser: false);
-            return;
-        }
-
-        if (reply != ConfirmationReplyKind.Confirm
-            && !string.Equals(text.Trim(), "continuar", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(text.Trim(), "continue", StringComparison.OrdinalIgnoreCase))
-        {
-            AddMessage(
-                "BAXY",
-                "Di «continuar» para reintentar el paso pendiente o «cancelar» para detener el resto del plan.",
-                isUser: false,
-                messageEvent: UserMessageEvent.Confirmation);
-            return;
-        }
-
-        await ExecuteMindPlanAsync(execution, registry, cancellationToken);
-    }
-
-    private void CompleteMindPlanStep(
-        PendingMindPlanExecution execution,
-        RetryableOperationRegistry registry,
-        PreparedOperation prepared,
-        MindPlanStep step,
-        OperationResponse response)
-    {
-        _ = TryMarkResolved(registry, prepared);
-        execution.PendingOperation = null;
-        execution.PendingEffectMayHaveOccurred = false;
-        execution.Observations.Add(
-            PlanObservationProjector.Create(step.Id, step.Operation, response));
-        execution.CompletedMessages.Add(
-            OperationResponseProjection.Create(response, step.Operation).Message);
-        execution.NextIndex++;
-        if (execution.NextIndex < execution.Steps.Count)
-        {
-            PersistMindPlan(execution);
-        }
-    }
-
-    private async Task<MindPlanResult?> TryReplanMindMissionAsync(
-        PendingMindPlanExecution execution,
-        MindPlanStep failedStep,
-        OperationResponse response,
-        CancellationToken cancellationToken)
-    {
-        MindSidecarClient? mind = _mindClient;
-        if (mind is null || !mind.IsReady)
-        {
-            return null;
-        }
-
-        MindReplanSuffixContract pendingSuffix =
-            MindPlanBoundary.CapturePendingSuffix(execution);
-        var recovery = new JsonObject
-        {
-            ["failedOperation"] = failedStep.Operation,
-            ["errorCode"] = response.ErrorCode ?? "operation_failed",
-            ["effectMayHaveOccurred"] = false,
-            ["completed"] = execution.Observations.DeepClone(),
-            ["instruction"] =
-                "Conserva los pasos completados; propone solo el sufijo pendiente y preserva exactamente la operación, el propósito y los argumentos literales declarados para cada paso.",
-        };
-        return await mind.PlanAsync(
-            execution.Objective,
-            [],
-            TimeSpan.FromSeconds(60),
-            cancellationToken,
-            recovery,
-            expectedSuffix: pendingSuffix);
-    }
-
-    private void FinishMindPlanWithFailure(
-        PendingMindPlanExecution execution,
-        string reason)
-    {
-        ClearMindPlan();
-        AddMessage(
-            "BAXY",
-            MissionNarration.CreateFailureMessage(execution.CompletedMessages, reason),
-            isUser: false,
-            messageEvent: UserMessageEvent.Error(
-                UserMessageDiagnosticCodes.ActionNotCompleted));
-    }
-
-    private void PersistMindPlan(PendingMindPlanExecution execution)
-    {
-        DurablePlanStore store = _planStore
-            ?? throw new InvalidOperationException("El store durable del planner no está disponible.");
-        store.Save(execution);
-    }
-
-    private void ClearMindPlan()
-    {
-        _pendingMindPlan = null;
-        _planStore?.Clear();
     }
 
     private bool AddMindConversationFallback()
@@ -2895,7 +2011,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             _pendingAudioOperation = null;
             RecoverPendingAudioOperation(announce: true);
-            RecoverPendingMemoryOperation(announce: true);
+            if (_retryableOperations is not null)
+            {
+                _memoryTurns.RecoverFrom(_retryableOperations, announce: true);
+            }
             RecoverPendingNoteInteraction(announce: true);
         }
         else if (resolved && _pendingNoteInteraction.TryClearResolved(prepared))
@@ -2953,90 +2072,13 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
-    private void RecoverPendingMemoryOperation(bool announce)
-    {
-        RetryableOperationRegistry? registry = _retryableOperations;
-        MemoryOperationProtector? protector = _memoryProtector;
-        if (registry is null || protector is null || _pendingMemoryConfirmation is not null)
-        {
-            return;
-        }
-
-        if (_pendingMemoryOperation is not null)
-        {
-            if (announce)
-            {
-                AnnouncePendingMemoryRecoveryIfReady();
-            }
-
-            return;
-        }
-
-        PreparedOperation? firstPreserved = null;
-        foreach (PreparedOperation operation in registry.SnapshotPendingOperations())
-        {
-            if (!MemoryOperationProtector.IsMemoryOperation(operation.OperationName))
-            {
-                continue;
-            }
-
-            MemoryOperationInspection inspection = protector.InspectForRecovery(operation);
-            if (!inspection.OriginatesInCurrentSession
-                && inspection.CancelAfterSessionChange)
-            {
-                registry.MarkResolved(operation);
-                if (registry.SnapshotPendingOperations().Any(
-                        candidate => IsSameMemoryOperation(candidate, operation)))
-                {
-                    throw new InvalidDataException(
-                        "No se pudo retirar una operación privada vencida de la recuperación.");
-                }
-
-                continue;
-            }
-
-            firstPreserved ??= operation;
-        }
-
-        if (firstPreserved is null)
-        {
-            return;
-        }
-
-        _pendingMemoryOperation = firstPreserved;
-        _pendingMemoryRecoveryAnnounced = false;
-        if (announce)
-        {
-            AnnouncePendingMemoryRecoveryIfReady();
-        }
-    }
-
-    private void AnnouncePendingMemoryRecoveryIfReady()
-    {
-        if (_pendingMemoryOperation is null
-            || _pendingMemoryRecoveryAnnounced
-            || _pendingMemoryConfirmation is not null
-            || _pendingAudioOperation is not null)
-        {
-            return;
-        }
-
-        _pendingMemoryRecoveryAnnounced = true;
-        StatusDescription = "Esperando comprobar la memoria";
-        AddMessage(
-            "BAXY",
-            PrivateOperationNarration.CreateMemoryRecoveryPrompt(_pendingMemoryOperation),
-            isUser: false,
-            messageEvent: UserMessageEvent.Confirmation);
-    }
-
     private void RecoverPendingNoteInteraction(bool announce)
     {
         RetryableOperationRegistry? registry = _retryableOperations;
         if (registry is null
             || _pendingAudioOperation is not null
-            || _pendingMemoryConfirmation is not null
-            || _pendingMemoryOperation is not null
+            || _memoryTurns.HasConfirmation
+            || _memoryTurns.HasPendingOperation
             || _pendingNoteInteraction.HasPending)
         {
             return;
@@ -3107,7 +2149,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             {
             }
         }
-        ClearVolatileMemoryConfirmation();
+        _memoryTurns.ClearConfirmation();
         if (_coreClient is not null)
         {
             DetachCoreDisconnectedHandler(_coreClient);
@@ -3128,7 +2170,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private async Task HandleStartupFailureAsync(CoreProcessClient client)
     {
-        ClearVolatileMemoryConfirmation();
+        _memoryTurns.ClearConfirmation();
         DetachCoreDisconnectedHandler(client);
         await client.DisposeAsync();
         if (ReferenceEquals(_coreClient, client))
@@ -3167,7 +2209,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
                 owner.IsReady = false;
                 owner.IsBusy = false;
-                owner.ClearVolatileMemoryConfirmation();
+                owner._memoryTurns.ClearConfirmation();
                 owner.HasStartupError = true;
                 owner.StatusText = "Desconectada";
                 owner.StatusDescription = "Conexión interrumpida";
@@ -3346,15 +2388,15 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         ClearProgressLabel();
         StatusText = "Lista";
-        StatusDescription = _pendingMemoryConfirmation is not null
+        StatusDescription = _memoryTurns.HasConfirmation
             ? "Esperando confirmación de memoria"
             : _pendingAudioOperation is not null
             ? "Esperando comprobar el audio"
-            : _pendingMindPlan is not null
+            : _mindPlans.HasPending
                 ? "awaiting_mission_resume"
             : _pendingMindClarificationObjective is not null
                 ? "Esperando tu aclaración"
-            : _pendingMemoryOperation is not null
+            : _memoryTurns.HasPendingOperation
                 ? "Esperando comprobar la memoria"
             : _pendingNoteInteraction.Current
                 is PendingNoteInteraction.ReconcilingSelection
@@ -3398,11 +2440,6 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-    private sealed record PendingPublicAfterMemory(
-        PreparedOperation Predecessor,
-        string Objective,
-        MissionInputSource Source);
 
     private enum MindStartupState
     {

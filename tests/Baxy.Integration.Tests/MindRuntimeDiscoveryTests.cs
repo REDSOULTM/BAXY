@@ -647,6 +647,72 @@ public sealed class MindRuntimeDiscoveryTests
     }
 
     [Test]
+    public void RegisteredRuntimeRejectsASwappedLlamaServerHash()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-mind-server-hash-" + Guid.NewGuid());
+        try
+        {
+            string python = Touch(Path.Combine(root, "venv", "python.exe"));
+            string pythonPath = Path.Combine(root, "source");
+            Touch(Path.Combine(pythonPath, "baxy_mind", "__main__.py"));
+            string gguf = Touch(Path.Combine(root, "models", "gemma.gguf"));
+            string server = Touch(Path.Combine(root, "llama", "llama-server.exe"));
+            string stt = Path.Combine(root, "stt");
+            foreach (string name in SttFiles)
+            {
+                Touch(Path.Combine(stt, name));
+            }
+            string manifest = Path.Combine(root, "mind-runtime-v1.json");
+            WriteRuntimeManifest(manifest, python, pythonPath, gguf, server, stt, 99);
+            Assert.That(MindRuntimeDiscovery.LoadRegistered(manifest), Is.Not.Null);
+
+            File.AppendAllText(server, "swapped");
+
+            Assert.That(MindRuntimeDiscovery.LoadRegistered(manifest), Is.Null);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void RegisteredRuntimeRejectsTheForeignBaxyWorktreeEvenWhenHashesMatch()
+    {
+        string root = Path.Combine(Path.GetTempPath(), "baxy-foreign-wt-" + Guid.NewGuid());
+        try
+        {
+            string python = Touch(Path.Combine(root, "venv", "python.exe"));
+            string pythonPath = Path.Combine(root, "source");
+            Touch(Path.Combine(pythonPath, "baxy_mind", "__main__.py"));
+            string gguf = Touch(Path.Combine(root, "models", "gemma.gguf"));
+            string server = Touch(Path.Combine(root, "BAXY", "legacy", "llama-server.exe"));
+            string stt = Path.Combine(root, "stt");
+            foreach (string name in SttFiles)
+            {
+                Touch(Path.Combine(stt, name));
+            }
+            string manifest = Path.Combine(root, "mind-runtime-v1.json");
+            WriteRuntimeManifest(manifest, python, pythonPath, gguf, server, stt, 99);
+            Assert.That(File.Exists(server), Is.True);
+            Assert.That(MindRuntimeDiscovery.IsForeignBaxyWorktree(server), Is.True);
+            Assert.That(MindRuntimeDiscovery.LoadRegistered(manifest), Is.Null);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [TestCase(@"C:\work\Programacion\BAXY\legacy\llama-server.exe", true)]
+    [TestCase(@"C:\work\Programacion\BAXY Definitivo\src", false)]
+    [TestCase(@"C:\Users\local\AppData\Local\BAXYRuntime\python\python.exe", false)]
+    public void ForeignBaxyWorktreeDetectsTheExactSiblingSegment(string path, bool expected)
+    {
+        Assert.That(MindRuntimeDiscovery.IsForeignBaxyWorktree(path), Is.EqualTo(expected));
+    }
+
+    [Test]
     [NonParallelizable]
     public void DiscoverVerifiedDoesNotPublishUntilApplyVerified()
     {

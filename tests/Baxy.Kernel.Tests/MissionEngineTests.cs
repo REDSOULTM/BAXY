@@ -11,6 +11,20 @@ namespace Baxy.Kernel.Tests;
 public sealed class MissionEngineTests
 {
     [Test]
+    public void ExposesASinglePublicConstructor()
+    {
+        System.Reflection.ConstructorInfo[] constructors = typeof(MissionEngine)
+            .GetConstructors();
+        Assert.That(constructors, Has.Length.EqualTo(1));
+        System.Reflection.ParameterInfo[] parameters = constructors[0].GetParameters();
+        Assert.That(parameters, Has.Length.EqualTo(3));
+        Assert.That(parameters[0].ParameterType, Is.EqualTo(typeof(OperationRegistry)));
+        Assert.That(parameters[1].ParameterType, Is.EqualTo(typeof(IInvocationJournal)));
+        Assert.That(parameters[2].ParameterType, Is.EqualTo(typeof(MissionEngineOptions)));
+        Assert.That(parameters[2].IsOptional, Is.True);
+    }
+
+    [Test]
     public async Task ExecutesVerifiedEffectAndReplaysWithoutRepeatingIt()
     {
         var handler = new CountingHandler(OperationRisk.Reversible);

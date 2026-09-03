@@ -13,10 +13,11 @@
       "environment": "BAXY_MIND_LLM_GGUF",
       "candidates": [
         "${BAXY_ASSETS_ROOT}\\models\\Qwen3-4B-Q4_K_M.gguf",
+        "${LOCALAPPDATA}\\BAXYRuntime\\assets\\models\\Qwen3-4B-Q4_K_M.gguf",
         "D:\\BAXYRuntime\\assets\\models\\Qwen3-4B-Q4_K_M.gguf",
         "${BAXY_ASSETS_ROOT}\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
+        "${LOCALAPPDATA}\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
         "D:\\BAXYRuntime\\assets\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
-        "${REPOSITORY_ROOT}\\legacy\\models\\artifacts\\gemma4-e2b\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf",
         "${USERPROFILE}\\.gemma4\\models\\gemma-4-E2B-it-qat-UD-Q4_K_XL.gguf"
       ],
       "repair": "Restaura el GGUF conversacional atestado o declara su ruta en el override local; BAXY no descarga modelos automáticamente."
@@ -27,11 +28,11 @@
       "environment": "BAXY_MIND_LLAMA_SERVER",
       "candidates": [
         "${BAXY_ASSETS_ROOT}\\llama-b9980-cuda12.4\\llama-server.exe",
+        "${LOCALAPPDATA}\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
         "D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4\\llama-server.exe",
-        "${REPOSITORY_ROOT}\\legacy\\models\\artifacts\\llama-b9980\\llama-server.exe",
         "${USERPROFILE}\\.gemma4\\tools\\llama-b9980\\llama-server.exe"
       ],
-      "repair": "Restaura el runtime llama.cpp b9980 atestado desde legacy/models/artifacts/llama-b9980 o declara su ruta en el override local."
+      "repair": "Restaura llama.cpp b9980 atestado en %LOCALAPPDATA%\\BAXYRuntime\\assets\\llama-b9980-cuda12.4 o D:\\BAXYRuntime\\assets\\llama-b9980-cuda12.4, o declara su ruta en el override local. No uses el repositorio BAXY hermano."
     },
     "stt_parakeet": {
       "kind": "directory",

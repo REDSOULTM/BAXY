@@ -1,14 +1,14 @@
 # Estado de Sprints comprobación
 
 Fecha de preparación: 2026-09-03. Base inspeccionada: b2505da.
-C01 **CERRADO** en `d6500f8` (instrumento fiel; capturas relanzadas contra ese commit). C02–C09 no ejecutados.
+C01 **CERRADO** en `d6500f8` (instrumento fiel; capturas relanzadas contra `384493c`). C02 **EN_CURSO**.
 Admisión al Goal 10: **NO_LISTO**.
-Siguiente acción: el dueño pega [C02](C02_HERENCIA_Y_BASE.md) íntegro en una sesión nueva. No se ha empezado C02.
+Siguiente acción: C02 — inventario G01, runtime sin BAXY hermano, descomposición restante, Full×2 + clon.
 
 | Goal | Estado | Evidencia de cumplimiento |
 |---|---|---|
-| C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` (COMANDO, launch-1/2 y r01-r06 con `meta.commit=d6500f8`, FULL, REPARACIONES_C02) |
-| C02 | PENDIENTE | — |
+| C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` (COMANDO, launch-1/2 y r01-r06, FULL, REPARACIONES_C02). Recaptura posterior `384493c`. |
+| C02 | EN_CURSO | checkpoint abajo; evidencia `artifacts/comprobaciones/C02/` |
 | C03 | PENDIENTE | — |
 | C04 | PENDIENTE | — |
 | C05 | PENDIENTE | — |
@@ -28,21 +28,21 @@ No atribuir ese archivo al plan ni descartarlo para obtener verde.
 
 ## Checkpoint a completar por la tanda activa
 
-- Goal / criterios activos: C01 CERRADO. No ejecutar C02 hasta recibir su objetivo íntegro.
-- Ruta del prompt íntegro / id de sesión Grok si está disponible: `documentacion/sprints/Sprints comprobación/C01_ENTRADA_COMPARTIDA.md`
-- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; publicado `d6500f8`; capturas relanzadas contra ese HEAD.
-- Motivo de interrupción: — (cerrado).
-- Commit, runtime, entorno y comando de entrada común: `d6500f810dac26089873fa3df7ae44fc5b554470`; `py main.py --conductor --turns-file artifacts/comprobaciones/C01/launch.turns.jsonl --capture <dir> --timeout-ms 180000`.
-- Intento en curso: ninguno.
-- Último caso/cursor, resultado y ubicación de evidencia: launch-1/2 y r01-r06 con `meta.commit=d6500f8` en `artifacts/comprobaciones/C01/`.
-- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05); bloquean C09. Plan pendiente sobrevive Nueva sesión.
-- Cambios publicados: canal, conductor, tests, sellos STT, wakeword, evidencia C01, sprints de comprobación, auditoría inicial.
-- Trabajo ya comprobado: FieldProduct 8/8; launch×2; R01–R06; Full 3986 pass / 1 skip .NET, 8792 pass / 3 skip Python.
-- Validación ejecutada: Full `source_quality_gate_passed` (commit de código); capturas posteriores no invalidan Full (sin cambio de fuente).
-- Estado durable: perfil `%LOCALAPPDATA%\BAXY\comprobaciones-c01` con plan pendiente a propósito. Notepad «Sin título» observado tras R01–R06; no se mató.
+- Goal / criterios activos: C02 EN_CURSO. C01 permanece cerrado (`d6500f8` / recaptura `384493c`).
+- Ruta del prompt íntegro / id de sesión Grok si está disponible: `documentacion/sprints/Sprints comprobación/C02_HERENCIA_Y_BASE.md`
+- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; C01 cerrado; C02 arranca en HEAD `384493c`.
+- Motivo de interrupción: — (en curso).
+- Commit, runtime, entorno y comando de entrada común: HEAD `384493cfe2aeb91d67e0406a9fc1c5a67e14127a`; `main` 2 commits ahead of `origin/main` (ambos C01, ajenos a C02); manifiesto vivo `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` con `llama_server` en `Programacion\BAXY\legacy\...` (accidental). Comando C01: `py main.py --conductor --turns-file artifacts/comprobaciones/C01/launch.turns.jsonl --capture <dir> --timeout-ms 180000`.
+- Intento en curso: C02 inventario + runtime reproducible + descomposición restante + Full×2/clon.
+- Último caso/cursor, resultado y ubicación de evidencia: baseline C01 en `artifacts/comprobaciones/C01/`; scratch `{SCRATCH}/c02-baseline.txt` pendiente de escribir.
+- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05); runtime llama-server apunta al BAXY hermano; G01.09 reabre ~1050 líneas de máquina de estados del ViewModel (APLAZADOS Goal 01); MissionEngine ya tiene un constructor.
+- Cambios publicados: ninguno de C02. Los 2 commits locales son de C01 y se preservan.
+- Trabajo ya comprobado: nada de C02 aún. C01: FieldProduct 8/8; launch×2; R01–R06; Full 3986 pass / 1 skip .NET, 8792 pass / 3 skip Python (conteos heredados, no de esta corrida).
+- Validación ejecutada: ninguna de C02. No reutilizar 3986/8792 ni 3865/8511 como resultado actual.
+- Estado durable: perfil `%LOCALAPPDATA%\BAXY\comprobaciones-c01` intacto. No se toca el repo hermano.
 - Criterios que invalida el último cambio: —
-- Próxima acción concreta: ninguna de C01. C02 sólo si el dueño pega su prompt.
-- Contexto: instrumento fiel listo; no maquillar R01–R06.
+- Próxima acción concreta: capturar baseline HEAD/runtime; inventario G01 + 09.5; cortar llama-server del BAXY hermano; extraer responsabilidades restantes del ViewModel.
+- Contexto: C01 instrumento fiel; no maquillar R01–R06; no borrar trabajo ajeno; no reescribir contratos históricos STT.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
 archivos, diff, logs, procesos y efectos antes de repetir el intento. Un proceso

@@ -466,6 +466,49 @@ internal static class MindRuntimeDiscovery
         return canonical is not null && Directory.Exists(canonical) ? canonical : null;
     }
 
+    internal static bool IsForeignBaxyWorktree(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return false;
+        }
+
+        string full;
+        try
+        {
+            full = Path.GetFullPath(path);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or NotSupportedException or PathTooLongException)
+        {
+            return false;
+        }
+
+        ReadOnlySpan<char> span = full.AsSpan();
+        for (int index = 0; index < span.Length; index++)
+        {
+            if (span[index] is not '\\' and not '/')
+            {
+                continue;
+            }
+
+            int start = index + 1;
+            if (start + 4 > span.Length
+                || !span.Slice(start, 4).Equals("BAXY", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            int after = start + 4;
+            if (after == span.Length || span[after] is '\\' or '/')
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static string? CanonicalPath(string? value)
     {
         if (string.IsNullOrWhiteSpace(value) || !Path.IsPathFullyQualified(value))
@@ -475,7 +518,8 @@ internal static class MindRuntimeDiscovery
 
         try
         {
-            return Path.GetFullPath(value);
+            string full = Path.GetFullPath(value);
+            return IsForeignBaxyWorktree(full) ? null : full;
         }
         catch (Exception exception) when (exception is ArgumentException
             or NotSupportedException or PathTooLongException)
