@@ -1,5 +1,4 @@
-﻿utc=2026-09-03T03:58:26.8356220Z
-local=2026-09-02 23:58:26 -04:00
-offset=-04:00
-processes=[{"ProcessName":"ApplicationFrameHost","Id":33048,"MainWindowTitle":"Calculadora"},{"ProcessName":"CalculatorApp","Id":27444,"MainWindowTitle":""}]
+﻿utc=2026-09-03T04:24:25.6611092Z
+local=2026-09-03 00:24:25 -04:00
+processes=
 network_1.1.1.1_after=True

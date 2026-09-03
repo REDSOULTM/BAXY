@@ -61,7 +61,7 @@ crear un host o controlador nuevo.
       lo exclusivamente visual o acústico no se declara verificado sin su prueba.
 - [x] R01–R06 quedan como regresiones reproducibles, con resultados reales.
 - [x] Tests propietarios y Full verdes, con skips separados y sin nuevos ocultamientos.
-- [ ] Código propio publicado, diff revisado, comando/artefactos y estado guardados.
+- [x] Código propio publicado, diff revisado, comando/artefactos y estado guardados.
 
 Evidencia: artifacts/comprobaciones/C01/. Siguiente: C02.
 El cierre acredita un instrumento fiel; los fallos observados siguen abiertos

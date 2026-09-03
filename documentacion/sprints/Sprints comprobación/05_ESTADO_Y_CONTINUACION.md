@@ -1,13 +1,13 @@
 # Estado de Sprints comprobación
 
 Fecha de preparación: 2026-09-03. Base inspeccionada: b2505da.
-C01 **EN_CURSO** (publicar en main y recapturar launch/R01–R06 contra ese árbol). C02–C09 no ejecutados.
+C01 **CERRADO** en `d6500f8` (instrumento fiel; capturas relanzadas contra ese commit). C02–C09 no ejecutados.
 Admisión al Goal 10: **NO_LISTO**.
-Siguiente acción: commit C01 y relanzar conductor; no C02.
+Siguiente acción: el dueño pega [C02](C02_HERENCIA_Y_BASE.md) íntegro en una sesión nueva. No se ha empezado C02.
 
 | Goal | Estado | Evidencia de cumplimiento |
 |---|---|---|
-| C01 | EN_CURSO | código listo, Full verde; capturas previas son del working tree `b2505da`+diff, no del commit |
+| C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` (COMANDO, launch-1/2 y r01-r06 con `meta.commit=d6500f8`, FULL, REPARACIONES_C02) |
 | C02 | PENDIENTE | — |
 | C03 | PENDIENTE | — |
 | C04 | PENDIENTE | — |
@@ -28,22 +28,21 @@ No atribuir ese archivo al plan ni descartarlo para obtener verde.
 
 ## Checkpoint a completar por la tanda activa
 
-- Goal / criterios activos: C01 EN_CURSO — publicar en main y recapturar contra ese commit. No C02.
+- Goal / criterios activos: C01 CERRADO. No ejecutar C02 hasta recibir su objetivo íntegro.
 - Ruta del prompt íntegro / id de sesión Grok si está disponible: `documentacion/sprints/Sprints comprobación/C01_ENTRADA_COMPARTIDA.md`
-- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; cierre bloqueado hasta commit + capturas del árbol publicado.
-- Motivo de interrupción: — (publicando).
-- Commit, runtime, entorno y comando de entrada común: HEAD aún `b2505da`; comando `py main.py --conductor …`.
-- Intento en curso: commit del producto C01 y relanzar launch-1/2 + R01–R06.
-- Último caso/cursor, resultado y ubicación de evidencia: Full verde y capturas del working tree; no acreditan el commit.
-- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05).
-- Cambios del goal a publicar: canal, conductor, tests, sellos STT, wakeword, `artifacts/comprobaciones/C01/`, sprints de comprobación.
-- Cambios ajenos preservados y a incluir: auditoría `artifacts/audit/` + `AUDITORIA_…` (evidencia inicial C01, no producto).
-- Trabajo ya comprobado: FieldProduct 8/8; Full 3986/8792 pass. Capturas a repetir tras commit.
-- Validación ejecutada: Full `source_quality_gate_passed`.
-- Estado durable: perfil `%LOCALAPPDATA%\BAXY\comprobaciones-c01`.
-- Criterios que invalida el último cambio: capturas con `meta.commit=b2505da` dejan de ser del árbol publicado.
-- Próxima acción concreta: `git commit` C01 y `py main.py --conductor` dos veces + R01–R06.
-- Contexto: no marcar C01 cerrado ni empezar C02.
+- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; publicado `d6500f8`; capturas relanzadas contra ese HEAD.
+- Motivo de interrupción: — (cerrado).
+- Commit, runtime, entorno y comando de entrada común: `d6500f810dac26089873fa3df7ae44fc5b554470`; `py main.py --conductor --turns-file artifacts/comprobaciones/C01/launch.turns.jsonl --capture <dir> --timeout-ms 180000`.
+- Intento en curso: ninguno.
+- Último caso/cursor, resultado y ubicación de evidencia: launch-1/2 y r01-r06 con `meta.commit=d6500f8` en `artifacts/comprobaciones/C01/`.
+- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05); bloquean C09. Plan pendiente sobrevive Nueva sesión.
+- Cambios publicados: canal, conductor, tests, sellos STT, wakeword, evidencia C01, sprints de comprobación, auditoría inicial.
+- Trabajo ya comprobado: FieldProduct 8/8; launch×2; R01–R06; Full 3986 pass / 1 skip .NET, 8792 pass / 3 skip Python.
+- Validación ejecutada: Full `source_quality_gate_passed` (commit de código); capturas posteriores no invalidan Full (sin cambio de fuente).
+- Estado durable: perfil `%LOCALAPPDATA%\BAXY\comprobaciones-c01` con plan pendiente a propósito. Notepad «Sin título» observado tras R01–R06; no se mató.
+- Criterios que invalida el último cambio: —
+- Próxima acción concreta: ninguna de C01. C02 sólo si el dueño pega su prompt.
+- Contexto: instrumento fiel listo; no maquillar R01–R06.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
 archivos, diff, logs, procesos y efectos antes de repetir el intento. Un proceso

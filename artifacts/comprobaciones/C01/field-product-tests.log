@@ -1,10 +1,5 @@
   Determinando los proyectos que se van a restaurar...
-  Se ha restaurado C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Kernel\Baxy.Kernel.csproj (en 268 ms).
-  Se ha restaurado C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Contracts\Baxy.Contracts.csproj (en 268 ms).
-  Se ha restaurado C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 268 ms).
-  Se ha restaurado C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Core\Baxy.Core.csproj (en 268 ms).
-  Se ha restaurado C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 268 ms).
-  2 de 7 proyectos están actualizados para la restauración.
+  Todos los proyectos están actualizados para la restauración.
   Baxy.Contracts -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
   Baxy.Security.Windows -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
   Baxy.Kernel -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
@@ -15,4 +10,4 @@
 Serie de pruebas para C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
 1 archivos de prueba en total coincidieron con el patrón especificado.
 
-Correctas! - Con error:     0, Superado:     8, Omitido:     0, Total:     8, Duración: 489 ms - Baxy.Integration.Tests.dll (net10.0)
+Correctas! - Con error:     0, Superado:     8, Omitido:     0, Total:     8, Duración: 510 ms - Baxy.Integration.Tests.dll (net10.0)
