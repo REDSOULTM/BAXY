@@ -1,14 +1,14 @@
 # Estado de Sprints comprobación
 
 Fecha de preparación: 2026-09-03. Base inspeccionada: b2505da.
-C01 **CERRADO**. C02 evidencia y Full verdes en `605e486`; publicación a `origin/main` es el último paso.
+C01 **CERRADO**. C02 **CERRADO** en `12d7aba` (`origin/main`).
 Admisión al Goal 10: **NO_LISTO**.
-Siguiente acción tras publicar C02: el dueño pega [C03](C03_RESPUESTA_VERAZ.md).
+Siguiente acción: el dueño pega [C03](C03_RESPUESTA_VERAZ.md) íntegro en una sesión nueva.
 
 | Goal | Estado | Evidencia de cumplimiento |
 |---|---|---|
 | C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` |
-| C02 | EN_CURSO | `605e486`; Full×2+clon; launch×2 árbol y clon; `artifacts/comprobaciones/C02/`. Falta `origin/main`. |
+| C02 | CERRADO | `12d7aba` en `origin/main`; `artifacts/comprobaciones/C02/` |
 | C03 | PENDIENTE | — |
 | C04 | PENDIENTE | — |
 | C05 | PENDIENTE | — |
@@ -28,21 +28,21 @@ No atribuir ese archivo al plan ni descartarlo para obtener verde.
 
 ## Checkpoint a completar por la tanda activa
 
-- Goal / criterios activos: C02. Falta sólo publicar a origin/main (G01.10 / G02.10).
+- Goal / criterios activos: C02 CERRADO. No ejecutar C03 hasta recibir su objetivo íntegro.
 - Ruta del prompt íntegro / id de sesión Grok si está disponible: `documentacion/sprints/Sprints comprobación/C02_HERENCIA_Y_BASE.md`
-- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; C02 Full×2 y clon verdes.
-- Motivo de interrupción: — (publicación).
-- Commit, runtime, entorno y comando de entrada común: `605e486`; llama-server `%LOCALAPPDATA%\BAXYRuntime\assets\llama-b9980-cuda12.4`; `powershell -File scripts/run_baxy_conductor.ps1 -TurnsFile artifacts/comprobaciones/C02/launch.turns.jsonl -TimeoutMs 180000`.
-- Intento en curso: push `origin/main`.
-- Último caso/cursor, resultado y ubicación de evidencia: `artifacts/comprobaciones/C02/` (INVENTARIO, FULL, LAUNCH, G02_09, LINEAGE, RUNTIME, logs, capturas).
-- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05). Journal `system.time` verified; prosa «No pude». No se maquilla.
-- Cambios publicados: C01 `d6500f8`/`384493c` aún locales junto con C02 hasta el push.
-- Trabajo ya comprobado: inventario G01/X03; ViewModel sesiones; runtime sin hermano; owner tests; Full 3996/8793 ×2; clon 3996/8785; conductor ×2+×2.
-- Validación ejecutada: Full `source_quality_gate_passed` tres veces. Skips: 1 .NET oficial, 3 Python (dev) / 11 clon (env).
-- Estado durable: perfiles `comprobaciones-c02*`. Repo hermano no tocado. C01 perfil intacto.
+- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; publicado `12d7aba`.
+- Motivo de interrupción: — (cerrado).
+- Commit, runtime, entorno y comando de entrada común: `12d7aba`; llama-server `%LOCALAPPDATA%\BAXYRuntime\assets\llama-b9980-cuda12.4`; `powershell -File scripts/run_baxy_conductor.ps1 -TurnsFile artifacts/comprobaciones/C02/launch.turns.jsonl -TimeoutMs 180000`.
+- Intento en curso: ninguno.
+- Último caso/cursor, resultado y ubicación de evidencia: `artifacts/comprobaciones/C02/`.
+- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05). Journal `system.time` verified; prosa «No pude».
+- Cambios publicados: C01 + C02 en `origin/main` (`b2505da..12d7aba`).
+- Trabajo ya comprobado: inventario G01/X03; ViewModel sesiones; runtime sin hermano; Full 3996/8793 ×2; clon 3996/8785; conductor ×2+×2.
+- Validación ejecutada: Full `source_quality_gate_passed` tres veces. Skips 1 .NET / 3 Python (11 en clon, env).
+- Estado durable: perfiles `comprobaciones-c02*`. Repo hermano no tocado.
 - Criterios que invalida el último cambio: —
-- Próxima acción concreta: `git push origin main`. Luego C03.
-- Contexto: C01 instrumento fiel; R01 conservado como fallo de producto.
+- Próxima acción concreta: ninguna de C02. C03 sólo si el dueño pega su prompt.
+- Contexto: R01 conservado como fallo de producto; no maquillar.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
 archivos, diff, logs, procesos y efectos antes de repetir el intento. Un proceso
