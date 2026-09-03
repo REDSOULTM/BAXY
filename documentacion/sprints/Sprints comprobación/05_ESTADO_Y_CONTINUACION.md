@@ -1,14 +1,14 @@
 # Estado de Sprints comprobación
 
 Fecha de preparación: 2026-09-03. Base inspeccionada: b2505da.
-C01 **CERRADO** en `d6500f8` (instrumento fiel; capturas relanzadas contra `384493c`). C02 **EN_CURSO**.
+C01 **CERRADO**. C02 evidencia y Full verdes en `605e486`; publicación a `origin/main` es el último paso.
 Admisión al Goal 10: **NO_LISTO**.
-Siguiente acción: C02 — inventario G01, runtime sin BAXY hermano, descomposición restante, Full×2 + clon.
+Siguiente acción tras publicar C02: el dueño pega [C03](C03_RESPUESTA_VERAZ.md).
 
 | Goal | Estado | Evidencia de cumplimiento |
 |---|---|---|
-| C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` (COMANDO, launch-1/2 y r01-r06, FULL, REPARACIONES_C02). Recaptura posterior `384493c`. |
-| C02 | EN_CURSO | checkpoint abajo; evidencia `artifacts/comprobaciones/C02/` |
+| C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` |
+| C02 | EN_CURSO | `605e486`; Full×2+clon; launch×2 árbol y clon; `artifacts/comprobaciones/C02/`. Falta `origin/main`. |
 | C03 | PENDIENTE | — |
 | C04 | PENDIENTE | — |
 | C05 | PENDIENTE | — |
@@ -28,21 +28,21 @@ No atribuir ese archivo al plan ni descartarlo para obtener verde.
 
 ## Checkpoint a completar por la tanda activa
 
-- Goal / criterios activos: C02 EN_CURSO. C01 permanece cerrado (`d6500f8` / recaptura `384493c`).
+- Goal / criterios activos: C02. Falta sólo publicar a origin/main (G01.10 / G02.10).
 - Ruta del prompt íntegro / id de sesión Grok si está disponible: `documentacion/sprints/Sprints comprobación/C02_HERENCIA_Y_BASE.md`
-- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; C01 cerrado; C02 arranca en HEAD `384493c`.
-- Motivo de interrupción: — (en curso).
-- Commit, runtime, entorno y comando de entrada común: HEAD `384493cfe2aeb91d67e0406a9fc1c5a67e14127a`; `main` 2 commits ahead of `origin/main` (ambos C01, ajenos a C02); manifiesto vivo `%LOCALAPPDATA%\BAXYRuntime\mind-runtime-v1.json` con `llama_server` en `Programacion\BAXY\legacy\...` (accidental). Comando C01: `py main.py --conductor --turns-file artifacts/comprobaciones/C01/launch.turns.jsonl --capture <dir> --timeout-ms 180000`.
-- Intento en curso: C02 inventario + runtime reproducible + descomposición restante + Full×2/clon.
-- Último caso/cursor, resultado y ubicación de evidencia: baseline C01 en `artifacts/comprobaciones/C01/`; scratch `{SCRATCH}/c02-baseline.txt` pendiente de escribir.
-- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05); runtime llama-server apunta al BAXY hermano; G01.09 reabre ~1050 líneas de máquina de estados del ViewModel (APLAZADOS Goal 01); MissionEngine ya tiene un constructor.
-- Cambios publicados: ninguno de C02. Los 2 commits locales son de C01 y se preservan.
-- Trabajo ya comprobado: nada de C02 aún. C01: FieldProduct 8/8; launch×2; R01–R06; Full 3986 pass / 1 skip .NET, 8792 pass / 3 skip Python (conteos heredados, no de esta corrida).
-- Validación ejecutada: ninguna de C02. No reutilizar 3986/8792 ni 3865/8511 como resultado actual.
-- Estado durable: perfil `%LOCALAPPDATA%\BAXY\comprobaciones-c01` intacto. No se toca el repo hermano.
+- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-03; C02 Full×2 y clon verdes.
+- Motivo de interrupción: — (publicación).
+- Commit, runtime, entorno y comando de entrada común: `605e486`; llama-server `%LOCALAPPDATA%\BAXYRuntime\assets\llama-b9980-cuda12.4`; `powershell -File scripts/run_baxy_conductor.ps1 -TurnsFile artifacts/comprobaciones/C02/launch.turns.jsonl -TimeoutMs 180000`.
+- Intento en curso: push `origin/main`.
+- Último caso/cursor, resultado y ubicación de evidencia: `artifacts/comprobaciones/C02/` (INVENTARIO, FULL, LAUNCH, G02_09, LINEAGE, RUNTIME, logs, capturas).
+- Fallos confirmados / hipótesis pendientes: R01–R06 FAIL de producto (C03–C05). Journal `system.time` verified; prosa «No pude». No se maquilla.
+- Cambios publicados: C01 `d6500f8`/`384493c` aún locales junto con C02 hasta el push.
+- Trabajo ya comprobado: inventario G01/X03; ViewModel sesiones; runtime sin hermano; owner tests; Full 3996/8793 ×2; clon 3996/8785; conductor ×2+×2.
+- Validación ejecutada: Full `source_quality_gate_passed` tres veces. Skips: 1 .NET oficial, 3 Python (dev) / 11 clon (env).
+- Estado durable: perfiles `comprobaciones-c02*`. Repo hermano no tocado. C01 perfil intacto.
 - Criterios que invalida el último cambio: —
-- Próxima acción concreta: capturar baseline HEAD/runtime; inventario G01 + 09.5; cortar llama-server del BAXY hermano; extraer responsabilidades restantes del ViewModel.
-- Contexto: C01 instrumento fiel; no maquillar R01–R06; no borrar trabajo ajeno; no reescribir contratos históricos STT.
+- Próxima acción concreta: `git push origin main`. Luego C03.
+- Contexto: C01 instrumento fiel; R01 conservado como fallo de producto.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
 archivos, diff, logs, procesos y efectos antes de repetir el intento. Un proceso

@@ -32,7 +32,7 @@ de Identidad o del cuerpo de los goals; no se presentan como casillas histórica
 |---|---|---|---|---|
 | X01 | Misma admisión, estado, ejecución y publicación para usuario y agente; sin ventana obligatoria. Petición actual y contrato de campaña. | C01 | PENDIENTE | — |
 | X02 | Conductor con runtime real, entrada natural, oráculo externo y captura de final/silencio; ninguna decisión ni respuesta esperada inyectada. Petición actual. | C01 | PENDIENTE | — |
-| X03 | Cuatro herencias del 01 y decisiones 09.5 conciliadas con código integrado; inventario no equivale a ejecución. [01, cuerpo](../01_HERENCIA.md). | C02 | PENDIENTE | — |
+| X03 | Cuatro herencias del 01 y decisiones 09.5 conciliadas con código integrado; inventario no equivale a ejecución. [01, cuerpo](../01_HERENCIA.md). | C02 | CUMPLIDO | `605e486`; [INVENTARIO.md](../../../artifacts/comprobaciones/C02/INVENTARIO.md) |
 | X04 | Memoria visible, editable y borrable, modelo local y sin salida de contenido privado, con datos de prueba. [Identidad](../../00_IDENTIDAD.md). | C06 | PENDIENTE | — |
 | X05 | Cambiar de tema, cancelar, Nueva sesión y reiniciar conservan evidencia sin capturar objetivos nuevos; secuencias R04–R06/R12/R16. Auditoría y petición actual. | C05 | PENDIENTE | — |
 | X06 | Primera señal p50 ≤1 s / p95 ≤2 s; acción simple completa p50 ≤2,5 s; máximo silencio ≤3 s. [08, objetivo](../08_PRIMERA_SENAL.md). | C07 | PENDIENTE | — |
@@ -48,16 +48,16 @@ SHA-256: `50db76ca77e8106f129e736bc37ee8a0d686da9f2f1e11ff201c611482d820e4`.
 
 | ID / línea | Criterio original completo | Owner | Estado | Evidencia |
 |---|---|---|---|---|
-| G01.01 / 336 | Un mapa que dice **qué intentos hubo**, qué se propuso cada uno, y por qué se abandonó. | C02 | PENDIENTE | — |
-| G01.02 / 338 | Para cada intento, **qué funciona hoy**, comprobado ejecutándolo — no leído. | C02 | PENDIENTE | — |
-| G01.03 / 339 | **Qué se hereda**, de dónde, y qué hace falta para traerlo. | C02 | PENDIENTE | — |
-| G01.04 / 340 | **Qué no se hereda y por qué.** Un rechazo con el mecanismo entendido vale tanto como una herencia. | C02 | PENDIENTE | — |
-| G01.05 / 342 | Las **cuatro herencias obligatorias** resueltas: existe / no existe / existía a medias, con evidencia en cada caso. | C02 | PENDIENTE | — |
-| G01.06 / 344 | El inventario de **preguntas ya respondidas y dónde**, separando lo vigente de lo caducado. | C02 | PENDIENTE | — |
-| G01.07 / 346 | Las **soluciones al problema de comprensión** que hay en los cuatro repositorios, listadas y comparables — el goal 03 arranca de ahí y no de cero. | C02 | PENDIENTE | — |
-| G01.08 / 348 | La lista, fichero por fichero, de los **adaptadores por aplicación** que hay que sustituir por capacidad genérica. | C02 | PENDIENTE | — |
-| G01.09 / 350 | `MainWindowViewModel` descompuesto y `MissionEngine` con un solo constructor, con la compuerta .NET verde después: 3.865 pruebas, 0 advertencias. | C02 | PENDIENTE | — |
-| G01.10 / 352 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | PENDIENTE | — |
+| G01.01 / 336 | Un mapa que dice **qué intentos hubo**, qué se propuso cada uno, y por qué se abandonó. | C02 | CUMPLIDO | [INVENTARIO.md](../../../artifacts/comprobaciones/C02/INVENTARIO.md); `00_MAPA.md` §1 |
+| G01.02 / 338 | Para cada intento, **qué funciona hoy**, comprobado ejecutándolo — no leído. | C02 | CUMPLIDO | Runtime 2026-09-03; [RUNTIME.md](../../../artifacts/comprobaciones/C02/RUNTIME.md); [LAUNCH.md](../../../artifacts/comprobaciones/C02/LAUNCH.md) |
+| G01.03 / 339 | **Qué se hereda**, de dónde, y qué hace falta para traerlo. | C02 | CUMPLIDO | INVENTARIO G01.03; 09.5.9 `conservar_actual` |
+| G01.04 / 340 | **Qué no se hereda y por qué.** Un rechazo con el mecanismo entendido vale tanto como una herencia. | C02 | CUMPLIDO | INVENTARIO G01.04; rechazos 09.5.9 |
+| G01.05 / 342 | Las **cuatro herencias obligatorias** resueltas: existe / no existe / existía a medias, con evidencia en cada caso. | C02 | CUMPLIDO | INVENTARIO G01.05 |
+| G01.06 / 344 | El inventario de **preguntas ya respondidas y dónde**, separando lo vigente de lo caducado. | C02 | CUMPLIDO | INVENTARIO G01.06; `00_MAPA.md` §7 |
+| G01.07 / 346 | Las **soluciones al problema de comprensión** que hay en los cuatro repositorios, listadas y comparables — el goal 03 arranca de ahí y no de cero. | C02 | CUMPLIDO | INVENTARIO G01.07; `00_MAPA.md` §6 |
+| G01.08 / 348 | La lista, fichero por fichero, de los **adaptadores por aplicación** que hay que sustituir por capacidad genérica. | C02 | CUMPLIDO | `D_ADAPTADORES_POR_APP.md`; Goal 07 sustituye |
+| G01.09 / 350 | `MainWindowViewModel` descompuesto y `MissionEngine` con un solo constructor, con la compuerta .NET verde después: 3.865 pruebas, 0 advertencias. | C02 | CUMPLIDO | `MindPlanSession`+`MemoryTurnSession`; 1 constructor; Full 3996 .NET / 0 warn. El 3865 es histórico. |
+| G01.10 / 352 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | PENDIENTE | push de este cierre |
 
 ## G02
 
@@ -66,16 +66,16 @@ SHA-256: `031e311f6c96590948398045ee845f84e344662feccda613806332c57ef9c0d4`.
 
 | ID / línea | Criterio original completo | Owner | Estado | Evidencia |
 |---|---|---|---|---|
-| G02.01 / 304 | El trabajo del goal 01 comprometido en su propio commit, antes del tuyo. | C02 | PENDIENTE | — |
-| G02.02 / 305 | El sello de `Baxy.FieldUi` cuadra, **con la decisión escrita** de qué árbol es el correcto y por qué — no con la constante subida a lo que había. | C02 | PENDIENTE | — |
-| G02.03 / 307 | La compuerta pasa **entera** dos veces seguidas sobre un árbol congelado. | C02 | PENDIENTE | — |
-| G02.04 / 308 | Pasa una tercera vez sobre un **clon limpio** del repositorio. | C02 | PENDIENTE | — |
-| G02.05 / 309 | Los fallos por entorno se distinguen de las regresiones: una máquina sin el `.venv` del spike no cuenta nueve regresiones falsas. | C02 | PENDIENTE | — |
-| G02.06 / 311 | Ningún rojo se cerró con `skip`, `xfail`, umbral relajado ni fallback. | C02 | PENDIENTE | — |
-| G02.07 / 312 | El artefacto .NET dependiente del estado local ya no lo es, o está declarado con su causa. | C02 | PENDIENTE | — |
-| G02.08 / 314 | El manifiesto de runtime está **versionado**, y un binario distinto del declarado pone la compuerta en rojo. | C02 | PENDIENTE | — |
-| G02.09 / 316 | Registro de qué cambiaste y por qué, prueba por prueba. | C02 | PENDIENTE | — |
-| G02.10 / 317 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | PENDIENTE | — |
+| G02.01 / 304 | El trabajo del goal 01 comprometido en su propio commit, antes del tuyo. | C02 | CUMPLIDO | `7092c1a` (goal 01) ≺ `605e486` (C02) |
+| G02.02 / 305 | El sello de `Baxy.FieldUi` cuadra, **con la decisión escrita** de qué árbol es el correcto y por qué — no con la constante subida a lo que había. | C02 | CUMPLIDO | `ORIGIN.md` 10.2.5; constante `0F6DCDA5…`; test FieldSource |
+| G02.03 / 307 | La compuerta pasa **entera** dos veces seguidas sobre un árbol congelado. | C02 | CUMPLIDO | [FULL.md](../../../artifacts/comprobaciones/C02/FULL.md) ×2 |
+| G02.04 / 308 | Pasa una tercera vez sobre un **clon limpio** del repositorio. | C02 | CUMPLIDO | worktree `605e486`; pnpm --frozen-lockfile; `dotnet restore`; Full verde |
+| G02.05 / 309 | Los fallos por entorno se distinguen de las regresiones: una máquina sin el `.venv` del spike no cuenta nueve regresiones falsas. | C02 | CUMPLIDO | clon 11 skip env vs 3 en árbol de desarrollo; 0 fail |
+| G02.06 / 311 | Ningún rojo se cerró con `skip`, `xfail`, umbral relajado ni fallback. | C02 | CUMPLIDO | G02_09.md; STT intermitente pasó sin bajar umbral |
+| G02.07 / 312 | El artefacto .NET dependiente del estado local ya no lo es, o está declarado con su causa. | C02 | CUMPLIDO | skip Integration opt-in declarado; no hay artefacto nuevo atado a esta máquina |
+| G02.08 / 314 | El manifiesto de runtime está **versionado**, y un binario distinto del declarado pone la compuerta en rojo. | C02 | CUMPLIDO | schema v1; tests hash GGUF/llama; `IsForeignBaxyWorktree` |
+| G02.09 / 316 | Registro de qué cambiaste y por qué, prueba por prueba. | C02 | CUMPLIDO | [G02_09.md](../../../artifacts/comprobaciones/C02/G02_09.md) |
+| G02.10 / 317 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | PENDIENTE | push de este cierre |
 
 ## G03
 
