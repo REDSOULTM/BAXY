@@ -27,7 +27,8 @@ internal sealed class MemoryTurnSession
         internal required Action<bool> RecoverNotes { get; init; }
 
         internal required Func<MissionInputRoute, RetryableOperationRegistry, CancellationToken, Task<bool>>
-            ContinuePublic { get; init; }
+            ContinuePublic
+        { get; init; }
     }
 
     internal sealed record PublicAfterMemory(
