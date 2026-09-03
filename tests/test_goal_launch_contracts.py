@@ -11,6 +11,7 @@ REFERENCE_DOCS = {
     "09.5_HERENCIA_TOTAL.md",
     "09.5_PROTOCOLO_GROK46.md",
     "10_USO_DIARIO.md",
+    "10_REPLANIFICACION_AUTONOMA.md",
     "10_PROTOCOLO_GROK46.md",
     "11_VALIDACION.md",
     "11_PROTOCOLO_GROK46.md",
@@ -33,9 +34,17 @@ def executable_prompts() -> list[str]:
     return [name for name in linked if name not in REFERENCE_DOCS]
 
 
+# 16 prompts hasta 09.5.12, mas 10.0/10.1/10.2/10.2.5, 10.7-10.18 y 11.1-11.16.
+# La replanificacion del dueno del 2026-09-01 retiro 10.3-10.6 y anadio 10.2.5:
+# 51 - 4 + 1 = 48, menos 10_REPLANIFICACION_AUTONOMA.md, que es la decision
+# del dueno y nunca se pega como goal: 47.
+# Ver documentacion/sprints/10_REPLANIFICACION_AUTONOMA.md.
+EXECUTABLE_PROMPT_COUNT = 47
+
+
 def test_order_is_complete_unique_and_chained() -> None:
     prompts = executable_prompts()
-    assert len(prompts) == 51
+    assert len(prompts) == EXECUTABLE_PROMPT_COUNT
     assert len(set(prompts)) == len(prompts)
 
     for index, name in enumerate(prompts):

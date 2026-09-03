@@ -12,7 +12,14 @@ El siguiente goal real es **10.7**.
 ## Regla para avanzar
 
 Lanza sólo un goal a la vez. Si aparece un defecto o falta un criterio, Grok lo
-corrige y revalida **dentro del mismo `/goal`**; no pegues de nuevo el MD. Avanza
+corrige y revalida **dentro del mismo `/goal`**; no pegues de nuevo el MD.
+
+**Un goal, una sesión.** Cada MD lleva dentro identidad, leyes, invariantes,
+contrato y criterios: se pega entero y no hay protocolo aparte que pegar. Si un
+goal no cierra en su sesión, no lo pases a otro agente — el handoff tiene que
+decir dónde quedó el cursor y por qué el corte estaba mal hecho. Encadenar
+agentes sobre un goal mal cortado fue exactamente lo que hundió el Goal 10
+original. Avanza
 al enlace siguiente únicamente cuando el cierre demuestre todos sus checks, el
 handoff esté actualizado, el commit esté publicado, `HEAD == origin/main` y el
 árbol esté limpio. `FALLO_DE_AMBIENTE` conserva el cursor y pausa esa misma meta:
