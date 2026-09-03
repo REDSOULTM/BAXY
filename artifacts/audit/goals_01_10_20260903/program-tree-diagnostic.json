@@ -1,0 +1,14 @@
+{
+  "diskFiles": 396,
+  "headFiles": 396,
+  "diskSeal": "1d3a69df31ac1ce1a75517f3f988b25a0d701b29667c89dd015d55956889bdac",
+  "headSeal": "1d3a69df31ac1ce1a75517f3f988b25a0d701b29667c89dd015d55956889bdac",
+  "lfNormalizedDiskSeal": "1d3a69df31ac1ce1a75517f3f988b25a0d701b29667c89dd015d55956889bdac",
+  "extraPaths": [],
+  "missingPaths": [],
+  "byteChangedCount": 0,
+  "byteChangedPaths": [],
+  "sealReplacingOnlyIntegrateWith192051f": "08300d7cec3ef1d770fb1a10c9a6de7e9d8fdf64e69c7a3be9c4bf4221a5fc7b",
+  "expectedSeal": "08300d7cec3ef1d770fb1a10c9a6de7e9d8fdf64e69c7a3be9c4bf4221a5fc7b",
+  "historicalSealMatchesExpected": true
+}

@@ -385,13 +385,20 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         catch (MissionInputRejectedException)
         {
-            AddMessage(
-                "BAXY",
-                MissionInputContract.SafeRejectionGuidance,
-                isUser: false,
-                messageEvent: UserMessageEvent.Clarification);
+            PublishInputRejection();
         }
     }
+
+    internal void PublishInputRejection()
+    {
+        AddMessage(
+            "BAXY",
+            MissionInputContract.SafeRejectionGuidance,
+            isUser: false,
+            messageEvent: UserMessageEvent.Clarification);
+    }
+
+    internal bool HasPendingPlan => _pendingMindPlan is not null;
 
     internal async Task SubmitAsync(
         MissionInput input,

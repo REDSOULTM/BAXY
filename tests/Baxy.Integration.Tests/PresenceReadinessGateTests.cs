@@ -125,10 +125,12 @@ public sealed class PresenceReadinessGateTests
     [Test]
     public void BridgeSourceUsesTheSharedReadyGate()
     {
+        string channel = File.ReadAllText(RepositoryPath("src", "Baxy.App", "FieldProductChannel.cs"));
         string bridge = File.ReadAllText(RepositoryPath("src", "Baxy.App", "FieldUiBridge.cs"));
         string contract = File.ReadAllText(RepositoryPath("src", "Baxy.App", "FieldBridgeContract.cs"));
-        Assert.That(bridge, Does.Contain("FieldBridgeContract.TryAcceptTurn"));
-        Assert.That(bridge, Does.Contain("FieldBridgeContract.TryAcceptVoiceControl"));
+        Assert.That(channel, Does.Contain("FieldBridgeContract.TryAcceptTurn"));
+        Assert.That(channel, Does.Contain("FieldBridgeContract.TryAcceptVoiceControl"));
+        Assert.That(bridge, Does.Contain("_channel.HandleHttpAsync"));
         Assert.That(contract, Does.Contain("AgentNotReadyError = \"agent_not_ready\""));
     }
 

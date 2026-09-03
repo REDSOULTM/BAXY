@@ -1,0 +1,153 @@
+.FFF                                                                     [100%]
+================================== FAILURES ===================================
+_________ test_stt_evaluator_freezes_final_contract_and_blind_engines _________
+
+    def test_stt_evaluator_freezes_final_contract_and_blind_engines() -> None:
+        evaluator = load_module(
+            "baxy_stt_reserved_evaluator",
+            "experiments/stt_quality/evaluate_reserved_stt.py",
+        )
+    
+        assert evaluator.CONTRACT_SCHEMA == "baxy.stt-evaluator-preopen-contract.v3"
+        assert evaluator.REPORT_SCHEMA == "baxy.stt-real-audio-evaluation.v3"
+        assert evaluator.THRESHOLDS["minds14"]["blind"]["expectedCases"] == 196
+        assert evaluator.THRESHOLDS["audio_arena"]["blind"]["expectedCases"] == 50
+        assert (
+>           evaluator._program_tree(ROOT)["sha256"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            == evaluator.EXPECTED_PROGRAM_TREE_SHA256
+        )
+
+tests\test_stt_quality_evaluators.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\evaluate_reserved_stt.py:324: RuntimeError
+_____ test_fresh_postweight_source_audit_is_preacquisition_and_text_blind _____
+
+    def test_fresh_postweight_source_audit_is_preacquisition_and_text_blind() -> None:
+        audit_module = load_module(
+            "baxy_fresh_postweight_stt_source_audit",
+            "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+        )
+        pages: dict[str, str] = {}
+        private_samples: list[str] = []
+        for language in ("es", "en"):
+            page, samples = _fake_mdc_page(audit_module, language)
+            pages[audit_module.MDC_EXPECTED[language]["url"]] = page
+            private_samples.extend(samples)
+        pages[audit_module.GIGASPEECHBENCH_API] = json.dumps(
+            {
+                "sha": audit_module.GIGASPEECHBENCH_COMMIT,
+                "lastModified": audit_module.GIGASPEECHBENCH_LAST_MODIFIED,
+                "gated": False,
+                "private": False,
+                "tags": [],
+                "siblings": [
+                    {"rfilename": f"data/file-{index:03d}.parquet"} for index in range(155)
+                ],
+            }
+        )
+    
+>       audit = audit_module.build_audit(
+            repository_root=ROOT,
+            audited_at_utc="2026-08-11T00:00:00Z",
+            fetch_text=pages.__getitem__,
+        )
+
+tests\test_stt_quality_evaluators.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:502: in build_audit
+    "wakeProgramTree": _program_tree(repository_root),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:359: RuntimeError
+__________ test_livekit_sessions_are_single_threaded_and_do_not_spin __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001BBA7D626F0>
+
+    def test_livekit_sessions_are_single_threaded_and_do_not_spin(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        onnxruntime, options_seen = _install_fake_runtime(monkeypatch)
+        original_factory = onnxruntime.InferenceSession  # type: ignore[attr-defined]
+    
+        AcousticWakeDetector(_config())
+    
+        assert len(options_seen) == 3
+>       assert len({id(options) for options in options_seen}) == 1
+E       assert 3 == 1
+E        +  where 3 = len({1903722469216, 1905476486880, 1905476499408})
+
+tests\test_wakeword_runtime_resources.py:93: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_stt_quality_evaluators.py::test_stt_evaluator_freezes_final_contract_and_blind_engines
+FAILED tests/test_stt_quality_evaluators.py::test_fresh_postweight_source_audit_is_preacquisition_and_text_blind
+FAILED tests/test_wakeword_runtime_resources.py::test_livekit_sessions_are_single_threaded_and_do_not_spin
+3 failed, 1 passed in 17.21s

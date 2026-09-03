@@ -1,0 +1,9 @@
+{"cmd":"turn","text":"Hola, ¿qué puedes hacer?"}
+{"cmd":"turn","text":"Explícame qué es un huso horario en una frase."}
+{"cmd":"turn","text":"¿Por qué importa?"}
+{"cmd":"turn","text":"¿Qué hora es?"}
+{"cmd":"turn","text":"Abre la calculadora"}
+{"cmd":"turn","text":"Cuéntame un chiste corto."}
+{"cmd":"turn","text":"¿Tengo conexión a internet?"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Dime la hora y el estado del audio."}

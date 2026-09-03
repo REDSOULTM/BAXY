@@ -1,0 +1,427 @@
+source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified
+source_quality_stage_started: powershell-source
+source_quality_stage_passed: powershell-source
+source_quality_stage_started: python-ruff
+All checks passed!
+source_quality_stage_passed: python-ruff
+source_quality_stage_started: python-compileall
+source_quality_stage_passed: python-compileall
+source_quality_stage_started: field-ui-eslint
+source_quality_stage_passed: field-ui-eslint
+source_quality_stage_started: field-ui-tsc-app
+source_quality_stage_passed: field-ui-tsc-app
+source_quality_stage_started: field-ui-tsc-node
+source_quality_stage_passed: field-ui-tsc-node
+source_quality_stage_started: dotnet-format
+source_quality_stage_passed: dotnet-format
+source_quality_stage_started: dotnet-build-release
+  Baxy.Contracts -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Setup -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Setup\bin\Release\net10.0-windows10.0.19041.0\win-x64\Baxy.Setup.dll
+  Baxy.Contracts.Tests -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll
+  Baxy.Kernel -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Setup.Tests -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll
+  Baxy.Kernel.Tests -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll
+  Baxy.Providers.Windows -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.Providers.Windows.Tests -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+  Baxy.App -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:01.53
+source_quality_stage_passed: dotnet-build-release
+source_quality_stage_started: dotnet-tests
+Serie de pruebas para C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+
+Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 108 ms - Baxy.Contracts.Tests.dll (net10.0)
+Serie de pruebas para C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareLegacyAndCurrentJsonHotPaths [1 ms]
+  Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]
+  Omitidas EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [12 ms]
+  Omitidas SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]
+  Omitidas OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam","Steam") [< 1 ms]
+  Omitidas ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Bloc de notas","Bloc de notas") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Discord si está instalado","Discord") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam pero no maximices ni lances juegos","Steam") [< 1 ms]
+shell_visible_indication_ms p50=0.137 p95=0.707 max=0.707
+shell_published_text_ms_without_llm_composition p50=34.417 p95=41.206 max=41.206
+
+
+Correctas! - Con error:     0, Superado:  2853, Omitido:     1, Total:  2854, Duración: 3 m 33 s - Baxy.Integration.Tests.dll (net10.0)
+Serie de pruebas para C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareMemoryStreamAndArrayBufferWriterImplementations [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   137, Omitido:     0, Total:   137, Duración: 1 s - Baxy.Kernel.Tests.dll (net10.0)
+Serie de pruebas para C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas NativeAotCoreAudioJsonlRoundTripReplaysWithoutAnotherEffectAndRestoresBaseline [1 ms]
+  Omitidas WifiStatusReadsActualWindowsStateTwice [< 1 ms]
+  Omitidas DxgiAndPdhProduceOneCoherentLocalSnapshot [< 1 ms]
+  Omitidas ActualIpListReturnsStableParseableAddressesWithoutInterfaceNames [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   451, Omitido:     0, Total:   451, Duración: 43 s - Baxy.Providers.Windows.Tests.dll (net10.0)
+Serie de pruebas para C:\Users\usuario\Desktop\ETC\Programacion\BAXY Definitivo\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas InstallationMoveWorksWhileAnExecutableRunsFromTheRoot [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 12 s - Baxy.Setup.Tests.dll (net10.0)
+source_quality_stage_passed: dotnet-tests
+source_quality_stage_started: python-tests
+........................................................................ [  0%]
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+.............. [ 28%]
+................................................... [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 71%]
+........................................................................ [ 72%]
+........................................................................ [ 73%]
+.................................................F.................................................................................................. [ 75%]
+........................................................................ [ 76%]
+............................................................... [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 78%]
+............................................ [ 78%]
+............................................................................................................................................... [ 80%]
+........................................................................ [ 81%]
+................................................................... [ 82%]
+..............................................................s............................................................... [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+.......F..sF..................................................... [ 85%]
+......s.................................................. [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+................F........                                                [100%]
+================================== FAILURES ===================================
+_____________ test_voice_engine_pcm_source_wakes_on_injected_wav ______________
+
+tmp_path = WindowsPath('C:/Users/usuario/AppData/Local/Temp/pytest-of-usuario/pytest-2953/test_voice_engine_pcm_source_w0')
+
+    def test_voice_engine_pcm_source_wakes_on_injected_wav(tmp_path: Path) -> None:
+        stt = _require_parakeet()
+        _uncalibrated_wake_manifest(tmp_path)
+        os.environ["BAXY_MIND_STT_DIR"] = str(stt)
+        os.environ["BAXY_VOICE_WAKE_ALLOW_UNCALIBRATED"] = "1"
+        events: list[dict] = []
+        transcripts: list[str] = []
+        engine = VoiceEngine(transcripts.append, events.append)
+        engine.use_pcm_source()
+        try:
+            started = engine.start("wake")
+            if not started:
+                _fail_environment(f"wake start failed: {engine.last_error}")
+            engine.ingest_pcm(np.zeros(4_000, dtype=np.float32))
+            time.sleep(0.8)
+            noise = (np.random.default_rng(1).standard_normal(SAMPLE_RATE * 2) * 0.01).astype(
+                np.float32
+            )
+            _ingest_paced(engine, noise)
+            time.sleep(0.5)
+            assert not any(event.get("event") == "wake_detected" for event in events)
+    
+            baxy = _sapi_baxy_wav(tmp_path / "baxy_launch.wav")
+            if baxy.size < WINDOW_SAMPLES:
+                baxy = np.pad(baxy, (0, WINDOW_SAMPLES - baxy.size))
+            _ingest_paced(engine, baxy)
+            deadline = time.monotonic() + 4.0
+            while time.monotonic() < deadline and not any(
+                event.get("event") == "wake_detected" for event in events
+            ):
+                time.sleep(0.05)
+            assert any(event.get("event") == "wake_detected" for event in events)
+    
+            engine.ingest_pcm(np.zeros(int(SAMPLE_RATE * 1.2), dtype=np.float32))
+            deadline = time.monotonic() + 3.0
+            while time.monotonic() < deadline:
+                if any(event.get("event") == "wake" for event in events) or engine.speaking:
+                    break
+                time.sleep(0.05)
+            engine.cancel_speech()
+            before = list(transcripts)
+    
+            request = _speak_named("open notepad please", tmp_path / "req.wav", "zira")
+            _ingest_paced(engine, request)
+            engine.ingest_pcm(np.zeros(int(SAMPLE_RATE * 1.2), dtype=np.float32))
+            deadline = time.monotonic() + 6.0
+            while time.monotonic() < deadline:
+                joined = " ".join(transcripts[len(before) :]).casefold()
+                if "notepad" in joined:
+                    break
+                time.sleep(0.05)
+            joined = " ".join(transcripts[len(before) :]).casefold()
+>           assert "notepad" in joined
+E           AssertionError: assert 'notepad' in 'open up pad please'
+
+tests\test_goal09_voice_engines.py:389: AssertionError
+_________ test_stt_evaluator_freezes_final_contract_and_blind_engines _________
+
+    def test_stt_evaluator_freezes_final_contract_and_blind_engines() -> None:
+        evaluator = load_module(
+            "baxy_stt_reserved_evaluator",
+            "experiments/stt_quality/evaluate_reserved_stt.py",
+        )
+    
+        assert evaluator.CONTRACT_SCHEMA == "baxy.stt-evaluator-preopen-contract.v3"
+        assert evaluator.REPORT_SCHEMA == "baxy.stt-real-audio-evaluation.v3"
+        assert evaluator.THRESHOLDS["minds14"]["blind"]["expectedCases"] == 196
+        assert evaluator.THRESHOLDS["audio_arena"]["blind"]["expectedCases"] == 50
+        assert (
+>           evaluator._program_tree(ROOT)["sha256"]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            == evaluator.EXPECTED_PROGRAM_TREE_SHA256
+        )
+
+tests\test_stt_quality_evaluators.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\evaluate_reserved_stt.py:324: RuntimeError
+_____ test_fresh_postweight_source_audit_is_preacquisition_and_text_blind _____
+
+    def test_fresh_postweight_source_audit_is_preacquisition_and_text_blind() -> None:
+        audit_module = load_module(
+            "baxy_fresh_postweight_stt_source_audit",
+            "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+        )
+        pages: dict[str, str] = {}
+        private_samples: list[str] = []
+        for language in ("es", "en"):
+            page, samples = _fake_mdc_page(audit_module, language)
+            pages[audit_module.MDC_EXPECTED[language]["url"]] = page
+            private_samples.extend(samples)
+        pages[audit_module.GIGASPEECHBENCH_API] = json.dumps(
+            {
+                "sha": audit_module.GIGASPEECHBENCH_COMMIT,
+                "lastModified": audit_module.GIGASPEECHBENCH_LAST_MODIFIED,
+                "gated": False,
+                "private": False,
+                "tags": [],
+                "siblings": [
+                    {"rfilename": f"data/file-{index:03d}.parquet"} for index in range(155)
+                ],
+            }
+        )
+    
+>       audit = audit_module.build_audit(
+            repository_root=ROOT,
+            audited_at_utc="2026-08-11T00:00:00Z",
+            fetch_text=pages.__getitem__,
+        )
+
+tests\test_stt_quality_evaluators.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:502: in build_audit
+    "wakeProgramTree": _program_tree(repository_root),
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+repository_root = WindowsPath('C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo')
+
+    def _program_tree(repository_root: Path) -> dict[str, object]:
+        roots = (
+            repository_root / "experiments" / "voice_latency",
+            repository_root / "scripts",
+            repository_root / "src" / "baxy_mind",
+        )
+        files: dict[str, Path] = {}
+        for root in roots:
+            for path in root.rglob("*.py"):
+                if path.is_file() and not path.is_symlink():
+                    files[path.relative_to(repository_root).as_posix()] = path
+        digest = hashlib.sha256()
+        for relative in sorted(files):
+            digest.update(relative.encode("utf-8"))
+            digest.update(b"\n")
+            digest.update(_sha256(files[relative]).encode("ascii"))
+            digest.update(b"\n")
+        result = {
+            "schema": "baxy.wake-validation-program-tree.v1",
+            "roots": [
+                "experiments/voice_latency",
+                "scripts",
+                "src/baxy_mind",
+            ],
+            "pythonFiles": len(files),
+            "sha256": digest.hexdigest(),
+        }
+        if result["sha256"] != EXPECTED_PROGRAM_TREE_SHA256:
+>           raise RuntimeError("wake_program_tree_changed")
+E           RuntimeError: wake_program_tree_changed
+
+experiments\stt_quality\audit_fresh_postweight_stt_sources.py:359: RuntimeError
+__________ test_livekit_sessions_are_single_threaded_and_do_not_spin __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001D8173AC8F0>
+
+    def test_livekit_sessions_are_single_threaded_and_do_not_spin(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        onnxruntime, options_seen = _install_fake_runtime(monkeypatch)
+        original_factory = onnxruntime.InferenceSession  # type: ignore[attr-defined]
+    
+        AcousticWakeDetector(_config())
+    
+        assert len(options_seen) == 3
+>       assert len({id(options) for options in options_seen}) == 1
+E       assert 3 == 1
+E        +  where 3 = len({2027614299696, 2027614301088, 2027623653232})
+
+tests\test_wakeword_runtime_resources.py:93: AssertionError
+============================== warnings summary ===============================
+tests/test_measure_multicluster_oos_recovery.py::test_duplicate_training_rows_do_not_create_empty_cluster_boundaries
+  C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Lib\site-packages\sklearn\base.py:1403: ConvergenceWarning: Number of distinct clusters (1) found smaller than n_clusters (2). Possibly due to duplicate points in X.
+    return fit_method(estimator, *args, **kwargs)
+
+tests/test_train_mdtc_phoneme_distillation_v2.py::test_frame_metrics_respects_explicit_causal_delay
+  C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Lib\site-packages\numpy\core\fromnumeric.py:3504: RuntimeWarning: Mean of empty slice.
+    return _methods._mean(a, axis=axis, dtype=dtype,
+
+tests/test_train_mdtc_phoneme_distillation_v2.py::test_frame_metrics_respects_explicit_causal_delay
+  C:\Users\usuario\AppData\Local\BAXYRuntime\python\mind-runtime-v1\Lib\site-packages\numpy\core\_methods.py:129: RuntimeWarning: invalid value encountered in scalar divide
+    ret = ret.dtype.type(ret / rcount)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_goal09_voice_engines.py::test_voice_engine_pcm_source_wakes_on_injected_wav
+FAILED tests/test_stt_quality_evaluators.py::test_stt_evaluator_freezes_final_contract_and_blind_engines
+FAILED tests/test_stt_quality_evaluators.py::test_fresh_postweight_source_audit_is_preacquisition_and_text_blind
+FAILED tests/test_wakeword_runtime_resources.py::test_livekit_sessions_are_single_threaded_and_do_not_spin
+4 failed, 8788 passed, 3 skipped, 3 warnings, 446 subtests passed in 555.29s (0:09:15)

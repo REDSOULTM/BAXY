@@ -193,10 +193,13 @@ public sealed class MainWindowShellContractTests
             Assert.That(script, Does.Contain("managedSettingsTabs"));
             Assert.That(script, Does.Contain("diagnóstico local"));
             Assert.That(script, Does.Contain("Configuración administrada por BAXY"));
-            Assert.That(host, Does.Contain("new MissionInput(text, MissionInputSource.Text)"));
-            Assert.That(host, Does.Contain("SetWakeVoiceAsync"));
-            Assert.That(host, Does.Contain("StartDirectVoiceAsync"));
-            Assert.That(host, Does.Contain("direct_tool_execution_disabled"));
+            Assert.That(host, Does.Contain("_channel.HandleHttpAsync"));
+            string channel = File.ReadAllText(
+                RepositoryPath("src", "Baxy.App", "FieldProductChannel.cs"));
+            Assert.That(channel, Does.Contain("new MissionInput(text, MissionInputSource.Text)"));
+            Assert.That(channel, Does.Contain("SetWakeVoiceAsync"));
+            Assert.That(channel, Does.Contain("StartDirectVoiceAsync"));
+            Assert.That(channel, Does.Contain("direct_tool_execution_disabled"));
             Assert.That(window, Does.Contain("SetVirtualHostNameToFolderMapping"));
             Assert.That(window, Does.Contain("External network disabled"));
             Assert.That(window, Does.Not.Contain("http://"));

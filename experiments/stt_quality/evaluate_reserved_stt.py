@@ -46,8 +46,11 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # had already drifted past it before the request-completion repair landed. Goal
 # 10.2.5 re-sealed this unmeasured expectation after changing only the ONNX
 # scheduling policy; model, hop, score and reserved corpora remain unchanged.
+# C01 2026-09-03: tree drifted when scripts/goal095_09512_integrate.py was
+# updated after the previous pin. C02 must revalidate historical campaign
+# hashes against this tree; the corpora and engines are unchanged.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "08300d7cec3ef1d770fb1a10c9a6de7e9d8fdf64e69c7a3be9c4bf4221a5fc7b"
+    "1d3a69df31ac1ce1a75517f3f988b25a0d701b29667c89dd015d55956889bdac"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

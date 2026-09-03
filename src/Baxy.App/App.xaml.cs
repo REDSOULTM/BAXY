@@ -33,7 +33,40 @@ public partial class App : Application
                 ShellTraceStages.ProcessYielded);
             _instanceMutex.Dispose();
             _instanceMutex = null;
+            if (ProductConductorHost.IsRequested(e.Args))
+            {
+                Console.Error.WriteLine(
+                    "{\"type\":\"terminal\",\"kind\":\"blocked_environment\",\"diagnostic\":\"instance_already_running\"}");
+                Shutdown(2);
+                return;
+            }
+
             Shutdown(0);
+            return;
+        }
+
+        if (ProductConductorHost.IsRequested(e.Args))
+        {
+            ShellTraceSink.Record(
+                ShellTraceScopes.Startup,
+                "process",
+                ShellTraceStages.WindowCreated);
+            Dispatcher.BeginInvoke(async () =>
+            {
+                int code = 1;
+                try
+                {
+                    code = await ProductConductorHost.RunAsync(e.Args, Dispatcher);
+                }
+                catch (Exception)
+                {
+                    Console.Error.WriteLine(
+                        "{\"type\":\"terminal\",\"kind\":\"blocked_environment\",\"diagnostic\":\"conductor_failed\"}");
+                    code = 1;
+                }
+
+                Shutdown(code);
+            });
             return;
         }
 

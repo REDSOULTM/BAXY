@@ -71,6 +71,16 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="lanza únicamente el cuerpo determinista",
     )
+    parser.add_argument(
+        "--conductor",
+        action="store_true",
+        help="arranca el runtime sin ventana y conduce la misma entrada de producto",
+    )
+    parser.add_argument("--profile", help="perfil persistente de datos del conductor")
+    parser.add_argument("--capture", help="directorio de captura JSONL del conductor")
+    parser.add_argument("--turns-file", help="JSONL de comandos públicos (text/session.new/upload/cancel)")
+    parser.add_argument("--text", help="un turno de texto natural")
+    parser.add_argument("--timeout-ms", type=int, default=120000)
     return parser.parse_args()
 
 
@@ -237,6 +247,9 @@ def compile_if_needed(*, force: bool) -> None:
     print("Compilación actualizada.")
 
 
+CONDUCTOR_SCRIPT = ROOT / "scripts" / "run_baxy_conductor.ps1"
+
+
 def launch(*, cpu: bool, without_mind: bool) -> None:
     environment = environment_for_dotnet(dotnet_executable())
     command = [
@@ -254,12 +267,40 @@ def launch(*, cpu: bool, without_mind: bool) -> None:
     run_checked(command, environment=environment)
 
 
+def launch_conductor(args: argparse.Namespace) -> None:
+    environment = environment_for_dotnet(dotnet_executable())
+    command = [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        str(CONDUCTOR_SCRIPT),
+        "-TimeoutMs",
+        str(args.timeout_ms),
+    ]
+    if args.cpu:
+        command.extend(["-Cpu"])
+    if args.profile:
+        command.extend(["-Profile", args.profile])
+    if args.capture:
+        command.extend(["-Capture", args.capture])
+    if args.turns_file:
+        command.extend(["-TurnsFile", args.turns_file])
+    if args.text:
+        command.extend(["-Text", args.text])
+    run_checked(command, environment=environment)
+
+
 def main() -> int:
     if os.name != "nt":
         raise RuntimeError("BAXY requiere Windows.")
     args = parse_args()
     close_previous_development_window()
     compile_if_needed(force=args.recompilar)
+    if args.conductor:
+        launch_conductor(args)
+        return 0
     launch(cpu=args.cpu, without_mind=args.sin_mente)
     return 0
 

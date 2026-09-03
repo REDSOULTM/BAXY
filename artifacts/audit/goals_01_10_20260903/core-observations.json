@@ -1,0 +1,54 @@
+{
+  "source": "local authenticated invocation journal; audit-owned operations only",
+  "records": [
+    {
+      "sequence": 402,
+      "timestampUtc": "2026-09-03T01:37:09.5489335+00:00",
+      "phase": "completed",
+      "requestId": "90d467d2-512b-4088-8e73-0c2e63e85977",
+      "missionId": "5a89d0a0-9f0a-4cfc-80f9-6d2f54a3a730",
+      "invocationId": "4a0a246b-fd01-4254-b59c-4638666573b4",
+      "operation": "system.time",
+      "requestFingerprint": "7eb9506ef3d19fae10c14c53e5b04410e42088cce8321512673624d6459503cf",
+      "response": {
+        "type": "operation.response",
+        "requestId": "90d467d2-512b-4088-8e73-0c2e63e85977",
+        "missionId": "5a89d0a0-9f0a-4cfc-80f9-6d2f54a3a730",
+        "invocationId": "4a0a246b-fd01-4254-b59c-4638666573b4",
+        "status": "completed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"system.time\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"utc\":\"2026-09-03T01:37:09.5472814+00:00\",\"localUtcOffsetMinutes\":-240}}",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "utc": "2026-09-03T01:37:09.5472814+00:00",
+          "localUtcOffsetMinutes": -240
+        },
+        "errorCode": null
+      }
+    },
+    {
+      "sequence": 404,
+      "timestampUtc": "2026-09-03T01:39:59.1931233+00:00",
+      "phase": "completed",
+      "requestId": "c78c4709-01ba-49bc-862b-c2622bb2a24d",
+      "missionId": "218ee918-c0dd-49df-af21-9d2eab24577d",
+      "invocationId": "6c4d10c0-cc8c-4c59-9b95-e38b0d8455ed",
+      "operation": "app.open",
+      "requestFingerprint": "7404e294cb13378eab61f9b7098c83b3f114c36d9490eb66bbdcb3cd05d099f8",
+      "response": {
+        "type": "operation.response",
+        "requestId": "c78c4709-01ba-49bc-862b-c2622bb2a24d",
+        "missionId": "218ee918-c0dd-49df-af21-9d2eab24577d",
+        "invocationId": "6c4d10c0-cc8c-4c59-9b95-e38b0d8455ed",
+        "status": "failed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"app.open\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"verification_failed\",\"effectUncertain\":true}",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "verification_failed",
+        "effectMayHaveOccurred": true
+      }
+    }
+  ]
+}
