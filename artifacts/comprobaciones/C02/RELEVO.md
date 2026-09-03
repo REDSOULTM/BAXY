@@ -1,8 +1,8 @@
 # C02 relevo 2026-09-03 — revalidación independiente
 
 Agente nuevo. No se heredaron los conteos de auditoría (3978/8788 con 4 fail).
-HEAD al arrancar: `3d04bd8`. Fuente `src tests scripts main.py assets.manifest.json`
-idéntica a Full `605e486`.
+HEAD al arrancar: `3d04bd8`. Publicado el relevo: `7d28421`.
+Fuente `src tests scripts main.py assets.manifest.json` idéntica a Full `605e486`.
 
 ## Runtime vivo (hashes de fichero)
 
@@ -29,5 +29,5 @@ verified; prosa R01 «No pude» conservada. Clone-launch usó el descriptor del 
 
 ## Publicación
 
-G01.10/G02.10 ya no afirman `origin/main = 12d7aba`. El criterio es status vacío y
-`rev-list` 0, con C02 en `origin/main`.
+G01.10/G02.10 citan `7d28421` en `origin/main`. El criterio es status vacío y
+`rev-list` 0. Índice para el panel: [PANEL.md](PANEL.md) (no abrir `full-*.log`).

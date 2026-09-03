@@ -1,0 +1,49 @@
+# Decoded Full logs (UTF-8). Raw *.log are mixed UTF-8/UTF-16LE; do not open as binary.
+
+## full-frozen-1.log
+contains gate_passed=True EXIT=0=True
+1:HEAD=605e486dbba6e1d7eb4bad820ed9238e5d25f8f5
+35:0 Advertencia(s)
+39:source_quality_stage_passed: dotnet-build-release
+45:Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duraci
+65:Correctas! - Con error:     0, Superado:  2870, Omitido:     1, Total:  2871, Duraci
+72:Correctas! - Con error:     0, Superado:   138, Omitido:     0, Total:   138, Duraci
+82:Correctas! - Con error:     0, Superado:   451, Omitido:     0, Total:   451, Duraci
+89:Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duraci
+91:source_quality_stage_passed: dotnet-tests
+229:8793 passed, 3 skipped, 3 warnings, 446 subtests passed in 456.17s (0:07:36)
+230:source_quality_stage_passed: python-tests
+231:source_quality_gate_passed: mode=Full
+232:EXIT=0
+
+## full-frozen-2.log
+contains gate_passed=True EXIT=0=True
+1:HEAD=605e486dbba6e1d7eb4bad820ed9238e5d25f8f5
+36:0 Advertencia(s)
+40:source_quality_stage_passed: dotnet-build-release
+46:Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duraci
+66:Correctas! - Con error:     0, Superado:  2870, Omitido:     1, Total:  2871, Duraci
+73:Correctas! - Con error:     0, Superado:   138, Omitido:     0, Total:   138, Duraci
+83:Correctas! - Con error:     0, Superado:   451, Omitido:     0, Total:   451, Duraci
+90:Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duraci
+92:source_quality_stage_passed: dotnet-tests
+230:8793 passed, 3 skipped, 3 warnings, 446 subtests passed in 463.43s (0:07:43)
+231:source_quality_stage_passed: python-tests
+232:source_quality_gate_passed: mode=Full
+233:EXIT=0
+
+## full-clone.log
+contains gate_passed=True EXIT=0=True
+1:HEAD=605e486dbba6e1d7eb4bad820ed9238e5d25f8f5
+35:0 Advertencia(s)
+39:source_quality_stage_passed: dotnet-build-release
+45:Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duraci
+65:Correctas! - Con error:     0, Superado:  2870, Omitido:     1, Total:  2871, Duraci
+72:Correctas! - Con error:     0, Superado:   138, Omitido:     0, Total:   138, Duraci
+82:Correctas! - Con error:     0, Superado:   451, Omitido:     0, Total:   451, Duraci
+89:Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duraci
+91:source_quality_stage_passed: dotnet-tests
+229:8785 passed, 11 skipped, 3 warnings, 433 subtests passed in 471.19s (0:07:51)
+230:source_quality_stage_passed: python-tests
+231:source_quality_gate_passed: mode=Full
+232:EXIT=0

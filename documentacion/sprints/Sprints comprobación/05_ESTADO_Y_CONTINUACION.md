@@ -8,7 +8,7 @@ Siguiente acción: el dueño pega [C03](C03_RESPUESTA_VERAZ.md) íntegro en una 
 | Goal | Estado | Evidencia de cumplimiento |
 |---|---|---|
 | C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` |
-| C02 | CERRADO | `artifacts/comprobaciones/C02/` (incl. `RELEVO.md`); Full `605e486`; HEAD publicado en `origin/main` |
+| C02 | CERRADO | `7d28421` + [PANEL.md](../../../artifacts/comprobaciones/C02/PANEL.md); Full `605e486` |
 | C03 | PENDIENTE | — |
 | C04 | PENDIENTE | — |
 | C05 | PENDIENTE | — |

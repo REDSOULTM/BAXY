@@ -57,7 +57,7 @@ SHA-256: `50db76ca77e8106f129e736bc37ee8a0d686da9f2f1e11ff201c611482d820e4`.
 | G01.07 / 346 | Las **soluciones al problema de comprensión** que hay en los cuatro repositorios, listadas y comparables — el goal 03 arranca de ahí y no de cero. | C02 | CUMPLIDO | INVENTARIO G01.07; `00_MAPA.md` §6 |
 | G01.08 / 348 | La lista, fichero por fichero, de los **adaptadores por aplicación** que hay que sustituir por capacidad genérica. | C02 | CUMPLIDO | `D_ADAPTADORES_POR_APP.md`; Goal 07 sustituye |
 | G01.09 / 350 | `MainWindowViewModel` descompuesto y `MissionEngine` con un solo constructor, con la compuerta .NET verde después: 3.865 pruebas, 0 advertencias. | C02 | CUMPLIDO | `MindPlanSession`+`MemoryTurnSession`; 1 constructor; Full 3996 .NET / 0 warn. El 3865 es histórico. |
-| G01.10 / 352 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | CUMPLIDO | Criterio: status vacío y `rev-list --count origin/main..main` = 0. C02 vive en `origin/main` (`b2505da`…`3d04bd8` y el commit de relevo). No se fija el SHA remoto a `12d7aba`. |
+| G01.10 / 352 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | CUMPLIDO | `7d28421` en `origin/main` (relevo). Criterio: status vacío y count 0. No `12d7aba`. [PANEL.md](../../../artifacts/comprobaciones/C02/PANEL.md) |
 
 ## G02
 
@@ -75,7 +75,7 @@ SHA-256: `031e311f6c96590948398045ee845f84e344662feccda613806332c57ef9c0d4`.
 | G02.07 / 312 | El artefacto .NET dependiente del estado local ya no lo es, o está declarado con su causa. | C02 | CUMPLIDO | skip Integration opt-in declarado; no hay artefacto nuevo atado a esta máquina |
 | G02.08 / 314 | El manifiesto de runtime está **versionado**, y un binario distinto del declarado pone la compuerta en rojo. | C02 | CUMPLIDO | schema v1; tests hash GGUF/llama; `IsForeignBaxyWorktree` |
 | G02.09 / 316 | Registro de qué cambiaste y por qué, prueba por prueba. | C02 | CUMPLIDO | [G02_09.md](../../../artifacts/comprobaciones/C02/G02_09.md) |
-| G02.10 / 317 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | CUMPLIDO | Criterio: status vacío y count 0. C02 en `origin/main` desde `b2505da` (incluye `12d7aba` y `3d04bd8`). SHA remoto no se congela a un commit anterior al de evidencia. |
+| G02.10 / 317 | **Publicado.** `git status --short` vacío y `git rev-list --count origin/main..main` en **0**: todo lo del goal está en `origin/main`. Un goal con el trabajo sólo en este PC no está cerrado, por verdes que estén los demás criterios. | C02 | CUMPLIDO | `7d28421` en `origin/main`. Status vacío y count 0. [PANEL.md](../../../artifacts/comprobaciones/C02/PANEL.md) |
 
 ## G03
 
