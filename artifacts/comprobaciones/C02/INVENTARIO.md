@@ -30,7 +30,7 @@ JRVS fuera de linaje. Procedencia: `00_MAPA.md` §1; no se re-ejecutó 09.5.
 | Wake | manifiesto `%LOCALAPPDATA%\BAXYRuntime\assets\wake\baxy-wakeword-v1.json` `fefb9517…` | Presente |
 | FieldUi sello | `MainWindowShellContractTests` constante `0F6DCDA5…`, 38 ficheros, decisión escrita en `ORIGIN.md` (10.2.5) | Cuadra |
 | MissionEngine | un constructor público | Cuadra |
-| Compuerta | se mide en Full de esta tanda, no se heredan 3986/8792 ni 3865/8511 | Pendiente de Full |
+| Compuerta | Full en `605e486` (fuente idéntica a `3d04bd8`): .NET 3996 pass / 0 fail / 1 skip; Python 8793 pass / 0 fail / 3 skip ×2; clon 8785 / 11 skip env. No se heredan 3986/8792 ni 3865/8511 | Verde |
 
 ## G01.03 / G01.04 — hereda / no hereda
 
