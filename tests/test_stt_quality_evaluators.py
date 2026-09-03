@@ -40,13 +40,19 @@ def test_stt_evaluator_freezes_final_contract_and_blind_engines() -> None:
         audit._program_tree(ROOT)["sha256"] == audit.EXPECTED_PROGRAM_TREE_SHA256
     )
     assert audit.EXPECTED_PROGRAM_TREE_SHA256 == evaluator.EXPECTED_PROGRAM_TREE_SHA256
-    historical = load_module(
-        "baxy_stt_minds14_preregister",
-        "experiments/stt_quality/preregister_minds14_stt_holdout.py",
-    )
-    # Campaign contracts keep their own tree pin. C02 must not rewrite them to
-    # the current evaluator seal (1d3a69df…, lineage of goal095_09512_integrate.py).
-    assert historical.EXPECTED_PROGRAM_TREE_SHA256 != evaluator.EXPECTED_PROGRAM_TREE_SHA256
+    # Campaign contracts keep their own tree pin. Read the published constant
+    # without importing pyarrow (that extra is only for opening the holdout).
+    historical_source = (
+        ROOT / "experiments/stt_quality/preregister_minds14_stt_holdout.py"
+    ).read_text(encoding="utf-8")
+    historical_pin = None
+    for line in historical_source.splitlines():
+        stripped = line.strip().strip(",")
+        if len(stripped) == 66 and stripped.startswith('"') and stripped.endswith('"'):
+            historical_pin = stripped.strip('"')
+            break
+    assert historical_pin is not None and len(historical_pin) == 64
+    assert historical_pin != evaluator.EXPECTED_PROGRAM_TREE_SHA256
     diagnostic = json.loads(
         (ROOT / "artifacts/audit/goals_01_10_20260903/program-tree-diagnostic.json").read_text(
             encoding="utf-8"
