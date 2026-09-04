@@ -18,14 +18,14 @@ Admisión al Goal 10: **NO_LISTO**.
 
 ## Checkpoint a completar por la tanda activa
 
-- Goal / criterios activos: C03 EN_CURSO. G06.01 PENDIENTE. G04.06/G06.06 PENDIENTE hasta origin/main.
-- Fecha: 2026-09-04. HEAD base `3eb8836`. Esta sesión grok 12584.
-- Intento en curso: publicar el WIP C03 (sin logs C02).
-- Último caso: [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) cien-16; R01-R02-6; R07-*-2; Full `source_quality_gate_passed`.
+- Goal / criterios activos: C03 EN_CURSO. G06.01 PENDIENTE. G04.06/G06.06 `6fbb19a`.
+- Fecha: 2026-09-04. HEAD `6fbb19a` en origin/main.
+- Intento en curso: ninguno. Siguiente: 100 frescas para G06.01.
+- Último caso: [CIEN.md](../../../artifacts/comprobaciones/C03/CIEN.md) cien-16; R01-R02-6; R07-*-2; Full verde.
 - Fallos confirmados: G06.01 cien-16 restates/huecos. Exhaust honesto. Reloj utc+offset en ventana.
 - Cambios ajenos conservados: `artifacts/comprobaciones/C02/full-reval-*.log` untracked.
-- Validación: Full .NET 2907/0 fail/1 skip Integration + otras suites; Python 8798 pass / 3 skip.
-- Próxima acción concreta: commit+push C03; luego 100 frescas sobre este árbol para G06.01. No abrir C04.
+- Validación: Full .NET Integration 2907 pass / 1 skip; Python 8798 pass / 3 skip.
+- Próxima acción concreta: 100 frescas sobre `6fbb19a` para G06.01. No abrir C04.
 - Contexto: hermano `Programacion\BAXY` no modificado.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
