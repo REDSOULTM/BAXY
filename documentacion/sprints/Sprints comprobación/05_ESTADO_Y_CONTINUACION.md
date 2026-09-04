@@ -36,11 +36,11 @@ No atribuir ese archivo al plan ni descartarlo para obtener verde.
 - Intento en curso: C03 EN_CURSO. G06.01 PENDIENTE (aclaraciones C06). Resto de filas C03 con evidencia en cien-11 salvo publicación.
 - Último caso/cursor, resultado y ubicación de evidencia: `artifacts/comprobaciones/C03/CIEN.md` (cien-11, oráculo 01:47–02:20).
 - Fallos confirmados: hora y taxi-afirmado tapados. Q2/Q4 no era la causa. G06.01 no se marca CUMPLIDO mientras C06 se coma el turno.
-- Cambios publicados: C01 + C02 en `origin/main`. C03 en este PC, pendiente de push.
+- Cambios publicados: C01 + C02 + C03 código en `origin/main` (`c1ebb79`). G06.01 sigue PENDIENTE.
 - Trabajo ya comprobado: compose utc+offset; recovery mismos hechos; cola no silencia; R02/R07; cien-11 rúbrica hechos/palabras/plantillas en cero.
 - Validación ejecutada: Full `source_quality_gate_passed` (dotnet 2899+60+138+451+477 / 1 skip; Python 8798 pass / 3 skip ambientales).
 - Estado durable: perfiles `comprobaciones-c03-*`.
-- Próxima acción concreta: publicar origin/main; G06.01 lo cierra C06.
+- Próxima acción concreta: C06 (over-trigger). C03 no se declara CERRADO mientras G06.01 esté PENDIENTE.
 - Contexto: no narrar C05 como completada.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
