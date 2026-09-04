@@ -20,5 +20,5 @@ C01 **CERRADO**. C02 **CERRADO**. C03 **EN_CURSO**. C04 no se abre.
 - Goal activo: C03 EN_CURSO. G06.01 PENDIENTE.
 - `session.new` ahora llama `_mindPlans.Clear()`. Full verde 2026-09-04.
 - cien-17: plan pendiente envenenó la muestra. cien-18 leída, huecos de aclaración/conocimiento y «app is open».
-- Próxima: otra 100 fresca tras publicar este arreglo. No abrir C04.
+- Publicado: `e7a8ba0`. Próxima: 100 fresca para G06.01. No abrir C04.
 - Ajenos: `artifacts/comprobaciones/C02/full-reval-*.log` untracked.
