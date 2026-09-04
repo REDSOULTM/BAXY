@@ -282,6 +282,18 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
+            if (InventedVolume(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (InventedAppEffectOnClock(draft.Source, modelText))
+            {
+                return "missing_literal_fact";
+            }
+            if (draft.Intent == "status" && IsBareSuccessOpener(modelText))
+            {
+                return "missing_literal_fact";
+            }
             if (AddsGenericFollowUp(modelText))
             {
                 return "generic_follow_up";
@@ -574,8 +586,9 @@ internal static class UserMessagePolicy
     private static bool LooksLikeOutOfWorldRequest(string user) =>
         ContainsAny(
             user,
-            ["marte", "mars", "jupiter", "saturn", "neptun", "rocket",
-                "bitcoin", "titan", "postcard", "to io", " a io",
+            ["marte", "mars", "jupiter", "saturn", "neptun", "pluton",
+                "europa", "ganymede", "ganimedes", "calisto", "callisto",
+                "rocket", "bitcoin", "titan", "postcard", "to io", " a io",
                 "to the moon", "a la luna", "fabrica una hora",
                 "invent a clock", "inventa una hora"]);
 
@@ -1032,6 +1045,42 @@ internal static class UserMessagePolicy
         }
 
         return ClockAppears(FoldForPolicy(result), hhmm);
+    }
+
+    private static bool InventedVolume(string source, string result)
+    {
+        string folded = FoldForPolicy(result);
+        if (!ContainsAny(folded, ["volumen", "volume", " muted", "silenci"]))
+        {
+            return false;
+        }
+
+        if (!IsStructuredFacts(source))
+        {
+            return true;
+        }
+
+        return !source.Contains("\"level\"", StringComparison.Ordinal)
+            && !source.Contains("\"muted\"", StringComparison.Ordinal);
+    }
+
+    private static bool InventedAppEffectOnClock(string source, string result)
+    {
+        if (!TryDerivedLocalClock(source, out _))
+        {
+            return false;
+        }
+
+        string folded = FoldForPolicy(result);
+        return ContainsAny(
+            folded,
+            ["app is open", "the app is", "esta abierto", "esta abierta", "abri "]);
+    }
+
+    private static bool IsBareSuccessOpener(string modelText)
+    {
+        string folded = FoldForPolicy(modelText).Trim().Trim('.', '!', ' ');
+        return folded is "listo" or "ready" or "done";
     }
 
     private static bool InventedClock(string source, string result)

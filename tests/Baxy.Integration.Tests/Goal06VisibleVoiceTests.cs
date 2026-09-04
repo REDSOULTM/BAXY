@@ -409,6 +409,40 @@ public sealed class Goal06VisibleVoiceTests
             UserMessagePolicy.ConversationFallbackIntent("mail a postcard to Io"),
             Is.EqualTo("out_of_catalog"));
         Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("book a table on Europa"),
+            Is.EqualTo("out_of_catalog"));
+        Assert.That(
+            UserMessagePolicy.ConversationFallbackIntent("llama un taxi a Plutón"),
+            Is.EqualTo("out_of_catalog"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "Listo.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Status("acting"),
+                    UserMessageEvent.Status)),
+            Is.EqualTo("missing_literal_fact"));
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "The volume was at level 3.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Welcome(),
+                    UserMessageEvent.Welcome)),
+            Is.Null);
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "The volume was at level 3.",
+                UserMessagePolicy.Create(
+                    TurnVisibleFacts.Status("acting"),
+                    UserMessageEvent.Status)),
+            Is.EqualTo("missing_literal_fact"));
+        const string clockFacts =
+            """{"kind":"operation","operation":"system.time","polarity":"success","verified":true,"observed":{"utc":"2026-09-04T18:29:00+00:00","localUtcOffsetMinutes":-240}}""";
+        Assert.That(
+            UserMessagePolicy.ModelResponseRejectionReason(
+                "The app is open, and the time is 14:29.",
+                UserMessagePolicy.Create(clockFacts, UserMessageEvent.Status)),
+            Is.EqualTo("missing_literal_fact"));
+        Assert.That(
             UserMessagePolicy.IsSafeConversationReply(
                 "cierra aquello",
                 "¿Quieres que minimice la ventana?"),

@@ -551,7 +551,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         {
             RetryableOperationRegistry registry = _retryableOperations
                 ?? throw new InvalidOperationException("La cola durable no está disponible.");
-            if (_mindPlans.HasPending)
+            if (_mindPlans.HasPending
+                && !NaturalSystemStatusRequestParser.IsCurrentTimeRequest(text)
+                && !UserMessagePolicy.IsConnectivityStatusRequest(text))
             {
                 await _mindPlans.HandlePendingAsync(text, registry, cancellationToken);
                 return;
@@ -1354,6 +1356,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return false;
         }
 
+        _mindPlans.Clear();
+        _pendingMindClarificationObjective = null;
         Messages.Clear();
         AddMessage(
             "BAXY",

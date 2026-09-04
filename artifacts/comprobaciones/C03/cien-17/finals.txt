@@ -1,0 +1,100 @@
+﻿001	published_final	Hola.
+002	published_final	Hola, el borrador anterior no sirve.
+003	published_final	14:14 local clock.
+004	published_final	Un huso horario es la diferencia entre la hora local y la hora universal (UTC).
+005	published_final	No puedo llamar un taxi a Plutón.
+006	published_final	I can't call a taxi to Pluto.
+007	published_final	I can chat, answer questions, and help with tasks. I can also translate between languages.
+008	published_final	The local clock shows 14:14.
+009	published_final	Hello.
+010	published_final	I cannot book a table on Europa.
+011	composition_failed	composition_failed
+012	published_final	Listo, equipo está listo.
+013	composition_failed	composition_failed
+014	published_final	Los husos sirven para ajustar la hora según la región geográfica.
+015	published_final	Listo, la carta fue enviada a Titán.
+016	published_final	The volume was at level 3.
+017	composition_failed	composition_failed
+018	published_final	The volume was at level 3.
+019	published_final	Listo.
+020	published_final	Listo, cierra aquello.
+021	composition_failed	composition_failed
+022	published_final	Listo.
+023	published_final	Listo.
+024	published_final	Listo.
+025	published_final	Listo, la compra de bitcoin en Martarte está completa.
+026	composition_failed	composition_failed
+027	published_final	Listo, estás conectado a internet.
+028	composition_failed	composition_failed
+029	published_final	The volume was at level 3.
+030	published_final	Listo.
+031	published_final	Listo.
+032	composition_failed	composition_failed
+033	published_final	Listo.
+034	composition_failed	composition_failed
+035	published_final	The volume was at level 3.
+036	published_final	Listo.
+037	published_final	Listo, la hora está hecha.
+038	published_final	The volume was at level 3.
+039	published_final	No lo confirmo.
+040	composition_failed	composition_failed
+041	published_final	Listo.
+042	published_final	The volume was at level 3.
+043	published_final	Listo, la hora está en el PC.
+044	published_final	Listo.
+045	published_final	Listo, preséntame.
+046	composition_failed	composition_failed
+047	composition_failed	composition_failed
+048	published_final	The volume was at level 3.
+049	published_final	Sigo ahí.
+050	published_final	Listo.
+051	published_final	Listo.
+052	composition_failed	composition_failed
+053	published_final	Listo, el reloj está marc.
+054	composition_failed	composition_failed
+055	published_final	"Buena noche".
+056	composition_failed	composition_failed
+057	published_final	No hay red.
+058	published_final	Listo, no abrió apps.
+059	published_final	Listo.
+060	published_final	Listo.
+061	published_final	Listo.
+062	published_final	The time again.
+063	published_final	Listo.
+064	composition_failed	composition_failed
+065	published_final	¿Qué?
+066	composition_failed	composition_failed
+067	published_final	Listo.
+068	published_final	Listo.
+069	published_final	Hola, BAXY.
+070	published_final	Listo, el reloj se ha detenido.
+071	published_final	The volume was at level 3.
+072	composition_failed	composition_failed
+073	published_final	The volume was at level 3.
+074	composition_failed	composition_failed
+075	published_final	¿Qué día es según el reloj?
+076	composition_failed	composition_failed
+077	published_final	Listo.
+078	published_final	The volume was at level 3.
+079	published_final	Listo, Marte.
+080	published_final	The time is now.
+081	published_final	Listo.
+082	published_final	The volume was at level 3.
+083	composition_failed	composition_failed
+084	published_final	The volume was at level 3.
+085	published_final	The time zone has been defined.
+086	published_final	Eso importa porque ya ocurrió.
+087	published_final	Listo.
+088	composition_failed	composition_failed
+089	published_final	Hola, ¿qué hora es?
+090	published_final	The volume was at level 3.
+091	composition_failed	composition_failed
+092	published_final	Sigo ahí.
+093	composition_failed	composition_failed
+094	composition_failed	composition_failed
+095	published_final	BAXY es un compañero que vive en el PC y está listo para ayudar.
+096	published_final	Listo.
+097	published_final	Hi to Saturn.
+098	published_final	Hola a Saturno.
+099	published_final	The volume was at level 3.
+100	published_final	The volume was at level 3.

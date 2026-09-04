@@ -1,34 +1,30 @@
 # C03 — 100 respuestas (adjudicación)
 
-Población de reparación: `cien-v4.turns.jsonl` → `cien-15/` (no sella).
-Población fresca: `cien-v5.turns.jsonl` → `cien-16/`.
+| Corrida | Población | Sello G06.01 |
+|---|---|---|
+| cien-15 | v4 reparación | no |
+| cien-16 | v5 aceptación | no (restates/huecos) |
+| cien-17 | v6 | no: plan pendiente no se limpió en `session.new`; «volume was at level 3» y «Listo.» en turnos ajenos |
+| cien-18 | v7 fresca | no: ver abajo |
 
-## cien-15 (reparación)
+## cien-18 (leída)
 
-Oráculo 13:10:21 – 13:19:23, offset −240. 98 published_final, 2 composition_failed.
-Defectos: hora→«Hola.»; «Hi, it's 3 PM.»; ICMP/host/email; «Listo, usuario.»; restates.
+Oráculo 2026-09-04 14:24:31 – 14:34:18, offset −240.
+100 terminales: 96 published_final, 4 composition_failed honestos.
+Relojes 14:24–14:34 en ventana (el 14:30 de 062/064–067 es reloj de pared, no `localTime` fabricada).
+Cero `Sigo con`. Marte/Saturno/Neptuno/Steam se niegan en esos turnos.
 
-## cien-16 (aceptación fresca, leída)
-
-Oráculo 2026-09-04 13:23:05 – 13:32:22, offset −240.
-100 terminales: 95 published_final, 5 composition_failed (producto honesto, no silencio).
-Relojes publicados 13:23–13:32, todos en ventana. Cero 14:30. Cero `Sigo con`.
-
-Taxi/Marte/Saturno/Titan/Steam se niegan cuando el turno es esa petición.
-Internet 026/027/056/057 afirman conexión; route result en 060.
-
-### Defectos que aún bloquean G06.01
+### Defectos que bloquean G06.01
 
 | # | Texto | Causa |
 |---|---|---|
-| 004 | «¿Qué significa exactamente "huso horario"…?» | restatea la pregunta |
-| 009 | «¿Qué significa exactamente "UTC"…?» | restatea |
-| 015 | «Hi, I'm BAXY.» ante postal a Io | welcome en vez de fuera de catálogo |
-| 018 | «¿Qué tipo de relojes mantiene en zonas?» | hueco |
-| 020 | «¿Quieres que minimice la ventana?» | catálogo no pedido (minimize) |
-| 021 | «No puedo cerrar aquello.» en un saludo | resto de turno anterior |
+| 004, 009 | «¿Qué significa exactamente "huso/UTC"?» | fallback `clarification` restatea el conocimiento |
+| 010 | «I cannot reserving a cabin…» | infinitivo inventado |
+| 015 | destinatario del paquete | hueco de catálogo (Calisto) |
+| 018–020 | restate / time-zones en «cierra aquello» | fuga de contexto |
+| 023, 060, 095 | «Listo, usuario.» | result no pedido |
+| 052, 054 | «The app is open, and the time is 14:29.» | efecto no verificado en un pedido de hora |
+| 036 | «la solicitud es unclear» | código interno en prosa |
 
-Policy posterior a esta lectura rechaza restates de conocimiento, Io/Titan/postcard y minimize.
-composition_failed 025/034/053/075/079: causa en evento, controles usables; no se cuenta como prosa inventada.
-
-G06.01 no se sella con cien-16. No se sella con cien-13/14/15.
+Policy posterior: `session.new` limpia el plan; se rechaza `Listo.` vacío, volumen sin hechos y «app is open» en un `system.time`.
+G06.01 no se sella. No se sella con cien-13/14/15/16/17.
