@@ -1,14 +1,14 @@
 # Estado de Sprints comprobación
 
 Fecha de preparación: 2026-09-03. Base inspeccionada: b2505da.
-C01 **CERRADO**. C02 **EN_CURSO** (publicando revalidación 2026-09-04). C03 trabajo **conservado**.
+C01 **CERRADO**. C02 **CERRADO** (revalidación 2026-09-04 `88b5370`). C03 trabajo **conservado**, no abierto por este cierre.
 Admisión al Goal 10: **NO_LISTO**.
-Siguiente acción: publicar evidencia C02; no abrir C03.
+Siguiente acción: el dueño pega C03 si corresponde; este agente no lo abre.
 
 | Goal | Estado | Evidencia de cumplimiento |
 |---|---|---|
 | C01 | CERRADO | commit `d6500f8`; `artifacts/comprobaciones/C01/` |
-| C02 | EN_CURSO | Full ×2+clon `f9391c1` gate_passed; [PANEL-2026-09-04.md](../../../artifacts/comprobaciones/C02/PANEL-2026-09-04.md). Publicación pendiente de este commit. |
+| C02 | CERRADO | `88b5370` + [PANEL-2026-09-04.md](../../../artifacts/comprobaciones/C02/PANEL-2026-09-04.md); Full sobre `f9391c1` |
 | C03 | CONSERVADO | WIP ViewModel/voz y cien-12/13/14 intactos; no se avanza C03 aquí |
 | C04 | PENDIENTE | — |
 | C05 | PENDIENTE | — |
@@ -28,21 +28,21 @@ No atribuir ese archivo al plan ni descartarlo para obtener verde.
 
 ## Checkpoint a completar por la tanda activa
 
-- Goal / criterios activos: C02 EN_CURSO (relevo). Filas G01.01–G01.10, G02.01–G02.10, X03. No se abre C03.
-- Ruta del prompt íntegro / id de sesión Grok si está disponible: `documentacion/sprints/Sprints comprobación/` C02 + bloque de relevo.
-- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-04 relevo C02. Agente anterior C03; un `grok.exe` (PID 38216, cwd este repo, 2026-09-03 14:31) es esta sesión. Ningún Full/conductor/llama-server vivo.
-- Motivo de interrupción: el dueño pegó C02 con relevo; el estado persistido decía C02 CERRADO / C03 EN_CURSO.
-- Commit, runtime, entorno y comando de entrada común: HEAD `f9391c1` = `origin/main`. llama-server `%LOCALAPPDATA%\BAXYRuntime\assets\llama-b9980-cuda12.4`. Conductor C02: `powershell -File scripts/run_baxy_conductor.ps1 -Profile %LOCALAPPDATA%\BAXY\comprobaciones-c02 -TurnsFile artifacts/comprobaciones/C02/launch.turns.jsonl -TimeoutMs 180000`.
-- Intento en curso: revalidar C02. Full C02 `605e486` invalidado: `git diff 7d28421 HEAD -- src tests scripts main.py assets.manifest.json` no vacío (C03 `c1ebb79`).
-- Último caso/cursor, resultado y ubicación de evidencia: inventario/linaje C02 siguen siendo hechos históricos; medición de dueños/runtime/Full/conductor pendiente sobre este HEAD.
-- Fallos confirmados: — (aún no re-medido). Prosa R01 «No pude» es FAIL de producto conservado, no éxito C02.
-- Cambios publicados: C01+C02+C03 en `origin/main` (`f9391c1`). `rev-list origin/main..main` = 0.
-- Cambios ajenos conservados (C03, no tocar): `src/Baxy.App/MainWindowViewModel.cs`, `ProductConductor.cs`, `UserMessagePolicy.cs`, `tests/Baxy.Integration.Tests/Goal06VisibleVoiceTests.cs`, `artifacts/comprobaciones/C03/CIEN.md`, untracked `cien-12/` `cien-13/` `cien-14/`.
-- Trabajo ya comprobado (relevo, no Full): raíz `BAXY Definitivo`, rama `main`; `MissionEngine` un constructor; `MindPlanSession`+`MemoryTurnSession` siguen extraídos; no hay `HandlePendingMindPlanAsync` en el ViewModel; hermano no tocado.
-- Validación ejecutada: dueños 8 pytest + 26 Integration + 17 Kernel; STT evaluators 12 pass / 1 skip env; hashes runtime coinciden; 0 adaptadores faltantes. Fuente `src tests scripts main.py` restaurada a HEAD (WIP C03 copiado a scratch `c03-wip-backup`).
-- Estado durable: `artifacts/comprobaciones/C02/RUNTIME-2026-09-04.md`; backup C03 en scratch.
-- Próxima acción concreta: Full del clon limpio `f9391c1` (pnpm frozen ya). Full ×2 congelado: gate_passed, .NET 4025/0 fail/1 skip, Python 8798/3 skip, 0 advertencias. Luego conductor C01 ×2 + clon. Restaurar WIP C03 después.
-- Contexto: no reset/clean; no iniciar C03. WIP C03 fuente apartada temporalmente para congelar; evidencia C03 (`CIEN.md`, cien-12/13/14) intacta.
+- Goal / criterios activos: C02 CERRADO. G01.01–G01.10, G02.01–G02.10, X03. No se abre C03.
+- Ruta del prompt íntegro / id de sesión Grok si está disponible: C02 + bloque de relevo.
+- Fecha del checkpoint / sesión responsable / situación del agente anterior: 2026-09-04 relevo C02 cerrado.
+- Motivo de interrupción: — (cerrado).
+- Commit, runtime, entorno y comando de entrada común: `88b5370` sobre medición `f9391c1`. llama-server `%LOCALAPPDATA%\BAXYRuntime\assets\llama-b9980-cuda12.4`. Conductor: perfiles `comprobaciones-c02-reval-*`.
+- Intento en curso: ninguno. C02 revalidado.
+- Último caso/cursor, resultado y ubicación de evidencia: [PANEL-2026-09-04.md](../../../artifacts/comprobaciones/C02/PANEL-2026-09-04.md).
+- Fallos confirmados: prosa R01 histórica «No pude» conservada en LAUNCH.md; en 2026-09-04 el oráculo de reloj coincidió con el texto. C02 no certifica C03.
+- Cambios publicados: C02 revalidación `88b5370` (push pendiente de este segundo commit de sello).
+- Cambios ajenos conservados (C03): ViewModel/Conductor/UserMessagePolicy/Goal06 tests, CIEN.md, cien-12/13/14.
+- Trabajo ya comprobado: Full ×2+clon gate_passed; dueños; runtime hashes; conductor ×2+clon con `system.time` verified vs reloj de pared; WIP C03 restaurado.
+- Validación ejecutada: Full .NET 4025/0 fail/1 skip; Python 8798/3 y clon 8790/11 env.
+- Estado durable: `artifacts/comprobaciones/C02/*-2026-09-04.md`.
+- Próxima acción concreta: el dueño pega C03 si quiere continuarlo. Este cierre no lo abre.
+- Contexto: hermano `203c34a` no modificado.
 
 Después de un corte por cuota, el goal permanece EN_CURSO. Al volver, contrasta
 archivos, diff, logs, procesos y efectos antes de repetir el intento. Un proceso
